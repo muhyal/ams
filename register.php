@@ -76,7 +76,7 @@ function sendVerificationEmail($to, $verificationCode) {
         $mail->Port = $config['smtp']['port'];
 
         // E-posta ayarları
-        $mail->setFrom('test@epozta.com', 'OİM');
+        $mail->setFrom($fromAddress, $fromName);
         $mail->addAddress($to);
 
         $mail->Subject = 'Hesap Doğrulama';
