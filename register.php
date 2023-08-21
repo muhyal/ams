@@ -3,6 +3,12 @@
 //ini_set('display_startup_errors', 1);
 //error_reporting(E_ALL);
 
+// Oturum kontrolü
+if (!isset($_SESSION["admin_id"])) {
+    header("Location: admin_login.php"); // Giriş sayfasına yönlendir
+    exit();
+}
+
 require_once "db_connection.php"; // Veritabanı bağlantısı
 require 'PHPMailer/src/Exception.php';
 require 'PHPMailer/src/PHPMailer.php';
