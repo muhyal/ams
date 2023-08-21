@@ -1,28 +1,21 @@
 <?php
-//ini_set('display_errors', 1);
-//ini_set('display_startup_errors', 1);
-//error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-// Oturum kontrolü
-if (!isset($_SESSION["admin_id"])) {
-    header("Location: admin_login.php"); // Giriş sayfasına yönlendir
-    exit();
-}
-
-require_once "db_connection.php"; // Veritabanı bağlantısı
+require_once "db_connection.php";
 require 'PHPMailer/src/Exception.php';
 require 'PHPMailer/src/PHPMailer.php';
 require 'PHPMailer/src/SMTP.php';
-require 'config.php'; // SMTP ayarlarını içeren dosya
-
-
-use Infobip\Infobip;
-use Infobip\Api\Configuration;
-use Infobip\Api\SendSingleTextualSms;
+require 'config.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
+
+use Infobip\Infobip;
+use Infobip\Api\Configuration;
+use Infobip\Api\SendSingleTextualSms;
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $tc = $_POST["tc"];
@@ -41,22 +34,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($existingUser) {
         echo "Bu e-posta, TC kimlik numarası veya telefon numarası zaten kayıtlı!";
     } else {
-        // Yeni kayıt işlemi
-        $verificationCode = generateVerificationCode(); // Rastgele doğrulama kodu oluştur
+// Yeni kayıt işlemi
+$verificationCodeEmail = generateVerificationCode();
+$verificationCodeSms = generateVerificationCode();
+$verificationTimeEmail = date("Y-m-d H:i:s", time()); // E-posta doğrulama zamanı
+$verificationTimeSms = date("Y-m-d H:i:s", time()); // SMS doğrulama zamanı
 
-        $insertQuery = "INSERT INTO users (tc, firstname, lastname, email, phone, password, verification_code) VALUES (?, ?, ?, ?, ?, ?, ?)";
+$insertQuery = "INSERT INTO users (tc, firstname, lastname, email, phone, password, verification_code_email, verification_code_sms, verification_time_email_sent, verification_time_sms_sent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try {
-            $stmt = $db->prepare($insertQuery);
-            $stmt->execute([$tc, $firstname, $lastname, $email, $phone, $password, $verificationCode]);
+try {
+    $stmt = $db->prepare($insertQuery);
+    $stmt->execute([$tc, $firstname, $lastname, $email, $phone, $password, $verificationCodeEmail, $verificationCodeSms, $verificationTimeEmail, $verificationTimeSms]);
 
-            // E-posta gönderme işlemi
-    sendVerificationEmail($email, $verificationCode);
+    // E-posta ve SMS gönderme işlemleri
+    sendVerificationEmail($email, $verificationCodeEmail);
+    sendVerificationSms($phone, $verificationCodeSms);
 
-            echo "Kullanıcı kaydedildi, doğrulama e-postası gönderildi.";
-        } catch (PDOException $e) {
-            echo "Hata: " . $e->getMessage();
-        }
+    echo "Kullanıcı kaydedildi, doğrulama e-postası ve SMS gönderildi.";
+} catch (PDOException $e) {
+    echo "Hata: " . $e->getMessage();
+}
     }
 }
 
@@ -67,7 +64,7 @@ function generateVerificationCode() {
 
 // E-posta gönderme fonksiyonu
 function sendVerificationEmail($to, $verificationCode) {
-    global $config; // Global olarak config dosyasını kullanabilmek için
+    global $config;
 
     $mail = new PHPMailer(true);
 
@@ -82,7 +79,7 @@ function sendVerificationEmail($to, $verificationCode) {
         $mail->Port = $config['smtp']['port'];
 
         // E-posta ayarları
-        $mail->setFrom($fromAddress, $fromName);
+        $mail->setFrom($config['smtp']['username'], 'OİM');
         $mail->addAddress($to);
 
         $mail->Subject = 'Hesap Doğrulama';
@@ -92,7 +89,35 @@ function sendVerificationEmail($to, $verificationCode) {
         $mail->send();
     } catch (Exception $e) {
         // E-posta gönderimi hatası
-        echo "E-posta gönderimi başarısız oldu. Hata: {$mail->ErrorInfo}";
+        // echo "E-posta gönderimi başarısız oldu. Hata: {$mail->ErrorInfo}";
+    }
+}
+
+
+// SMS gönderme fonksiyonu
+function sendVerificationSms($to, $verificationCode) {
+    global $config;
+
+    $infobipConfig = new Configuration();
+    $infobipConfig->setApiKeyPrefix('App');
+    $infobipConfig->setApiKey($config['infobip']['apiKey']);
+
+    $infobip = new Infobip($infobipConfig);
+
+    $sms = new SendSingleTextualSms();
+    $sms->setFrom($config['infobip']['from']);
+    $sms->setTo($to);
+
+    // SMS içeriği olarak bağlantıyı kullan
+    $verificationLink = getVerificationLink($to, $verificationCode);
+    $sms->setText("Hesabınızı doğrulamak için aşağıdaki bağlantıya tıklayınız: $verificationLink");
+
+    try {
+        $response = $infobip->sendSingleTextualSms($sms);
+        // SMS gönderimi başarılı
+    } catch (Exception $e) {
+        // SMS gönderimi hatası
+        echo "SMS gönderimi başarısız oldu. Hata: {$e->getMessage()}";
     }
 }
 
@@ -101,7 +126,6 @@ function getVerificationLink($email, $code) {
     return "http://oim/verify.php?email=$email&code=$code";
 }
 ?>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -121,9 +145,7 @@ function getVerificationLink($email, $code) {
         <label for="phone">Telefon:</label>
         <input type="text" name="phone" required><br>
         <label for="password">Şifre:</label>
-        <input type="
-
-password" name="password" required><br>
+        <input type="password" name="password" required><br>
         <input type="submit" value="Kayıt Ol">
     </form>
 </body>
