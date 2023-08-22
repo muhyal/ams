@@ -1,19 +1,25 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Yönetici Girişi</title>
-</head>
-<body>
-    <h1>Yönetici Girişi</h1>
+<?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+require_once "config.php";
+global $siteName, $siteShortName, $siteUrl;
+require_once "header.php";
+?>
 
-    <form method="post" action="admin_login_process.php">
-        <label for="username">Kullanıcı Adı:</label>
-        <input type="text" id="username" name="username" required><br>
+   <form class="form-signin" method="post" action="admin_login_process.php">
+      <h1 class="h3 mb-3 font-weight-normal">Oturum aç</h1>
 
-        <label for="password">Şifre:</label>
-        <input type="password" id="password" name="password" required><br>
+        <label for="username" class="sr-only">Kullanıcı adı</label>
+        <input type="text" id="username" name="username" placeholder="Kullanıcı adı" class="form-control" required="" autofocus=""><br>
 
-        <input type="submit" value="Giriş Yap">
+        <label for="password" class="sr-only">Şifre</label>
+        <input type="password" id="password" name="password" placeholder="Şifre" class="form-control" required=""><br>
+
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Oturum aç</button>
+   <p class="mt-5 mb-3 text-muted">© <?php echo (new DateTime())->format('Y') ?>, <?php echo $siteName ?>.</p>
     </form>
-</body>
-</html>
+
+<?php
+require_once "footer.php";
+?>
