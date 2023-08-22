@@ -1,0 +1,22 @@
+<?php
+require 'vendor/autoload.php';
+use PHPMailer\PHPMailer\PHPMailer;
+
+$config = array(
+    'smtp' => array(
+        'host' => 'smtp.example.com', // SMTP sunucusu adresi
+        'username' => 'noreply@example.com', // SMTP hesabı e-posta adresi
+        'password' => 'PASSWORD', // SMTP hesabı şifresi
+        'encryption' => PHPMailer::ENCRYPTION_SMTPS, // Güvenli bağlantı türü
+        'port' => 465 // SMTP port numarası
+    )
+);
+$siteName = 'Example';
+$siteShortName = 'OIM';
+$siteUrl = 'https://oim.example.com';
+$agreementLink = 'https://oim.example.com/agreement.php';
+$mailFromAddress = 'noreply@example.com';
+$mailFromName = 'OIM';
+$BASE_URL = "https://BASEURL.api.infobip.com";
+$API_KEY = "APIKEY";
+$SENDER = "SENDERID";
