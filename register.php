@@ -8,14 +8,17 @@ require 'PHPMailer/src/Exception.php';
 require 'PHPMailer/src/PHPMailer.php';
 require 'PHPMailer/src/SMTP.php';
 require 'config.php';
+require 'vendor/autoload.php';
 
+use Infobip\Api\SmsApi;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
-use Infobip\Infobip;
-use Infobip\Api\Configuration;
-use Infobip\Api\SendSingleTextualSms;
+use Infobip\Configuration;
+use Infobip\Model\SmsAdvancedTextualRequest;
+use Infobip\Model\SmsDestination;
+use Infobip\Model\SmsTextualMessage;
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $tc = $_POST["tc"];
@@ -34,26 +37,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($existingUser) {
         echo "Bu e-posta, TC kimlik numarası veya telefon numarası zaten kayıtlı!";
     } else {
-// Yeni kayıt işlemi
-$verificationCodeEmail = generateVerificationCode();
-$verificationCodeSms = generateVerificationCode();
-$verificationTimeEmail = date("Y-m-d H:i:s", time()); // E-posta doğrulama zamanı
-$verificationTimeSms = date("Y-m-d H:i:s", time()); // SMS doğrulama zamanı
+        // Yeni kayıt işlemi
+        $verificationCodeEmail = generateVerificationCode();
+        $verificationCodeSms = generateVerificationCode();
+        $verificationTimeEmail = date("Y-m-d H:i:s", time()); // E-posta doğrulama zamanı
+        $verificationTimeSms = date("Y-m-d H:i:s", time()); // SMS doğrulama zamanı
 
-$insertQuery = "INSERT INTO users (tc, firstname, lastname, email, phone, password, verification_code_email, verification_code_sms, verification_time_email_sent, verification_time_sms_sent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $insertQuery = "INSERT INTO users (tc, firstname, lastname, email, phone, password, verification_code_email, verification_code_sms, verification_time_email_sent, verification_time_sms_sent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-try {
-    $stmt = $db->prepare($insertQuery);
-    $stmt->execute([$tc, $firstname, $lastname, $email, $phone, $password, $verificationCodeEmail, $verificationCodeSms, $verificationTimeEmail, $verificationTimeSms]);
+        try {
+            $stmt = $db->prepare($insertQuery);
+            $stmt->execute([$tc, $firstname, $lastname, $email, $phone, $password, $verificationCodeEmail, $verificationCodeSms, $verificationTimeEmail, $verificationTimeSms]);
 
-    // E-posta ve SMS gönderme işlemleri
-    sendVerificationEmail($email, $verificationCodeEmail);
-    sendVerificationSms($phone, $verificationCodeSms);
+            // E-posta ve SMS gönderme işlemleri
+            sendVerificationEmail($email, $verificationCodeEmail, $firstname, $lastname);
+            sendVerificationSms($phone, $verificationCodeSms, $firstname, $lastname);
 
-    echo "Kullanıcı kaydedildi, doğrulama e-postası ve SMS gönderildi.";
-} catch (PDOException $e) {
-    echo "Hata: " . $e->getMessage();
-}
+            echo "Kullanıcı kaydedildi, doğrulama e-postası ve SMS gönderildi.";
+        } catch (PDOException $e) {
+            echo "Hata: " . $e->getMessage();
+        }
     }
 }
 
@@ -63,7 +66,7 @@ function generateVerificationCode() {
 }
 
 // E-posta gönderme fonksiyonu
-function sendVerificationEmail($to, $verificationCode) {
+function sendVerificationEmail($to, $verificationCode, $firstname, $lastname) {
     global $config;
 
     $mail = new PHPMailer(true);
@@ -83,7 +86,7 @@ function sendVerificationEmail($to, $verificationCode) {
         $mail->addAddress($to);
 
         $mail->Subject = 'Hesap Doğrulama';
-        $mail->Body = "Hesabınızı doğrulamak için aşağıdaki bağlantıya tıklayınız: " . getVerificationLink($to, $verificationCode);
+        $mail->Body = "Sayın $firstname $lastname, hesabınızı doğrulamak ve sözleşmeleri onaylamak için aşağıdaki bağlantıya tıklayınız: " . getVerificationLink($to, $verificationCode);
 
         // E-postayı gönder
         $mail->send();
@@ -93,33 +96,35 @@ function sendVerificationEmail($to, $verificationCode) {
     }
 }
 
-
 // SMS gönderme fonksiyonu
-function sendVerificationSms($to, $verificationCode) {
-    global $config;
+function sendVerificationSms($to, $verificationCode, $firstname, $lastname) {
+    global $config, $BASE_URL, $API_KEY, $SENDER, $MESSAGE_TEXT;
 
-    $infobipConfig = new Configuration();
-    $infobipConfig->setApiKeyPrefix('App');
-    $infobipConfig->setApiKey($config['infobip']['apiKey']);
+    $smsConfiguration = new Configuration(host: $BASE_URL, apiKey: $API_KEY);
 
-    $infobip = new Infobip($infobipConfig);
+    $sendSmsApi = new SmsApi(config: $smsConfiguration);
 
-    $sms = new SendSingleTextualSms();
-    $sms->setFrom($config['infobip']['from']);
-    $sms->setTo($to);
+    $destination = new SmsDestination(
+        to: $to
+    );
 
-    // SMS içeriği olarak bağlantıyı kullan
-    $verificationLink = getVerificationLink($to, $verificationCode);
-    $sms->setText("Hesabınızı doğrulamak için aşağıdaki bağlantıya tıklayınız: $verificationLink");
+    $message = new SmsTextualMessage(destinations: [$destination], from: $SENDER, text: "Sayın $firstname $lastname, hesabınızı doğrulamak ve sözleşmeleri onaylamak için aşağıdaki bağlantıya tıklayınız: " . getVerificationLink($to, $verificationCode));
+
+    $request = new SmsAdvancedTextualRequest(messages: [$message]);
 
     try {
-        $response = $infobip->sendSingleTextualSms($sms);
-        // SMS gönderimi başarılı
-    } catch (Exception $e) {
-        // SMS gönderimi hatası
-        echo "SMS gönderimi başarısız oldu. Hata: {$e->getMessage()}";
+        $smsResponse = $sendSmsApi->sendSmsMessage($request);
+
+        echo $smsResponse->getBulkId() . PHP_EOL;
+
+        foreach ($smsResponse->getMessages() ?? [] as $message) {
+            echo sprintf('Message ID: %s, status: %s', $message->getMessageId(), $message->getStatus()?->getName()) . PHP_EOL;
+        }
+    } catch (Throwable $apiException) {
+        echo("HTTP Code: " . $apiException->getCode() . "\n");
     }
 }
+
 
 // Doğrulama bağlantısı oluşturma
 function getVerificationLink($email, $code) {
@@ -132,21 +137,21 @@ function getVerificationLink($email, $code) {
     <title>Kayıt Formu</title>
 </head>
 <body>
-    <h2>Kayıt Formu</h2>
-    <form method="post" action="">
-        <label for="tc">TC Kimlik No:</label>
-        <input type="text" name="tc" required><br>
-        <label for="firstname">Ad:</label>
-        <input type="text" name="firstname" required><br>
-        <label for="lastname">Soyad:</label>
-        <input type="text" name="lastname" required><br>
-        <label for="email">E-posta:</label>
-        <input type="email" name="email" required><br>
-        <label for="phone">Telefon:</label>
-        <input type="text" name="phone" required><br>
-        <label for="password">Şifre:</label>
-        <input type="password" name="password" required><br>
-        <input type="submit" value="Kayıt Ol">
-    </form>
+<h2>Kayıt Formu</h2>
+<form method="post" action="">
+    <label for="tc">TC Kimlik No:</label>
+    <input type="text" name="tc" required><br>
+    <label for="firstname">Ad:</label>
+    <input type="text" name="firstname" required><br>
+    <label for="lastname">Soyad:</label>
+    <input type="text" name="lastname" required><br>
+    <label for="email">E-posta:</label>
+    <input type="email" name="email" required><br>
+    <label for="phone">Telefon:</label>
+    <input type="text" name="phone" required><br>
+    <label for="password">Şifre:</label>
+    <input type="password" name="password" required><br>
+    <input type="submit" value="Kayıt Ol">
+</form>
 </body>
 </html>
