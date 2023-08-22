@@ -46,7 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $existingUser = $stmtCheck->fetch(PDO::FETCH_ASSOC);
 
     if ($existingUser) {
-        echo "Bu e-posta, TC kimlik numarası veya telefon numarası zaten kayıtlı!";
+        echo "Bu e-posta, T.C. kimlik numarası veya telefon numarası zaten kayıtlı!";
     } else {
         // Yeni kayıt işlemi
         $verificationCodeEmail = generateVerificationCode();
