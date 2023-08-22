@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.1.2
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost:8889
--- Generation Time: Aug 22, 2023 at 02:21 PM
--- Server version: 5.7.39
--- PHP Version: 8.2.0
+-- Host: localhost:3306
+-- Generation Time: Aug 23, 2023 at 12:22 AM
+-- Server version: 5.7.24
+-- PHP Version: 8.2.5
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -55,7 +55,8 @@ CREATE TABLE `users` (
   `verification_time_email_sent` datetime DEFAULT NULL,
   `verification_time_sms_sent` datetime DEFAULT NULL,
   `verification_time_email_confirmed` datetime DEFAULT NULL,
-  `verification_time_sms_confirmed` datetime DEFAULT NULL
+  `verification_time_sms_confirmed` datetime DEFAULT NULL,
+  `sms_bulk_id` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
