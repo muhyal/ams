@@ -11,7 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     try {
         $stmt = $db->prepare($query);
         $stmt->execute([$username, $email, $password]);
-        echo "Admin kaydedildi!";
+        echo "Yönetici kaydedildi!";
     } catch (PDOException $e) {
         echo "Hata: " . $e->getMessage();
     }

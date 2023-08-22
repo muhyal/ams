@@ -14,13 +14,13 @@ $admin_username = $_SESSION["admin_username"];
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Admin Kaydı</title>
+    <title>Yönetici Kaydı</title>
 </head>
 <body>
-    <h1>Admin Kaydı</h1>
+    <h1>Yönetici Kaydı</h1>
 
     <form method="post" action="admin_register_process.php">
-        <label for="username">Kullanıcı Adı:</label>
+        <label for="username">Yönetici Kullanıcı Adı:</label>
         <input type="text" id="username" name="username" required><br>
 
         <label for="email">E-posta:</label>

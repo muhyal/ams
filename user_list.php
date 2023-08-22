@@ -1,4 +1,12 @@
 <?php
+session_start();
+
+// Oturum kontrolü
+if (!isset($_SESSION["admin_id"])) {
+    header("Location: admin_login.php"); // Giriş sayfasına yönlendir
+    exit();
+}
+
 require_once "db_connection.php"; // Veritabanı bağlantısı
 
 // Oturum kontrolü
@@ -23,6 +31,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <h2>Kullanıcı Listesi</h2>
     <table>
         <tr>
+            <th>No</th>
             <th>Ad</th>
             <th>Soyad</th>
             <th>E-posta</th>
@@ -39,6 +48,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </tr>
         <?php foreach ($users as $user): ?>
         <tr>
+            <td><?= $user['id'] ?></td>
             <td><?= $user['firstname'] ?></td>
             <td><?= $user['lastname'] ?></td>
             <td><?= $user['email'] ?></td>
@@ -52,8 +62,16 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <td><?= $user['verification_time_sms_sent'] ?></td>
             <td><?= $user['verification_time_email_confirmed'] ?></td>
             <td><?= $user['verification_time_sms_confirmed'] ?></td>
+            <td>
+                <a href="delete_user.php?id=<?php echo $user["id"]; ?>">Sil</a>
+            </td>
+            <td>
+                <a href="edit_user.php?id=<?php echo $user["id"]; ?>">Düzenle</a>
+            </td>
         </tr>
         <?php endforeach; ?>
     </table>
+    <p><button onclick="history.back()">Geri Dön</button></p>
+    <p><a href="register.php">Kullanıcı ekle</a></p>
 </body>
 </html>

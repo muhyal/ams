@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Admin Girişi</title>
+    <title>Yönetici Girişi</title>
 </head>
 <body>
-    <h1>Admin Girişi</h1>
+    <h1>Yönetici Girişi</h1>
 
     <form method="post" action="admin_login_process.php">
         <label for="username">Kullanıcı Adı:</label>

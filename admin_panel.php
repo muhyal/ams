@@ -15,13 +15,18 @@ $admin_username = $_SESSION["admin_username"];
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Admin Paneli</title>
+    <title>Yönetici Paneli</title>
 </head>
 <body>
-    <h1>Admin Paneli - Hoş Geldiniz, <?php echo $admin_username; ?></h1>
+    <h1>Yönetici Paneli - Hoş Geldiniz, <?php echo $admin_username; ?></h1>
 
-    <!-- Admin paneli içeriği burada -->
-
+    <!-- Yönetici paneli içeriği burada -->
+    <a href="register.php">Kullanıcı Kaydet</a><br>
+    <a href="user_list.php">Kullanıcı Listesi</a><br>
+    <a href="delete_user.php">Kullanıcı Sil</a><br>
+    <a href="edit_user.php">Kullanıcı Düzenle</a><br>
+    <a href="admin_register.php">Yönetici Kaydet</a><br>
+    <a href="agreement.php">Sözleşmeleri Görüntüle</a><br>
     <a href="logout.php">Çıkış Yap</a>
 </body>
 </html>

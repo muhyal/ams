@@ -3,6 +3,14 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+session_start();
+
+// Oturum kontrolü
+if (!isset($_SESSION["admin_id"])) {
+    header("Location: admin_login.php"); // Giriş sayfasına yönlendir
+    exit();
+}
+
 require_once "db_connection.php";
 require 'PHPMailer/src/Exception.php';
 require 'PHPMailer/src/PHPMailer.php';
@@ -50,8 +58,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->execute([$tc, $firstname, $lastname, $email, $phone, $password, $verificationCodeEmail, $verificationCodeSms, $verificationTimeEmail, $verificationTimeSms]);
 
             // E-posta ve SMS gönderme işlemleri
-            sendVerificationEmail($email, $verificationCodeEmail, $firstname, $lastname);
-            sendVerificationSms($phone, $verificationCodeSms, $firstname, $lastname);
+            sendVerificationEmail($email, $verificationCodeEmail, $firstname, $lastname); // Doğru şekilde çağrıldı
+            sendVerificationSms($phone, $verificationCodeSms, $firstname, $lastname); // Doğru şekilde çağrıldı
+
 
             echo "Kullanıcı kaydedildi, doğrulama e-postası ve SMS gönderildi.";
         } catch (PDOException $e) {
@@ -67,7 +76,7 @@ function generateVerificationCode() {
 
 // E-posta gönderme fonksiyonu
 function sendVerificationEmail($to, $verificationCode, $firstname, $lastname) {
-    global $config;
+    global $config, $siteName, $agreementLink;
 
     $mail = new PHPMailer(true);
 
@@ -86,19 +95,28 @@ function sendVerificationEmail($to, $verificationCode, $firstname, $lastname) {
         $mail->addAddress($to);
 
         $mail->Subject = 'Hesap Doğrulama';
-        $mail->Body = "Sayın $firstname $lastname, hesabınızı doğrulamak ve sözleşmeleri onaylamak için aşağıdaki bağlantıya tıklayınız: " . getVerificationLink($to, $verificationCode);
+
+        // Parametreleri şifrele
+        $encryptedEmail = urlencode(base64_encode($to));
+        $encryptedCode = urlencode(base64_encode($verificationCode));
+
+        // Gizli bağlantı oluştur
+        $verificationLink = getVerificationLink($encryptedEmail, $encryptedCode);
+
+        $mail->Body = "Sayın $firstname $lastname, $siteName kaydınızı doğrulamanız ve sözleşmeleri okuyup onaylamanız gerekmektedir. Sözleşmeleri okumak için tıklayın: $agreementLink Sözleşmeleri onaylamak için (Onay bağlantı açıldığında otomatik onaylanmış olacaktır): $verificationLink";
 
         // E-postayı gönder
         $mail->send();
     } catch (Exception $e) {
         // E-posta gönderimi hatası
-        // echo "E-posta gönderimi başarısız oldu. Hata: {$mail->ErrorInfo}";
+        echo "E-posta gönderimi başarısız oldu. Hata: {$mail->ErrorInfo}";
     }
 }
 
+
 // SMS gönderme fonksiyonu
 function sendVerificationSms($to, $verificationCode, $firstname, $lastname) {
-    global $config, $BASE_URL, $API_KEY, $SENDER, $MESSAGE_TEXT;
+    global $config, $BASE_URL, $API_KEY, $SENDER, $MESSAGE_TEXT, $siteName, $agreementLink;
 
     $smsConfiguration = new Configuration(host: $BASE_URL, apiKey: $API_KEY);
 
@@ -108,7 +126,14 @@ function sendVerificationSms($to, $verificationCode, $firstname, $lastname) {
         to: $to
     );
 
-    $message = new SmsTextualMessage(destinations: [$destination], from: $SENDER, text: "Sayın $firstname $lastname, hesabınızı doğrulamak ve sözleşmeleri onaylamak için aşağıdaki bağlantıya tıklayınız: " . getVerificationLink($to, $verificationCode));
+    // Parametreleri şifrele
+    $encryptedPhone = urlencode(base64_encode($to));
+    $encryptedCode = urlencode(base64_encode($verificationCode));
+
+    // Gizli bağlantı oluştur
+    $verificationLink = getVerificationLink($encryptedPhone, $encryptedCode);
+
+    $message = new SmsTextualMessage(destinations: [$destination], from: $SENDER, text: "Sayın $firstname $lastname, $siteName kaydınızı doğrulamanız ve sözleşmeleri okuyup onaylamanız gerekmektedir. Sözleşmeleri okumak için: $agreementLink Sözleşmeleri onaylamak için (Onay bağlantı açıldığında otomatik onaylanmış olacaktır): $verificationLink");
 
     $request = new SmsAdvancedTextualRequest(messages: [$message]);
 
@@ -118,7 +143,7 @@ function sendVerificationSms($to, $verificationCode, $firstname, $lastname) {
         echo $smsResponse->getBulkId() . PHP_EOL;
 
         foreach ($smsResponse->getMessages() ?? [] as $message) {
-            echo sprintf('Message ID: %s, status: %s', $message->getMessageId(), $message->getStatus()?->getName()) . PHP_EOL;
+            echo sprintf('SMS Gönderim No: %s, Durum: %s', $message->getMessageId(), $message->getStatus()?->getName()) . PHP_EOL;
         }
     } catch (Throwable $apiException) {
         echo("HTTP Code: " . $apiException->getCode() . "\n");
@@ -126,9 +151,11 @@ function sendVerificationSms($to, $verificationCode, $firstname, $lastname) {
 }
 
 
+
 // Doğrulama bağlantısı oluşturma
 function getVerificationLink($email, $code) {
-    return "http://oim/verify.php?email=$email&code=$code";
+    global $siteUrl;
+    return "$siteUrl/verify.php?email=$email&code=$code";
 }
 ?>
 <!DOCTYPE html>
@@ -152,6 +179,7 @@ function getVerificationLink($email, $code) {
     <label for="password">Şifre:</label>
     <input type="password" name="password" required><br>
     <input type="submit" value="Kayıt Ol">
+    <p><button onclick="history.back()">Geri Dön</button></p>
 </form>
 </body>
 </html>
