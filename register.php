@@ -1,4 +1,5 @@
 <?php
+global $db;
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -12,17 +13,19 @@ if (!isset($_SESSION["admin_id"])) {
 }
 
 require_once "db_connection.php";
-require 'PHPMailer/src/Exception.php';
-require 'PHPMailer/src/PHPMailer.php';
-require 'PHPMailer/src/SMTP.php';
-require 'config.php';
-require 'vendor/autoload.php';
 
-use Infobip\Api\SmsApi;
+//Import PHPMailer classes into the global namespace
+//These must be at the top of your script, not inside a function
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
+//Load Composer's autoloader
+require 'vendor/autoload.php';
+
+require 'config.php';
+
+use Infobip\Api\SmsApi;
 use Infobip\Configuration;
 use Infobip\Model\SmsAdvancedTextualRequest;
 use Infobip\Model\SmsDestination;
@@ -146,10 +149,9 @@ function sendVerificationSms($to, $verificationCode, $firstname, $lastname) {
             echo sprintf('SMS Gönderim No: %s, Durum: %s', $message->getMessageId(), $message->getStatus()?->getName()) . PHP_EOL;
         }
     } catch (Throwable $apiException) {
-        echo("HTTP Code: " . $apiException->getCode() . "\n");
+        echo("SMS gönderimi sırasında bir hata oluştu: " . $apiException->getMessage() . "\n");
     }
 }
-
 
 
 // Doğrulama bağlantısı oluşturma
@@ -178,7 +180,7 @@ function getVerificationLink($email, $code) {
     <input type="text" name="phone" required><br>
     <label for="password">Şifre:</label>
     <input type="password" name="password" required><br>
-    <input type="submit" value="Kayıt Ol">
+    <p><input type="submit" value="Kaydet"></p>
     <p><button onclick="history.back()">Geri Dön</button></p>
 </form>
 </body>

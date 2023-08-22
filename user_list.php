@@ -1,4 +1,5 @@
 <?php
+global $db;
 session_start();
 
 // Oturum kontrolü
