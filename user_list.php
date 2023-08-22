@@ -10,12 +10,16 @@ if (!isset($_SESSION["admin_id"])) {
 
 require_once "db_connection.php"; // Veritabanı bağlantısı
 
-// Oturum kontrolü
-//if (!isset($_SESSION["admin_id"])) {
-//    header("Location: admin_login.php"); // Giriş sayfasına yönlendir
-//    exit();
-//}
+// Kullanıcı bilgilerini kullanabilirsiniz
+$admin_id = $_SESSION["admin_id"];
+$admin_username = $_SESSION["admin_username"];
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+require_once "config.php";
+global $siteName, $siteShortName, $siteUrl;
+require_once "admin_panel_header.php";
 // Kullanıcıları veritabanından çekme
 $query = "SELECT * FROM users";
 $stmt = $db->prepare($query);
@@ -23,33 +27,97 @@ $stmt->execute();
 $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Kullanıcı Listesi</title>
-</head>
-<body>
-    <h2>Kullanıcı Listesi</h2>
-    <table>
-        <tr>
-            <th>No</th>
-            <th>Ad</th>
-            <th>Soyad</th>
-            <th>E-posta</th>
-            <th>TC Kimlik No</th>
-            <th>Telefon</th>
-            <th>E-posta Doğrulama IP</th>
-            <th>SMS Doğrulama IP</th>
-            <th>E-posta Doğrulama Durumu</th>
-            <th>SMS Doğrulama Durumu</th>
-            <th>E-posta Doğrulama Gönderim Zamanı</th>
-            <th>SMS Doğrulama Gönderim Zamanı</th>
-             <th>E-posta Doğrulama Zamanı</th>
-            <th>SMS Doğrulama Zamanı</th>
-        </tr>
+  <body>
+    <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
+      <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="<?php echo $siteUrl ?>"><?php echo $siteName ?> - <?php echo $siteShortName ?></a>
+      <input class="form-control form-control-dark w-100" type="text" placeholder="Ara" aria-label="Ara">
+      <ul class="navbar-nav px-3">
+        <li class="nav-item text-nowrap">
+          <a class="nav-link" href="logout.php">Oturumu kapat</a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+          <div class="sidebar-sticky">
+            <!-- Yönetici paneli içeriği burada -->
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="admin_panel.php">
+                        Genel bakış
+                    </a>
+                </li>
+              <li class="nav-item">
+                <a class="nav-link" href="register.php">
+                 Kullanıcı Kaydet
+                </a>
+              </li>
+              <li class="nav-item">
+
+                <a class="nav-link" href="user_list.php">
+                     <span data-feather="users"></span>
+                  Kullanıcı Listesi
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="delete_user.php">
+                 Kullanıcı Sil
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="edit_user.php">
+                 Kullanıcı Düzenle
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="admin_register.php">
+                  Yönetici Kaydet
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="agreement.php">
+                    <span data-feather="file"></span>
+                  Sözleşmeleri Görüntüle
+                </a>
+              </li>
+            </ul>
+
+
+          </div>
+        </nav>
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+            <h1 class="h2">Genel Bakış</h1>
+          </div>
+
+<main>
+  <h2>Kullanıcılar</h2>
+  <div class="table-responsive">
+    <table class="table table-striped table-sm">
+      <thead>
+         <tr>
+ <th scope="col">No</th>
+    <th scope="col">Ad</th>
+    <th scope="col">Soyad</th>
+    <th scope="col">E-posta</th>
+    <th scope="col">TC Kimlik</th>
+    <th scope="col">Telefon</th>
+     <th scope="col">E-posta Doğrulama IP</th>
+    <th scope="col">SMS Doğrulama IP</th>
+    <th scope="col">E-posta Doğrulama</th>
+    <th scope="col">SMS Doğrulama</th>
+     <th scope="col">E-posta Doğrulama Gönderimi</th>
+     <th scope="col">E-posta Doğrulama</th>
+     <th scope="col">SMS Doğrulama</th>
+    </tr>
+      </thead>
+      <tbody>
         <?php foreach ($users as $user): ?>
-        <tr>
-            <td><?= $user['id'] ?></td>
+            <tr>
+      <th scope="row"><?= $user['id'] ?></th>
             <td><?= $user['firstname'] ?></td>
             <td><?= $user['lastname'] ?></td>
             <td><?= $user['email'] ?></td>
@@ -63,16 +131,38 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <td><?= $user['verification_time_sms_sent'] ?></td>
             <td><?= $user['verification_time_email_confirmed'] ?></td>
             <td><?= $user['verification_time_sms_confirmed'] ?></td>
-            <td>
+             <td>
                 <a href="delete_user.php?id=<?php echo $user["id"]; ?>">Sil</a>
             </td>
             <td>
                 <a href="edit_user.php?id=<?php echo $user["id"]; ?>">Düzenle</a>
             </td>
-        </tr>
+    </tr>
         <?php endforeach; ?>
+      </tbody>
     </table>
-    <p><button onclick="history.back()">Geri Dön</button></p>
-    <p><a href="register.php">Kullanıcı ekle</a></p>
-</body>
-</html>
+  </div>
+</main>
+
+      </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+   <script src="https://getbootstrap.com/docs/4.0/assets/js/vendor/jquery-slim.min.js"></script>
+    <script src="https://getbootstrap.com/docs/4.0/assets/js/vendor/popper.min.js"></script>
+    <script src="https://getbootstrap.com/docs/4.0/dist/js/bootstrap.min.js"></script>
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
+    <script>
+      feather.replace()
+    </script>
+
+
+  </body>
+<?php
+require_once "footer.php";
+?>

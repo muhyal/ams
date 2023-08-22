@@ -1,5 +1,5 @@
 <?php
-global $db;
+global $db, $siteUrl, $siteName, $siteShortName;
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -46,7 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $existingUser = $stmtCheck->fetch(PDO::FETCH_ASSOC);
 
     if ($existingUser) {
-        echo "Bu e-posta, T.C. kimlik numarası veya telefon numarası zaten kayıtlı!";
+        $message = "Bu e-posta, T.C. kimlik numarası veya telefon numarası zaten kayıtlı!";
     } else {
         // Yeni kayıt işlemi
         $verificationCodeEmail = generateVerificationCode();
@@ -57,18 +57,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $insertQuery = "INSERT INTO users (tc, firstname, lastname, email, phone, password, verification_code_email, verification_code_sms, verification_time_email_sent, verification_time_sms_sent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try {
-            $stmt = $db->prepare($insertQuery);
-            $stmt->execute([$tc, $firstname, $lastname, $email, $phone, $password, $verificationCodeEmail, $verificationCodeSms, $verificationTimeEmail, $verificationTimeSms]);
+    $stmt = $db->prepare($insertQuery);
+    $stmt->execute([$tc, $firstname, $lastname, $email, $phone, $password, $verificationCodeEmail, $verificationCodeSms, $verificationTimeEmail, $verificationTimeSms]);
 
-            // E-posta ve SMS gönderme işlemleri
-            sendVerificationEmail($email, $verificationCodeEmail, $firstname, $lastname); // Doğru şekilde çağrıldı
-            sendVerificationSms($phone, $verificationCodeSms, $firstname, $lastname); // Doğru şekilde çağrıldı
+    // E-posta ve SMS gönderme işlemleri
+    sendVerificationEmail($email, $verificationCodeEmail, $firstname, $lastname);
+    sendVerificationSms($phone, $verificationCodeSms, $firstname, $lastname);
 
-
-            echo "Kullanıcı kaydedildi, doğrulama e-postası ve SMS gönderildi.";
-        } catch (PDOException $e) {
-            echo "Hata: " . $e->getMessage();
-        }
+    // Kullanıcı kaydedildiğini bildiren mesajı $message değişkenine atıyoruz
+    $message = "Kullanıcı kaydedildi, doğrulama e-postası ve SMS gönderildi.";
+} catch (PDOException $e) {
+    // Hata durumunda hata mesajını $message değişkenine atıyoruz
+    $message = "Hata: " . $e->getMessage();
+}
     }
 }
 
@@ -141,16 +142,30 @@ function sendVerificationSms($to, $verificationCode, $firstname, $lastname) {
     $request = new SmsAdvancedTextualRequest(messages: [$message]);
 
     try {
-        $smsResponse = $sendSmsApi->sendSmsMessage($request);
+    $smsResponse = $sendSmsApi->sendSmsMessage($request);
 
-        echo $smsResponse->getBulkId() . PHP_EOL;
+    // Mesajları gönderim sonuçları ile ilgili bilgileri saklayacak değişkenler
+    $smsStatusMessages = [];
+    $smsBulkId = $smsResponse->getBulkId();
 
-        foreach ($smsResponse->getMessages() ?? [] as $message) {
-            echo sprintf('SMS Gönderim No: %s, Durum: %s', $message->getMessageId(), $message->getStatus()?->getName()) . PHP_EOL;
-        }
-    } catch (Throwable $apiException) {
-        echo("SMS gönderimi sırasında bir hata oluştu: " . $apiException->getMessage() . "\n");
+    foreach ($smsResponse->getMessages() ?? [] as $message) {
+        $smsStatusMessages[] = sprintf('SMS Gönderim No: %s, Durum: %s', $message->getMessageId(), $message->getStatus()?->getName());
     }
+
+    // Başarılı mesajları gösteren bir mesaj oluşturuyoruz
+    $smsSuccessMessage = "SMS gönderimi başarılı, Gönderim No: $smsBulkId";
+
+    // Hata mesajını temsil edecek değişkeni boş olarak başlatıyoruz
+    $smsErrorMessage = "";
+
+} catch (Throwable $apiException) {
+    // Hata durumunda hata mesajını saklayan değişkeni ayarlıyoruz
+    $smsErrorMessage = "SMS gönderimi sırasında bir hata oluştu: " . $apiException->getMessage();
+
+    // Başarılı ve hata mesajlarını boş olarak başlatıyoruz
+    $smsSuccessMessage = "";
+    $smsStatusMessages = [];
+}
 }
 
 
@@ -159,29 +174,149 @@ function getVerificationLink($email, $code) {
     global $siteUrl;
     return "$siteUrl/verify.php?email=$email&code=$code";
 }
+
+require_once "admin_panel_header.php";
+
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Kayıt Formu</title>
-</head>
-<body>
-<h2>Kayıt Formu</h2>
-<form method="post" action="">
-    <label for="tc">TC Kimlik No:</label>
-    <input type="text" name="tc" required><br>
-    <label for="firstname">Ad:</label>
-    <input type="text" name="firstname" required><br>
-    <label for="lastname">Soyad:</label>
-    <input type="text" name="lastname" required><br>
-    <label for="email">E-posta:</label>
-    <input type="email" name="email" required><br>
-    <label for="phone">Telefon:</label>
-    <input type="text" name="phone" required><br>
-    <label for="password">Şifre:</label>
-    <input type="password" name="password" required><br>
-    <p><input type="submit" value="Kaydet"></p>
-    <p><button onclick="history.back()">Geri Dön</button></p>
-</form>
-</body>
-</html>
+
+  <body>
+    <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
+      <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="<?php echo $siteUrl ?>/admin_panel.php"><?php echo $siteName ?> - <?php echo $siteShortName ?></a>
+      <input class="form-control form-control-dark w-100" type="text" placeholder="Ara" aria-label="Ara">
+      <ul class="navbar-nav px-3">
+        <li class="nav-item text-nowrap">
+          <a class="nav-link" href="logout.php">Oturumu kapat</a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+          <div class="sidebar-sticky">
+            <!-- Yönetici paneli içeriği burada -->
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="admin_panel.php">
+                        Genel bakış
+                    </a>
+                </li>
+              <li class="nav-item">
+                <a class="nav-link" href="register.php">
+                 Kullanıcı Kaydet
+                </a>
+              </li>
+              <li class="nav-item">
+
+                <a class="nav-link" href="user_list.php">
+                     <span data-feather="users"></span>
+                  Kullanıcı Listesi
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="delete_user.php">
+                 Kullanıcı Sil
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="edit_user.php">
+                 Kullanıcı Düzenle
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="admin_register.php">
+                  Yönetici Kaydet
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="agreement.php">
+                    <span data-feather="file"></span>
+                  Sözleşmeleri Görüntüle
+                </a>
+              </li>
+            </ul>
+
+
+          </div>
+        </nav>
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+            <h1 class="h2">Genel Bakış</h1>
+          </div>
+
+<main>
+  <h2>Kullanıcı Kaydı</h2>
+
+  <!-- Mesajı burada gösteriyoruz -->
+<?php if (isset($message) && $message !== ""): ?>
+    <div class="alert alert-danger" role="alert">
+      <?= $message ?>
+    </div>
+  <?php endif; ?>
+
+  <!-- SMS gönderim başarılı mesajı -->
+    <?php if (isset($smsSuccessMessage) && $smsSuccessMessage !== ""): ?>
+        <div class="alert alert-success" role="alert">
+      <?= $smsSuccessMessage ?>
+    </div>
+  <?php endif; ?>
+
+  <!-- SMS gönderim hata mesajı -->
+    <?php if (isset($smsErrorMessage) && $smsErrorMessage !== ""): ?>
+        <div class="alert alert-danger" role="alert">
+      <?= $smsErrorMessage ?>
+    </div>
+  <?php endif; ?>
+
+  <!-- SMS gönderim sonuçları -->
+    <?php if (isset($smsStatusMessage) && $smsStatusMessage !== ""): ?>
+    <div class="alert alert-info" role="alert">
+      <?= $smsStatusMessage ?>
+    </div>
+    <?php endif; ?>
+
+  <form method="post" action="">
+    <label class="form-label" for="tc">TC Kimlik No:</label>
+    <input class="form-control" type="text" name="tc" required><br>
+    <label class="form-label" for="firstname">Ad:</label>
+    <input class="form-control"type="text" name="firstname" required><br>
+    <label class="form-label" for="lastname">Soyad:</label>
+    <input class="form-control"type="text" name="lastname" required><br>
+    <label for="email" class="form-label">E-posta:</label>
+    <input class="form-control"type="email" name="email" class="form-control" aria-describedby="emailHelp" required>
+      <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+      <br>
+    <label class="form-label" for="phone">Telefon:</label>
+    <input class="form-control" type="text" name="phone" required><br>
+    <label  class="form-label"for="password">Şifre:</label>
+    <input class="form-control" type="password" name="password" required><br>
+      <button type="submit" class="btn btn-primary">Kaydet</button>
+        <button onclick="history.back()" class="btn btn-primary">Geri dön</button>
+    </form>
+
+
+</main>
+
+      </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+   <script src="https://getbootstrap.com/docs/4.0/assets/js/vendor/jquery-slim.min.js"></script>
+    <script src="https://getbootstrap.com/docs/4.0/assets/js/vendor/popper.min.js"></script>
+    <script src="https://getbootstrap.com/docs/4.0/dist/js/bootstrap.min.js"></script>
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
+    <script>
+      feather.replace()
+    </script>
+
+
+  </body>
+<?php
+require_once "footer.php";
+?>
