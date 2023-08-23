@@ -83,20 +83,20 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <table class="table table-striped table-sm">
       <thead>
          <tr>
- <th scope="col">No</th>
+ <th scope="col">#</th>
     <th scope="col">Ad</th>
     <th scope="col">Soyad</th>
     <th scope="col">E-posta</th>
     <th scope="col">T.C. Kimlik</th>
     <th scope="col">Telefon</th>
-    <th scope="col">E-posta Doğrulama</th>
-    <th scope="col">SMS Doğrulama</th>
+    <th scope="col">E-posta Doğrulandı Mı?</th>
+    <th scope="col">SMS Doğrulandı Mı?</th>
     </tr>
       </thead>
       <tbody>
         <?php foreach ($users as $user): ?>
-            <tr>
-      <th scope="row"><?= $user['id'] ?></th>
+    <tr>
+            <th scope="row"><?= $user['id'] ?></th>
             <td><?= $user['firstname'] ?></td>
             <td><?= $user['lastname'] ?></td>
             <td><?= $user['email'] ?></td>

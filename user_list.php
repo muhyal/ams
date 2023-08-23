@@ -77,18 +77,18 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <table class="table table-striped table-sm">
       <thead>
          <tr>
- <th scope="col">No</th>
+ <th scope="col">#</th>
     <th scope="col">Ad</th>
     <th scope="col">Soyad</th>
     <th scope="col">E-posta</th>
     <th scope="col">T.C. Kimlik</th>
     <th scope="col">Telefon</th>
     <th scope="col">SMS Doğrulaması Gönderildi</th>
-    <th scope="col">SMS Doğrulaması Onayladı</th>
+    <th scope="col">SMS Doğrulaması Onaylandı</th>
     <th scope="col">SMS Doğrulandı Mı?</th>
     <th scope="col">SMS Doğrulama IP</th>
     <th scope="col">E-Posta Doğrulaması Gönderildi</th>
-    <th scope="col">E-Posta Doğrulaması Onayladı</th>
+    <th scope="col">E-Posta Doğrulaması Onaylandı</th>
     <th scope="col">E-posta Doğrulandı Mı?</th>
     <th scope="col">E-posta Doğrulama IP</th>
     <th scope="col">Sil</th>
