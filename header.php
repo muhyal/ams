@@ -15,7 +15,6 @@ global $siteName, $siteShortName, $siteUrl;
     <!-- Custom styles for this template -->
     <link href="oim.css" rel="stylesheet"></head>
     <!-- Custom styles for this template -->
-    <link href="dashboard.css" rel="stylesheet">
   <body>
 <header class="p-3 mb-3 border-bottom">
     <div class="container">
@@ -23,15 +22,12 @@ global $siteName, $siteShortName, $siteUrl;
         <a href="<?php echo $siteUrl ?>" class="d-flex align-items-center mb-2 mb-lg-0 link-body-emphasis text-decoration-none">
           <?php echo $siteName ?> - <?php echo $siteShortName ?>
         </a>
-
         <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
           <li><a href="<?php echo $siteUrl ?>" class="nav-link px-2 link-secondary"></a></li>
         </ul>
-
         <!-- <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
           <input type="search" class="form-control" placeholder="Ara..." aria-label="Ara">
         </form> -->
-
         <div class="dropdown text-end">
           <a href="<?php echo $siteUrl ?>" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
             <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">

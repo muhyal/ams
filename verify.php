@@ -25,12 +25,6 @@ if ((isset($_GET['email'])  || isset($_GET['phone']) )&& isset($_GET['code'])) {
     $stmtEmail->execute([$userEmail, $verificationCode]);
     $userEmailData = $stmtEmail->fetch(PDO::FETCH_ASSOC);
 	}
-  
-
-
-
-
- 
 
     if ($userEmailData !==null) {
         $verificationTime = date('Y-m-d H:i:s'); // Şu anki zamanı al

@@ -24,8 +24,6 @@ require_once "agreement_header.php";
     </symbol>
 </svg>
 
-
-
 <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
     <header class="mb-auto">
         <div>

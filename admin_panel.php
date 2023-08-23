@@ -26,7 +26,6 @@ $stmt = $db->prepare($query);
 $stmt->execute();
 $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
-
   <body>
     <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
       <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="<?php echo $siteUrl ?>/admin_panel.php"><?php echo $siteName ?> - <?php echo $siteShortName ?></a>
@@ -37,7 +36,6 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </li>
       </ul>
     </nav>
-
     <div class="container-fluid">
       <div class="row">
         <nav class="col-md-2 d-none d-md-block bg-light sidebar">
@@ -62,16 +60,6 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="delete_user.php">
-                 Kullanıcı Sil
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="edit_user.php">
-                 Kullanıcı Düzenle
-                </a>
-              </li>
-              <li class="nav-item">
                 <a class="nav-link" href="admin_register.php">
                   Yönetici Kaydet
                 </a>
@@ -83,16 +71,12 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </a>
               </li>
             </ul>
-
-
           </div>
         </nav>
-
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
             <h1 class="h2">Genel Bakış</h1>
           </div>
-
 <main>
   <h2>Kullanıcılar</h2>
   <div class="table-responsive">
@@ -126,9 +110,8 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </table>
   </div>
 </main>
-
-      </div>
-    </div>
+</div>
+</div>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
@@ -143,8 +126,6 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <script>
       feather.replace()
     </script>
-
-
   </body>
 <?php
 require_once "footer.php";

@@ -17,7 +17,6 @@ require_once "db_connection.php";
 //Import PHPMailer classes into the global namespace
 //These must be at the top of your script, not inside a function
 use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
 //Load Composer's autoloader
@@ -213,20 +212,9 @@ require_once "admin_panel_header.php";
                 </a>
               </li>
               <li class="nav-item">
-
                 <a class="nav-link" href="user_list.php">
                      <span data-feather="users"></span>
                   Kullanıcı Listesi
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="delete_user.php">
-                 Kullanıcı Sil
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="edit_user.php">
-                 Kullanıcı Düzenle
                 </a>
               </li>
               <li class="nav-item">
@@ -241,8 +229,6 @@ require_once "admin_panel_header.php";
                 </a>
               </li>
             </ul>
-
-
           </div>
         </nav>
 
@@ -250,7 +236,6 @@ require_once "admin_panel_header.php";
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
             <h1 class="h2">Genel Bakış</h1>
           </div>
-
 <main>
   <h2>Kullanıcı Kaydı</h2>
 
@@ -300,12 +285,9 @@ require_once "admin_panel_header.php";
       <button type="submit" class="btn btn-primary">Kaydet</button>
         <button onclick="history.back()" class="btn btn-primary">Geri dön</button>
     </form>
-
-
 </main>
-
-      </div>
-    </div>
+</div>
+</div>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
@@ -320,7 +302,6 @@ require_once "admin_panel_header.php";
     <script>
       feather.replace()
     </script>
-
 
   </body>
 <?php

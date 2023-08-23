@@ -85,16 +85,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="delete_user.php">
-                            Kullanıcı Sil
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="edit_user.php">
-                            Kullanıcı Düzenle
-                        </a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" href="admin_register.php">
                             Yönetici Kaydet
                         </a>
