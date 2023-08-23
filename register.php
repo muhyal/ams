@@ -101,8 +101,8 @@ function sendVerificationEmail($to, $verificationCode, $firstname, $lastname) {
         $mail->Subject = 'Hesap Doğrulama';
 
         // Parametreleri şifrele
-        $encryptedEmail = urlencode(base64_encode($to));
-        $encryptedCode = urlencode(base64_encode($verificationCode));
+        $encryptedEmail = $to;
+        $encryptedCode = $verificationCode;
 
         // Gizli bağlantı oluştur
         $verificationLink = getVerificationLink($encryptedEmail, $encryptedCode);
@@ -131,11 +131,12 @@ function sendVerificationSms($to, $verificationCode, $firstname, $lastname) {
     );
 
     // Parametreleri şifrele
-    $encryptedPhone = urlencode(base64_encode($to));
-    $encryptedCode = urlencode(base64_encode($verificationCode));
+    $encryptedPhone = $to;
+    $encryptedCode = $verificationCode;
+	
 
     // Gizli bağlantı oluştur
-    $verificationLink = getVerificationLink($encryptedPhone, $encryptedCode);
+    $verificationLink = getVerificationLink($encryptedPhone, $encryptedCode,"phone");
 
     $message = new SmsTextualMessage(destinations: [$destination], from: $SENDER, text: "Sayın $firstname $lastname, $siteName kaydınızı doğrulamanız ve sözleşmeleri okuyup onaylamanız gerekmektedir. Sözleşmeleri görüntüleyin: $agreementLink Sözleşmeleri onaylayın (Bağlantı açıldığında sözleşmeler otomatik onaylanacaktır): $verificationLink");
 
@@ -170,9 +171,14 @@ function sendVerificationSms($to, $verificationCode, $firstname, $lastname) {
 
 
 // Doğrulama bağlantısı oluşturma
-function getVerificationLink($email, $code) {
+function getVerificationLink($emailOrPhone, $code, $type="email") {
     global $siteUrl;
-    return "$siteUrl/verify.php?email=$email&code=$code";
+	if($type == "phone"){
+	 return "$siteUrl/verify.php?phone=$emailOrPhone&code=$code";
+	}else{
+		 return "$siteUrl/verify.php?email=$emailOrPhone&code=$code";
+	}
+   
 }
 
 require_once "admin_panel_header.php";
