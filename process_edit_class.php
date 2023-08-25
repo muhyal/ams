@@ -1,4 +1,11 @@
 <?php
+session_start();
+
+// Oturum kontrolü
+if (!isset($_SESSION["admin_id"])) {
+    header("Location: admin_login.php"); // Giriş sayfasına yönlendir
+    exit();
+}
 global $db;
 require_once "db_connection.php"; // Veritabanı bağlantısı
 

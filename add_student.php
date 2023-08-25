@@ -1,7 +1,9 @@
 <?php
 session_start();
-if(!isset($_SESSION['admin_id'])) {
-    header("Location: index.php");
+
+// Oturum kontrolü
+if (!isset($_SESSION["admin_id"])) {
+    header("Location: admin_login.php"); // Giriş sayfasına yönlendir
     exit();
 }
 

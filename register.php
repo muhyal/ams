@@ -197,40 +197,10 @@ require_once "admin_panel_header.php";
 
     <div class="container-fluid">
       <div class="row">
-        <nav class="col-md-2 d-none d-md-block bg-light sidebar">
-          <div class="sidebar-sticky">
-            <!-- Yönetici paneli içeriği burada -->
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link" href="admin_panel.php">
-                        Genel bakış
-                    </a>
-                </li>
-              <li class="nav-item">
-                <a class="nav-link" href="register.php">
-                 Kullanıcı Kaydet
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="user_list.php">
-                     <span data-feather="users"></span>
-                  Kullanıcı Listesi
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="admin_register.php">
-                  Yönetici Kaydet
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="agreement.php">
-                    <span data-feather="file"></span>
-                  Sözleşmeleri Görüntüle
-                </a>
-              </li>
-            </ul>
-          </div>
-        </nav>
+
+          <?php
+          require_once "admin_panel_sidebar.php";
+          ?>
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">

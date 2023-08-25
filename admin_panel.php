@@ -20,11 +20,26 @@ error_reporting(E_ALL);
 require_once "config.php";
 global $siteName, $siteShortName, $siteUrl;
 require_once "admin_panel_header.php";
+
 // Kullanıcıları veritabanından çekme
 $query = "SELECT * FROM users";
 $stmt = $db->prepare($query);
 $stmt->execute();
 $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Öğrenci listesi sorgusu
+$query = "SELECT * FROM students";
+$stmt = $db->query($query);
+
+// Öğrenci verilerini alın
+$students = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Öğrenci listesi sorgusu
+$query = "SELECT * FROM classes";
+$stmt = $db->query($query);
+
+// Öğrenci verilerini alın
+$classes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
   <body>
     <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
@@ -38,71 +53,19 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </nav>
     <div class="container-fluid">
       <div class="row">
-        <nav class="col-md-2 d-none d-md-block bg-light sidebar">
-          <div class="sidebar-sticky">
-            <!-- Yönetici paneli içeriği burada -->
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link" href="admin_panel.php">
-                        Genel bakış
-                    </a>
-                </li>
-                <li class="nav-item">
-                <a class="nav-link" href="register.php">
-                 Kullanıcı Kaydet
-                </a>
-              </li>
-              <li class="nav-item">
 
-                <a class="nav-link" href="user_list.php">
-                     <span data-feather="users"></span>
-                  Kullanıcı Listesi
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="admin_register.php">
-                  Yönetici Kaydet
-                </a>
-              </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="student_list.php">
-                        <span data-feather="file"></span>
-                        Öğrenci Listesi (Yakında)
-                    </a>
-                </li>
-              <li class="nav-item">
-                <a class="nav-link" href="add_student.php">
-                    <span data-feather="file"></span>
-                    Öğrenci Ekle (Yakında)
-                </a>
-              </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="class_list.php">
-                        <span data-feather="file"></span>
-                        Sınıf Listesi (Yakında)
-                    </a>
-                </li>
-              <li class="nav-item">
-                    <a class="nav-link" href="add_class.php">
-                        <span data-feather="file"></span>
-                        Sınıf Ekle (Yakında)
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="agreement.php">
-                        <span data-feather="file"></span>
-                        Sözleşmeleri Görüntüle
-                    </a>
-                </li>
-            </ul>
-          </div>
-        </nav>
+
+        <?php
+        require_once "admin_panel_sidebar.php";
+        ?>
+
+
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
             <h1 class="h2">Genel Bakış</h1>
           </div>
 <main>
-  <h2>Kullanıcılar</h2>
+  <h2>Öğrenciler</h2>
   <div class="table-responsive">
     <table class="table table-striped table-sm">
       <thead>
@@ -113,27 +76,84 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <th scope="col">E-posta</th>
     <th scope="col">T.C. Kimlik</th>
     <th scope="col">Telefon</th>
-    <th scope="col">E-posta Doğrulandı Mı?</th>
-    <th scope="col">SMS Doğrulandı Mı?</th>
     </tr>
       </thead>
       <tbody>
-        <?php foreach ($users as $user): ?>
+        <?php foreach ($students as $student): ?>
     <tr>
-            <th scope="row"><?= $user['id'] ?></th>
-            <td><?= $user['firstname'] ?></td>
-            <td><?= $user['lastname'] ?></td>
-            <td><?= $user['email'] ?></td>
-            <td><?= $user['tc'] ?></td>
-            <td><?= $user['phone'] ?></td>
-            <td><?= $user['verification_time_email_confirmed'] ? 'Doğrulandı' : 'Doğrulanmadı' ?></td>
-            <td><?= $user['verification_time_sms_confirmed'] ? 'Doğrulandı' : 'Doğrulanmadı' ?></td>
+            <th scope="row"><?= $student['id'] ?></th>
+            <td><?= $student['firstname'] ?></td>
+            <td><?= $student['lastname'] ?></td>
+            <td><?= $student['email'] ?></td>
+            <td><?= $student['tc_identity'] ?></td>
+            <td><?= $student['phone'] ?></td>
     </tr>
         <?php endforeach; ?>
       </tbody>
     </table>
   </div>
 </main>
+
+
+            <main>
+                <h2>Kullanıcılar</h2>
+                <div class="table-responsive">
+                    <table class="table table-striped table-sm">
+                        <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Ad</th>
+                            <th scope="col">Soyad</th>
+                            <th scope="col">E-posta</th>
+                            <th scope="col">T.C. Kimlik</th>
+                            <th scope="col">Telefon</th>
+                            <th scope="col">E-posta Doğrulandı Mı?</th>
+                            <th scope="col">SMS Doğrulandı Mı?</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach ($users as $user): ?>
+                            <tr>
+                                <th scope="row"><?= $user['id'] ?></th>
+                                <td><?= $user['firstname'] ?></td>
+                                <td><?= $user['lastname'] ?></td>
+                                <td><?= $user['email'] ?></td>
+                                <td><?= $user['tc'] ?></td>
+                                <td><?= $user['phone'] ?></td>
+                                <td><?= $user['verification_time_email_confirmed'] ? 'Doğrulandı' : 'Doğrulanmadı' ?></td>
+                                <td><?= $user['verification_time_sms_confirmed'] ? 'Doğrulandı' : 'Doğrulanmadı' ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </main>
+
+            <main>
+                <h2>Sınıflar</h2>
+                <div class="table-responsive">
+                    <table class="table table-striped table-sm">
+                        <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Ad</th>
+                            <th scope="col">Kod</th>
+                            <th scope="col">Açıklama</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach ($classes as $class): ?>
+                            <tr>
+                                <th scope="row"><?= $class['id'] ?></th>
+                                <td><?= $class['class_name'] ?></td>
+                                <td><?= $class['class_code'] ?></td>
+                                <td><?= $class['class_description'] ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </main>
 </div>
 </div>
 
