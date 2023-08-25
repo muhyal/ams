@@ -1,3 +1,3 @@
-# OIM (Online İşlemler Merkezi)
+# OIM (Öğrenci İşleri Merkezi)
 
-Kurum içi gereksinim nedeniyle oluşturulmuş basit online işlemler merkezi betiği. 
+Kurum içi gereksinim nedeniyle oluşturulmuş basit öğrenci işleri merkezi betiği. 
