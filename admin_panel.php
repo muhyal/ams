@@ -64,12 +64,36 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                   Yönetici Kaydet
                 </a>
               </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="student_list.php">
+                        <span data-feather="file"></span>
+                        Öğrenci Listesi (Yakında)
+                    </a>
+                </li>
               <li class="nav-item">
-                <a class="nav-link" href="agreement.php">
+                <a class="nav-link" href="add_student.php">
                     <span data-feather="file"></span>
-                  Sözleşmeleri Görüntüle
+                    Öğrenci Ekle (Yakında)
                 </a>
               </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="class_list.php">
+                        <span data-feather="file"></span>
+                        Sınıf Listesi (Yakında)
+                    </a>
+                </li>
+              <li class="nav-item">
+                    <a class="nav-link" href="add_class.php">
+                        <span data-feather="file"></span>
+                        Sınıf Ekle (Yakında)
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="agreement.php">
+                        <span data-feather="file"></span>
+                        Sözleşmeleri Görüntüle
+                    </a>
+                </li>
             </ul>
           </div>
         </nav>
