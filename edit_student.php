@@ -1,69 +1,71 @@
 <?php
-session_start();
-
-// Oturum kontrolü
-if (!isset($_SESSION["admin_id"])) {
-    header("Location: admin_login.php"); // Giriş sayfasına yönlendir
-    exit();
-}
 global $db;
 require_once "db_connection.php";
 
-if (isset($_GET['id'])) {
-    $studentId = $_GET['id'];
+session_start();
 
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $firstname = $_POST['firstname'];
-        $lastname = $_POST['lastname'];
-        $tc_identity = $_POST['tc_identity'];
-        $phone = $_POST['phone'];
-        $email = $_POST['email'];
+// Giriş yapmış olan kullanıcının rolünü kontrol edin ve gerekirse erişimi engelleyin
+$allowedRoles = array(1); // Öğrenci düzenlemesi için uygun olan rollerin değeri
+$currentUserRole = $_SESSION['admin_role'];
 
-        // Öğrenciyi veritabanında güncelleme işlemi
-        $query = "UPDATE students SET firstname = ?, lastname = ?, tc_identity = ?, phone = ?, email = ? WHERE id = ?";
-        $stmt = $db->prepare($query);
-        $stmt->execute([$firstname, $lastname, $tc_identity, $phone, $email, $studentId]);
-
-        header("Location: student_list.php");
-        exit;
-    }
-
-    // Öğrenci bilgilerini veritabanından çekme işlemi
-    $query = "SELECT * FROM students WHERE id = ?";
-    $stmt = $db->prepare($query);
-    $stmt->execute([$studentId]);
-    $student = $stmt->fetch(PDO::FETCH_ASSOC);
-} else {
-    header("Location: student_list.php");
+if (!in_array($currentUserRole, $allowedRoles)) {
+    header("Location: access_denied.php");
     exit;
 }
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $student_id = $_POST["student_id"];
+    $new_firstname = $_POST["new_firstname"];
+    $new_lastname = $_POST["new_lastname"];
+    $new_tc_identity = $_POST["new_tc_identity"];
+    $new_phone = $_POST["new_phone"];
+    $new_email = $_POST["new_email"];
+
+    // Öğrenci verilerini güncelleme işlemi
+    $update_query = "UPDATE students SET firstname = ?, lastname = ?, tc_identity = ?, phone = ?, email = ? WHERE id = ?";
+    $stmt = $db->prepare($update_query);
+    $stmt->execute([$new_firstname, $new_lastname, $new_tc_identity, $new_phone, $new_email, $student_id]);
+
+    header("Location: student_list.php"); // Öğrenci listesine geri dön
+    exit();
+}
+
+// Öğrenci verisini çekme
+if (isset($_GET["id"])) {
+    $student_id = $_GET["id"];
+    $select_query = "SELECT * FROM students WHERE id = ?";
+    $stmt = $db->prepare($select_query);
+    $stmt->execute([$student_id]);
+    $student = $stmt->fetch(PDO::FETCH_ASSOC);
+}
 ?>
+
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Öğrenci Düzenle</title>
 </head>
 <body>
 <h1>Öğrenci Düzenle</h1>
-<form method="post">
-    <label for="firstname">Adı:</label>
-    <input type="text" name="firstname" value="<?php echo $student['firstname']; ?>"><br>
 
-    <label for="lastname">Soyadı:</label>
-    <input type="text" name="lastname" value="<?php echo $student['lastname']; ?>"><br>
+<form method="post" action="">
+    <input type="hidden" name="student_id" value="<?php echo $student['id']; ?>">
+    <label for="new_firstname">Yeni Adı:</label>
+    <input type="text" id="new_firstname" name="new_firstname" value="<?php echo $student['firstname']; ?>" required><br>
 
-    <label for="tc_identity">TC Kimlik No:</label>
-    <input type="text" name="tc_identity" value="<?php echo $student['tc_identity']; ?>"><br>
+    <label for="new_lastname">Yeni Soyadı:</label>
+    <input type="text" id="new_lastname" name="new_lastname" value="<?php echo $student['lastname']; ?>" required><br>
 
-    <label for="phone">Cep Telefonu:</label>
-    <input type="text" name="phone" value="<?php echo $student['phone']; ?>"><br>
+    <label for="new_tc_identity">Yeni TC Kimlik No:</label>
+    <input type="text" id="new_tc_identity" name="new_tc_identity" value="<?php echo $student['tc_identity']; ?>" required><br>
 
-    <label for="email">E-posta:</label>
-    <input type="email" name="email" value="<?php echo $student['email']; ?>"><br>
+    <label for="new_phone">Yeni Cep Telefonu:</label>
+    <input type="text" id="new_phone" name="new_phone" value="<?php echo $student['phone']; ?>" required><br>
 
-    <button type="submit">Kaydet</button>
+    <label for="new_email">Yeni E-posta:</label>
+    <input type="email" id="new_email" name="new_email" value="<?php echo $student['email']; ?>" required><br>
+
+    <input type="submit" value="Kaydet">
 </form>
 </body>
 </html>

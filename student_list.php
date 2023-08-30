@@ -77,15 +77,15 @@ $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <td><?php echo $student['email']; ?></td>
             <td><?php echo $student['parent_firstname'] . ' ' . $student['parent_lastname']; ?></td> <!-- Veli bilgisi -->
             <td><?php echo $student['parent_phone']; ?></td> <!-- Veli telefonu -->
-            <td><?php echo $student['parent_phone']; ?></td> <!-- Veli telefonu -->
+            <td><?php echo $student['parent_email']; ?></td> <!-- Veli telefonu -->
             <td><?php echo $student['emergency_contact']; ?></td>
-            <td><?php echo $student['phone']; ?></td>
+            <td><?php echo $student['emergency_phone']; ?></td>
             <td><?php echo $student['blood_type']; ?></td> <!-- Yeni sütun -->
             <td><?php echo $student['health_issue']; ?></td> <!-- Yeni sütun -->
             <td><?php echo $student['city']; ?></td> <!-- Yeni sütun -->
             <td><?php echo $student['district']; ?></td> <!-- Yeni sütun -->
             <td><a href="edit_student.php?id=<?php echo $student['id']; ?>">Düzenle</a></td>
-            <td><a href="process_delete_student.php?id=<?php echo $student['id']; ?>">Sil</a></td>
+            <td><a href="delete_student.php?id=<?php echo $student['id']; ?>">Sil</a></td>
         </tr>
     <?php endforeach; ?>
     </tbody>

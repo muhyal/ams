@@ -48,7 +48,7 @@ if (isset($_POST["reset_request"])) {
             $mail->SMTPSecure = $config['smtp']['encryption'];
             $mail->Port = $config['smtp']['port'];
             $mail->CharSet = $config['smtp']['mailCharset'];
-            $mail->ContentType = $config['smtp']['contentType'];
+            $mail->ContentType = $config['smtp']['mailContentType'];
 
             // E-posta ayarları
             $mail->setFrom($config['smtp']['username'], 'OİM');

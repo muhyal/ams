@@ -13,7 +13,7 @@ global $siteName, $siteShortName, $siteUrl;
     <title><?php echo $siteName ?> - <?php echo $siteShortName ?></title>
     <link href="/admin/css/bootstrap.min.css" rel="stylesheet">
     <!-- Custom styles for this template -->
-    <link href="oim.css" rel="stylesheet"></head>
+    <link href="/admin/css/admin_login.css" rel="stylesheet"></head>
 <!-- Custom styles for this template -->
 <body>
 <header class="p-3 mb-3 border-bottom">

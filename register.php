@@ -92,8 +92,8 @@ function sendVerificationEmail($to, $verificationCode, $firstname, $lastname) {
         $mail->Password = $config['smtp']['password'];
         $mail->SMTPSecure = $config['smtp']['encryption'];
         $mail->Port = $config['smtp']['port'];
-        $mail->CharSet = $config['smtp']['charset'];
-        $mail->ContentType = $config['smtp']['contenttype'];
+        $mail->CharSet = $config['smtp']['mailCharset'];
+        $mail->ContentType = $config['smtp']['mailContentType'];
 
         // E-posta ayarları
         $mail->setFrom($config['smtp']['username'], 'OİM');
