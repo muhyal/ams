@@ -15,8 +15,7 @@
                 </a>
             </li>
             <li class="nav-item">
-
-                <a class="nav-link" href="user_list.php">
+              <a class="nav-link" href="user_list.php">
                     <span data-feather="list"></span>
                     Kullanıcı Listesi
                 </a>
@@ -25,6 +24,12 @@
                 <a class="nav-link" href="admin_register.php">
                     <span data-feather="plus"></span>
                     Yönetici Kaydet
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="admin_list.php">
+                    <span data-feather="list"></span>
+                    Yönetici Listesi
                 </a>
             </li>
             <li class="nav-item">

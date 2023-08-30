@@ -38,11 +38,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $lastname = $_POST["lastname"];
     $email = $_POST["email"];
     $phone = $_POST["phone"];
+    $new_password = $_POST["new_password"];
 
-    // Veritabanında güncelleme işlemi yapın
-    $updateQuery = "UPDATE users SET tc = ?, firstname = ?, lastname = ?, email = ?, phone = ? WHERE id = ?";
-    $stmt = $db->prepare($updateQuery);
-    $stmt->execute([$tc, $firstname, $lastname, $email, $phone, $userId]);
+    // Şifre değişikliği yapılacak mı kontrolü
+    if (!empty($new_password)) {
+        $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+        $updateQuery = "UPDATE users SET tc = ?, firstname = ?, lastname = ?, email = ?, phone = ?, password = ? WHERE id = ?";
+        $stmt = $db->prepare($updateQuery);
+        $stmt->execute([$tc, $firstname, $lastname, $email, $phone, $hashed_password, $userId]);
+    } else {
+        $updateQuery = "UPDATE users SET tc = ?, firstname = ?, lastname = ?, email = ?, phone = ? WHERE id = ?";
+        $stmt = $db->prepare($updateQuery);
+        $stmt->execute([$tc, $firstname, $lastname, $email, $phone, $userId]);
+    }
 
     // Kullanıcıyı güncelledikten sonra yönlendirme yapabilirsiniz
     header("Location: user_list.php");
@@ -120,6 +128,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <br>
         <label class="form-label" for="phone">Telefon:</label>
         <input class="form-control" type="text" name="phone" value="<?php echo $user["phone"]; ?>" required><br>
+
+         <label for="new_password">Yeni Şifre (Boş bırakabilirsiniz):</label>
+         <input type="password" id="new_password" name="new_password"><br>
+
         <button type="submit" class="btn btn-primary">Güncelle</button>
         <button onclick="history.back()" class="btn btn-primary">Geri dön</button>
     </form>

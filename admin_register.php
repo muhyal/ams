@@ -1,10 +1,12 @@
 <?php
 session_start();
 
-// Oturum kontrolü
-if (!isset($_SESSION["admin_id"])) {
-    header("Location: admin_login.php"); // Giriş sayfasına yönlendir
-    exit();
+$allowedRoles = array(1); // "sa" rolü için rol değeri (örneğin 1)
+$currentUserRole = $_SESSION['admin_role'];
+
+if (!in_array($currentUserRole, $allowedRoles)) {
+    header("Location: access_denied.php");
+    exit;
 }
 
 // Kullanıcı bilgilerini kullanabilirsiniz

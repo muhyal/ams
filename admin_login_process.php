@@ -1,4 +1,5 @@
 <?php
+global $db;
 session_start();
 require_once "db_connection.php";
 
@@ -16,6 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($admin && password_verify($password, $admin["password"])) {
             $_SESSION["admin_id"] = $admin["id"];
             $_SESSION["admin_username"] = $admin["username"];
+            $_SESSION["admin_role"] = $admin["role"]; // Kullanıcının rolünü ekleyin
             header("Location: admin_panel.php"); // Yönlendirme admin paneline
             exit();
         } else {
@@ -25,4 +27,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "Hata: " . $e->getMessage();
     }
 }
+
 ?>

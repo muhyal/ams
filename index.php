@@ -4,7 +4,7 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 require_once "config.php";
 global $siteName, $siteShortName, $siteUrl;
-require_once "header.php";
+require_once "user_login_header.php";
 ?>
 <div class="px-4 py-5 my-5 text-center">
     <h1 class="display-5 fw-bold text-body-emphasis"><?php echo $siteName ?> - <?php echo $siteShortName ?></h1>
@@ -19,3 +19,4 @@ require_once "header.php";
 <?php
 require_once "footer.php";
 ?>
+-
