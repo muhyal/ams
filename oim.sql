@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.1.2
+-- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost:3306
--- Generation Time: Aug 30, 2023 at 10:30 PM
--- Server version: 5.7.24
--- PHP Version: 8.2.2
+-- Host: localhost:8889
+-- Generation Time: Aug 31, 2023 at 11:33 AM
+-- Server version: 5.7.39
+-- PHP Version: 8.2.0
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -68,6 +68,21 @@ CREATE TABLE `classes` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `courses`
+--
+
+CREATE TABLE `courses` (
+  `id` int(11) NOT NULL,
+  `course_code` varchar(50) NOT NULL,
+  `course_name` varchar(100) NOT NULL,
+  `description` text,
+  `teacher_id` int(11) DEFAULT NULL,
+  `course_teacher_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `emergency_contacts`
 --
 
@@ -125,7 +140,25 @@ CREATE TABLE `students` (
   `email` varchar(255) NOT NULL,
   `blood_type` varchar(5) NOT NULL,
   `health_issue` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `course_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `teachers`
+--
+
+CREATE TABLE `teachers` (
+  `id` int(11) NOT NULL,
+  `first_name` varchar(50) NOT NULL,
+  `last_name` varchar(50) NOT NULL,
+  `birth_date` date DEFAULT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `class_id` int(11) DEFAULT NULL,
+  `course_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -179,6 +212,14 @@ ALTER TABLE `classes`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `courses`
+--
+ALTER TABLE `courses`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `teacher_id` (`teacher_id`),
+  ADD KEY `course_teacher_id` (`course_teacher_id`);
+
+--
 -- Indexes for table `emergency_contacts`
 --
 ALTER TABLE `emergency_contacts`
@@ -202,7 +243,17 @@ ALTER TABLE `roles`
 -- Indexes for table `students`
 --
 ALTER TABLE `students`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `course_id` (`course_id`);
+
+--
+-- Indexes for table `teachers`
+--
+ALTER TABLE `teachers`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `email` (`email`),
+  ADD KEY `teacher_class_id` (`class_id`),
+  ADD KEY `course_id` (`course_id`);
 
 --
 -- Indexes for table `users`
@@ -233,6 +284,12 @@ ALTER TABLE `classes`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `courses`
+--
+ALTER TABLE `courses`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `emergency_contacts`
 --
 ALTER TABLE `emergency_contacts`
@@ -254,6 +311,12 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT for table `students`
 --
 ALTER TABLE `students`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `teachers`
+--
+ALTER TABLE `teachers`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -279,6 +342,13 @@ ALTER TABLE `admins`
   ADD CONSTRAINT `FK_user_role` FOREIGN KEY (`role`) REFERENCES `roles` (`id`);
 
 --
+-- Constraints for table `courses`
+--
+ALTER TABLE `courses`
+  ADD CONSTRAINT `courses_ibfk_1` FOREIGN KEY (`teacher_id`) REFERENCES `teachers` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `courses_ibfk_2` FOREIGN KEY (`course_teacher_id`) REFERENCES `teachers` (`id`);
+
+--
 -- Constraints for table `emergency_contacts`
 --
 ALTER TABLE `emergency_contacts`
@@ -289,6 +359,19 @@ ALTER TABLE `emergency_contacts`
 --
 ALTER TABLE `parents`
   ADD CONSTRAINT `parents_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `students`
+--
+ALTER TABLE `students`
+  ADD CONSTRAINT `students_ibfk_1` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`);
+
+--
+-- Constraints for table `teachers`
+--
+ALTER TABLE `teachers`
+  ADD CONSTRAINT `teachers_ibfk_1` FOREIGN KEY (`class_id`) REFERENCES `classes` (`id`),
+  ADD CONSTRAINT `teachers_ibfk_2` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
