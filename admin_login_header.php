@@ -11,7 +11,7 @@ global $siteName, $siteShortName, $siteUrl;
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?php echo $siteName ?> - <?php echo $siteShortName ?></title>
-    <link href="/admin/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://getbootstrap.com/docs/4.0/dist/css/bootstrap.min.css" rel="stylesheet">    <!-- Custom styles for this template -->
     <!-- Custom styles for this template -->
     <link href="/admin/css/admin_login.css" rel="stylesheet"></head>
 <!-- Custom styles for this template -->

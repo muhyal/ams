@@ -1,4 +1,5 @@
 <?php
+global $db;
 session_start();
 
 // Oturum kontrolü
@@ -7,8 +8,27 @@ if (!isset($_SESSION["admin_id"])) {
     exit();
 }
 
-// Veritabanı bağlantısı ve öğrenci ekleme işlemleri
+// Veritabanı bağlantısı ve veli ekleme işlemleri burada gerçekleştirilecektir
+require_once "db_connection.php"; // Veritabanı bağlantısı sağladığınız dosyanın adını buraya ekleyin
 
+// Öğretmenleri veritabanından çekme
+
+$queryTeachers = "SELECT id, first_name, last_name FROM teachers";
+$stmtTeachers = $db->prepare($queryTeachers);
+$stmtTeachers->execute();
+$teachers = $stmtTeachers->fetchAll(PDO::FETCH_ASSOC);
+
+// Dersleri veritabanından çekme
+$queryCourses = "SELECT id, course_name FROM courses";
+$stmtCourses = $db->prepare($queryCourses);
+$stmtCourses->execute();
+$courses = $stmtCourses->fetchAll(PDO::FETCH_ASSOC);
+
+// Sınıfları veritabanından çekme
+$queryClasses = "SELECT id, class_name FROM classes";
+$stmtClasses = $db->prepare($queryClasses);
+$stmtClasses->execute();
+$classes = $stmtClasses->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html>
@@ -77,6 +97,36 @@ if (!isset($_SESSION["admin_id"])) {
     <input type="text" name="blood_type" required><br>
     <label for="health_issue">Bilinen Rahatsızlık:</label>
     <input type="text" name="health_issue"><br>
+
+    <!-- Öğretmen Seçimi -->
+    <h2>Öğretmen Seçimi</h2>
+    <label for="teacher">Öğretmen:</label>
+    <select name="teacher" required>
+        <option value="">Öğretmen Seçin</option>
+        <?php foreach ($teachers as $teacher): ?>
+            <option value="<?php echo $teacher['id']; ?>"><?php echo $teacher['first_name'] . ' ' . $teacher['last_name']; ?></option>
+        <?php endforeach; ?>
+    </select><br>
+
+    <!-- Ders Seçimi -->
+    <h2>Ders Seçimi</h2>
+    <label for="course">Ders:</label>
+    <select name="course" required>
+        <option value="">Ders Seçin</option>
+        <?php foreach ($courses as $course): ?>
+            <option value="<?php echo $course['id']; ?>"><?php echo $course['course_name']; ?></option>
+        <?php endforeach; ?>
+    </select><br>
+
+    <!-- Sınıf Seçimi -->
+    <h2>Sınıf Seçimi</h2>
+    <label for="class">Sınıf:</label>
+    <select name="class" required>
+        <option value="">Sınıf Seçin</option>
+        <?php foreach ($classes as $class): ?>
+            <option value="<?php echo $class['id']; ?>"><?php echo $class['class_name']; ?></option>
+        <?php endforeach; ?>
+    </select><br>
 
     <input type="submit" value="Ekle">
 </form>

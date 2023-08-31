@@ -44,7 +44,24 @@
                     Öğrenci Ekle (Yakında)
                 </a>
             </li>
-
+            <li class="nav-item">
+                <a class="nav-link" href="teachers_list.php">
+                    <span data-feather="list"></span>
+                    Öğretmen Listesi (Yakında)
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="add_teacher.php">
+                    <span data-feather="plus"></span>
+                    Öğretmen Ekle (Yakında)
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="courses.php">
+                    <span data-feather="list"></span>
+                    Ders Listesi (Yakında)
+                </a>
+            </li>
 
             <li class="nav-item">
                 <a class="nav-link" href="class_list.php">

@@ -4,7 +4,7 @@ session_start();
 
 // Oturum kontrolü
 if (!isset($_SESSION["admin_id"])) {
-    header("Location: admin_login.php"); // Giriş sayfasına yönlendir
+    header("Location: admin_login.php");
     exit();
 }
 
@@ -27,19 +27,37 @@ $stmt = $db->prepare($query);
 $stmt->execute();
 $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Öğrenci listesi sorgusu
-$query = "SELECT * FROM students";
+// Öğretmenler listesi sorgusu
+$query = "SELECT * FROM teachers";
 $stmt = $db->query($query);
+$teachers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Öğrenci verilerini alın
-$students = $stmt->fetchAll(PDO::FETCH_ASSOC);
+// Dersler listesi sorgusu
+$query = "SELECT * FROM courses";
+$stmt = $db->query($query);
+$courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Öğrenci listesi sorgusu
+// Sınıf listesi sorgusu
 $query = "SELECT * FROM classes";
 $stmt = $db->query($query);
 
-// Öğrenci verilerini alın
+// Sınıf verilerini alın
 $classes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Öğrenci listesi sorgusu
+$query = "
+    SELECT students.id AS student_id, students.firstname, students.lastname, students.email, students.tc_identity, students.phone,
+           classes.class_name, courses.course_name, CONCAT(teachers.first_name, ' ', teachers.last_name) AS teacher_name
+    FROM students
+    INNER JOIN classes ON students.course_id = classes.id
+    INNER JOIN courses ON students.course_id = courses.id
+    INNER JOIN teachers ON courses.teacher_id = teachers.id
+";
+
+$stmt = $db->prepare($query);
+$stmt->execute();
+$student_course_teacher_relations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+?>
 ?>
   <body>
     <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
@@ -68,27 +86,33 @@ $classes = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <h2>Öğrenciler</h2>
   <div class="table-responsive">
     <table class="table table-striped table-sm">
-      <thead>
-         <tr>
- <th scope="col">#</th>
-    <th scope="col">Ad</th>
-    <th scope="col">Soyad</th>
-    <th scope="col">E-posta</th>
-    <th scope="col">T.C. Kimlik</th>
-    <th scope="col">Telefon</th>
-    </tr>
-      </thead>
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Ad</th>
+            <th scope="col">Soyad</th>
+            <th scope="col">E-posta</th>
+            <th scope="col">T.C. Kimlik</th>
+            <th scope="col">Telefon</th>
+            <th scope="col">Sınıf</th>
+            <th scope="col">Ders</th>
+            <th scope="col">Öğretmen</th>
+        </tr>
+        </thead>
       <tbody>
-        <?php foreach ($students as $student): ?>
-    <tr>
-            <th scope="row"><?= $student['id'] ?></th>
-            <td><?= $student['firstname'] ?></td>
-            <td><?= $student['lastname'] ?></td>
-            <td><?= $student['email'] ?></td>
-            <td><?= $student['tc_identity'] ?></td>
-            <td><?= $student['phone'] ?></td>
-    </tr>
-        <?php endforeach; ?>
+      <?php foreach ($student_course_teacher_relations as $relation): ?>
+          <tr>
+              <th scope="row"><?= $relation['student_id'] ?></th>
+              <td><?= $relation['firstname'] ?></td>
+              <td><?= $relation['lastname'] ?></td>
+              <td><?= $relation['email'] ?></td>
+              <td><?= $relation['tc_identity'] ?></td>
+              <td><?= $relation['phone'] ?></td>
+              <td><?= $relation['class_name'] ?></td>
+              <td><?= $relation['course_name'] ?></td>
+              <td><?= $relation['teacher_name'] ?></td>
+          </tr>
+      <?php endforeach; ?>
       </tbody>
     </table>
   </div>
@@ -154,23 +178,86 @@ $classes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </table>
                 </div>
             </main>
-</div>
+
+            <!-- Öğretmenler Tablosu -->
+            <main>
+                <h2>Öğretmenler</h2>
+                <div class="table-responsive">
+                    <table class="table table-striped table-sm">
+                        <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Ad</th>
+                            <th scope="col">Soyad</th>
+                            <th scope="col">E-posta</th>
+                            <th scope="col">Telefon</th>
+                            <!-- Diğer öğretmen alanları -->
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach ($teachers as $teacher): ?>
+                            <tr>
+                                <th scope="row"><?= $teacher['id'] ?></th>
+                                <td><?= $teacher['first_name'] ?></td>
+                                <td><?= $teacher['last_name'] ?></td>
+                                <td><?= $teacher['email'] ?></td>
+                                <td><?= $teacher['phone'] ?></td>
+                                <!-- Diğer öğretmen verileri -->
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </main>
+
+            <!-- Dersler Tablosu -->
+            <main>
+                <h2>Dersler</h2>
+                <div class="table-responsive">
+                    <table class="table table-striped table-sm">
+                        <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Ders Adı</th>
+                            <th scope="col">Ders Kodu</th>
+                            <th scope="col">Açıklama</th>
+                            <!-- Diğer ders alanları -->
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach ($courses as $course): ?>
+                            <tr>
+                                <th scope="row"><?= $course['id'] ?></th>
+                                <td><?= $course['course_name'] ?></td>
+                                <td><?= $course['course_code'] ?></td>
+                                <td><?= $course['description'] ?></td>
+                                <!-- Diğer ders verileri -->
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </main>
+
+
+      </div>
 </div>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="/admin/js/jquery-3.2.1.slim.min.js"></script>
-   <script src="/admin/js/jquery-slim.min.js"></script>
-    <script src="/admin/js/popper.min.js"></script>
-    <script src="/admin/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://getbootstrap.com/docs/4.0/assets/js/vendor/jquery-slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js"></script>
+    <script src="https://getbootstrap.com/docs/4.0/dist/js/bootstrap.min.js"></script>
 
     <!-- Icons -->
-    <script src="/admin/js/feather.min.js"></script>
+    <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
     <script>
-      feather.replace()
+        feather.replace()
     </script>
   </body>
+
 <?php
 require_once "footer.php";
 ?>
