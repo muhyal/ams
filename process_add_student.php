@@ -14,6 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $firstname = isset($_POST['firstname']) ? $_POST['firstname'] : '';
     $lastname = isset($_POST['lastname']) ? $_POST['lastname'] : '';
     $tc_identity = isset($_POST['tc_identity']) ? $_POST['tc_identity'] : '';
+    $birthdate = isset($_POST['birthdate']) ? $_POST['birthdate'] : '';
     $phone = isset($_POST['phone']) ? $_POST['phone'] : '';
     $email = isset($_POST['email']) ? $_POST['email'] : '';
     $blood_type = isset($_POST['blood_type']) ? $_POST['blood_type'] : '';
@@ -35,10 +36,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $address = isset($_POST['address']) ? $_POST['address'] : '';
 
     // Öğrenci ekleme sorgusu
-    $insertQuery = "INSERT INTO students (firstname, lastname, tc_identity, phone, email, blood_type, health_issue) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    $insertQuery = "INSERT INTO students (firstname, lastname, tc_identity, birthdate, phone, email, blood_type, health_issue) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     $insertStmt = $db->prepare($insertQuery);
 
-    if ($insertStmt->execute([$firstname, $lastname, $tc_identity, $phone, $email, $blood_type, $health_issue])) {
+    if ($insertStmt->execute([$firstname, $lastname, $tc_identity, $birthdate, $phone, $email, $blood_type, $health_issue])) {
         $studentId = $db->lastInsertId();
 
         // Veli bilgilerini ekleme sorgusu

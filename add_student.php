@@ -55,6 +55,10 @@ $classes = $stmtClasses->fetchAll(PDO::FETCH_ASSOC);
     <input type="text" name="lastname" required><br>
     <label for="tc_identity">TC Kimlik No:</label>
     <input type="text" name="tc_identity" required><br>
+    <!-- Doğum Tarihi -->
+    <h2>Doğum Tarihi</h2>
+    <label for="birthdate">Doğum Tarihi:</label>
+    <input type="date" id="birthdate" name="birthdate" required><br>
     <label for="phone">Cep Telefonu:</label>
     <input type="text" name="phone" onclick="addPrefixToPhoneInput(this)"><br>
     <label for="email">E-posta Adresi:</label>
