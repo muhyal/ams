@@ -51,6 +51,7 @@ $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <th>Öğrenci Adı</th>
         <th>Öğrenci Soyadı</th>
         <th>Öğrenci TC Kimlik No</th>
+        <th>Doğum Tarihi</th>
         <th>Öğrenci Cep Telefonu</th>
         <th>Öğrenci E-posta</th>
         <th>Veli Ad Soyad</th>
@@ -73,6 +74,7 @@ $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <td><?php echo $student['firstname']; ?></td>
             <td><?php echo $student['lastname']; ?></td>
             <td><?php echo $student['tc_identity']; ?></td>
+            <td><?php echo $student['birthdate']; ?></td>
             <td><?php echo $student['phone']; ?></td>
             <td><?php echo $student['email']; ?></td>
             <td><?php echo $student['parent_firstname'] . ' ' . $student['parent_lastname']; ?></td> <!-- Veli bilgisi -->
@@ -84,6 +86,7 @@ $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <td><?php echo $student['health_issue']; ?></td> <!-- Yeni sütun -->
             <td><?php echo $student['city']; ?></td> <!-- Yeni sütun -->
             <td><?php echo $student['district']; ?></td> <!-- Yeni sütun -->
+            <td><a href="student_profile.php?id=<?php echo $student['id']; ?>">Profil</a></td>
             <td><a href="edit_student.php?id=<?php echo $student['id']; ?>">Düzenle</a></td>
             <td><a href="delete_student.php?id=<?php echo $student['id']; ?>">Sil</a></td>
         </tr>
