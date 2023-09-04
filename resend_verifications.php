@@ -1,0 +1,245 @@
+<?php
+global $db, $siteUrl, $siteName, $siteShortName;
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+session_start();
+
+// Oturum kontrolü
+if (!isset($_SESSION["admin_id"])) {
+    header("Location: admin_login.php"); // Giriş sayfasına yönlendir
+    exit();
+}
+
+require_once "db_connection.php";
+
+//Import PHPMailer classes into the global namespace
+//These must be at the top of your script, not inside a function
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+//Load Composer's autoloader
+require 'vendor/autoload.php';
+
+require 'config.php';
+
+use Infobip\Api\SmsApi;
+use Infobip\Configuration;
+use Infobip\Model\SmsAdvancedTextualRequest;
+use Infobip\Model\SmsDestination;
+use Infobip\Model\SmsTextualMessage;
+
+// "id" parametresini kontrol et
+if (isset($_GET["id"])) {
+    $user_id = $_GET["id"];
+
+    // Kullanıcı bilgilerini veritabanından çekin
+    $query = "SELECT email, phone FROM users WHERE id = ?";
+    $stmt = $db->prepare($query);
+    $stmt->execute([$user_id]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($user) {
+        // Kullanıcı bilgilerini alın
+        $email = $user["email"];
+        $phone = $user["phone"];
+    } else {
+        // Kullanıcı bulunamadıysa hata mesajı ayarla
+        $message = "Kullanıcı bulunamadı.";
+    }
+} else {
+    // "id" parametresi belirtilmemişse veya kullanıcı sayfaya doğrudan eriştiyse, varsayılan değerleri ata
+    $email = ""; // veya varsayılan e-posta adresi
+    $phone = ""; // veya varsayılan telefon numarası
+}
+
+// Doğrulama bağlantısı oluşturma
+function getVerificationLink($emailOrPhone, $code, $type = "email") {
+    global $siteUrl;
+    if ($type == "phone") {
+        return "$siteUrl/verify.php?phone=$emailOrPhone&code=$code";
+    } else {
+        return "$siteUrl/verify.php?email=$emailOrPhone&code=$code";
+    }
+}
+
+// Kullanıcıya doğrulama kodlarını yeniden gönderme işlemi
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Kullanıcıyı veritabanından bul
+    $query = "SELECT * FROM users WHERE email = ? AND phone = ?";
+    $stmt = $db->prepare($query);
+    $stmt->execute([$email, $phone]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($user) {
+        // Yeniden doğrulama kodları oluştur
+        $verificationCodeEmail = generateVerificationCode();
+        $verificationCodeSms = generateVerificationCode();
+
+        // Yeniden doğrulama zamanlarını güncelle
+        $verificationTimeEmail = date("Y-m-d H:i:s", time());
+        $verificationTimeSms = date("Y-m-d H:i:s", time());
+
+        // Veritabanında güncelle
+        $updateQuery = "UPDATE users SET verification_code_email = ?, verification_code_sms = ?, verification_time_email_sent = ?, verification_time_sms_sent = ? WHERE id = ?";
+        $stmtUpdate = $db->prepare($updateQuery);
+        $stmtUpdate->execute([$verificationCodeEmail, $verificationCodeSms, $verificationTimeEmail, $verificationTimeSms, $user["id"]]);
+
+        // E-posta ve SMS gönderme işlemleri
+        sendVerificationEmail($email, $verificationCodeEmail, $user["firstname"], $user["lastname"]);
+        sendVerificationSms($phone, $verificationCodeSms, $user["firstname"], $user["lastname"]);
+
+        $message = "Doğrulama kodları yeniden gönderildi.";
+    } else {
+        $message = "Kullanıcı bulunamadı. Lütfen doğru e-posta ve telefon numarasını girin.";
+    }
+}
+
+// Rastgele doğrulama kodu oluşturma fonksiyonu
+function generateVerificationCode() {
+    return mt_rand(100000, 999999); // Örnek: 6 haneli rastgele kod
+}
+
+// E-posta gönderme fonksiyonu
+function sendVerificationEmail($to, $verificationCode, $firstname, $lastname) {
+    global $config, $siteName, $agreementLink;
+
+    $mail = new PHPMailer(true);
+
+    try {
+        // SMTP ayarları
+        $mail->isSMTP();
+        $mail->Host = $config['smtp']['host'];
+        $mail->SMTPAuth = true;
+        $mail->Username = $config['smtp']['username'];
+        $mail->Password = $config['smtp']['password'];
+        $mail->SMTPSecure = $config['smtp']['encryption'];
+        $mail->Port = $config['smtp']['port'];
+        $mail->CharSet = $config['smtp']['mailCharset'];
+        $mail->ContentType = $config['smtp']['mailContentType'];
+
+        // E-posta ayarları
+        $mail->setFrom($config['smtp']['username'], 'OİM');
+        $mail->addAddress($to);
+
+        $mail->Subject = 'Hesap Doğrulama';
+
+        // Parametreleri şifrele
+        $encryptedEmail = $to;
+        $encryptedCode = $verificationCode;
+
+        // Gizli bağlantı oluştur
+        $verificationLink = getVerificationLink($encryptedEmail, $encryptedCode);
+
+        $mail->Body = "Sayın $firstname $lastname, $siteName kaydınızı doğrulamanız ve sözleşmeleri okuyup onaylamanız gerekmektedir. Sözleşmeleri görüntüleyin: $agreementLink Sözleşmeleri onaylayın (Bağlantı açıldığında sözleşmeler otomatik onaylanacaktır): $verificationLink";
+
+        // E-postayı gönder
+        $mail->send();
+    } catch (Exception $e) {
+        // E-posta gönderimi hatası
+        echo "E-posta gönderimi başarısız oldu. Hata: {$mail->ErrorInfo}";
+    }
+}
+
+// SMS gönderme fonksiyonu
+function sendVerificationSms($to, $verificationCode, $firstname, $lastname) {
+    global $config, $BASE_URL, $API_KEY, $SENDER, $MESSAGE_TEXT, $siteName, $agreementLink;
+
+    $smsConfiguration = new Configuration(host: $BASE_URL, apiKey: $API_KEY);
+
+    $sendSmsApi = new SmsApi(config: $smsConfiguration);
+
+    $destination = new SmsDestination(
+        to: $to
+    );
+
+    // Parametreleri şifrele
+    $encryptedPhone = $to;
+    $encryptedCode = $verificationCode;
+
+    // Gizli bağlantı oluştur
+    $verificationLink = getVerificationLink($encryptedPhone, $encryptedCode, "phone");
+
+    $message = new SmsTextualMessage(destinations: [$destination], from: $SENDER, text: "Sayın $firstname $lastname, $siteName kaydınızı doğrulamanız ve sözleşmeleri okuyup onaylamanız gerekmektedir. Sözleşmeleri görüntüleyin: $agreementLink Sözleşmeleri onaylayın (Bağlantı açıldığında sözleşmeler otomatik onaylanacaktır): $verificationLink");
+
+    $request = new SmsAdvancedTextualRequest(messages: [$message]);
+
+    try {
+        $smsResponse = $sendSmsApi->sendSmsMessage($request);
+
+        // Mesajları gönderim sonuçları ile ilgili bilgileri saklayacak değişkenler
+        $smsStatusMessages = [];
+        $smsBulkId = $smsResponse->getBulkId();
+
+        foreach ($smsResponse->getMessages() ?? [] as $message) {
+            $smsStatusMessages[] = sprintf('SMS Gönderim No: %s, Durum: %s', $message->getMessageId(), $message->getStatus()?->getName());
+        }
+
+        // Başarılı mesajları gösteren bir mesaj oluşturuyoruz
+        $smsSuccessMessage = "SMS gönderimi başarılı, Gönderim No: $smsBulkId";
+
+        // Hata mesajını temsil edecek değişkeni boş olarak başlatıyoruz
+        $smsErrorMessage = "";
+
+    } catch (Throwable $apiException) {
+        // Hata durumunda hata mesajını saklayan değişkeni ayarlıyoruz
+        $smsErrorMessage = "SMS gönderimi sırasında bir hata oluştu: " . $apiException->getMessage();
+
+        // Başarılı ve hata mesajlarını boş olarak başlatıyoruz
+        $smsSuccessMessage = "";
+        $smsStatusMessages = [];
+    }
+}
+
+require_once "admin_panel_header.php";
+?>
+
+<body>
+<nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
+    <!-- Navbar kodları burada -->
+</nav>
+
+<div class="container-fluid">
+    <!-- Yeniden doğrulama isteği formu -->
+    <form method="post" action="">
+        <label class="form-label" for="email">E-posta:</label>
+        <input class="form-control" type="email" name="email" value="<?php echo htmlspecialchars($email); ?>" required><br>
+
+        <label class="form-label" for="phone">Telefon:</label>
+        <input class="form-control" type="text" name="phone" value="<?php echo htmlspecialchars($phone); ?>" required><br>
+
+        <button type="submit" class="btn btn-primary">Doğrulama Kodunu Yeniden Gönder</button>
+    </form>
+
+    <!-- Mesajı burada gösteriyoruz -->
+    <?php if (isset($message) && $message !== ""): ?>
+        <div class="alert alert-danger" role="alert">
+            <?= $message ?>
+        </div>
+    <?php endif; ?>
+
+    <!-- SMS gönderim başarılı mesajı -->
+    <?php if (isset($smsSuccessMessage) && $smsSuccessMessage !== ""): ?>
+        <div class="alert alert-success" role="alert">
+            <?= $smsSuccessMessage ?>
+        </div>
+    <?php endif; ?>
+
+    <!-- SMS gönderim hata mesajı -->
+    <?php if (isset($smsErrorMessage) && $smsErrorMessage !== ""): ?>
+        <div class="alert alert-danger" role="alert">
+            <?= $smsErrorMessage ?>
+        </div>
+    <?php endif; ?>
+
+    <!-- Diğer sayfa içeriği ve kodları -->
+</div>
+
+<!-- Bootstrap ve diğer JavaScript kodları burada -->
+
+<?php
+require_once "footer.php";
+?>
+</body>
+</html>

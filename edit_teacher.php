@@ -21,6 +21,9 @@ if (isset($_GET["edit_id"])) {
     $editId = $_GET["edit_id"];
     $editTeacher = $db->query("SELECT * FROM teachers WHERE id = $editId")->fetch(PDO::FETCH_ASSOC);
 }
+
+// Türkçe tarih biçimine çevirme
+$birthDate = $editTeacher["birth_date"] ? date("d-m-Y", strtotime($editTeacher["birth_date"])) : "";
 ?>
 
 <!DOCTYPE html>

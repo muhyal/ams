@@ -92,6 +92,9 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <td>
                 <a href="edit_user.php?id=<?php echo $user["id"]; ?>">Düzenle</a>
             </td>
+            <td>
+                <a href="resend_verifications.php?id=<?php echo $user["id"]; ?>">Doğrulamayı Yeniden Gönder</a>
+            </td>
             </tr>
         <?php endforeach; ?>
       </tbody>

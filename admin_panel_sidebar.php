@@ -76,6 +76,12 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a class="nav-link" href="birthdays.php">
+                    <span data-feather="plus"></span>
+                    Doğum Günleri
+                </a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" href="agreement.php">
                     <span data-feather="file"></span>
                     Sözleşmeleri Görüntüle
