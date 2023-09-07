@@ -30,9 +30,22 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET["id"])) {
         echo "Öğrenci bulunamadı.";
         exit();
     }
+} else if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["student_id"])) {
+    $studentId = $_POST["student_id"];
+
+    // Öğrenciyi silme sorgusu
+    $deleteQuery = "DELETE FROM students WHERE id = ?";
+    $stmt = $db->prepare($deleteQuery);
+
+    if ($stmt->execute([$studentId])) {
+        // Başarılı silme işlemi
+        header("Location: student_list.php"); // Öğrenci listesine yönlendir
+        exit();
+    } else {
+        echo "Öğrenci silinirken bir hata oluştu.";
+    }
 } else {
     echo "Geçersiz istek.";
-    exit();
 }
 ?>
 
