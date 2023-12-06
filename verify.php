@@ -35,7 +35,7 @@ if ((isset($_GET['email'])  || isset($_GET['phone']) )&& isset($_GET['code'])) {
             $updateQuery = "UPDATE users SET verification_time_email_confirmed = ?, verification_ip_email = ? WHERE email = ?";
             $updateStmt = $db->prepare($updateQuery);
             $updateStmt->execute([$verificationTime, $verificationIP, $userEmail]);
-            echo "E-posta doğrulaması başarılı! IP adresiniz kaydedildi: $verificationIP";
+            echo "E-posta doğrulaması başarılı! IP adresiniz $verificationIP olarak kaydedildi. Bu sayfayı kapatabilirsiniz.";
         }
     } elseif ($userSmsData !== null) {
         $verificationTime = date('Y-m-d H:i:s'); // Şu anki zamanı al
@@ -46,7 +46,7 @@ if ((isset($_GET['email'])  || isset($_GET['phone']) )&& isset($_GET['code'])) {
             $updateQuery = "UPDATE users SET verification_time_sms_confirmed = ?, verification_ip_sms = ? WHERE phone = ?";
             $updateStmt = $db->prepare($updateQuery);
             $updateStmt->execute([$verificationTime, $verificationIP, $userSmsData['phone']]);
-            echo "SMS doğrulaması başarılı! IP adresiniz kaydedildi: $verificationIP";
+            echo "SMS doğrulaması başarılı! IP adresiniz $verificationIP olarak kaydedildi. Bu sayfayı kapatabilirsiniz.";
         }
     } else {
         // Her iki yöntemle de doğrulama başarısız
@@ -58,9 +58,9 @@ if ((isset($_GET['email'])  || isset($_GET['phone']) )&& isset($_GET['code'])) {
 
 // Aynı sayfa üzerinden tıklanabilir linkler gösterilirse kullanıcıya daha iyi bir deneyim sunabilirsiniz.
 if (isset($userEmailData)) {
-    echo '<br><a href="verify.php?email='.$userEmail.'&code='.$verificationCode.'">E-posta doğrulamasını tekrarla</a>';
+    echo '<br><a href="verify.php?email='.$userEmail.'&code='.$verificationCode.'">E-posta doğrulamasını tekrarla (Opsiyonel)</a>';
 }
 if (isset($userSmsData)) {
-    echo '<br><a href="verify.php?phone='.$userSmsData['phone'].'&code='.$verificationCode.'">SMS doğrulamasını tekrarla</a>';
+    echo '<br><a href="verify.php?phone='.$userSmsData['phone'].'&code='.$verificationCode.'">SMS doğrulamasını tekrarla (Opsiyonel)</a>';
 }
 ?>

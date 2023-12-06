@@ -170,7 +170,6 @@ function sendVerificationSms($to, $verificationCode, $firstname, $lastname) {
 }
 }
 
-
 // Doğrulama bağlantısı oluşturma
 function getVerificationLink($emailOrPhone, $code, $type="email") {
     global $siteUrl;
