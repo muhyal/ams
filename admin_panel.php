@@ -73,8 +73,9 @@ $student_course_teacher_relations = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <h1 class="h2">Genel Bakış</h1>
           </div>
 <main>
-  <h2>Öğrenciler</h2>
-  <div class="table-responsive">
+    <h4 style="display: inline-block; margin-right: 10px;">Öğrenciler</h4>
+    <small><a style="color: #2b2f32;" href="student_list.php">Tüm Öğrenciler</a></small>
+    <div class="table-responsive">
     <table class="table table-striped table-sm">
         <thead>
         <tr>
@@ -110,7 +111,8 @@ $student_course_teacher_relations = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 
             <main>
-                <h2>Kullanıcılar</h2>
+                <h4 style="display: inline-block; margin-right: 10px;">Kullanıcılar</h4>
+                <small><a style="color: #2b2f32;" href="user_list.php">Tüm Kullanıcılar</a></small>
                 <div class="table-responsive">
                     <table class="table table-striped table-sm">
                         <thead>
@@ -144,7 +146,8 @@ $student_course_teacher_relations = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </main>
 
             <main>
-                <h2>Sınıflar</h2>
+                <h4 style="display: inline-block; margin-right: 10px;">Sınıflar</h4>
+                <small><a style="color: #2b2f32;" href="class_list.php">Tüm Sınıflar</a></small>
                 <div class="table-responsive">
                     <table class="table table-striped table-sm">
                         <thead>
@@ -171,7 +174,8 @@ $student_course_teacher_relations = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             <!-- Öğretmenler Tablosu -->
             <main>
-                <h2>Öğretmenler</h2>
+                <h4 style="display: inline-block; margin-right: 10px;">Öğretmenler</h4>
+                <small><a style="color: #2b2f32;" href="teachers_list.php">Tüm Öğretmenler</a></small>
                 <div class="table-responsive">
                     <table class="table table-striped table-sm">
                         <thead>
@@ -202,7 +206,8 @@ $student_course_teacher_relations = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             <!-- Dersler Tablosu -->
             <main>
-                <h2>Dersler</h2>
+                <h4 style="display: inline-block; margin-right: 10px;">Dersler</h4>
+                <small><a style="color: #2b2f32;" href="courses.php">Tüm Dersler</a></small>
                 <div class="table-responsive">
                     <table class="table table-striped table-sm">
                         <thead>

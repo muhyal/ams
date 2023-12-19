@@ -41,44 +41,44 @@
             <li class="nav-item">
                 <a class="nav-link" href="student_list.php">
                     <span data-feather="list"></span>
-                    Öğrenci Listesi (Yakında)
+                    Öğrenci Listesi
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="add_student.php">
                     <span data-feather="plus"></span>
-                    Öğrenci Ekle (Yakında)
+                    Öğrenci Ekle
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="teachers_list.php">
                     <span data-feather="list"></span>
-                    Öğretmen Listesi (Yakında)
+                    Öğretmen Listesi
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="add_teacher.php">
                     <span data-feather="plus"></span>
-                    Öğretmen Ekle (Yakında)
+                    Öğretmen Ekle
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="courses.php">
                     <span data-feather="list"></span>
-                    Ders Listesi (Yakında)
+                    Dersler
                 </a>
             </li>
 
             <li class="nav-item">
                 <a class="nav-link" href="class_list.php">
                     <span data-feather="list"></span>
-                    Sınıf Listesi (Yakında)
+                    Sınıf Listesi
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="add_class.php">
                     <span data-feather="plus"></span>
-                    Sınıf Ekle (Yakında)
+                    Sınıf Ekle
                 </a>
             </li>
             <li class="nav-item">

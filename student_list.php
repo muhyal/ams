@@ -1,15 +1,24 @@
 <?php
+global $db;
 session_start();
-
 // Oturum kontrolü
 if (!isset($_SESSION["admin_id"])) {
     header("Location: admin_login.php"); // Giriş sayfasına yönlendir
     exit();
 }
 
-// Veritabanı bağlantısı ve gerekli dosyaları include edin
-global $db;
-require_once "db_connection.php";
+require_once "db_connection.php"; // Veritabanı bağlantısı
+
+// Kullanıcı bilgilerini kullanabilirsiniz
+$admin_id = $_SESSION["admin_id"];
+$admin_username = $_SESSION["admin_username"];
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+require_once "config.php";
+global $siteName, $siteShortName, $siteUrl;
+require_once "admin_panel_header.php";
 
 // Öğrenci listesi sorgusu
 $query = "SELECT students.*, parents.*, emergency_contacts.*, addresses.* 
@@ -24,10 +33,16 @@ $stmt = $db->query($query);
 $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Öğrenci Listesi</title>
+<div class="container-fluid">
+    <div class="row">
+        <?php
+        require_once "admin_panel_sidebar.php";
+        ?>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
+                <h2>Öğrenci Listesi</h2>
+            </div>
+
     <style>
         table {
             width: 100%;
@@ -39,11 +54,6 @@ $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
             text-align: left;
         }
     </style>
-</head>
-<body>
-
-<!-- Öğrenci Listesi -->
-<h2>Öğrenci Listesi</h2>
 
 <table>
     <thead>
@@ -94,5 +104,6 @@ $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </tbody>
 </table>
 
-</body>
-</html>
+<?php
+require_once "footer.php";
+?>

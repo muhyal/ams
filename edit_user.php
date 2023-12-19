@@ -81,7 +81,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <input class="form-control"type="text" name="lastname" value="<?php echo $user["lastname"]; ?>" required><br>
         <label for="email" class="form-label">E-posta:</label>
         <input class="form-control"type="email" name="email" class="form-control" aria-describedby="emailHelp" value="<?php echo $user["email"]; ?>" required>
-        <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+        <div id="emailHelp" class="form-text">Geçerli bir e-posta adresi olmalıdır.</div>
         <br>
         <label class="form-label" for="phone">Telefon:</label>
         <input class="form-control" type="text" name="phone" value="<?php echo $user["phone"]; ?>" required><br>

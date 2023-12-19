@@ -1,6 +1,24 @@
 <?php
 global $db;
-require_once "db_connection.php";
+session_start();
+// Oturum kontrolü
+if (!isset($_SESSION["admin_id"])) {
+    header("Location: admin_login.php"); // Giriş sayfasına yönlendir
+    exit();
+}
+
+require_once "db_connection.php"; // Veritabanı bağlantısı
+
+// Kullanıcı bilgilerini kullanabilirsiniz
+$admin_id = $_SESSION["admin_id"];
+$admin_username = $_SESSION["admin_username"];
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+require_once "config.php";
+global $siteName, $siteShortName, $siteUrl;
+require_once "admin_panel_header.php";
 
 // Öğrenci doğum günleri
 $studentQuery = "SELECT firstname, lastname, birthdate FROM students";
@@ -15,10 +33,6 @@ $stmtTeacher->execute();
 $teacherBirthdays = $stmtTeacher->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Doğum Günleri</title>
     <style>
         .container {
             display: flex;
@@ -37,9 +51,14 @@ $teacherBirthdays = $stmtTeacher->fetchAll(PDO::FETCH_ASSOC);
             padding: 0;
         }
     </style>
-</head>
-<body>
-<h1>Doğum Günleri</h1>
+
+<div class="container-fluid">
+    <div class="row">
+        <?php
+        require_once "admin_panel_sidebar.php";
+        ?>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+
 
 <div class="container">
     <div class="column">
@@ -72,5 +91,6 @@ $teacherBirthdays = $stmtTeacher->fetchAll(PDO::FETCH_ASSOC);
         </ul>
     </div>
 </div>
-</body>
-</html>
+<?php
+require_once "footer.php";
+?>

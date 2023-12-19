@@ -1,16 +1,24 @@
 <?php
 global $db;
 session_start();
-
 // Oturum kontrolü
 if (!isset($_SESSION["admin_id"])) {
     header("Location: admin_login.php"); // Giriş sayfasına yönlendir
     exit();
 }
 
-// Veritabanı bağlantısı ve veli ekleme işlemleri burada gerçekleştirilecektir
-require_once "db_connection.php"; // Veritabanı bağlantısı sağladığınız dosyanın adını buraya ekleyin
+require_once "db_connection.php"; // Veritabanı bağlantısı
 
+// Kullanıcı bilgilerini kullanabilirsiniz
+$admin_id = $_SESSION["admin_id"];
+$admin_username = $_SESSION["admin_username"];
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+require_once "config.php";
+global $siteName, $siteShortName, $siteUrl;
+require_once "admin_panel_header.php";
 // Öğretmenleri veritabanından çekme
 
 $queryTeachers = "SELECT id, first_name, last_name FROM teachers";
@@ -30,10 +38,6 @@ $stmtClasses = $db->prepare($queryClasses);
 $stmtClasses->execute();
 $classes = $stmtClasses->fetchAll(PDO::FETCH_ASSOC);
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Öğrenci Ekleme</title>
     <script src="/js/jquery.min.js"></script>
     <script src="/js/jquery.inputmask.min.js"></script>
     <script>
@@ -44,10 +48,16 @@ $classes = $stmtClasses->fetchAll(PDO::FETCH_ASSOC);
             }
         }
     </script>
-</head>
-<body>
-<h1>Öğrenci Ekleme</h1>
-<a href="student_list.php">Öğrenci Listesi</a>
+<div class="container-fluid">
+    <div class="row">
+        <?php
+        require_once "admin_panel_sidebar.php";
+        ?>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
+                <h2>Öğrenci Ekle</h2>
+            </div>
+<p><a href="student_list.php">Öğrenci Listesi</a></p>
 <form action="process_add_student.php" method="post" id="studentForm">
     <label for="firstname">Öğrenci Adı:</label>
     <input type="text" name="firstname" required><br>
@@ -160,5 +170,7 @@ $classes = $stmtClasses->fetchAll(PDO::FETCH_ASSOC);
         $('[data-mask]').inputmask();
     });
 </script>
-</body>
-</html>
+
+<?php
+require_once "footer.php";
+?>

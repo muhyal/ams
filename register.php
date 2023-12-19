@@ -234,7 +234,7 @@ require_once "admin_panel_header.php";
     <input class="form-control"type="text" name="lastname" required><br>
     <label for="email" class="form-label">E-posta:</label>
     <input class="form-control"type="email" name="email" class="form-control" aria-describedby="emailHelp" required>
-      <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+      <div id="emailHelp" class="form-text">Geçerli bir e-posta adresi olmalıdır.</div>
       <br>
     <label class="form-label" for="phone">Telefon:</label>
     <input class="form-control" type="text" name="phone" required><br>
@@ -247,21 +247,6 @@ require_once "admin_panel_header.php";
 </div>
 </div>
 
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-   <script src="https://getbootstrap.com/docs/4.0/assets/js/vendor/jquery-slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js"></script>
-    <script src="https://getbootstrap.com/docs/4.0/dist/js/bootstrap.min.js"></script>
-
-    <!-- Icons -->
-    <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
-    <script>
-      feather.replace()
-    </script>
-
-  </body>
 <?php
 require_once "footer.php";
 ?>
