@@ -28,6 +28,12 @@ if ($searchType === "user") {
 } elseif ($searchType === "class") {
     // Sınıf arama sorgusu
     $query = "SELECT * FROM classes WHERE class_name LIKE :searchQuery";
+    } elseif ($searchType === "teacher") {
+    // Öğretmen arama sorgusu
+    $query = "SELECT * FROM teachers WHERE first_name LIKE :searchQuery OR last_name LIKE :searchQuery";
+} elseif ($searchType === "course") {
+    // Ders arama sorgusu
+    $query = "SELECT * FROM courses WHERE course_name LIKE :searchQuery";
 }
 $searchQuery = $_GET['q'] ?? ''; // searchQuery değişkenini tanımlayın
 
@@ -52,6 +58,10 @@ $searchResults = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     Öğrenci: <?php echo $result['firstname'] . ' ' . $result['lastname']; ?>
                 <?php } elseif ($searchType === "class") { ?>
                     Sınıf Adı: <?php echo $result['class_name']; ?>
+                <?php } elseif ($searchType === "teacher") { ?>
+                    Öğretmen: <?php echo $result['first_name'] . ' ' . $result['last_name']; ?>
+                <?php } elseif ($searchType === "course") { ?>
+                    Ders: <?php echo $result['course_name']; ?>
                 <?php } ?>
             </li>
         <?php } ?>

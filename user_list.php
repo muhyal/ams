@@ -26,27 +26,16 @@ $stmt = $db->prepare($query);
 $stmt->execute();
 $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
-  <body>
-    <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
-      <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="<?php echo $siteUrl ?>"><?php echo $siteName ?> - <?php echo $siteShortName ?></a>
-      <input class="form-control form-control-dark w-100" type="text" placeholder="Ara" aria-label="Ara">
-      <ul class="navbar-nav px-3">
-        <li class="nav-item text-nowrap">
-          <a class="nav-link" href="logout.php">Oturumu kapat</a>
-        </li>
-      </ul>
-    </nav>
+
     <div class="container-fluid">
       <div class="row">
           <?php
           require_once "admin_panel_sidebar.php";
           ?>
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
-          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-            <h1 class="h2">Genel Bakış</h1>
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
+              <h2>Kullanıcılar</h2>
  </div>
-<main>
-  <h2>Kullanıcılar</h2>
   <div class="table-responsive">
     <table class="table table-striped table-sm">
       <thead>

@@ -37,8 +37,8 @@ if (isset($_POST["confirm_delete"])) {
 <body>
 <h1>Öğretmeni Sil</h1>
 <p>Aşağıdaki öğretmeni silmek istediğinize emin misiniz?</p>
-<p>Ad: <?php echo $teacher["firstname"]; ?></p>
-<p>Soyad: <?php echo $teacher["lastname"]; ?></p>
+<p>Ad: <?php echo $teacher["first_name"]; ?></p>
+<p>Soyad: <?php echo $teacher["last_name"]; ?></p>
 <p>Email: <?php echo $teacher["email"]; ?></p>
 
 <form method="post">

@@ -30,7 +30,7 @@ global $siteName, $siteShortName, $siteUrl;
             </form> -->
             <div class="dropdown text-end">
                 <a href="<?php echo $siteUrl ?>" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
+                    <img src="/img/default_pp.png" alt="mdo" width="32" height="32" class="rounded-circle">
                 </a>
                 <ul class="dropdown-menu text-small">
                     <li><a class="dropdown-item" href="admin_login.php">Oturum aç</a></li>

@@ -58,16 +58,7 @@ $stmt = $db->prepare($query);
 $stmt->execute();
 $student_course_teacher_relations = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
-  <body>
-    <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
-      <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="<?php echo $siteUrl ?>/admin_panel.php"><?php echo $siteName ?> - <?php echo $siteShortName ?></a>
-      <input class="form-control form-control-dark w-100" type="text" placeholder="Ara" aria-label="Ara">
-      <ul class="navbar-nav px-3">
-        <li class="nav-item text-nowrap">
-          <a class="nav-link" href="logout.php">Oturumu kapat</a>
-        </li>
-      </ul>
-    </nav>
+
     <div class="container-fluid">
       <div class="row">
 

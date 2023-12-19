@@ -14,6 +14,7 @@ $config = array(
 $siteName = 'Example';
 $siteShortName = 'OIM';
 $siteUrl = 'https://oim.example.com';
+$siteHeroDescription ='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus vel vestibulum erat. Aliquam nec diam nec justo sollicitudin imperdiet. Donec est mauris, viverra id dolor eget, convallis mollis massa. Cras commodo ligula hendrerit bibendum euismod.';
 $agreementLink = 'https://oim.example.com/agreement.php';
 
 

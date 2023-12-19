@@ -5,7 +5,7 @@
     <script src="https://getbootstrap.com/docs/4.0/assets/js/vendor/jquery-slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js"></script>
     <script src="https://getbootstrap.com/docs/4.0/dist/js/bootstrap.min.js"></script>
-<script src="https://getbootstrap.com/docs/5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+    <script src="https://getbootstrap.com/docs/5.3/dist/js/bootstrap.bundle.min.js"></script>
 
 
     <!-- Icons -->
@@ -13,6 +13,19 @@
     <script>
         feather.replace()
     </script>
+   <!-- CSS Styles -->
+   <style>
+       .search-form {
+           display: flex;
+           align-items: center;
+           justify-content: flex-start; /* Formu sola yaslamak için eklenen özellik */
+       }
 
+       .search-form input,
+       .search-form select,
+       .search-form button {
+           margin-right: 10px;
+       }
+   </style>
   </body>
 </html>

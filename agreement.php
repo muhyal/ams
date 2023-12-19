@@ -29,17 +29,14 @@ require_once "agreement_header.php";
         <div>
             <h3 class="float-md-start mb-0"><?php echo $siteName ?> - <?php echo $siteShortName ?></h3>
             <nav class="nav nav-masthead justify-content-center float-md-end">
-                <a class="nav-link fw-bold py-1 px-0 active" aria-current="page" href="agreement.php">Sözleşme</a>
+                <a class="nav-link fw-bold py-1 px-0 active" aria-current="page" href="agreement.php">Sözleşmeler</a>
             </nav>
         </div>
     </header>
 
     <main class="px-3">
-        <h1>Sözleşmeler</h1>
+        <br>
         <p class="lead">Aşağıdan size en uygun kategoriyi seçerek ilgili sözleşmeleri görüntüleyebilirsiniz. Sözleşme onayında zaman damgalı SMS ve e-posta ile onay alınmakta ve onayınız kaydedilmektedir.</p>
-        <p class="lead">
-
-        </p>
     </main>
 
 <?php

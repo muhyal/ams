@@ -15,6 +15,12 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a class="nav-link" href="search.php">
+                    <span data-feather="search"></span>
+                    Arama Yap
+                </a>
+            </li>
+            <li class="nav-item">
               <a class="nav-link" href="user_list.php">
                     <span data-feather="list"></span>
                     Kullanıcı Listesi

@@ -15,3 +15,28 @@ global $siteName, $siteShortName, $siteUrl;
     <link href="https://getbootstrap.com/docs/4.0/dist/css/bootstrap.min.css" rel="stylesheet">    <!-- Custom styles for this template -->
     <link href="admin/css/admin_panel.css" rel="stylesheet">
   <body>
+  <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
+      <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="<?php echo $siteUrl ?>/admin_panel.php"><?php echo $siteName ?> - <?php echo $siteShortName ?></a>
+
+      <div class="search-form ml-auto">
+          <form action="search_results.php" method="get" class="form-inline">
+              <input type="text" id="searchQuery" name="q" class="form-control form-control-dark" placeholder="Aranacak metin..." aria-label="Ara" required>
+              <select id="searchType" name="search_type" class="form-control">
+                  <option value="user">Kullanıcı</option>
+                  <option value="student">Öğrenci</option>
+                  <option value="teacher">Öğretmen</option>
+                  <option value="course">Ders</option>
+                  <option value="class">Sınıf</option>
+              </select>
+              <button type="submit" class="btn btn-primary">Ara</button>
+          </form>
+      </div>
+
+
+
+      <ul class="navbar-nav px-3">
+          <li class="nav-item text-nowrap">
+              <a class="nav-link" href="logout.php">Oturumu kapat</a>
+          </li>
+      </ul>
+  </nav>

@@ -13,9 +13,9 @@ $loggedIn = isset($_SESSION["user_id"]);
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?php echo $siteName ?> - <?php echo $siteShortName ?></title>
-    <link href="bootstrap.min.css" rel="stylesheet">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
     <!-- Custom styles for this template -->
-    <link href="oim.css" rel="stylesheet"></head>
+    <link href="/css/oim.css" rel="stylesheet"></head>
 <!-- Custom styles for this template -->
 <body>
 <header class="p-3 mb-3 border-bottom">
@@ -32,7 +32,7 @@ $loggedIn = isset($_SESSION["user_id"]);
             </form> -->
             <div class="dropdown text-end">
                 <a href="<?php echo $siteUrl ?>" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
+                    <img src="/img/default_pp.png" alt="mdo" width="32" height="32" class="rounded-circle">
                 </a>
                 <ul class="dropdown-menu text-small">
                     <li><a class="dropdown-item" href="user_login.php">Oturum aç</a></li>
