@@ -12,8 +12,7 @@ global $siteName, $siteShortName, $siteUrl;
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?php echo $siteName ?> - <?php echo $siteShortName ?></title>
     <!-- Bootstrap core CSS -->
-    <link href="https://getbootstrap.com/docs/4.0/dist/css/bootstrap.min.css" rel="stylesheet">    <!-- Custom styles for this template -->
-    <link href="admin/css/admin_panel.css" rel="stylesheet">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">    <link href="admin/css/admin_panel.css" rel="stylesheet">
   <body>
   <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
       <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="<?php echo $siteUrl ?>/admin_panel.php"><?php echo $siteName ?> - <?php echo $siteShortName ?></a>

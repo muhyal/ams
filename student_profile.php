@@ -22,7 +22,6 @@ require_once "admin_panel_header.php";
 ?>
 
 
-
     <div class="container-fluid">
     <div class="row">
 <?php

@@ -6,7 +6,6 @@ require_once "config.php";
 global $siteName, $siteShortName, $siteUrl;
 require_once "agreement_header.php";
 ?>
-
 <body class="d-flex h-100 text-center text-bg-dark">
 <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
     <symbol id="check2" viewBox="0 0 16 16">
@@ -51,7 +50,9 @@ $selectedFolder = isset($_GET['folder']) ? $_GET['folder'] : $folder1;
     <p>Seçilen Kategori: <?php echo $selectedFolder; ?></p>
 <a class="btn btn-md btn-light fw-bold border-white bg-white" href="agreement.php?folder=<?php echo $folder1; ?>">Veli tarafından onaylanan 18 yaşından küçük öğrenciler için sözleşmeler</a><br>
 <a class="btn btn-md btn-light fw-bold border-white bg-white" href="agreement.php?folder=<?php echo $folder2; ?>">18 yaşından büyük yetişkin öğrencilerin onayladığı sözleşmeler</a><br><br>
-    </p><?php
+    </p>
+
+    <?php
 // Seçilen klasördeki PDF dosyalarını listele
 $pdfFiles = scandir($selectedFolder);
 foreach ($pdfFiles as $pdfFile) {
