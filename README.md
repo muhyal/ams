@@ -4,6 +4,9 @@ Kurum içi gereksinim nedeniyle oluşturulmuş basit bir öğrenci işleri merke
 
 /!\ Henüz geliştirilme aşamasındadır ve hataları ile fonksiyonel çalışmayan alanları olabilir /!\
 
+### Ek bilgiler
+* Veritabanı için oim.sql dosyası kullanılabilir
+
 ### Özellikler
 * Kullanıcılara özel oturum aç, şifremi unuttum özelliği
 * Yöneticilere özel oturum aç, şifremi unuttum özelliği
