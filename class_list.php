@@ -1,10 +1,27 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Sınıf Listesi</title>
-</head>
-<body>
-<h1>Sınıf Listesi</h1>
+<?php
+session_start();
+
+// Oturum kontrolü
+if (!isset($_SESSION["admin_id"])) {
+    header("Location: admin_login.php"); // Giriş sayfasına yönlendir
+    exit();
+}
+
+global $db;
+require_once "db_connection.php";
+require_once "config.php";
+global $siteName, $siteShortName, $siteUrl;
+require_once "admin_panel_header.php";
+?>
+<div class="container-fluid">
+    <div class="row">
+        <?php
+        require_once "admin_panel_sidebar.php";
+        ?>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
+                <h2>Sınıf Listesi</h2>
+            </div>
 <a href="add_class.php">Sınıf Ekle</a>
 <table border="1">
     <tr>
@@ -15,16 +32,7 @@
         <th>İşlemler</th>
     </tr>
     <?php
-    session_start();
 
-    // Oturum kontrolü
-    if (!isset($_SESSION["admin_id"])) {
-        header("Location: admin_login.php"); // Giriş sayfasına yönlendir
-        exit();
-    }
-
-    global$db;
-    require_once "db_connection.php"; // Veritabanı bağlantısı
 
     $selectQuery = "SELECT * FROM classes";
     $stmt = $db->prepare($selectQuery);
@@ -45,5 +53,6 @@
     }
     ?>
 </table>
-</body>
-</html>
+<?php
+require_once "footer.php";
+?>

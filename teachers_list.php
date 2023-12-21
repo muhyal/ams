@@ -21,15 +21,19 @@ $query = "
 
 $stmt = $db->query($query);
 $teachers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+require_once "config.php";
+global $siteName, $siteShortName, $siteUrl;
+require_once "admin_panel_header.php";
 ?>
-
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Öğretmen Listesi</title>
-</head>
-<body>
-<h1>Öğretmen Listesi</h1>
+    <div class="container-fluid">
+    <div class="row">
+<?php
+require_once "admin_panel_sidebar.php";
+?>
+    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
+        <h2>Öğretmen Listesi</h2>
+    </div>
 <table>
     <tr>
         <th>ID</th>
@@ -60,5 +64,6 @@ $teachers = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <?php endforeach; ?>
 </table>
 <a href="add_teacher.php">Yeni Öğretmen Ekle</a>
-</body>
-</html>
+<?php
+require_once "footer.php";
+?>

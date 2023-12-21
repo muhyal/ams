@@ -12,14 +12,19 @@ if (!in_array($currentUserRole, $allowedRoles)) {
 // Kullanıcı bilgilerini kullanabilirsiniz
 $admin_id = $_SESSION["admin_id"];
 $admin_username = $_SESSION["admin_username"];
+require_once "config.php";
+global $siteName, $siteShortName, $siteUrl;
+require_once "admin_panel_header.php";
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Yönetici Kaydı</title>
-</head>
-<body>
-    <h1>Yönetici Kaydı</h1>
+    <div class="container-fluid">
+    <div class="row">
+<?php
+require_once "admin_panel_sidebar.php";
+?>
+    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
+            <h2>Yönetici Kaydı</h2>
+        </div>
 
     <form method="post" action="admin_register_process.php">
         <label for="username">Yönetici Kullanıcı Adı:</label>
@@ -33,5 +38,6 @@ $admin_username = $_SESSION["admin_username"];
 
         <input type="submit" value="Kaydet">
     </form>
-</body>
-</html>
+    <?php
+    require_once "footer.php";
+    ?>

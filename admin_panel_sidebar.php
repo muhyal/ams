@@ -9,12 +9,6 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="register.php">
-                    <span data-feather="plus"></span>
-                    Kullanıcı Kaydet
-                </a>
-            </li>
-            <li class="nav-item">
                 <a class="nav-link" href="search.php">
                     <span data-feather="search"></span>
                     Arama Yap
@@ -23,25 +17,31 @@
             <li class="nav-item">
               <a class="nav-link" href="user_list.php">
                     <span data-feather="list"></span>
-                    Kullanıcı Listesi
+                    Kullanıcılar
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="admin_register.php">
+                <a class="nav-link" href="register.php">
                     <span data-feather="plus"></span>
-                    Yönetici Kaydet
+                    Kullanıcı Ekle
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="admin_list.php">
                     <span data-feather="list"></span>
-                    Yönetici Listesi
+                    Yöneticiler
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="admin_register.php">
+                    <span data-feather="plus"></span>
+                    Yönetici Ekle
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="student_list.php">
                     <span data-feather="list"></span>
-                    Öğrenci Listesi
+                    Öğrenciler
                 </a>
             </li>
             <li class="nav-item">
@@ -53,7 +53,7 @@
             <li class="nav-item">
                 <a class="nav-link" href="teachers_list.php">
                     <span data-feather="list"></span>
-                    Öğretmen Listesi
+                    Öğretmenler
                 </a>
             </li>
             <li class="nav-item">
@@ -72,7 +72,7 @@
             <li class="nav-item">
                 <a class="nav-link" href="class_list.php">
                     <span data-feather="list"></span>
-                    Sınıf Listesi
+                    Sınıflar
                 </a>
             </li>
             <li class="nav-item">
@@ -90,7 +90,7 @@
             <li class="nav-item">
                 <a class="nav-link" href="agreement.php">
                     <span data-feather="file"></span>
-                    Sözleşmeleri Görüntüle
+                    Sözleşmeler
                 </a>
             </li>
         </ul>

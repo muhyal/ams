@@ -26,15 +26,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt = $db->prepare($query);
     $stmt->execute([$firstName, $lastName, $birthDate, $phone, $email, $selectedCourse, $selectedClass]);
 }
+require_once "config.php";
+global $siteName, $siteShortName, $siteUrl;
+require_once "admin_panel_header.php";
 ?>
-
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Öğretmen Ekleme</title>
-</head>
-<body>
-<h1>Öğretmen Ekleme</h1>
+<div class="container-fluid">
+    <div class="row">
+        <?php
+        require_once "admin_panel_sidebar.php";
+        ?>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
+                <h2>Öğretmen Listesi</h2>
+            </div>
 <form method="post">
     <label for="first_name">Adı:</label>
     <input type="text" id="first_name" name="first_name" required><br>
@@ -66,5 +70,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <button type="submit" name="add_teacher">Öğretmen Ekle</button>
 </form>
 <a href="teachers_list.php">Öğretmen Listesi</a>
-</body>
-</html>
+<?php
+require_once "footer.php";
+?>

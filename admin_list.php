@@ -7,8 +7,19 @@ $query = "SELECT * FROM admins";
 $stmt = $db->prepare($query);
 $stmt->execute();
 $admins = $stmt->fetchAll(PDO::FETCH_ASSOC);
+require_once "config.php";
+global $siteName, $siteShortName, $siteUrl;
+require_once "admin_panel_header.php";
 ?>
-
+<div class="container-fluid">
+    <div class="row">
+        <?php
+        require_once "admin_panel_sidebar.php";
+        ?>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
+                <h2>Yönetici Listesi</h2>
+            </div>
 <!-- Yönetici Listesi Tablosu -->
 <table>
     <tr>
@@ -29,3 +40,6 @@ $admins = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </tr>
     <?php endforeach; ?>
 </table>
+<?php
+require_once "footer.php";
+?>
