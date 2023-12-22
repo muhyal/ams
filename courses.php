@@ -119,11 +119,7 @@ $courses = $db->query("SELECT * FROM courses")->fetchAll(PDO::FETCH_ASSOC);
                 <input type="text" id="course_code" name="course_code" required><br>
                 <button type="submit" name="add_course">Ders Ekle</button>
             </form>
-
-
-
-
-<?php
-require_once "footer.php";
-?>
+            <?php
+            require_once "footer.php";
+            ?>
 

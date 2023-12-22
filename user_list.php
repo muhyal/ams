@@ -36,23 +36,24 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
               <h2>Kullanıcılar</h2>
  </div>
+
   <div class="table-responsive">
     <table class="table table-striped table-sm">
-      <thead>
+      <thead class="thead-dark">
          <tr>
  <th scope="col">#</th>
     <th scope="col">Ad</th>
     <th scope="col">Soyad</th>
     <th scope="col">E-posta</th>
-    <th scope="col">T.C. Kimlik</th>
+    <th scope="col">T.C. Kimlik No</th>
     <th scope="col">Telefon</th>
     <th scope="col">SMS Doğrulaması Gönderildi</th>
     <th scope="col">SMS Doğrulaması Onaylandı</th>
-    <th scope="col">SMS Doğrulandı Mı?</th>
+    <th scope="col">SMS Doğrulaması</th>
     <th scope="col">SMS Doğrulama IP</th>
     <th scope="col">E-Posta Doğrulaması Gönderildi</th>
     <th scope="col">E-Posta Doğrulaması Onaylandı</th>
-    <th scope="col">E-posta Doğrulandı Mı?</th>
+    <th scope="col">E-posta Doğrulaması</th>
     <th scope="col">E-posta Doğrulama IP</th>
     <th scope="col">Sil</th>
     <th scope="col">Düzenle</th>

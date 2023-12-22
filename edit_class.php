@@ -1,4 +1,5 @@
 <?php
+global $db;
 session_start();
 
 // Oturum kontrolü
@@ -6,8 +7,20 @@ if (!isset($_SESSION["admin_id"])) {
     header("Location: admin_login.php"); // Giriş sayfasına yönlendir
     exit();
 }
-global $db;
-require_once "db_connection.php";
+
+require_once "db_connection.php"; // Veritabanı bağlantısı
+
+// Kullanıcı bilgilerini kullanabilirsiniz
+$admin_id = $_SESSION["admin_id"];
+$admin_username = $_SESSION["admin_username"];
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+require_once "config.php";
+global $siteName, $siteShortName, $siteUrl;
+require_once "admin_panel_header.php";
+
 
 if (isset($_GET['id'])) {
     $classId = $_GET['id'];
@@ -37,15 +50,15 @@ if (isset($_GET['id'])) {
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sınıf Düzenle</title>
-</head>
-<body>
-<h1>Sınıf Düzenle</h1>
+<div class="container-fluid">
+    <div class="row">
+        <?php
+        require_once "admin_panel_sidebar.php";
+        ?>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
+                <h2>Sınıf Düzenle</h2>
+            </div>
 <form method="post">
     <label for="class_name">Sınıf Adı:</label>
     <input type="text" name="class_name" value="<?php echo $classData['class_name']; ?>"><br>
@@ -58,5 +71,7 @@ if (isset($_GET['id'])) {
 
     <button type="submit">Kaydet</button>
 </form>
-</body>
-</html>
+<?php
+require_once "footer.php";
+?>
+
