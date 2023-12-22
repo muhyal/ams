@@ -77,8 +77,7 @@ $classes = $stmtClasses->fetchAll(PDO::FETCH_ASSOC);
     <!-- Veli Bilgileri -->
     <h2>Veli Bilgileri</h2>
     <label for="parent_checkbox">
-        <input type="checkbox" id="parent_checkbox" name="parent_checkbox">
-        Kendi bilgilerimi kullanmak istiyorum
+    <input type="checkbox" id="parent_checkbox" name="parent_checkbox">Kendi bilgilerimi kullanmak istiyorum
     </label><br>
     <label for="parent_firstname">Veli Adı:</label>
     <input type="text" name="parent_firstname" id="parent_firstname" required><br>

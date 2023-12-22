@@ -118,8 +118,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     feather.replace()
 </script>
 
-
-</body>
 <?php
 require_once "footer.php";
 ?>

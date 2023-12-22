@@ -4,14 +4,14 @@
         <ul class="nav flex-column">
             <li class="nav-item">
                 <a class="nav-link" href="admin_panel.php">
-                    <span data-feather="menu"></span>
+                    <span data-feather="activity"></span>
                     Genel bakış
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="search.php">
                     <span data-feather="search"></span>
-                    Arama Yap
+                    Gelişmiş Arama
                 </a>
             </li>
             <li class="nav-item">
@@ -83,13 +83,13 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="birthdays.php">
-                    <span data-feather="plus"></span>
+                    <span data-feather="gift"></span>
                     Doğum Günleri
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="agreement.php">
-                    <span data-feather="file"></span>
+                    <span data-feather="pen-tool"></span>
                     Sözleşmeler
                 </a>
             </li>
