@@ -71,8 +71,10 @@ $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <th>Acil Durumda Aranacak Kişi Telefonu</th>
         <th>Kan Grubu</th> <!-- Yeni sütun -->
         <th>Bilinen Rahatsızlık</th> <!-- Yeni sütun -->
-        <th>İl</th> <!-- Yeni sütun -->
-        <th>İlçe</th> <!-- Yeni sütun -->
+        <th>İl</th>
+        <th>İlçe</th>
+        <th>Adres</th>
+        <th></th> <!-- Profil Bağlantısı -->
         <th></th> <!-- Düzenleme Bağlantısı -->
         <th></th> <!-- Silme Bağlantısı -->
     </tr>
@@ -96,6 +98,7 @@ $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <td><?php echo $student['health_issue']; ?></td> <!-- Yeni sütun -->
             <td><?php echo $student['city']; ?></td> <!-- Yeni sütun -->
             <td><?php echo $student['district']; ?></td> <!-- Yeni sütun -->
+            <td><?php echo $student['address']; ?></td> <!-- Yeni sütun -->
             <td><a href="student_profile.php?id=<?php echo $student['id']; ?>">Profil</a></td>
             <td><a href="edit_student.php?id=<?php echo $student['id']; ?>">Düzenle</a></td>
             <td><a href="delete_student.php?id=<?php echo $student['id']; ?>">Sil</a></td>

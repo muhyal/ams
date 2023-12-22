@@ -29,11 +29,13 @@ if (isset($_GET['id'])) {
         // Düzenlenmiş sınıf bilgilerini al
         $className = $_POST['class_name'];
         $classDescription = $_POST['class_description'];
+        $classCode = $_POST['class_code'];
 
         // Sınıf bilgilerini güncelle
-        $updateQuery = "UPDATE classes SET class_name = ?, class_description = ? WHERE id = ?";
+        $updateQuery = "UPDATE classes SET class_name = ?, class_code = ?, class_description = ? WHERE id = ?";
         $updateStmt = $db->prepare($updateQuery);
-        $updateStmt->execute([$className, $classDescription, $classId]);
+        $updateStmt->execute([$className, $classCode, $classDescription, $classId]);
+
 
         header("Location: class_list.php");
         exit;

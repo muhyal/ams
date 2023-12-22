@@ -10,25 +10,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $birthDate = $_POST["birth_date"];
     $phone = $_POST["phone"];
     $email = $_POST["email"];
+    $selectedCourse = $_POST["course"];
+    $selectedClass = $_POST["class"];
 
     // Veritabanındaki öğretmeni güncelle
-    $query = "UPDATE teachers SET first_name = ?, last_name = ?, tc_identity = ?, birth_date = ?, phone = ?, email = ? WHERE id = ?";
+    $query = "UPDATE teachers SET first_name = ?, last_name = ?, tc_identity = ?, birth_date = ?, phone = ?, email = ?, course_id = ?, class_id = ? WHERE id = ?";
     $stmt = $db->prepare($query);
-    $stmt->execute([$firstName, $lastName, $tcIdentity, $birthDate, $phone, $email, $id]);
+    $stmt->execute([$firstName, $lastName, $tcIdentity, $birthDate, $phone, $email, $selectedCourse, $selectedClass, $id]);
 }
 
 // Öğretmen verisini çekme 1
 if (isset($_GET["id"])) {
     $teacher_id = $_GET["id"];
-    $select_query = "SELECT * FROM teachers WHERE id = ?";
+    $select_query = "SELECT teachers.*, courses.course_name, classes.class_name 
+                     FROM teachers
+                     LEFT JOIN courses ON teachers.course_id = courses.id
+                     LEFT JOIN classes ON teachers.class_id = classes.id
+                     WHERE teachers.id = ?";
     $stmt = $db->prepare($select_query);
     $stmt->execute([$teacher_id]);
     $teacher = $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
+// Courses and Classes
+$courses_query = "SELECT * FROM courses";
+$classes_query = "SELECT * FROM classes";
 
-// Türkçe tarih biçimine çevirme
-$birthDate = $teacher["birth_date"] ? date("d-m-Y", strtotime($teacher["birth_date"])) : "";
+$courses_stmt = $db->query($courses_query);
+$classes_stmt = $db->query($classes_query);
+
+$courses = $courses_stmt->fetchAll(PDO::FETCH_ASSOC);
+$classes = $classes_stmt->fetchAll(PDO::FETCH_ASSOC);
+
 require_once "config.php";
 global $siteName, $siteShortName, $siteUrl;
 require_once "admin_panel_header.php";
@@ -56,8 +69,30 @@ require_once "admin_panel_header.php";
     <input type="tel" id="phone" name="phone" value="<?php echo $teacher["phone"]; ?>"><br>
     <label for="email">E-posta:</label>
     <input type="email" id="email" name="email" value="<?php echo $teacher["email"]; ?>" required><br>
+    <!-- Ders Seçimi -->
+    <label for="course">Ders:</label>
+    <select id="course" name="course">
+        <?php foreach ($courses as $course): ?>
+            <option value="<?= $course['id'] ?>" <?= ($teacher['course_id'] == $course['id']) ? 'selected' : '' ?>>
+                <?= $course['course_name'] ?>
+            </option>
+        <?php endforeach; ?>
+    </select><br>
+
+    <!-- Sınıf Seçimi -->
+    <label for="class">Sınıf:</label>
+    <select id="class" name="class">
+        <?php foreach ($classes as $class): ?>
+            <option value="<?= $class['id'] ?>" <?= ($teacher['class_id'] == $class['id']) ? 'selected' : '' ?>>
+                <?= $class['class_name'] ?>
+            </option>
+        <?php endforeach; ?>
+    </select><br>
     <button type="submit" name="edit_teacher">Öğretmeni Düzenle</button>
+
 </form>
+
+
 <a href="teachers_list.php">Öğretmen Listesi</a>
 <?php
 require_once "footer.php";

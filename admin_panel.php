@@ -28,8 +28,18 @@ $stmt->execute();
 $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Öğretmenler listesi sorgusu
-$query = "SELECT * FROM teachers";
-$stmt = $db->query($query);
+$query = "
+    SELECT teachers.id AS teacher_id, teachers.first_name, teachers.last_name,
+           teachers.tc_identity, teachers.email, teachers.phone,
+           classes.class_name, courses.course_name
+    FROM teachers
+    LEFT JOIN courses ON teachers.course_id = courses.id
+    LEFT JOIN classes ON teachers.class_id = classes.id
+";
+
+
+$stmt = $db->prepare($query);
+$stmt->execute();
 $teachers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Dersler listesi sorgusu
@@ -104,38 +114,71 @@ $student_course_teacher_relations = $stmt->fetchAll(PDO::FETCH_ASSOC);
       </tbody>
     </table>
   </div>
-                <h4 style="display: inline-block; margin-right: 10px;">Kullanıcılar</h4>
-                <small><a style="color: #2b2f32;" href="user_list.php">Tüm Kullanıcılar</a></small>
-                <div class="table-responsive">
-                    <table class="table table-striped table-sm">
-                        <thead>
+
+            <!-- Öğretmenler Tablosu -->
+            <h4 style="display: inline-block; margin-right: 10px;">Öğretmenler</h4>
+            <small><a style="color: #2b2f32;" href="teachers_list.php">Tüm Öğretmenler</a></small>
+            <div class="table-responsive">
+                <table class="table table-striped table-sm">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Ad</th>
+                        <th scope="col">Soyad</th>
+                        <th scope="col">Sınıf</th>
+                        <th scope="col">Ders</th>
+                        <th scope="col">T.C. Kimlik No</th>
+                        <th scope="col">E-posta</th>
+                        <th scope="col">Telefon</th>
+                        <!-- Diğer öğretmen sütunları -->
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach ($teachers as $teacher): ?>
                         <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Ad</th>
-                            <th scope="col">Soyad</th>
-                            <th scope="col">E-posta</th>
-                            <th scope="col">T.C. Kimlik No</th>
-                            <th scope="col">Telefon</th>
-                            <th scope="col">E-posta Doğrulaması</th>
-                            <th scope="col">SMS Doğrulaması</th>
+                            <th scope="row"><?= isset($teacher['teacher_id']) ? $teacher['teacher_id'] : '' ?></th>
+                            <td><?= isset($teacher['first_name']) ? $teacher['first_name'] : '' ?></td>
+                            <td><?= isset($teacher['last_name']) ? $teacher['last_name'] : '' ?></td>
+                            <td><?= isset($teacher['class_name']) ? $teacher['class_name'] : '' ?></td>
+                            <td><?= isset($teacher['course_name']) ? $teacher['course_name'] : '' ?></td>
+                            <td><?= isset($teacher['tc_identity']) ? $teacher['tc_identity'] : '' ?></td>
+                            <td><?= isset($teacher['email']) ? $teacher['email'] : '' ?></td>
+                            <td><?= isset($teacher['phone']) ? $teacher['phone'] : '' ?></td>
+
+                            <!-- Diğer öğretmen verileri -->
                         </tr>
-                        </thead>
-                        <tbody>
-                        <?php foreach ($users as $user): ?>
-                            <tr>
-                                <th scope="row"><?= $user['id'] ?></th>
-                                <td><?= $user['firstname'] ?></td>
-                                <td><?= $user['lastname'] ?></td>
-                                <td><?= $user['email'] ?></td>
-                                <td><?= $user['tc'] ?></td>
-                                <td><?= $user['phone'] ?></td>
-                                <td><?= $user['verification_time_email_confirmed'] ? 'Doğrulandı' : 'Doğrulanmadı' ?></td>
-                                <td><?= $user['verification_time_sms_confirmed'] ? 'Doğrulandı' : 'Doğrulanmadı' ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Dersler Tablosu -->
+            <h4 style="display: inline-block; margin-right: 10px;">Dersler</h4>
+            <small><a style="color: #2b2f32;" href="courses.php">Tüm Dersler</a></small>
+            <div class="table-responsive">
+                <table class="table table-striped table-sm">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Ders Adı</th>
+                        <th scope="col">Ders Kodu</th>
+                        <th scope="col">Açıklama</th>
+                        <!-- Diğer ders sütunları -->
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach ($courses as $course): ?>
+                        <tr>
+                            <th scope="row"><?= $course['id'] ?></th>
+                            <td><?= $course['course_name'] ?></td>
+                            <td><?= $course['course_code'] ?></td>
+                            <td><?= $course['description'] ?></td>
+                            <!-- Diğer ders verileri -->
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
 
                 <h4 style="display: inline-block; margin-right: 10px;">Sınıflar</h4>
                 <small><a style="color: #2b2f32;" href="class_list.php">Tüm Sınıflar</a></small>
@@ -161,66 +204,38 @@ $student_course_teacher_relations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </tbody>
                     </table>
                 </div>
-
-            <!-- Öğretmenler Tablosu -->
-                <h4 style="display: inline-block; margin-right: 10px;">Öğretmenler</h4>
-                <small><a style="color: #2b2f32;" href="teachers_list.php">Tüm Öğretmenler</a></small>
-                <div class="table-responsive">
-                    <table class="table table-striped table-sm">
-                        <thead>
+            <h4 style="display: inline-block; margin-right: 10px;">Kullanıcılar</h4>
+            <small><a style="color: #2b2f32;" href="user_list.php">Tüm Kullanıcılar</a></small>
+            <div class="table-responsive">
+                <table class="table table-striped table-sm">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Ad</th>
+                        <th scope="col">Soyad</th>
+                        <th scope="col">E-posta</th>
+                        <th scope="col">T.C. Kimlik No</th>
+                        <th scope="col">Telefon</th>
+                        <th scope="col">E-posta Doğrulaması</th>
+                        <th scope="col">SMS Doğrulaması</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach ($users as $user): ?>
                         <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Ad</th>
-                            <th scope="col">Soyad</th>
-                            <th scope="col">T.C. Kimlik No</th>
-                            <th scope="col">E-posta</th>
-                            <th scope="col">Telefon</th>
-                            <!-- Diğer öğretmen sütunları -->
+                            <th scope="row"><?= $user['id'] ?></th>
+                            <td><?= $user['firstname'] ?></td>
+                            <td><?= $user['lastname'] ?></td>
+                            <td><?= $user['email'] ?></td>
+                            <td><?= $user['tc'] ?></td>
+                            <td><?= $user['phone'] ?></td>
+                            <td><?= $user['verification_time_email_confirmed'] ? 'Doğrulandı' : 'Doğrulanmadı' ?></td>
+                            <td><?= $user['verification_time_sms_confirmed'] ? 'Doğrulandı' : 'Doğrulanmadı' ?></td>
                         </tr>
-                        </thead>
-                        <tbody>
-                        <?php foreach ($teachers as $teacher): ?>
-                            <tr>
-                                <th scope="row"><?= $teacher['id'] ?></th>
-                                <td><?= $teacher['first_name'] ?></td>
-                                <td><?= $teacher['last_name'] ?></td>
-                                <td><?= $teacher['tc_identity'] ?></td>
-                                <td><?= $teacher['email'] ?></td>
-                                <td><?= $teacher['phone'] ?></td>
-                                <!-- Diğer öğretmen verileri -->
-                            </tr>
-                        <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-
-            <!-- Dersler Tablosu -->
-                <h4 style="display: inline-block; margin-right: 10px;">Dersler</h4>
-                <small><a style="color: #2b2f32;" href="courses.php">Tüm Dersler</a></small>
-                <div class="table-responsive">
-                    <table class="table table-striped table-sm">
-                        <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Ders Adı</th>
-                            <th scope="col">Ders Kodu</th>
-                            <th scope="col">Açıklama</th>
-                            <!-- Diğer ders sütunları -->
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <?php foreach ($courses as $course): ?>
-                            <tr>
-                                <th scope="row"><?= $course['id'] ?></th>
-                                <td><?= $course['course_name'] ?></td>
-                                <td><?= $course['course_code'] ?></td>
-                                <td><?= $course['description'] ?></td>
-                                <!-- Diğer ders verileri -->
-                            </tr>
-                        <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
       </div>
 </div>
 <?php

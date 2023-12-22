@@ -23,9 +23,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $selectedClass = $_POST["class"];
 
     // Veritabanına yeni öğretmen ekleyin
-    $query = "INSERT INTO teachers (first_name, last_name, tc_identity, birth_date, phone, email, course_id, class_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    $query = "INSERT INTO teachers (first_name, last_name, tc_identity, birth_date, phone, email, course_id, class_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $db->prepare($query);
     $stmt->execute([$firstName, $lastName, $tcIdentity, $birthDate, $phone, $email, $selectedCourse, $selectedClass]);
+
 }
 require_once "config.php";
 global $siteName, $siteShortName, $siteUrl;

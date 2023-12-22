@@ -37,15 +37,19 @@ require_once "admin_panel_sidebar.php";
 if (isset($_GET['id'])) {
     $student_id = $_GET['id'];
 
-    // Öğrenci ve diğer bilgileri birleştiren sorgu
-    $query = "SELECT students.*, parents.parent_firstname, parents.parent_lastname, parents.parent_phone, parents.parent_email,
-              emergency_contacts.emergency_contact, emergency_contacts.emergency_phone, 
-              addresses.city, addresses.district
-              FROM students
-              LEFT JOIN parents ON students.id = parents.student_id
-              LEFT JOIN emergency_contacts ON students.id = emergency_contacts.student_id
-              LEFT JOIN addresses ON students.id = addresses.student_id
-              WHERE students.id = ?";
+// Öğrenci ve diğer bilgileri birleştiren sorgu
+    $query = "SELECT students.*, 
+                 parents.parent_firstname, parents.parent_lastname, parents.parent_phone, parents.parent_email,
+                 emergency_contacts.emergency_contact, emergency_contacts.emergency_phone, 
+                 addresses.city, addresses.district, addresses.address
+          FROM students
+          LEFT JOIN parents ON students.id = parents.student_id
+          LEFT JOIN emergency_contacts ON students.id = emergency_contacts.student_id
+          LEFT JOIN addresses ON students.id = addresses.student_id
+          WHERE students.id = ?";
+
+
+
 
     $stmt = $db->prepare($query);
     $stmt->execute([$student_id]);
@@ -55,7 +59,7 @@ if (isset($_GET['id'])) {
     if ($student) {
         // Öğrenci bilgilerini tablo içinde görüntülemek için HTML çıktısı oluşturun
         echo "<table border='1'>";
-        echo "<tr><td>Ad</td><td>Soyad</td><td>TC Kimlik No</td><td>Cep Telefonu</td><td>E-posta</td><td>Veli Adı Soyadı</td><td>Veli Telefonu</td><td>Veli E-posta</td><td>Acil Durum Kişi</td><td>Acil Durum Telefonu</td><td>Kan Grubu</td><td>Rahatsızlık</td><td>İl</td><td>İlçe</td></tr>";
+        echo "<tr><td>Ad</td><td>Soyad</td><td>T.C. Kimlik No</td><td>Cep Telefonu</td><td>E-posta</td><td>Veli Adı Soyadı</td><td>Veli Telefonu</td><td>Veli E-posta</td><td>Acil Durum Kişi</td><td>Acil Durum Telefonu</td><td>Kan Grubu</td><td>Rahatsızlık</td><td>İl</td><td>İlçe</td><td>Adres</td></tr>";
         echo "<tr>";
         echo "<td>" . $student['firstname'] . "</td>";
         echo "<td>" . $student['lastname'] . "</td>";
@@ -71,6 +75,7 @@ if (isset($_GET['id'])) {
         echo "<td>" . $student['health_issue'] . "</td>";
         echo "<td>" . $student['city'] . "</td>";
         echo "<td>" . $student['district'] . "</td>";
+        echo "<td>" . $student['address'] . "</td>";
         echo "</tr>";
         echo "</table>";
     } else {
