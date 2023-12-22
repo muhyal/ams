@@ -58,21 +58,16 @@ $stmt = $db->prepare($query);
 $stmt->execute();
 $student_course_teacher_relations = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
-
     <div class="container-fluid">
       <div class="row">
-
-
         <?php
         require_once "admin_panel_sidebar.php";
         ?>
-
-
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
             <h1 class="h2">Genel Bakış</h1>
           </div>
-<main>
+
     <h4 style="display: inline-block; margin-right: 10px;">Öğrenciler</h4>
     <small><a style="color: #2b2f32;" href="student_list.php">Tüm Öğrenciler</a></small>
     <div class="table-responsive">
@@ -83,11 +78,12 @@ $student_course_teacher_relations = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <th scope="col">Ad</th>
             <th scope="col">Soyad</th>
             <th scope="col">E-posta</th>
-            <th scope="col">T.C. Kimlik</th>
+            <th scope="col">T.C. Kimlik No</th>
             <th scope="col">Telefon</th>
             <th scope="col">Sınıf</th>
             <th scope="col">Ders</th>
             <th scope="col">Öğretmen</th>
+            <th scope="col">Profil</th>
         </tr>
         </thead>
       <tbody>
@@ -102,15 +98,12 @@ $student_course_teacher_relations = $stmt->fetchAll(PDO::FETCH_ASSOC);
               <td><?= $relation['class_name'] ?></td>
               <td><?= $relation['course_name'] ?></td>
               <td><?= $relation['teacher_name'] ?></td>
+              <td><a href="student_profile.php?id=<?php echo $relation['student_id']; ?>">Git</a></td>
           </tr>
       <?php endforeach; ?>
       </tbody>
     </table>
   </div>
-</main>
-
-
-            <main>
                 <h4 style="display: inline-block; margin-right: 10px;">Kullanıcılar</h4>
                 <small><a style="color: #2b2f32;" href="user_list.php">Tüm Kullanıcılar</a></small>
                 <div class="table-responsive">
@@ -121,10 +114,10 @@ $student_course_teacher_relations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <th scope="col">Ad</th>
                             <th scope="col">Soyad</th>
                             <th scope="col">E-posta</th>
-                            <th scope="col">T.C. Kimlik</th>
+                            <th scope="col">T.C. Kimlik No</th>
                             <th scope="col">Telefon</th>
-                            <th scope="col">E-posta Doğrulandı Mı?</th>
-                            <th scope="col">SMS Doğrulandı Mı?</th>
+                            <th scope="col">E-posta Doğrulaması</th>
+                            <th scope="col">SMS Doğrulaması</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -143,9 +136,7 @@ $student_course_teacher_relations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </tbody>
                     </table>
                 </div>
-            </main>
 
-            <main>
                 <h4 style="display: inline-block; margin-right: 10px;">Sınıflar</h4>
                 <small><a style="color: #2b2f32;" href="class_list.php">Tüm Sınıflar</a></small>
                 <div class="table-responsive">
@@ -170,10 +161,8 @@ $student_course_teacher_relations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </tbody>
                     </table>
                 </div>
-            </main>
 
             <!-- Öğretmenler Tablosu -->
-            <main>
                 <h4 style="display: inline-block; margin-right: 10px;">Öğretmenler</h4>
                 <small><a style="color: #2b2f32;" href="teachers_list.php">Tüm Öğretmenler</a></small>
                 <div class="table-responsive">
@@ -183,9 +172,10 @@ $student_course_teacher_relations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <th scope="col">#</th>
                             <th scope="col">Ad</th>
                             <th scope="col">Soyad</th>
+                            <th scope="col">T.C. Kimlik No</th>
                             <th scope="col">E-posta</th>
                             <th scope="col">Telefon</th>
-                            <!-- Diğer öğretmen alanları -->
+                            <!-- Diğer öğretmen sütunları -->
                         </tr>
                         </thead>
                         <tbody>
@@ -194,6 +184,7 @@ $student_course_teacher_relations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <th scope="row"><?= $teacher['id'] ?></th>
                                 <td><?= $teacher['first_name'] ?></td>
                                 <td><?= $teacher['last_name'] ?></td>
+                                <td><?= $teacher['tc_identity'] ?></td>
                                 <td><?= $teacher['email'] ?></td>
                                 <td><?= $teacher['phone'] ?></td>
                                 <!-- Diğer öğretmen verileri -->
@@ -202,10 +193,8 @@ $student_course_teacher_relations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </tbody>
                     </table>
                 </div>
-            </main>
 
             <!-- Dersler Tablosu -->
-            <main>
                 <h4 style="display: inline-block; margin-right: 10px;">Dersler</h4>
                 <small><a style="color: #2b2f32;" href="courses.php">Tüm Dersler</a></small>
                 <div class="table-responsive">
@@ -216,7 +205,7 @@ $student_course_teacher_relations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <th scope="col">Ders Adı</th>
                             <th scope="col">Ders Kodu</th>
                             <th scope="col">Açıklama</th>
-                            <!-- Diğer ders alanları -->
+                            <!-- Diğer ders sütunları -->
                         </tr>
                         </thead>
                         <tbody>
@@ -232,13 +221,8 @@ $student_course_teacher_relations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </tbody>
                     </table>
                 </div>
-            </main>
-
-
       </div>
 </div>
-
-
 <?php
 require_once "footer.php";
 ?>

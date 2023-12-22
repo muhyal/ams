@@ -15,6 +15,7 @@ $classes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $firstName = $_POST["first_name"];
     $lastName = $_POST["last_name"];
+    $tcIdentity = $_POST["tc_identity"];
     $birthDate = $_POST["birth_date"];
     $phone = $_POST["phone"];
     $email = $_POST["email"];
@@ -22,9 +23,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $selectedClass = $_POST["class"];
 
     // Veritabanına yeni öğretmen ekleyin
-    $query = "INSERT INTO teachers (first_name, last_name, birth_date, phone, email, course_id, class_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    $query = "INSERT INTO teachers (first_name, last_name, tc_identity, birth_date, phone, email, course_id, class_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
     $stmt = $db->prepare($query);
-    $stmt->execute([$firstName, $lastName, $birthDate, $phone, $email, $selectedCourse, $selectedClass]);
+    $stmt->execute([$firstName, $lastName, $tcIdentity, $birthDate, $phone, $email, $selectedCourse, $selectedClass]);
 }
 require_once "config.php";
 global $siteName, $siteShortName, $siteUrl;
@@ -37,13 +38,17 @@ require_once "admin_panel_header.php";
         ?>
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
-                <h2>Öğretmen Listesi</h2>
+                <h2>Öğretmen Ekle</h2>
             </div>
 <form method="post">
     <label for="first_name">Adı:</label>
     <input type="text" id="first_name" name="first_name" required><br>
     <label for="last_name">Soyadı:</label>
     <input type="text" id="last_name" name="last_name" required><br>
+
+    <label for="tc_identity">TC Kimlik No:</label>
+    <input type="text" name="tc_identity" required><br>
+
     <label for="birth_date">Doğum Tarihi:</label>
     <input type="date" id="birth_date" name="birth_date" required><br>
     <label for="phone">Telefon:</label>
@@ -69,7 +74,9 @@ require_once "admin_panel_header.php";
 
     <button type="submit" name="add_teacher">Öğretmen Ekle</button>
 </form>
-<a href="teachers_list.php">Öğretmen Listesi</a>
+
+    <button onclick="location.href='teachers_list.php'" type="button">Öğretmen Listesi</button>
+
 <?php
 require_once "footer.php";
 ?>
