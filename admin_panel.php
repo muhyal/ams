@@ -1,7 +1,6 @@
 <?php
 global $db;
 session_start();
-
 // Oturum kontrolü
 if (!isset($_SESSION["admin_id"])) {
     header("Location: admin_login.php");
@@ -57,16 +56,35 @@ $classes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 // Öğrenci listesi sorgusu
 $query = "
     SELECT students.id AS student_id, students.firstname, students.lastname, students.email, students.tc_identity, students.phone,
-           classes.class_name, courses.course_name, CONCAT(teachers.first_name, ' ', teachers.last_name) AS teacher_name
+           academies.name AS academy_name, courses.course_name, CONCAT(teachers.first_name, ' ', teachers.last_name) AS teacher_name,
+           student_classes.id AS class_id, classes.class_name
     FROM students
-    INNER JOIN classes ON students.course_id = classes.id
-    INNER JOIN courses ON students.course_id = courses.id
+    INNER JOIN academy_students ON students.id = academy_students.student_id
+    INNER JOIN academies ON academy_students.academy_id = academies.id
+    INNER JOIN student_courses ON students.id = student_courses.student_id
+    INNER JOIN courses ON student_courses.course_id = courses.id
     INNER JOIN teachers ON courses.teacher_id = teachers.id
+    INNER JOIN student_classes ON students.id = student_classes.student_id
+    INNER JOIN classes ON student_classes.class_id = classes.id
 ";
+
 
 $stmt = $db->prepare($query);
 $stmt->execute();
 $student_course_teacher_relations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+
+// Öğrenci sayısını getir
+$studentCountQuery = "SELECT COUNT(*) as student_count FROM students";
+$stmtStudentCount = $db->query($studentCountQuery);
+$studentCount = $stmtStudentCount->fetch(PDO::FETCH_ASSOC);
+
+// Öğretmen sayısını getir
+$teacherCountQuery = "SELECT COUNT(*) as teacher_count FROM teachers";
+$stmtTeacherCount = $db->query($teacherCountQuery);
+$teacherCount = $stmtTeacherCount->fetch(PDO::FETCH_ASSOC);
+
 ?>
     <div class="container-fluid">
       <div class="row">
@@ -76,7 +94,22 @@ $student_course_teacher_relations = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
             <h1 class="h2">Genel Bakış</h1>
+
           </div>
+
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="alert alert-info" role="alert">
+                        Toplam Öğrenci Sayısı: <?php echo $studentCount['student_count']; ?>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="alert alert-info" role="alert">
+                        Toplam Öğretmen Sayısı: <?php echo $teacherCount['teacher_count']; ?>
+                    </div>
+                </div>
+            </div>
 
     <h4 style="display: inline-block; margin-right: 10px;">Öğrenciler</h4>
     <small><a style="color: #2b2f32;" href="student_list.php">Tüm Öğrenciler</a></small>
@@ -90,6 +123,7 @@ $student_course_teacher_relations = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <th scope="col">E-posta</th>
             <th scope="col">T.C. Kimlik No</th>
             <th scope="col">Telefon</th>
+            <th scope="col">Akademi</th>
             <th scope="col">Sınıf</th>
             <th scope="col">Ders</th>
             <th scope="col">Öğretmen</th>
@@ -105,6 +139,7 @@ $student_course_teacher_relations = $stmt->fetchAll(PDO::FETCH_ASSOC);
               <td><?= $relation['email'] ?></td>
               <td><?= $relation['tc_identity'] ?></td>
               <td><?= $relation['phone'] ?></td>
+              <td><?= $relation['academy_name'] ?></td>
               <td><?= $relation['class_name'] ?></td>
               <td><?= $relation['course_name'] ?></td>
               <td><?= $relation['teacher_name'] ?></td>
@@ -114,7 +149,6 @@ $student_course_teacher_relations = $stmt->fetchAll(PDO::FETCH_ASSOC);
       </tbody>
     </table>
   </div>
-
             <!-- Öğretmenler Tablosu -->
             <h4 style="display: inline-block; margin-right: 10px;">Öğretmenler</h4>
             <small><a style="color: #2b2f32;" href="teachers_list.php">Tüm Öğretmenler</a></small>
