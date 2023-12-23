@@ -15,6 +15,30 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a class="nav-link" href="academies.php">
+                    <span data-feather="list"></span>
+                    Akademiler
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="accounting.php">
+                    <span data-feather="list"></span>
+                    Muhasebe
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="academy_teachers.php">
+                    <span data-feather="list"></span>
+                    Akademi Öğretmenleri
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="academy_students.php">
+                    <span data-feather="list"></span>
+                    Akademi Öğrencileri
+                </a>
+            </li>
+            <li class="nav-item">
               <a class="nav-link" href="user_list.php">
                     <span data-feather="list"></span>
                     Kullanıcılar
@@ -94,6 +118,7 @@
                 </a>
             </li>
         </ul>
+
     </div>
 </nav>
 
