@@ -19,8 +19,8 @@ error_reporting(E_ALL);
 require_once "config.php";
 global $siteName, $siteShortName, $siteUrl;
 require_once "admin_panel_header.php";
-// Öğretmenleri veritabanından çekme
 
+// Öğretmenleri veritabanından çekme
 $queryTeachers = "SELECT id, first_name, last_name FROM teachers";
 $stmtTeachers = $db->prepare($queryTeachers);
 $stmtTeachers->execute();
@@ -110,6 +110,26 @@ $classes = $stmtClasses->fetchAll(PDO::FETCH_ASSOC);
     <input type="text" name="blood_type" required><br>
     <label for="health_issue">Bilinen Rahatsızlık:</label>
     <input type="text" name="health_issue"><br>
+
+    <?php
+    // Akademileri veritabanından çekme
+    $queryAcademies = "SELECT id, name FROM academies";
+    $stmtAcademies = $db->prepare($queryAcademies);
+    $stmtAcademies->execute();
+    $academies = $stmtAcademies->fetchAll(PDO::FETCH_ASSOC);
+
+    ?>
+    <!-- Akademi Seçimi -->
+    <h2>Akademi Seçimi</h2>
+    <label for="academy">Akademi:</label>
+    <select name="academy" required>
+        <option value="">Akademi Seçin</option>
+        <?php foreach ($academies as $academy): ?>
+            <option value="<?php echo $academy['id']; ?>"><?php echo $academy['name']; ?></option>
+        <?php endforeach; ?>
+    </select><br>
+
+
 
     <!-- Öğretmen Seçimi -->
     <h2>Öğretmen Seçimi</h2>
