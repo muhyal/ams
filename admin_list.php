@@ -1,5 +1,11 @@
 <?php
+// Veritabanı bağlantısı ve diğer gerekli dosyaların dahil edilmesi
 global $db;
+session_start();
+if (!isset($_SESSION["admin_id"])) {
+    header("Location: admin_login.php");
+    exit();
+}
 require_once "db_connection.php";
 
 // Yönetici verilerini çekme
