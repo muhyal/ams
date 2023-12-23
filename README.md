@@ -22,4 +22,6 @@ Kurum içi gereksinim nedeniyle oluşturulmuş basit bir öğrenci işleri merke
 * SMS ile kullanıcı doğrulaması
 * E-posta ile kullanıcı doğrulaması
 * Öğrenci ve öğretmenler için doğum günü takibi
+* Çoklu lokasyon ve birime özel öğrenci, öğretmen, ders, muhasebe kayıtları (Geliştiriliyor)
+* Basit muhasebe kayıtlarının tutulması (Geliştiriliyor)
 * ... geliştirilmeye devam ediliyor ...
