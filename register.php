@@ -198,7 +198,7 @@ require_once "admin_panel_header.php";
 
   <!-- Mesajı burada gösteriyoruz -->
 <?php if (isset($message) && $message !== ""): ?>
-    <div class="alert alert-danger" role="alert">
+    <div class="alert alert-primary" role="alert">
       <?= $message ?>
     </div>
   <?php endif; ?>
