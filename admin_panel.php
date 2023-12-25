@@ -78,6 +78,16 @@ $teacherCountQuery = "SELECT COUNT(*) as teacher_count FROM teachers";
 $stmtTeacherCount = $db->query($teacherCountQuery);
 $teacherCount = $stmtTeacherCount->fetch(PDO::FETCH_ASSOC);
 
+// Kullanıcı sayısını getir
+$userCountQuery = "SELECT COUNT(*) as user_count FROM users";
+$stmtUserCount = $db->query($userCountQuery);
+$userCount = $stmtUserCount->fetch(PDO::FETCH_ASSOC);
+
+// Kullanıcı sayısını getir
+$academyCountQuery = "SELECT COUNT(*) as academy_count FROM academies";
+$stmtAcademyCount = $db->query($academyCountQuery);
+$academyCount = $stmtAcademyCount->fetch(PDO::FETCH_ASSOC);
+
 ?>
     <div class="container-fluid">
       <div class="row">
@@ -92,17 +102,28 @@ $teacherCount = $stmtTeacherCount->fetch(PDO::FETCH_ASSOC);
 
 
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-3">
+                    <div class="alert alert-info" role="alert">
+                        Toplam Kullanıcı Sayısı: <?php echo $userCount['user_count']; ?>
+                    </div>
+                </div>
+                <div class="col-md-3">
                     <div class="alert alert-info" role="alert">
                         Toplam Öğrenci Sayısı: <?php echo $studentCount['student_count']; ?>
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-3">
                     <div class="alert alert-info" role="alert">
                         Toplam Öğretmen Sayısı: <?php echo $teacherCount['teacher_count']; ?>
                     </div>
                 </div>
+                <div class="col-md-3">
+                    <div class="alert alert-info" role="alert">
+                        Toplam Akademi Sayısı: <?php echo $academyCount['academy_count']; ?>
+                    </div>
+                </div>
             </div>
+
 
     <h4 style="display: inline-block; margin-right: 10px;">Öğrenciler</h4>
     <small><a style="color: #2b2f32;" href="student_list.php">Tüm Öğrenciler</a></small>
