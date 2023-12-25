@@ -1,9 +1,11 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+global $showErrors, $siteName, $siteShortName, $siteUrl;
+
+// Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
+$showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
+$showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
+
 require_once "config.php";
-global $siteName, $siteShortName, $siteUrl;
 require_once "admin_login_header.php";
 ?>
 

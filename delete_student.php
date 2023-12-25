@@ -14,6 +14,7 @@ if (!isset($_SESSION["admin_id"])) {
 // Veritabanı bağlantısı ve gerekli dosyaları include edin
 global $db;
 require_once "db_connection.php";
+require_once "admin_panel_header.php";
 
 if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET["id"])) {
     $studentId = $_GET["id"];
@@ -49,14 +50,15 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET["id"])) {
 }
 ?>
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Öğrenci Silme Onayı</title>
-</head>
-<body>
-
-<h2>Silmek istediğiniz öğrenciyi aşağıda onaylayın:</h2>
+    <div class="container-fluid">
+    <div class="row">
+<?php
+require_once "admin_panel_sidebar.php";
+?>
+    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
+        <h2>Öğrenci Sil</h2>
+    </div>
 <p><strong>Öğrenci Adı:</strong> <?php echo $studentInfo['firstname']; ?></p>
 <p><strong>Öğrenci Soyadı:</strong> <?php echo $studentInfo['lastname']; ?></p>
 <p><strong>T.C. Kimlik No:</strong> <?php echo $studentInfo['tc_identity']; ?></p>
@@ -70,6 +72,6 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET["id"])) {
     <input type="submit" name="confirm_delete" value="Öğrenciyi Sil">
     <a href="student_list.php">İptal</a>
 </form>
-
-</body>
-</html>
+<?php
+require_once "footer.php";
+?>

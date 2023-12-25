@@ -1,21 +1,23 @@
 <?php
-// Veritabanı bağlantısı ve diğer gerekli dosyaların dahil edilmesi
-global $db;
+global $db, $showErrors, $siteName, $siteShortName, $siteUrl;
 session_start();
+// Oturum kontrolü
 if (!isset($_SESSION["admin_id"])) {
-    header("Location: admin_login.php");
+    header("Location: admin_login.php"); // Giriş sayfasına yönlendir
     exit();
 }
 require_once "db_connection.php";
+require_once "config.php";
+require_once "admin_panel_header.php";
+// Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
+$showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
+$showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
 
 // Yönetici verilerini çekme
 $query = "SELECT * FROM admins";
 $stmt = $db->prepare($query);
 $stmt->execute();
 $admins = $stmt->fetchAll(PDO::FETCH_ASSOC);
-require_once "config.php";
-global $siteName, $siteShortName, $siteUrl;
-require_once "admin_panel_header.php";
 ?>
 <div class="container-fluid">
     <div class="row">
@@ -27,25 +29,31 @@ require_once "admin_panel_header.php";
                 <h2>Yönetici Listesi</h2>
             </div>
 <!-- Yönetici Listesi Tablosu -->
-<table>
-    <tr>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-sm">
+            <thead class="thead-light">
+            <tr>
         <th>#</th>
         <th>Kullanıcı Adı</th>
         <th>E-posta</th>
-        <th>İşlemler</th>
+        <th>Düzenle</th>
+        <th>Sil</th>
     </tr>
+            </thead>
+            <tbody>
     <?php foreach ($admins as $admin): ?>
         <tr>
             <td><?php echo $admin['id']; ?></td>
             <td><?php echo $admin['username']; ?></td>
             <td><?php echo $admin['email']; ?></td>
-            <td>
-                <a href="edit_admin.php?id=<?php echo $admin['id']; ?>">Düzenle</a>
-                <a href="delete_admin.php?id=<?php echo $admin['id']; ?>">Sil</a>
-            </td>
+            <td><a href="edit_admin.php?id=<?php echo $admin['id']; ?>">Düzenle</a></td>
+            <td><a href="delete_admin.php?id=<?php echo $admin['id']; ?>">Sil</a></td>
         </tr>
     <?php endforeach; ?>
+    </tbody>
 </table>
+    </div>
 <?php
 require_once "footer.php";
 ?>

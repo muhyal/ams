@@ -1,9 +1,11 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+global $db, $showErrors, $siteName, $siteShortName, $siteUrl;
+session_start();
+require_once "db_connection.php";
 require_once "config.php";
-global $siteName, $siteShortName, $siteUrl;
+// Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
+$showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
+$showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
 require_once "agreement_header.php";
 ?>
 <body class="d-flex h-100 text-center text-bg-dark">
@@ -32,6 +34,7 @@ require_once "agreement_header.php";
             </nav>
         </div>
     </header>
+
 
     <main class="px-3">
         <br>

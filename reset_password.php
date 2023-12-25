@@ -1,5 +1,9 @@
 <?php
-global $db, $config;
+global $resetPasswordDescription, $db, $showErrors, $siteName, $siteShortName, $siteUrl, $config;
+// Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
+$showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
+$showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
+require_once "config.php";
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
@@ -8,7 +12,6 @@ session_start();
 require_once "db_connection.php"; // Veritabanı bağlantısı
 // Load Composer's autoloader
 require 'vendor/autoload.php';
-require 'config.php';
 
 if (isset($_POST["reset_request"])) {
     // Şifre sıfırlama talebi gönderildiğinde
@@ -96,28 +99,32 @@ if (isset($_POST["reset_request"])) {
         echo "Geçersiz veya süresi dolmuş bir şifre sıfırlama bağlantısı.";
     }
 }
+require_once "user_login_header.php";
 ?>
+    <div class="px-4 py-5 my-5 text-center">
+    <h1 class="display-5 fw-bold text-body-emphasis"><?php echo $siteName ?> - <?php echo $siteShortName ?></h1>
+    <div class="col-lg-6 mx-auto">
+        <p class="lead mb-4"><?php echo $resetPasswordDescription ?></p>
+            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Şifre Sıfırlama</title>
-</head>
-<body>
-<?php if (!isset($_GET["token"])): ?>
-    <!-- Şifre sıfırlama talebi gönderme formu -->
-    <form method="post" action="">
-        <label for="email">E-posta:</label>
-        <input type="email" id="email" name="email" required>
-        <input type="submit" name="reset_request" value="Şifre Sıfırlama Talebi Gönder">
-    </form>
-<?php else: ?>
-    <!-- Yeni şifre belirleme formu -->
-    <form method="post" action="">
-        <label for="new_password">Yeni Şifre:</label>
-        <input type="password" id="new_password" name="new_password" required>
-        <input type="submit" value="Şifreyi Güncelle">
-    </form>
-<?php endif; ?>
-</body>
-</html>
+                <?php if (!isset($_GET["token"])): ?>
+                    <!-- Şifre sıfırlama talebi gönderme formu -->
+                    <form method="post" action="">
+                        <label class="form-label" for="email">E-posta:</label><br>
+                        <input class="form-control" type="email" id="email" name="email" required><br>
+                        <input type="submit" class="btn btn-primary" name="reset_request" value="Şifre Sıfırlama Talebi Gönder">
+                    </form>
+                <?php else: ?>
+                    <!-- Yeni şifre belirleme formu -->
+                    <form method="post" action="">
+                        <label class="form-label" for="new_password">Yeni Şifre:</label><br>
+                        <input class="form-control" type="password" id="new_password" name="new_password" required><br>
+                        <input type="submit" class="btn btn-primary" value="Şifreyi Güncelle">
+                    </form>
+                <?php endif; ?>
+        </div>
+    </div>
+
+<?php
+require_once "footer.php";
+?>

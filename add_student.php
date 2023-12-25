@@ -1,24 +1,21 @@
 <?php
-global $db;
+global $db, $showErrors, $siteName, $siteShortName, $siteUrl;
 session_start();
 // Oturum kontrolü
 if (!isset($_SESSION["admin_id"])) {
     header("Location: admin_login.php"); // Giriş sayfasına yönlendir
     exit();
 }
-
-require_once "db_connection.php"; // Veritabanı bağlantısı
+require_once "db_connection.php";
+require_once "config.php";
+require_once "admin_panel_header.php";
+// Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
+$showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
+$showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
 
 // Kullanıcı bilgilerini kullanabilirsiniz
 $admin_id = $_SESSION["admin_id"];
 $admin_username = $_SESSION["admin_username"];
-
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-require_once "config.php";
-global $siteName, $siteShortName, $siteUrl;
-require_once "admin_panel_header.php";
 
 // Öğretmenleri veritabanından çekme
 $queryTeachers = "SELECT id, first_name, last_name FROM teachers";

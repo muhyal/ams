@@ -1,9 +1,11 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+global $db, $showErrors, $siteName, $siteShortName, $siteUrl;
+require_once "db_connection.php";
 require_once "config.php";
-global $siteName, $siteShortName, $siteUrl;
+require_once "admin_panel_header.php";
+// Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
+$showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
+$showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
 ?>
 <!doctype html>
 <html lang="en">
@@ -30,8 +32,6 @@ global $siteName, $siteShortName, $siteUrl;
               <button type="submit" class="btn btn-primary">Ara</button>
           </form>
       </div>
-
-
 
       <ul class="navbar-nav px-3">
           <li class="nav-item text-nowrap">

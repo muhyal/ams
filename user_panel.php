@@ -1,5 +1,10 @@
 <?php
-global $db;
+global $db, $showErrors, $siteName, $siteShortName, $siteUrl, $config;
+// Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
+$showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
+$showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
+require_once "config.php";
+
 session_start();
 require_once "db_connection.php"; // Veritabanı bağlantısı
 

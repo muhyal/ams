@@ -1,5 +1,10 @@
 <?php
-global $db;
+global $resetPasswordDescription, $db, $showErrors, $siteName, $siteShortName, $siteUrl, $config;
+// Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
+$showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
+$showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
+require_once "config.php";
+
 session_start();
 // Oturum kontrolü
 if (!isset($_SESSION["admin_id"])) {
@@ -8,19 +13,11 @@ if (!isset($_SESSION["admin_id"])) {
 }
 
 require_once "db_connection.php"; // Veritabanı bağlantısı
-
 // Kullanıcı bilgilerini kullanabilirsiniz
 $admin_id = $_SESSION["admin_id"];
 $admin_username = $_SESSION["admin_username"];
-
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-require_once "config.php";
-global $siteName, $siteShortName, $siteUrl;
 require_once "admin_panel_header.php";
 ?>
-
 
     <div class="container-fluid">
     <div class="row">
@@ -49,12 +46,9 @@ if (isset($_GET['id'])) {
           WHERE students.id = ?";
 
 
-
-
     $stmt = $db->prepare($query);
     $stmt->execute([$student_id]);
     $student = $stmt->fetch(PDO::FETCH_ASSOC);
-
 
     if ($student) {
         // Öğrenci bilgilerini tablo içinde görüntülemek için HTML çıktısı oluşturun

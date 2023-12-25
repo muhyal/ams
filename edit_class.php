@@ -1,5 +1,10 @@
 <?php
-global $db;
+global $db, $showErrors, $siteName, $siteShortName, $siteUrl;
+// Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
+$showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
+$showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
+require_once "config.php";
+
 session_start();
 
 // Oturum kontrolü
@@ -14,11 +19,6 @@ require_once "db_connection.php"; // Veritabanı bağlantısı
 $admin_id = $_SESSION["admin_id"];
 $admin_username = $_SESSION["admin_username"];
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-require_once "config.php";
-global $siteName, $siteShortName, $siteUrl;
 require_once "admin_panel_header.php";
 
 

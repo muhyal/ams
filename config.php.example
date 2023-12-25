@@ -15,6 +15,8 @@ $siteName = 'Example';
 $siteShortName = 'OIM';
 $siteUrl = 'https://oim.example.com';
 $siteHeroDescription ='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus vel vestibulum erat. Aliquam nec diam nec justo sollicitudin imperdiet. Donec est mauris, viverra id dolor eget, convallis mollis massa. Cras commodo ligula hendrerit bibendum euismod.';
+$resetPasswordDescription = 'Şifrenizi sıfırlamak için sistemde kayıtlı e-posta adresinizi girin. E-posta adresiniz kayıtlı bir e-posta adresi ile eşleşir ise yeni şifrenizi belirleyebileceğiniz bir bağlantı gönderilecektir.';
+$siteVerifyDescription = 'Size gönderilen onay bağlantısı ile dijital olarak bütünlüğü bozulamaz bir şekilde sözleşmelerinizi kolayca onaylayabilirsiniz. SMS ve e-posta adreslerinize gönderilen bağlantılar sadece size özeldir ve şifrelenmiş olarak sistemlerimizde saklanmaktadır.';
 $agreementLink = 'https://oim.example.com/agreement.php';
 
 
@@ -26,3 +28,16 @@ $mailContentType = 'text/plain; charset=UTF-8';
 $BASE_URL = "https://BASEURL.api.infobip.com";
 $API_KEY = "APIKEY";
 $SENDER = "SENDERID";
+
+// Hata gösterme ayarını kontrol etmek için bir değişken
+$showErrors = true;
+
+// Eğer hata gösterme özelliği etkinse, hata mesajlarını göster
+if ($showErrors) {
+    ini_set('display_errors', 1);
+    ini_set('display_startup_errors', 1);
+} else {
+    // Hata gösterme özelliği devre dışı bırakılmışsa, hata mesajlarını gizle
+    ini_set('display_errors', 0);
+    ini_set('display_startup_errors', 0);
+}

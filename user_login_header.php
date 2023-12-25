@@ -1,9 +1,9 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+global $db, $showErrors, $siteName, $siteShortName, $siteUrl, $config;
+// Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
+$showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
+$showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
 require_once "config.php";
-global $siteName, $siteShortName, $siteUrl;
 // Oturum açıldıysa oturum değişkeni set edilir
 $loggedIn = isset($_SESSION["user_id"]);
 ?>
@@ -27,9 +27,7 @@ $loggedIn = isset($_SESSION["user_id"]);
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
                 <li><a href="<?php echo $siteUrl ?>" class="nav-link px-2 link-secondary"></a></li>
             </ul>
-            <!-- <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
-              <input type="search" class="form-control" placeholder="Ara..." aria-label="Ara">
-            </form> -->
+
             <div class="dropdown text-end">
                 <a href="<?php echo $siteUrl ?>" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                     <img src="/img/default_pp.png" alt="mdo" width="32" height="32" class="rounded-circle">

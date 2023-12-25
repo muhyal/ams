@@ -1,6 +1,10 @@
 <?php
-global $db;
-require_once "db_connection.php";
+global $db, $showErrors, $siteName, $siteShortName, $siteUrl;
+// Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
+$showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
+$showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
+
+require_once "config.php";require_once "db_connection.php";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id = $_POST["id"];
@@ -111,8 +115,6 @@ $teacherAcademies = $teacherAcademiesStmt->fetchAll(PDO::FETCH_COLUMN);
 
 }
 
-require_once "config.php";
-global $siteName, $siteShortName, $siteUrl;
 require_once "admin_panel_header.php";
 ?>
 <div class="container-fluid">
@@ -122,7 +124,7 @@ require_once "admin_panel_header.php";
         ?>
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
-                <h2>Öğretmen Düzenleme</h2>
+                <h2>Öğretmen Düzenle</h2>
             </div>
             <form method="post">
                 <input type="hidden" name="id" value="<?php echo $teacher["id"]; ?>">
@@ -184,9 +186,7 @@ require_once "admin_panel_header.php";
                     <button type="submit" name="update_courses">Dersleri Güncelle</button>
                 </form>
 
-
                 <button type="submit" name="edit_teacher">Öğretmeni Düzenle</button>
-
             </form>
 
             <a href="teachers_list.php">Öğretmen Listesi</a>

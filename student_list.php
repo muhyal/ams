@@ -1,5 +1,9 @@
 <?php
-global $db;
+global $db, $showErrors, $siteName, $siteShortName, $siteUrl, $config;
+// Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
+$showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
+$showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
+require_once "config.php";
 session_start();
 // Oturum kontrolü
 if (!isset($_SESSION["admin_id"])) {
@@ -13,11 +17,6 @@ require_once "db_connection.php"; // Veritabanı bağlantısı
 $admin_id = $_SESSION["admin_id"];
 $admin_username = $_SESSION["admin_username"];
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-require_once "config.php";
-global $siteName, $siteShortName, $siteUrl;
 require_once "admin_panel_header.php";
 
 // Öğrenci listesi sorgusu
@@ -69,14 +68,14 @@ $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <th>Veli E-Posta</th>
         <th>Acil Durumda Aranacak Kişi</th>
         <th>Acil Durumda Aranacak Kişi Telefonu</th>
-        <th>Kan Grubu</th> <!-- Yeni sütun -->
-        <th>Bilinen Rahatsızlık</th> <!-- Yeni sütun -->
+        <th>Kan Grubu</th>
+        <th>Bilinen Rahatsızlık</th>
         <th>İl</th>
         <th>İlçe</th>
         <th>Adres</th>
-        <th></th> <!-- Profil Bağlantısı -->
-        <th></th> <!-- Düzenleme Bağlantısı -->
-        <th></th> <!-- Silme Bağlantısı -->
+        <th>Profil</th> <!-- Profil Bağlantısı -->
+        <th>Düzenle</th> <!-- Düzenleme Bağlantısı -->
+        <th>Sil</th> <!-- Silme Bağlantısı -->
     </tr>
     </thead>
     <tbody>
@@ -91,14 +90,14 @@ $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <td><?php echo $student['email']; ?></td>
             <td><?php echo $student['parent_firstname'] . ' ' . $student['parent_lastname']; ?></td> <!-- Veli bilgisi -->
             <td><?php echo $student['parent_phone']; ?></td> <!-- Veli telefonu -->
-            <td><?php echo $student['parent_email']; ?></td> <!-- Veli telefonu -->
+            <td><?php echo $student['parent_email']; ?></td> <!-- Veli e-postası -->
             <td><?php echo $student['emergency_contact']; ?></td>
             <td><?php echo $student['emergency_phone']; ?></td>
-            <td><?php echo $student['blood_type']; ?></td> <!-- Yeni sütun -->
-            <td><?php echo $student['health_issue']; ?></td> <!-- Yeni sütun -->
-            <td><?php echo $student['city']; ?></td> <!-- Yeni sütun -->
-            <td><?php echo $student['district']; ?></td> <!-- Yeni sütun -->
-            <td><?php echo $student['address']; ?></td> <!-- Yeni sütun -->
+            <td><?php echo $student['blood_type']; ?></td>
+            <td><?php echo $student['health_issue']; ?></td>
+            <td><?php echo $student['city']; ?></td>
+            <td><?php echo $student['district']; ?></td>
+            <td><?php echo $student['address']; ?></td>
             <td><a href="student_profile.php?id=<?php echo $student['id']; ?>">Profil</a></td>
             <td><a href="edit_student.php?id=<?php echo $student['id']; ?>">Düzenle</a></td>
             <td><a href="delete_student.php?id=<?php echo $student['id']; ?>">Sil</a></td>

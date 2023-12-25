@@ -1,12 +1,18 @@
 <?php
-global $db;
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
+global $db, $siteVerifyDescription, $showErrors, $siteName, $siteShortName, $siteUrl, $config;
+// Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
+$showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
+$showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
+require_once "config.php";
 require_once "db_connection.php"; // Veritabanı bağlantısı
-
-if ((isset($_GET['email'])  || isset($_GET['phone']) )&& isset($_GET['code'])) {
+require_once "user_login_header.php";
+?>
+    <div class="px-4 py-5 my-5 text-center">
+        <div class="col-lg-6 mx-auto">
+            <p class="lead mb-4"><?php echo $siteVerifyDescription ?></p>
+            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+ <?php
+   if ((isset($_GET['email'])  || isset($_GET['phone']) )&& isset($_GET['code'])) {
 	$userSmsData=null;
 	$userEmailData=null;
 	    $verificationCode = $_GET['code'];
@@ -63,4 +69,10 @@ if (isset($userEmailData)) {
 if (isset($userSmsData)) {
     echo '<br><a href="verify.php?phone='.$userSmsData['phone'].'&code='.$verificationCode.'">SMS doğrulamasını tekrarla (Opsiyonel)</a>';
 }
+?>
+        </div>
+    </div>
+</div>
+<?php
+require_once "footer.php";
 ?>

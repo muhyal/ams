@@ -1,8 +1,9 @@
 <?php
-global $db, $siteUrl, $siteName, $siteShortName;
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+global $db, $showErrors, $siteName, $siteShortName, $siteUrl;
+// Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
+$showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
+$showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
+require_once "config.php";
 
 session_start();
 
@@ -21,8 +22,6 @@ use PHPMailer\PHPMailer\Exception;
 
 //Load Composer's autoloader
 require 'vendor/autoload.php';
-
-require 'config.php';
 
 use Infobip\Api\SmsApi;
 use Infobip\Configuration;
@@ -194,14 +193,18 @@ function sendVerificationSms($to, $verificationCode, $firstname, $lastname) {
 
 require_once "admin_panel_header.php";
 ?>
-
-<body>
-<nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
-    <!-- Navbar kodları burada -->
-</nav>
-
 <div class="container-fluid">
-    <!-- Yeniden doğrulama isteği formu -->
+    <div class="row">
+
+        <?php
+        require_once "admin_panel_sidebar.php";
+        ?>
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+                <h2>Doğrulamayı Tekrar Gönder</h2>
+            </div>
+            <!-- Yeniden doğrulama isteği formu -->
     <form method="post" action="">
         <label class="form-label" for="email">E-posta:</label>
         <input class="form-control" type="email" name="email" value="<?php echo htmlspecialchars($email); ?>" required><br>
@@ -233,13 +236,8 @@ require_once "admin_panel_header.php";
         </div>
     <?php endif; ?>
 
-    <!-- Diğer sayfa içeriği ve kodları -->
 </div>
-
-<!-- Bootstrap ve diğer JavaScript kodları burada -->
 
 <?php
 require_once "footer.php";
 ?>
-</body>
-</html>

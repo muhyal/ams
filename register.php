@@ -1,8 +1,9 @@
 <?php
-global $db, $siteUrl, $siteName, $siteShortName;
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+global $db, $showErrors, $siteName, $siteShortName, $siteUrl;
+// Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
+$showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
+$showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
+require_once "config.php";
 
 session_start();
 
@@ -21,8 +22,6 @@ use PHPMailer\PHPMailer\Exception;
 
 //Load Composer's autoloader
 require 'vendor/autoload.php';
-
-require 'config.php';
 
 use Infobip\Api\SmsApi;
 use Infobip\Configuration;

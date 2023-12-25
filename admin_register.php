@@ -1,5 +1,17 @@
 <?php
+global $db, $showErrors, $siteName, $siteShortName, $siteUrl;
 session_start();
+// Oturum kontrolü
+if (!isset($_SESSION["admin_id"])) {
+    header("Location: admin_login.php"); // Giriş sayfasına yönlendir
+    exit();
+}
+require_once "db_connection.php";
+require_once "config.php";
+require_once "admin_panel_header.php";
+// Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
+$showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
+$showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
 
 $allowedRoles = array(1); // "sa" rolü için rol değeri (örneğin 1)
 $currentUserRole = $_SESSION['admin_role'];
@@ -8,13 +20,6 @@ if (!in_array($currentUserRole, $allowedRoles)) {
     header("Location: access_denied.php");
     exit;
 }
-
-// Kullanıcı bilgilerini kullanabilirsiniz
-$admin_id = $_SESSION["admin_id"];
-$admin_username = $_SESSION["admin_username"];
-require_once "config.php";
-global $siteName, $siteShortName, $siteUrl;
-require_once "admin_panel_header.php";
 ?>
     <div class="container-fluid">
     <div class="row">

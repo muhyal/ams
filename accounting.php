@@ -1,16 +1,17 @@
 <?php
+global $db, $showErrors, $siteName, $siteShortName, $siteUrl;
 session_start();
-
 // Oturum kontrolü
 if (!isset($_SESSION["admin_id"])) {
     header("Location: admin_login.php"); // Giriş sayfasına yönlendir
     exit();
 }
-
-global $db;
 require_once "db_connection.php";
 require_once "config.php";
-global $siteName, $siteShortName, $siteUrl;
+require_once "admin_panel_header.php";
+// Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
+$showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
+$showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
 
 // Form gönderildi mi kontrolü
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -49,8 +50,6 @@ $courses = $stmt_courses->fetchAll(PDO::FETCH_ASSOC);
 $sql_academies = "SELECT * FROM academies";
 $stmt_academies = $db->query($sql_academies);
 $academies = $stmt_academies->fetchAll(PDO::FETCH_ASSOC);
-
-require_once "admin_panel_header.php";
 ?>
     <div class="container-fluid">
     <div class="row">

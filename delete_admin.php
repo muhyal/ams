@@ -1,6 +1,7 @@
 <?php
 global $db;
 require_once "db_connection.php";
+require_once "admin_panel_header.php";
 
 session_start();
 
@@ -36,22 +37,24 @@ if (isset($_GET["id"])) {
     }
 }
 ?>
-
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Yönetici Sil</title>
-</head>
-<body>
-<h1>Yönetici Sil</h1>
+    <div class="container-fluid">
+    <div class="row">
+<?php
+require_once "admin_panel_sidebar.php";
+?>
+    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
+        <h2>Yönetici Sil</h2>
+    </div>
 
 <p>Yöneticiyi silmek istediğinizden emin misiniz?</p>
 <p>Kullanıcı Adı: <?php echo $admin['username']; ?></p>
-<p>Email: <?php echo $admin['email']; ?></p>
+<p>E-posta: <?php echo $admin['email']; ?></p>
 <form method="post" action="">
     <input type="hidden" name="confirm" value="yes">
     <button type="submit">Evet, Sil</button>
     <a href="admin_list.php">Hayır, İptal</a>
 </form>
-</body>
-</html>
+<?php
+require_once "footer.php";
+?>
