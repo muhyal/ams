@@ -9,19 +9,26 @@ require_once "config.php";
 require_once "admin_login_header.php";
 ?>
 
-   <form class="form-signin" method="post" action="admin_login_process.php">
-      <h1 class="h3 mb-3 font-weight-normal">Oturum aç</h1>
+<form class="form-signin" method="post" action="admin_login_process.php">
+    <!-- CSRF Token -->
+    <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
 
-        <label for="username" class="sr-only">Kullanıcı adı</label>
-        <input type="text" id="username" name="username" placeholder="Kullanıcı adı" class="form-control" required="" autofocus=""><br>
+    <h1 class="h3 mb-3 font-weight-normal">Oturum aç</h1>
 
-        <label for="password" class="sr-only">Şifre</label>
-        <input type="password" id="password" name="password" placeholder="Şifre" class="form-control" required=""><br>
+    <label for="identifier" class="sr-only">Kullanıcı adı veya E-posta</label>
+    <input type="text" id="identifier" name="identifier" placeholder="Kullanıcı adı veya E-posta" class="form-control" required autofocus=""><br>
 
-       <p><a href="admin_reset_password.php">Şifremi unuttum</a></p>
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Oturum aç</button>
-   <p class="mt-5 mb-3 text-muted">© <?php echo (new DateTime())->format('Y') ?>, <?php echo $siteName ?>.</p>
-    </form>
+
+    <label for="password" class="sr-only">Şifre</label>
+    <input type="password" id="password" name="password" placeholder="Şifre" class="form-control" required=""><br>
+
+    <p><a href="admin_reset_password.php">Şifremi unuttum</a></p>
+
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Oturum aç</button>
+
+    <p class="mt-5 mb-3 text-muted">© <?php echo (new DateTime())->format('Y') ?>, <?php echo $siteName ?>.</p>
+</form>
+
 
 <?php
 require_once "footer.php";

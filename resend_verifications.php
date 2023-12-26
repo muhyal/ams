@@ -122,7 +122,7 @@ function sendVerificationEmail($to, $verificationCode, $firstname, $lastname) {
         $mail->setFrom($config['smtp']['username'], 'OİM');
         $mail->addAddress($to);
 
-        $mail->Subject = 'Hesap Doğrulama';
+        $mail->Subject = 'Kayıt Doğrulama';
 
         // Parametreleri şifrele
         $encryptedEmail = $to;
@@ -131,7 +131,7 @@ function sendVerificationEmail($to, $verificationCode, $firstname, $lastname) {
         // Gizli bağlantı oluştur
         $verificationLink = getVerificationLink($encryptedEmail, $encryptedCode);
 
-        $mail->Body = "Sayın $firstname $lastname, $siteName kaydınızı doğrulamanız ve sözleşmeleri okuyup onaylamanız gerekmektedir. Sözleşmeleri görüntüleyin: $agreementLink Sözleşmeleri onaylayın (Bağlantı açıldığında sözleşmeler otomatik onaylanacaktır): $verificationLink";
+        $mail->Body = "Sayın $firstname $lastname, $siteName kaydınızı doğrulamanız ve sözleşmeleri okuyup onaylamanız gerekmektedir. Sözleşmeleri okumak için: $agreementLink - Sözleşmeleri onaylamak için (Bağlantı açıldığında sözleşmeler otomatik onaylanacaktır): $verificationLink";
 
         // E-postayı gönder
         $mail->send();

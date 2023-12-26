@@ -14,9 +14,7 @@ $loggedIn = isset($_SESSION["user_id"]);
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?php echo $siteName ?> - <?php echo $siteShortName ?></title>
     <link href="/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Custom styles for this template -->
     <link href="/css/oim.css" rel="stylesheet"></head>
-<!-- Custom styles for this template -->
 <body>
 <header class="p-3 mb-3 border-bottom">
     <div class="container">
@@ -27,7 +25,6 @@ $loggedIn = isset($_SESSION["user_id"]);
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
                 <li><a href="<?php echo $siteUrl ?>" class="nav-link px-2 link-secondary"></a></li>
             </ul>
-
             <div class="dropdown text-end">
                 <a href="<?php echo $siteUrl ?>" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                     <img src="/img/default_pp.png" alt="mdo" width="32" height="32" class="rounded-circle">

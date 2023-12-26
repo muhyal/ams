@@ -95,10 +95,10 @@ function sendVerificationEmail($to, $verificationCode, $firstname, $lastname) {
         $mail->ContentType = $config['smtp']['mailContentType'];
 
         // E-posta ayarları
-        $mail->setFrom($config['smtp']['username'], 'OİM');
+        $mail->setFrom($config['smtp']['username'], $siteName);
         $mail->addAddress($to);
 
-        $mail->Subject = 'Hesap Doğrulama';
+        $mail->Subject = '=?UTF-8?B?' . base64_encode('Sözleşme Onayı') . '?='; // Encode subject in UTF-8
 
         // Parametreleri şifrele
         $encryptedEmail = $to;
@@ -107,7 +107,7 @@ function sendVerificationEmail($to, $verificationCode, $firstname, $lastname) {
         // Gizli bağlantı oluştur
         $verificationLink = getVerificationLink($encryptedEmail, $encryptedCode);
 
-        $mail->Body = "Sayın $firstname $lastname, $siteName kaydınızı doğrulamanız ve sözleşmeleri okuyup onaylamanız gerekmektedir. Sözleşmeleri görüntüleyin: $agreementLink Sözleşmeleri onaylayın (Bağlantı açıldığında sözleşmeler otomatik onaylanacaktır): $verificationLink";
+        $mail->Body = "Sayın $firstname $lastname, $siteName kaydınızı doğrulamanız ve sözleşmeleri okuyup onaylamanız gerekmektedir. Sözleşmeleri okuyun: $agreementLink - Sözleşmeleri onaylayın (Bağlantı açıldığında sözleşmeler otomatik onaylanacaktır): $verificationLink";
 
         // E-postayı gönder
         $mail->send();
@@ -138,7 +138,7 @@ function sendVerificationSms($to, $verificationCode, $firstname, $lastname) {
     // Gizli bağlantı oluştur
     $verificationLink = getVerificationLink($encryptedPhone, $encryptedCode,"phone");
 
-    $message = new SmsTextualMessage(destinations: [$destination], from: $SENDER, text: "Sayın $firstname $lastname, $siteName kaydınızı doğrulamanız ve sözleşmeleri okuyup onaylamanız gerekmektedir. Sözleşmeleri görüntüleyin: $agreementLink Sözleşmeleri onaylayın (Bağlantı açıldığında sözleşmeler otomatik onaylanacaktır): $verificationLink");
+    $message = new SmsTextualMessage(destinations: [$destination], from: $SENDER, text: "Sayın $firstname $lastname, $siteName kaydınızı doğrulamanız ve sözleşmeleri okuyup onaylamanız gerekmektedir. Sözleşmeleri okumak için: $agreementLink - Sözleşmeleri onaylamak için (Bağlantı açıldığında sözleşmeler otomatik onaylanacaktır): $verificationLink");
 
     $request = new SmsAdvancedTextualRequest(messages: [$message]);
 
