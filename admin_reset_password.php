@@ -1,11 +1,5 @@
 <?php
-global $db, $showErrors, $siteName, $siteShortName, $siteUrl;
-session_start();
-// Oturum kontrolü
-if (!isset($_SESSION["admin_id"])) {
-    header("Location: admin_login.php"); // Giriş sayfasına yönlendir
-    exit();
-}
+global $db, $showErrors, $siteName, $siteShortName, $siteUrl, $config;
 require_once "db_connection.php";
 require_once "config.php";
 require_once "admin_panel_header.php";
