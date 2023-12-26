@@ -54,12 +54,12 @@ if (isset($_POST["reset_request"])) {
             $mail->ContentType = $config['smtp']['mailContentType'];
 
             // E-posta ayarları
-            $mail->setFrom($config['smtp']['username'], 'OİM');
+            $mail->setFrom($config['smtp']['username'], $siteName);
             $mail->addAddress($email, $user["firstname"]); // Alıcı adresi ve adı
 
             $mail->isHTML(true);
-            $mail->Subject = 'Şifre Sıfırlama Talebi';
-            $mail->Body    = "Şifrenizi sıfırlamak için aşağıdaki bağlantıya tıklayın:<br><a href='$resetLink'>$resetLink</a>";
+            $mail->Subject = '=?UTF-8?B?' . base64_encode('Şifre Sıfırlama Talebi') . '?='; // Encode subject in UTF-8
+            $mail->Body    = "Merhaba, eğer bu şifre sıfırlama isteğini siz talep ettiyseniz, <a href='$siteUrl/$resetLink'>şifrenizi sıfırlamak için tıklayın</a>. Siz talep etmediyseniz farklı bir işlem yapmanız gerekmeyecektir.";
 
             $mail->send();
 
@@ -92,11 +92,11 @@ if (isset($_POST["reset_request"])) {
             $updateStmt = $db->prepare($updateQuery);
             $updateStmt->execute([$hashedPassword, $user["id"]]);
 
-            echo "Şifreniz başarıyla güncellendi ve giriş ekranına yönlendiriliyorsunuz...";
+            echo "Şifreniz başarıyla güncellendi ve oturum açma ekranına yönlendiriliyorsunuz...";
             header("refresh:3;url=user_login.php"); // 3 saniye sonra login.php'ye yönlendirme
         }
     } else {
-        echo "Geçersiz veya süresi dolmuş bir şifre sıfırlama bağlantısı.";
+        echo "Geçersiz ya da süresi dolmuş bir şifre sıfırlama bağlantısı.";
     }
 }
 require_once "user_login_header.php";

@@ -1,5 +1,5 @@
 <?php
-global $db, $showErrors, $siteName, $siteShortName, $siteUrl, $config;
+global $resetPasswordDescription, $db, $showErrors, $siteName, $siteShortName, $siteUrl, $config;
 require_once "db_connection.php";
 require_once "config.php";
 require_once "admin_panel_header.php";
@@ -53,12 +53,12 @@ if (isset($_POST["reset_request"])) {
             $mail->ContentType = $config['smtp']['mailContentType'];
 
             // E-posta ayarları
-            $mail->setFrom($config['smtp']['username'], 'Admin Paneli');
+            $mail->setFrom($config['smtp']['username'], $siteName);
             $mail->addAddress($email, $admin["username"]); // Alıcı adresi ve adı
 
             $mail->isHTML(true);
-            $mail->Subject = 'Şifre Sıfırlama Talebi (Admin)';
-            $mail->Body    = "Şifrenizi sıfırlamak için aşağıdaki bağlantıya tıklayın:<br><a href='$resetLink'>$resetLink</a>";
+            $mail->Subject = '=?UTF-8?B?' . base64_encode('Yönetici Şifre Sıfırlama Talebi') . '?='; // Encode subject in UTF-8
+            $mail->Body    = "Merhaba, eğer bu şifre sıfırlama isteğini siz talep ettiyseniz, <a href='$siteUrl/$resetLink'>şifrenizi sıfırlamak için tıklayın</a>. Siz talep etmediyseniz farklı bir işlem yapmanız gerekmeyecektir.";
 
             $mail->send();
 
@@ -67,7 +67,7 @@ if (isset($_POST["reset_request"])) {
             echo "E-posta gönderilirken bir hata oluştu: {$mail->ErrorInfo}";
         }
     } else {
-        echo "Bu e-posta adresine sahip bir admin bulunamadı.";
+        echo "Bu e-posta adresine sahip bir yönetici bulunamadı.";
     }
 
 } elseif (isset($_GET["token"])) {
