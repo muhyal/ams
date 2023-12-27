@@ -42,44 +42,81 @@ $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <h2>Öğrenci Listesi</h2>
             </div>
 
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: left;
-        }
-    </style>
+            <style>
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    overflow-x: auto;
+                    background-color: #f8f9fa; /* Arka plan rengi */
+                }
 
-<table>
+                th, td {
+                    border: 1px solid #dee2e6; /* Kenarlık rengi */
+                    padding: 12px;
+                    text-align: left;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Hafif gölgelendirme */
+                }
+
+                th {
+                    background-color: #6b6b6b; /* Başlık arka plan rengi */
+                    color: #ffffff; /* Başlık metin rengi */
+                }
+
+                tbody tr:nth-child(even) {
+                    background-color: #f2f2f2; /* Sıra arka plan rengi */
+                }
+
+                tbody tr:hover {
+                    background-color: #e9ecef; /* Hover efekti arka plan rengi */
+                }
+
+                .action-buttons {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                }
+
+                .action-buttons a {
+                    display: block;
+                    margin-bottom: 5px;
+                    padding: 8px;
+                    text-align: center;
+                    background-color: #007bff; /* Buton arka plan rengi */
+                    color: #ffffff; /* Buton metin rengi */
+                    text-decoration: none;
+                    border-radius: 5px;
+                }
+
+                .action-buttons a:hover {
+                    background-color: #0056b3; /* Hover efekti arka plan rengi */
+                }
+            </style>
+
+
+            <table>
     <thead>
     <tr>
         <th>Öğrenci Adı</th>
         <th>Öğrenci Soyadı</th>
-        <th>Öğrenci TC Kimlik No</th>
+        <th>Öğrenci T.C. Kimlik No</th>
         <th>Doğum Tarihi</th>
         <th>Öğrenci Cep Telefonu</th>
         <th>Öğrenci E-posta</th>
-        <th>Veli Ad Soyad</th>
-        <th>Veli Telefon</th>
-        <th>Veli E-Posta</th>
-        <th>Acil Durumda Aranacak Kişi</th>
-        <th>Acil Durumda Aranacak Kişi Telefonu</th>
-        <th>Kan Grubu</th>
-        <th>Bilinen Rahatsızlık</th>
-        <th>İl</th>
-        <th>İlçe</th>
-        <th>Adres</th>
-        <th>Profil</th> <!-- Profil Bağlantısı -->
-        <th>Düzenle</th> <!-- Düzenleme Bağlantısı -->
-        <th>Sil</th> <!-- Silme Bağlantısı -->
-    </tr>
-    </thead>
-    <tbody>
-    <!-- Öğrenci bilgilerini listeleyen döngü -->
+        <!-- <th>Veli Ad Soyad</th>
+         <th>Veli Telefon</th>
+         <th>Veli E-Posta</th>
+           <th>Acil Durumda Aranacak Kişi</th>
+           <th>Acil Durumda Aranacak Kişi Telefonu</th>
+           <th>Kan Grubu</th>
+           <th>Bilinen Rahatsızlık</th>
+           <th>İl</th>
+           <th>İlçe</th>
+           <th>Adres</th>-->
+          <th>İşlemler</th>
+      </tr>
+      </thead>
+      <tbody>
+      <!-- Öğrenci bilgilerini listeleyen döngü -->
     <?php foreach ($students as $student): ?>
         <tr>
             <td><?php echo $student['firstname']; ?></td>
@@ -88,19 +125,23 @@ $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <td><?php echo $student['birthdate']; ?></td>
             <td><?php echo $student['phone']; ?></td>
             <td><?php echo $student['email']; ?></td>
-            <td><?php echo $student['parent_firstname'] . ' ' . $student['parent_lastname']; ?></td> <!-- Veli bilgisi -->
-            <td><?php echo $student['parent_phone']; ?></td> <!-- Veli telefonu -->
-            <td><?php echo $student['parent_email']; ?></td> <!-- Veli e-postası -->
-            <td><?php echo $student['emergency_contact']; ?></td>
+            <!--<td><?php echo $student['parent_firstname'] . ' ' . $student['parent_lastname']; ?></td>
+            <td><?php echo $student['parent_phone']; ?></td>
+            <td><?php echo $student['parent_email']; ?></td>
+             <td><?php echo $student['emergency_contact']; ?></td>
             <td><?php echo $student['emergency_phone']; ?></td>
             <td><?php echo $student['blood_type']; ?></td>
             <td><?php echo $student['health_issue']; ?></td>
             <td><?php echo $student['city']; ?></td>
             <td><?php echo $student['district']; ?></td>
-            <td><?php echo $student['address']; ?></td>
-            <td><a href="student_profile.php?id=<?php echo $student['id']; ?>">Profil</a></td>
-            <td><a href="edit_student.php?id=<?php echo $student['id']; ?>">Düzenle</a></td>
-            <td><a href="delete_student.php?id=<?php echo $student['id']; ?>">Sil</a></td>
+            <td><?php echo $student['address']; ?></td>-->
+            <td>
+                <a class="btn btn-primary" href="student_profile.php?id=<?php echo $student['id']; ?>"><i class="fas fa-user"></i></a>
+                <a class="btn btn-warning" href="edit_student.php?id=<?php echo $student['id']; ?>"><i class="fas fa-edit"></i></a>
+                <a class="btn btn-danger" href="delete_student.php?id=<?php echo $student['id']; ?>"><i class="fas fa-trash-alt"></i></a>
+            </td>
+
+
         </tr>
     <?php endforeach; ?>
     </tbody>
