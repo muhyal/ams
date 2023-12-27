@@ -27,47 +27,43 @@ $academies = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <h2>Tüm Akademiler ve Öğrencileri</h2>
             </div>
 
-            <table class="table">
-                <thead>
-                <tr>
-                    <th>Akademi Adı</th>
-                    <th>İl</th>
-                    <th>İlçe</th>
-                    <th>Adres</th>
-                    <th>E-posta</th>
-                    <th>Çalışma Saatleri</th>
-                    <th>Öğrenciler</th>
-                </tr>
-                </thead>
-                <tbody>
+            <div class="card-columns">
                 <?php foreach ($academies as $academy): ?>
-                    <tr>
-                        <td><?php echo $academy["name"]; ?></td>
-                        <td><?php echo $academy["city"]; ?></td>
-                        <td><?php echo $academy["district"]; ?></td>
-                        <td><?php echo $academy["address"]; ?></td>
-                        <td><?php echo $academy["email"]; ?></td>
-                        <td><?php echo $academy["working_hours"]; ?></td>
-                        <td>
-                            <?php
-                            $academyId = $academy["id"];
-                            $studentsInAcademyQuery = "SELECT students.* FROM students
-                                                      INNER JOIN academy_students ON students.id = academy_students.student_id
-                                                      WHERE academy_students.academy_id = ?";
-                            $studentsInAcademyStmt = $db->prepare($studentsInAcademyQuery);
-                            $studentsInAcademyStmt->execute([$academyId]);
-                            $studentsInAcademy = $studentsInAcademyStmt->fetchAll(PDO::FETCH_ASSOC);
-                            foreach ($studentsInAcademy as $student) {
-                                echo $student["firstname"] . " " . $student["lastname"] . "<br>";
-                            }
-                            ?>
-                        </td>
-                    </tr>
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title"><?php echo $academy["name"]; ?></h5>
+                            <p class="card-text">
+                                İl: <?php echo $academy["city"]; ?><br>
+                                İlçe: <?php echo $academy["district"]; ?><br>
+                                Adres: <?php echo $academy["address"]; ?><br>
+                                E-posta: <?php echo $academy["email"]; ?><br>
+                                Çalışma Saatleri: <?php echo $academy["working_hours"]; ?>
+                            </p>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <strong>Öğrenciler:</strong><br>
+                                <?php
+                                $academyId = $academy["id"];
+                                $studentsInAcademyQuery = "SELECT students.* FROM students
+                                                          INNER JOIN academy_students ON students.id = academy_students.student_id
+                                                          WHERE academy_students.academy_id = ?";
+                                $studentsInAcademyStmt = $db->prepare($studentsInAcademyQuery);
+                                $studentsInAcademyStmt->execute([$academyId]);
+                                $studentsInAcademy = $studentsInAcademyStmt->fetchAll(PDO::FETCH_ASSOC);
+                                foreach ($studentsInAcademy as $student) {
+                                    echo $student["firstname"] . " " . $student["lastname"] . "<br>";
+                                }
+                                ?>
+                            </li>
+                        </ul>
+                    </div>
                 <?php endforeach; ?>
-                </tbody>
-            </table>
+            </div>
         </main>
     </div>
 </div>
+
+
 
 <?php require_once "footer.php"; ?>
