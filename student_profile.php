@@ -21,13 +21,12 @@ require_once "admin_panel_header.php";
 
     <div class="container-fluid">
     <div class="row">
+
 <?php
 require_once "admin_panel_sidebar.php";
 ?>
     <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
-        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
-            <h2>Öğrenci Profili</h2>
-        </div>
+
 
 <?php
 // Öğrenci ID'sini URL'den alın
@@ -51,27 +50,47 @@ if (isset($_GET['id'])) {
     $student = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($student) {
-        // Öğrenci bilgilerini tablo içinde görüntülemek için HTML çıktısı oluşturun
-        echo "<table border='1'>";
-        echo "<tr><td>Ad</td><td>Soyad</td><td>T.C. Kimlik No</td><td>Cep Telefonu</td><td>E-posta</td><td>Veli Adı Soyadı</td><td>Veli Telefonu</td><td>Veli E-posta</td><td>Acil Durum Kişi</td><td>Acil Durum Telefonu</td><td>Kan Grubu</td><td>Rahatsızlık</td><td>İl</td><td>İlçe</td><td>Adres</td></tr>";
-        echo "<tr>";
-        echo "<td>" . $student['firstname'] . "</td>";
-        echo "<td>" . $student['lastname'] . "</td>";
-        echo "<td>" . $student['tc_identity'] . "</td>";
-        echo "<td>" . $student['phone'] . "</td>";
-        echo "<td>" . $student['email'] . "</td>";
-        echo "<td>" . $student['parent_firstname'] . ' ' . $student['parent_lastname'] . "</td>";
-        echo "<td>" . $student['parent_phone'] . "</td>";
-        echo "<td>" . $student['parent_email'] . "</td>";
-        echo "<td>" . $student['emergency_contact'] . "</td>";
-        echo "<td>" . $student['emergency_phone'] . "</td>";
-        echo "<td>" . $student['blood_type'] . "</td>";
-        echo "<td>" . $student['health_issue'] . "</td>";
-        echo "<td>" . $student['city'] . "</td>";
-        echo "<td>" . $student['district'] . "</td>";
-        echo "<td>" . $student['address'] . "</td>";
-        echo "</tr>";
-        echo "</table>";
+        ?>
+
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group mr-2">
+                            <button onclick="history.back()" class="btn btn-sm btn-outline-secondary">Geri dön</button>
+                            <a href="student_list.php" class="btn btn-sm btn-outline-secondary">Öğrenci Listesi</a>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+<br>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-subtitle"><?php echo $student['firstname']; ?> <?php echo $student['lastname']; ?> için öğrenci bilgileri</h3>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><strong>Ad:</strong> <?php echo $student['firstname']; ?></li>
+                    <li class="list-group-item"><strong>Soyad:</strong> <?php echo $student['lastname']; ?></li>
+                    <li class="list-group-item"><strong>T.C. Kimlik No:</strong> <?php echo $student['tc_identity']; ?></li>
+                    <li class="list-group-item"><strong>Cep Telefonu:</strong> <?php echo $student['phone']; ?></li>
+                    <li class="list-group-item"><strong>E-posta:</strong> <?php echo $student['email']; ?></li>
+                    <li class="list-group-item"><strong>Veli Adı Soyadı:</strong> <?php echo $student['parent_firstname'] . ' ' . $student['parent_lastname']; ?></li>
+                    <li class="list-group-item"><strong>Veli Telefonu:</strong> <?php echo $student['parent_phone']; ?></li>
+                    <li class="list-group-item"><strong>Veli E-posta:</strong> <?php echo $student['parent_email']; ?></li>
+                    <li class="list-group-item"><strong>Acil Durum Kişi:</strong> <?php echo $student['emergency_contact']; ?></li>
+                    <li class="list-group-item"><strong>Acil Durum Telefonu:</strong> <?php echo $student['emergency_phone']; ?></li>
+                    <li class="list-group-item"><strong>Kan Grubu:</strong> <?php echo $student['blood_type']; ?></li>
+                    <li class="list-group-item"><strong>Rahatsızlık:</strong> <?php echo $student['health_issue']; ?></li>
+                    <li class="list-group-item"><strong>İl:</strong> <?php echo $student['city']; ?></li>
+                    <li class="list-group-item"><strong>İlçe:</strong> <?php echo $student['district']; ?></li>
+                    <li class="list-group-item"><strong>Adres:</strong> <?php echo $student['address']; ?></li>
+                </ul>
+            </div>
+        </div>
+        <?php
     } else {
         echo "Öğrenci bulunamadı.";
     }
@@ -80,6 +99,8 @@ if (isset($_GET['id'])) {
 }
 ?>
 
-<?php
-require_once "footer.php";
-?>
+        <?php
+        require_once "footer.php";
+        ?>
+
+
