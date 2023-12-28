@@ -10,7 +10,6 @@ if (!isset($_SESSION["admin_id"])) {
 
 require_once "db_connection.php";
 require_once "config.php";
-require_once "admin_panel_header.php";
 
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
@@ -89,17 +88,11 @@ if (isset($_GET["edit"])) {
     $editStmt = $db->prepare($editQuery);
     $editStmt->execute([$editAcademyId]);
     $editAcademy = $editStmt->fetch(PDO::FETCH_ASSOC);
-
-    // Akademide görev yapan öğretmenleri getir
-    $teachersInAcademyQuery = "SELECT teachers.* FROM teachers
-                              INNER JOIN academy_teachers ON teachers.id = academy_teachers.teacher_id
-                              WHERE academy_teachers.academy_id = ?";
-    $teachersInAcademyStmt = $db->prepare($teachersInAcademyQuery);
-    $teachersInAcademyStmt->execute([$editAcademyId]);
-    $teachersInAcademy = $teachersInAcademyStmt->fetchAll(PDO::FETCH_ASSOC);
 }
 ?>
-
+<?php
+require_once "admin_panel_header.php";
+?>
 <div class="container-fluid">
     <div class="row">
         <?php require_once "admin_panel_sidebar.php"; ?>
@@ -212,14 +205,6 @@ if (isset($_GET["edit"])) {
         <button type="submit" name="edit_academy" class="btn btn-primary">Akademi Düzenle</button>
     </form>
 
-
-    <!-- Akademide Görev Yapan Öğretmenler -->
-    <h3 id="teachersHeader">Akademi Öğretmenleri</h3>
-    <ul id="teachersList">
-        <?php foreach ($teachersInAcademy as $teacher): ?>
-            <li><?php echo $teacher["first_name"] . " " . $teacher["last_name"]; ?></li>
-        <?php endforeach; ?>
-    </ul>
     <?php
 }
 ?>
