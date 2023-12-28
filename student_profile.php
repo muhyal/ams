@@ -16,9 +16,10 @@ require_once "db_connection.php"; // Veritabanı bağlantısı
 // Kullanıcı bilgilerini kullanabilirsiniz
 $admin_id = $_SESSION["admin_id"];
 $admin_username = $_SESSION["admin_username"];
+?>
+<?php
 require_once "admin_panel_header.php";
 ?>
-
     <div class="container-fluid">
     <div class="row">
 

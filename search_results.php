@@ -41,18 +41,9 @@ $stmt = $db->prepare($query);
 $stmt->bindValue(":searchQuery", "%$searchQuery%");
 $stmt->execute();
 $searchResults = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-require_once "admin_panel_header.php";
 ?>
-<div class="container-fluid">
-    <div class="row">
-        <?php
-        require_once "admin_panel_sidebar.php";
-        ?>
-        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
-                <h2>Arama Sonuçları</h2>
-            </div>
+
+<h2>Arama Sonuçları</h2>
 
 <?php if (empty($searchResults)) { ?>
     <p>Hiçbir sonuç bulunamadı.</p>
@@ -71,10 +62,25 @@ require_once "admin_panel_header.php";
                 <?php } elseif ($searchType === "course") { ?>
                     Ders: <?php echo $result['course_name']; ?>
                 <?php } ?>
+
+                <!-- Düzenleme ve Silme Bağlantıları -->
+                <?php if ($searchType === "user") { ?>
+                    <a href="edit_user.php?id=<?php echo $result['id']; ?>">Düzenle</a>
+                    <a href="delete_user.php?id=<?php echo $result['id']; ?>" onclick="return confirm('Bu kullanıcıyı silmek istediğinizden emin misiniz?')">Sil</a>
+                <?php } elseif ($searchType === "student") { ?>
+                    <a href="edit_student.php?id=<?php echo $result['id']; ?>">Düzenle</a>
+                    <a href="delete_student.php?id=<?php echo $result['id']; ?>" onclick="return confirm('Bu öğrenciyi silmek istediğinizden emin misiniz?')">Sil</a>
+                <?php } elseif ($searchType === "class") { ?>
+                    <a href="edit_class.php?id=<?php echo $result['id']; ?>">Düzenle</a>
+                    <a href="delete_class.php?id=<?php echo $result['id']; ?>" onclick="return confirm('Bu sınıfı silmek istediğinizden emin misiniz?')">Sil</a>
+                <?php } elseif ($searchType === "teacher") { ?>
+                    <a href="edit_teacher.php?id=<?php echo $result['id']; ?>">Düzenle</a>
+                    <a href="delete_teacher.php?id=<?php echo $result['id']; ?>" onclick="return confirm('Bu öğretmeni silmek istediğinizden emin misiniz?')">Sil</a>
+                <?php } elseif ($searchType === "course") { ?>
+                    <a href="edit_course?id=<?php echo $result['id']; ?>">Düzenle</a>
+                    <a href="delete_course.php?id=<?php echo $result['id']; ?>" onclick="return confirm('Bu dersi silmek istediğinizden emin misiniz?')">Sil</a>
+                <?php } ?>
             </li>
         <?php } ?>
     </ul>
 <?php } ?>
-<?php
-require_once "footer.php";
-?>

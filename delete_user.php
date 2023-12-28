@@ -18,14 +18,12 @@ require_once "db_connection.php"; // Veritabanı bağlantısı
 $admin_id = $_SESSION["admin_id"];
 $admin_username = $_SESSION["admin_username"];
 
-require_once "admin_panel_header.php";
-
 // Silme işlemi için formdan gelen ID'yi alın
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["id"])) {
     $userId = $_POST["id"];
 
-    // Kullanıcıyı silme işlemini gerçekleştirin
-    $deleteQuery = "DELETE FROM users WHERE id = ?";
+    // Kullanıcının deleted_at sütunu üzerine silme tarihini güncelle
+    $deleteQuery = "UPDATE users SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?";
     $stmt = $db->prepare($deleteQuery);
     $stmt->execute([$userId]);
 
@@ -43,35 +41,31 @@ if (isset($_GET["id"])) {
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 }
 ?>
-
-<div class="container-fluid">
-    <div class="row">
-        <?php
-        require_once "admin_panel_sidebar.php";
-        ?>
-        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
-                <h2>Kullanıcı Sil</h2>
-            </div>
-
-<?php if (isset($user)): ?>
-    <p>Kullanıcı Adı: <?php echo $user["firstname"] . " " . $user["lastname"]; ?></p>
-    <p>E-posta: <?php echo $user["email"]; ?></p>
-<?php else: ?>
-    <p>Kullanıcı bulunamadı.</p>
-<?php endif; ?>
-
-<form method="post" action="">
-    <input type="hidden" name="id" value="<?php echo $userId; ?>">
-    <button type="submit" onclick="return confirm('Kullanıcıyı silmek istediğinizden emin misiniz?')">Kullanıcıyı Sil</button>
-</form>
-
-            <a href="user_list.php">Kullanıcı Listesine Geri Dön</a>
-        </main>
-
-    </div>
-</div>
-
 <?php
-require_once "footer.php";
+require_once "admin_panel_header.php";
 ?>
+    <div class="container-fluid">
+        <div class="row">
+            <?php require_once "admin_panel_sidebar.php"; ?>
+            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
+                    <h2>Kullanıcı Sil</h2>
+                </div>
+
+                <?php if (isset($user)): ?>
+                    <p><strong>Kullanıcı Adı:</strong> <?php echo $user["firstname"] . " " . $user["lastname"]; ?></p>
+                    <p><strong>E-posta:</strong> <?php echo $user["email"]; ?></p>
+                <?php else: ?>
+                    <p>Kullanıcı bulunamadı.</p>
+                <?php endif; ?>
+
+                <form method="post" action="" class="mb-2">
+                    <input type="hidden" name="id" value="<?php echo $userId; ?>">
+                    <button type="submit" onclick="return confirm('Kullanıcıyı silmek istediğinizden emin misiniz?')" class="btn btn-danger">Kullanıcıyı Sil</button>
+                    <a href="user_list.php" class="btn btn-secondary ml-2">Kullanıcı Listesine Geri Dön</a>
+                </form>
+            </main>
+        </div>
+    </div>
+
+<?php require_once "footer.php"; ?>

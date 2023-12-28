@@ -2,7 +2,6 @@
 global $resetPasswordDescription, $db, $showErrors, $siteName, $siteShortName, $siteUrl, $config;
 require_once "db_connection.php";
 require_once "config.php";
-require_once "admin_panel_header.php";
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
@@ -99,10 +98,13 @@ if (isset($_POST["reset_request"])) {
     }
 }
 ?>
+<?php
+require_once "admin_panel_header.php";
+?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Şifre Sıfırlama (Admin)</title>
+    <title>Şifre Sıfırlama (Yönetici)</title>
 </head>
 <body>
 <?php if (!isset($_GET["token"])): ?>

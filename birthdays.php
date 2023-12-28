@@ -8,7 +8,6 @@ if (!isset($_SESSION["admin_id"])) {
 }
 require_once "db_connection.php";
 require_once "config.php";
-require_once "admin_panel_header.php";
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
@@ -25,7 +24,9 @@ $stmtTeacher = $db->prepare($teacherQuery);
 $stmtTeacher->execute();
 $teacherBirthdays = $stmtTeacher->fetchAll(PDO::FETCH_ASSOC);
 ?>
-
+<?php
+require_once "admin_panel_header.php";
+?>
     <style>
         .container {
             display: flex;
@@ -44,15 +45,12 @@ $teacherBirthdays = $stmtTeacher->fetchAll(PDO::FETCH_ASSOC);
             padding: 0;
         }
     </style>
-
 <div class="container-fluid">
     <div class="row">
         <?php
         require_once "admin_panel_sidebar.php";
         ?>
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
-
-
 <div class="container">
     <div class="column">
         <h2>Öğrenci Doğum Günleri</h2>
@@ -68,7 +66,6 @@ $teacherBirthdays = $stmtTeacher->fetchAll(PDO::FETCH_ASSOC);
             <?php endforeach; ?>
         </ul>
     </div>
-
     <div class="column">
         <h2>Öğretmen Doğum Günleri</h2>
         <ul>

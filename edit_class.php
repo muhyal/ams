@@ -19,9 +19,6 @@ require_once "db_connection.php"; // Veritabanı bağlantısı
 $admin_id = $_SESSION["admin_id"];
 $admin_username = $_SESSION["admin_username"];
 
-require_once "admin_panel_header.php";
-
-
 if (isset($_GET['id'])) {
     $classId = $_GET['id'];
 
@@ -36,9 +33,8 @@ if (isset($_GET['id'])) {
         $updateStmt = $db->prepare($updateQuery);
         $updateStmt->execute([$className, $classCode, $classDescription, $classId]);
 
-
-        header("Location: class_list.php");
-        exit;
+        //header("Location: class_list.php");
+        //exit;
     }
 
     // Sınıf bilgilerini veritabanından çek
@@ -47,33 +43,41 @@ if (isset($_GET['id'])) {
     $stmt->execute([$classId]);
     $classData = $stmt->fetch(PDO::FETCH_ASSOC);
 } else {
-    header("Location: class_list.php");
-    exit;
+   header("Location: class_list.php");
+   exit;
 }
 ?>
-
+<?php
+require_once "admin_panel_header.php";
+?>
 <div class="container-fluid">
     <div class="row">
-        <?php
-        require_once "admin_panel_sidebar.php";
-        ?>
+        <?php require_once "admin_panel_sidebar.php"; ?>
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
                 <h2>Sınıf Düzenle</h2>
             </div>
-<form method="post">
-    <label for="class_name">Sınıf Adı:</label>
-    <input type="text" name="class_name" value="<?php echo $classData['class_name']; ?>"><br>
 
-    <label for="class_code">Sınıf Kodu:</label>
-    <input type="text" name="class_code" value="<?php echo $classData['class_code']; ?>"><br>
+            <form method="post">
+                <div class="form-group">
+                    <label for="class_name">Sınıf Adı:</label>
+                    <input type="text" class="form-control" name="class_name" value="<?php echo $classData['class_name']; ?>">
+                </div>
 
-    <label for="class_description">Sınıf Açıklaması:</label>
-    <textarea name="class_description"><?php echo $classData['class_description']; ?></textarea><br>
+                <div class="form-group">
+                    <label for="class_code">Sınıf Kodu:</label>
+                    <input type="text" class="form-control" name="class_code" value="<?php echo $classData['class_code']; ?>">
+                </div>
 
-    <button type="submit">Kaydet</button>
-</form>
-<?php
-require_once "footer.php";
-?>
+                <div class="form-group">
+                    <label for="class_description">Sınıf Açıklaması:</label>
+                    <textarea class="form-control" name="class_description"><?php echo $classData['class_description']; ?></textarea>
+                </div>
 
+                <button type="submit" class="btn btn-primary">Kaydet</button>
+            </form>
+        </main>
+    </div>
+</div>
+
+<?php require_once "footer.php"; ?>

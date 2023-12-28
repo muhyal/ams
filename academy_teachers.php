@@ -8,7 +8,6 @@ if (!isset($_SESSION["admin_id"])) {
 }
 require_once "db_connection.php";
 require_once "config.php";
-require_once "admin_panel_header.php";
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
@@ -18,7 +17,9 @@ $query = "SELECT * FROM academies";
 $stmt = $db->query($query);
 $academies = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
-
+<?php
+require_once "admin_panel_header.php";
+?>
 <div class="container-fluid">
     <div class="row">
         <?php require_once "admin_panel_sidebar.php"; ?>
@@ -45,9 +46,9 @@ $academies = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <strong>Öğretmenler:</strong><br>
                                 <?php
                                 $academyId = $academy["id"];
-                                $teachersInAcademyQuery = "SELECT teachers.* FROM teachers
-                                                          INNER JOIN academy_teachers ON teachers.id = academy_teachers.teacher_id
-                                                          WHERE academy_teachers.academy_id = ?";
+                                $teachersInAcademyQuery = "SELECT DISTINCT teachers.* FROM teachers
+                                                          INNER JOIN teacher_courses ON teachers.id = teacher_courses.teacher_id
+                                                          WHERE teacher_courses.academy_id = ?";
                                 $teachersInAcademyStmt = $db->prepare($teachersInAcademyQuery);
                                 $teachersInAcademyStmt->execute([$academyId]);
                                 $teachersInAcademy = $teachersInAcademyStmt->fetchAll(PDO::FETCH_ASSOC);
@@ -63,6 +64,4 @@ $academies = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </main>
     </div>
 </div>
-
-
 <?php require_once "footer.php"; ?>

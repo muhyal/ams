@@ -5,7 +5,6 @@ $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
 require_once "config.php";
 require_once "db_connection.php";
-require_once "admin_panel_header.php";
 
 session_start();
 
@@ -48,7 +47,9 @@ if (isset($_GET["id"])) {
     $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 }
 ?>
-
+<?php
+require_once "admin_panel_header.php";
+?>
 <div class="container-fluid">
     <div class="row">
         <?php
@@ -61,16 +62,18 @@ if (isset($_GET["id"])) {
 
 <form method="post" action="">
     <input type="hidden" name="admin_id" value="<?php echo $admin['id']; ?>">
-    <label for="new_username">Yeni Kullanıcı Adı:</label>
-    <input type="text" id="new_username" name="new_username" value="<?php echo $admin['username']; ?>" required><br>
+    <label class="form-label"  for="new_username">Yeni Kullanıcı Adı:</label>
+    <input class="form-control" type="text" id="new_username" name="new_username" value="<?php echo $admin['username']; ?>" required><br>
 
-    <label for="new_email">Yeni E-posta:</label>
-    <input type="email" id="new_email" name="new_email" value="<?php echo $admin['email']; ?>" required><br>
+    <label class="form-label"  for="new_email">Yeni E-posta:</label>
+    <input class="form-control" type="email" id="new_email" name="new_email" value="<?php echo $admin['email']; ?>" required><br>
 
-    <label for="new_password">Yeni Şifre (Boş bırakabilirsiniz):</label>
-    <input type="password" id="new_password" name="new_password"><br>
+    <label class="form-label"  for="new_password">Yeni Şifre (Boş bırakabilirsiniz):</label>
+    <input class="form-control" type="password" id="new_password" name="new_password"><br>
 
-    <input type="submit" value="Kaydet">
+    <button type="submit" class="btn btn-primary">Güncelle</button>
+    <button onclick="history.back()" class="btn btn-primary">Geri dön</button>
+    <button onclick="window.location.href='admin_list.php'" class="btn btn-secondary">Yönetici listesi</button>
 </form>
 <?php
 require_once "footer.php";

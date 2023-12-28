@@ -17,8 +17,6 @@ require_once "db_connection.php"; // Veritabanı bağlantısı
 $admin_id = $_SESSION["admin_id"];
 $admin_username = $_SESSION["admin_username"];
 
-require_once "admin_panel_header.php";
-
 // Öğrenci listesi sorgusu
 $query = "SELECT students.*, parents.*, emergency_contacts.*, addresses.* 
           FROM students 
@@ -31,7 +29,9 @@ $stmt = $db->query($query);
 // Öğrenci verilerini alın
 $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
-
+<?php
+require_once "admin_panel_header.php";
+?>
 <div class="container-fluid">
     <div class="row">
         <?php
@@ -91,8 +91,6 @@ $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     background-color: #0056b3; /* Hover efekti arka plan rengi */
                 }
             </style>
-
-
             <table>
     <thead>
     <tr>

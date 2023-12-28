@@ -8,7 +8,6 @@ if (!isset($_SESSION["admin_id"])) {
 }
 require_once "db_connection.php";
 require_once "config.php";
-require_once "admin_panel_header.php";
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
@@ -35,6 +34,9 @@ if (isset($_GET['id'])) {
     header("Location: class_list.php");
     exit;
 }
+?>
+<?php
+require_once "admin_panel_header.php";
 ?>
 <div class="container-fluid">
     <div class="row">

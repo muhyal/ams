@@ -1,6 +1,5 @@
 <?php
 require_once "db_connection.php";
-require_once "admin_panel_header.php";
 global $db, $showErrors, $siteName, $siteShortName, $siteUrl;
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
@@ -32,7 +31,9 @@ if (isset($_POST["confirm_delete"])) {
     exit();
 }
 ?>
-
+<?php
+require_once "admin_panel_header.php";
+?>
     <div class="container-fluid">
     <div class="row">
 <?php

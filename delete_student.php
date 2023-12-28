@@ -14,7 +14,6 @@ if (!isset($_SESSION["admin_id"])) {
 // Veritabanı bağlantısı ve gerekli dosyaları include edin
 global $db;
 require_once "db_connection.php";
-require_once "admin_panel_header.php";
 
 if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET["id"])) {
     $studentId = $_GET["id"];
@@ -49,29 +48,32 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET["id"])) {
     echo "Geçersiz istek.";
 }
 ?>
-
+<?php
+require_once "admin_panel_header.php";
+?>
     <div class="container-fluid">
-    <div class="row">
-<?php
-require_once "admin_panel_sidebar.php";
-?>
-    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
-        <h2>Öğrenci Sil</h2>
+        <div class="row">
+            <?php require_once "admin_panel_sidebar.php"; ?>
+            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
+                    <h2>Öğrenci Sil</h2>
+                </div>
+
+                <p><strong>Öğrenci Adı:</strong> <?php echo $studentInfo['firstname']; ?></p>
+                <p><strong>Öğrenci Soyadı:</strong> <?php echo $studentInfo['lastname']; ?></p>
+                <p><strong>T.C. Kimlik No:</strong> <?php echo $studentInfo['tc_identity']; ?></p>
+                <p><strong>Öğrenci Telefon:</strong> <?php echo $studentInfo['phone']; ?></p>
+                <p><strong>Öğrenci E-Posta:</strong> <?php echo $studentInfo['email']; ?></p>
+
+                <p><strong>Öğrenciyi silmek istediğinizden emin misiniz?</strong></p>
+
+                <form method="POST" action="delete_student.php">
+                    <input type="hidden" name="student_id" value="<?php echo $studentId; ?>">
+                    <button type="submit" name="confirm_delete" class="btn btn-danger">Öğrenciyi Sil</button>
+                    <a href="student_list.php" class="btn btn-secondary">İptal</a>
+                </form>
+            </main>
+        </div>
     </div>
-<p><strong>Öğrenci Adı:</strong> <?php echo $studentInfo['firstname']; ?></p>
-<p><strong>Öğrenci Soyadı:</strong> <?php echo $studentInfo['lastname']; ?></p>
-<p><strong>T.C. Kimlik No:</strong> <?php echo $studentInfo['tc_identity']; ?></p>
-<p><strong>Öğrenci Telefon:</strong> <?php echo $studentInfo['phone']; ?></p>
-<p><strong>Öğrenci E-Posta:</strong> <?php echo $studentInfo['email']; ?></p>
 
-<p><strong>Öğrenciyi silmek istediğinizden emin misiniz?</strong></p>
-
-<form method="POST" action="delete_student.php">
-    <input type="hidden" name="student_id" value="<?php echo $studentId; ?>">
-    <input type="submit" name="confirm_delete" value="Öğrenciyi Sil">
-    <a href="student_list.php">İptal</a>
-</form>
-<?php
-require_once "footer.php";
-?>
+<?php require_once "footer.php"; ?>

@@ -8,7 +8,6 @@ if (!isset($_SESSION["admin_id"])) {
 }
 require_once "db_connection.php";
 require_once "config.php";
-require_once "admin_panel_header.php";
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
@@ -47,12 +46,10 @@ if (isset($_GET["delete_id"])) {
 
 $courses = $db->query("SELECT * FROM courses")->fetchAll(PDO::FETCH_ASSOC);
 ?>
-
+<?php require_once "admin_panel_header.php"; ?>
 <div class="container-fluid">
     <div class="row">
-        <?php
-        require_once "admin_panel_sidebar.php";
-        ?>
+        <?php require_once "admin_panel_sidebar.php"; ?>
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
                 <h2>Ders Yönetimi</h2>
@@ -67,26 +64,35 @@ $courses = $db->query("SELECT * FROM courses")->fetchAll(PDO::FETCH_ASSOC);
                 <h2>Ders Düzenle</h2>
                 <form method="post">
                     <input type="hidden" name="id" value="<?php echo $editCourse["id"]; ?>">
-                    <label for="course_name">Ders Adı:</label>
-                    <input type="text" id="course_name" name="course_name" value="<?php echo $editCourse["course_name"]; ?>" required><br>
-                    <label for="course_name">Ders Açıklaması:</label>
-                    <input type="text" id="description" name="description" value="<?php echo $editCourse["description"]; ?>" required><br>
-                    <label for="course_code">Ders Kodu:</label>
-                    <input type="text" id="course_code" name="course_code" value="<?php echo $editCourse["course_code"]; ?>" required><br>
-                    <button type="submit" name="edit_course">Ders Düzenle</button>
+                    <div class="mb-3">
+                        <label for="course_name" class="form-label">Ders Adı:</label>
+                        <input type="text" id="course_name" name="course_name" class="form-control" value="<?php echo $editCourse["course_name"]; ?>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Ders Açıklaması:</label>
+                        <input type="text" id="description" name="description" class="form-control" value="<?php echo $editCourse["description"]; ?>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="course_code" class="form-label">Ders Kodu:</label>
+                        <input type="text" id="course_code" name="course_code" class="form-control" value="<?php echo $editCourse["course_code"]; ?>" required>
+                    </div>
+                    <button type="submit" name="edit_course" class="btn btn-primary">Ders Düzenle</button>
                 </form>
             <?php } ?>
 
             <!-- Ders Listesi -->
             <h2>Ders Listesi</h2>
-            <table border="1">
+            <table class="table">
+                <thead>
                 <tr>
-                    <th>No</th>
-                    <th>Ders Adı</th>
-                    <th>Ders Açıklaması</th>
-                    <th>Ders Kodu</th>
-                    <th>İşlemler</th>
+                    <th scope="col">No</th>
+                    <th scope="col">Ders Adı</th>
+                    <th scope="col">Ders Açıklaması</th>
+                    <th scope="col">Ders Kodu</th>
+                    <th scope="col">İşlemler</th>
                 </tr>
+                </thead>
+                <tbody>
                 <?php foreach ($courses as $course): ?>
                     <tr>
                         <td><?php echo $course["id"]; ?></td>
@@ -94,25 +100,29 @@ $courses = $db->query("SELECT * FROM courses")->fetchAll(PDO::FETCH_ASSOC);
                         <td><?php echo $course["description"]; ?></td>
                         <td><?php echo $course["course_code"]; ?></td>
                         <td>
-                            <a href="?edit_id=<?php echo $course["id"]; ?>">Düzenle</a>
-                            <a href="?delete_id=<?php echo $course["id"]; ?>" onclick="return confirm('Dersi silmek istediğinizden emin misiniz?')">Sil</a>
+                            <a href="?edit_id=<?php echo $course["id"]; ?>" class="btn btn-warning">Düzenle</a>
+                            <a href="?delete_id=<?php echo $course["id"]; ?>" onclick="return confirm('Dersi silmek istediğinizden emin misiniz?')" class="btn btn-danger">Sil</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>
+                </tbody>
             </table>
 
             <!-- Ders Ekleme Formu -->
             <h2>Ders Ekle</h2>
             <form method="post">
-                <label for="course_name">Ders Adı:</label>
-                <input type="text" id="course_name" name="course_name" required><br>
-                <label for="course_name">Ders Açıklaması:</label>
-                <input type="text" id="description" name="description" required><br>
-                <label for="course_code">Ders Kodu:</label>
-                <input type="text" id="course_code" name="course_code" required><br>
-                <button type="submit" name="add_course">Ders Ekle</button>
+                <div class="mb-3">
+                    <label for="course_name" class="form-label">Ders Adı:</label>
+                    <input type="text" id="course_name" name="course_name" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">Ders Açıklaması:</label>
+                    <input type="text" id="description" name="description" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="course_code" class="form-label">Ders Kodu:</label>
+                    <input type="text" id="course_code" name="course_code" class="form-control" required>
+                </div>
+                <button type="submit" name="add_course" class="btn btn-success">Ders Ekle</button>
             </form>
-            <?php
-            require_once "footer.php";
-            ?>
-
+            <?php require_once "footer.php"; ?>
