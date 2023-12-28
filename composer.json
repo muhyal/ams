@@ -2,6 +2,7 @@
     "require": {
         "infobip/infobip-api-php-client": "^5.1",
         "ext-pdo": "*",
-        "phpmailer/phpmailer": "^6.5"
+        "phpmailer/phpmailer": "^6.5",
+        "phpoffice/phpspreadsheet": "^1.29"
     }
 }
