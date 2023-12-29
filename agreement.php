@@ -39,7 +39,6 @@ require_once "agreement_header.php";
         </div>
     </header>
 
-
     <main class="px-3">
         <br>
         <p class="lead">Aşağıdan size en uygun kategoriyi seçerek ilgili sözleşmeleri görüntüleyebilirsiniz. Sözleşme onayında zaman damgalı SMS ve e-posta ile onay alınmakta ve onayınız kaydedilmektedir.</p>
@@ -47,8 +46,8 @@ require_once "agreement_header.php";
 
 <?php
 // Klasörleri tanımlayın
-$folder1 = "pdfs/student-under-18";
-$folder2 = "pdfs/student-over-18-years-old";
+$folder1 = "./assets/pdfs/student-under-18";
+$folder2 = "./assets/pdfs/student-over-18-years-old";
 
 // Seçilen klasörü belirlemek için GET parametresini alın
 $selectedFolder = isset($_GET['folder']) ? $_GET['folder'] : $folder1;

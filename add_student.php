@@ -45,8 +45,8 @@ $academies = $stmtAcademies->fetchAll(PDO::FETCH_ASSOC);
 <?php
 require_once "admin_panel_header.php";
 ?>
-    <script src="/js/jquery.min.js"></script>
-    <script src="/js/jquery.inputmask.min.js"></script>
+    <script src="./assets/js/jquery.min.js"></script>
+    <script src="./assets/js/jquery.inputmask.min.js"></script>
     <script>
         function addPrefixToPhoneInput(input) {
             // Inputa tıklanıldığında 90 değerini otomatik olarak ekleyin

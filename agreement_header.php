@@ -6,26 +6,13 @@ require_once "config.php";
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
 ?>
-
 <!doctype html>
 <html lang="en" class="h-100" data-bs-theme="auto">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?php echo $siteName ?> - <?php echo $siteShortName ?></title>
-    <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/cover/">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3">
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
-
-    <!-- Favicons -->
-    <link rel="apple-touch-icon" href="https://getbootstrap.com/docs/5.3/assets/img/favicons/apple-touch-icon.png" sizes="180x180">
-    <link rel="icon" href="https://getbootstrap.com/docs/5.3/assets/img/favicons/favicon-32x32.png" sizes="32x32" type="image/png">
-    <link rel="icon" href="https://getbootstrap.com/docs/5.3/assets/img/favicons/favicon-16x16.png" sizes="16x16" type="image/png">
-    <link rel="manifest" href="https://getbootstrap.com/docs/5.3/assets/img/favicons/manifest.json">
-    <link rel="mask-icon" href="https://getbootstrap.com/docs/5.3/assets/img/favicons/safari-pinned-tab.svg" color="#712cf9">
-    <link rel="icon" href="https://getbootstrap.com/docs/5.3/assets/img/favicons/favicon.ico">
-    <meta name="theme-color" content="#712cf9">
-
-
+    <link href="./assets/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .bd-placeholder-img {
             font-size: 1.125rem;
@@ -95,16 +82,17 @@ $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_er
             --bs-btn-active-bg: #5a23c8;
             --bs-btn-active-border-color: #5a23c8;
         }
+
         .bd-mode-toggle {
             z-index: 1500;
         }
+
+        .bd-mode-toggle .dropdown-menu .active .bi {
+            display: block !important;
+        }
     </style>
-
-
     <!-- Custom styles for this template -->
-    <link href="https://getbootstrap.com/docs/5.3/examples/cover/cover.css" rel="stylesheet">
-</html>
-
+    <link href="./assets/css/cover.css" rel="stylesheet">
 
 
 
