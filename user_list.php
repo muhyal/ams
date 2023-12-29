@@ -1,8 +1,9 @@
 <?php
 global $siteName, $siteShortName, $siteUrl, $db;
-session_start();
-
 // Oturum kontrolü
+session_start();
+session_regenerate_id(true);
+
 if (!isset($_SESSION["admin_id"])) {
     header("Location: admin_login.php"); // Giriş sayfasına yönlendir
     exit();

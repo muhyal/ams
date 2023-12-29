@@ -6,10 +6,12 @@ $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_er
 require_once "config.php";
 require_once "db_connection.php";
 
-// Giriş kontrolü
+// Oturum kontrolü
 session_start();
-if (!isset($_SESSION['admin_id'])) {
-    header("Location: login.php");
+session_regenerate_id(true);
+
+if (!isset($_SESSION["admin_id"])) {
+    header("Location: admin_login.php"); // Giriş sayfasına yönlendir
     exit();
 }
 

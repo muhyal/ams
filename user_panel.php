@@ -6,6 +6,8 @@ $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_er
 require_once "config.php";
 
 session_start();
+session_regenerate_id(true);
+
 require_once "db_connection.php"; // Veritabanı bağlantısı
 
 // Oturum kontrolü yaparak giriş yapılmış mı diye kontrol ediyoruz

@@ -6,6 +6,8 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 // Oturum kontrolü
 session_start();
+session_regenerate_id(true);
+
 if (!isset($_SESSION["admin_id"])) {
     header("Location: admin_login.php"); // Giriş sayfasına yönlendir
     exit();
@@ -55,15 +57,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // Bu tarih aralığındaki alınan ödemeleri getir
             $sql = "
-                SELECT 
-                    academies.name AS academy_name,
-                    SUM(accounting_entries.amount) AS total_amount
-                FROM accounting_entries
-                INNER JOIN academies ON accounting_entries.academy_id = academies.id
-                WHERE academies.id = :academy_id
-                AND accounting_entries.entry_date BETWEEN :start_date AND :end_date
-                GROUP BY accounting_entries.academy_id
-            ";
+        SELECT 
+            academies.name AS academy_name,
+            SUM(accounting_entries.amount) AS total_amount
+        FROM accounting_entries
+        INNER JOIN academies ON accounting_entries.academy_id = academies.id
+        WHERE academies.id = :academy_id
+        AND accounting_entries.entry_date BETWEEN :start_date AND :end_date
+        GROUP BY accounting_entries.academy_id
+    ";
 
             $stmt = $db->prepare($sql);
             $stmt->bindParam(":academy_id", $academy['id'], PDO::PARAM_INT);
@@ -84,21 +86,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $sheet->setCellValue('E1', 'Ders Adı');
             $sheet->setCellValue('F1', 'Ödeme Tarihi');
             $sheet->setCellValue('G1', 'Ödeme Tutarı');
+            $sheet->setCellValue('H1', 'Ödeme Yöntemi');
 
             // Öğrenci Detayları için sorgu
             $studentDetailSql = "
-                SELECT 
-                    students.firstname AS student_name,
-                    courses.course_name,
-                    accounting_entries.entry_date AS payment_date,
-                    accounting_entries.amount AS payment_amount
-                FROM accounting_entries
-                INNER JOIN students ON accounting_entries.student_id = students.id
-                INNER JOIN courses ON accounting_entries.course_id = courses.id
-                WHERE accounting_entries.academy_id = :academy_id
-                AND accounting_entries.entry_date BETWEEN :start_date AND :end_date
-            ";
+    SELECT 
+        students.firstname AS student_name,
+        students.lastname AS student_lastname,
+        courses.course_name,
+        accounting_entries.entry_date AS payment_date,
+        accounting_entries.amount AS payment_amount,
+        accounting_entries.payment_method
+    FROM accounting_entries
+    INNER JOIN students ON accounting_entries.student_id = students.id
+    INNER JOIN courses ON accounting_entries.course_id = courses.id
+    WHERE accounting_entries.academy_id = :academy_id
+    AND accounting_entries.entry_date BETWEEN :start_date AND :end_date
+";
 
+            // Öğrenci Detayları için sorgu
             $stmtStudentDetail = $db->prepare($studentDetailSql);
             $stmtStudentDetail->bindParam(":academy_id", $academy['id'], PDO::PARAM_INT);
             $stmtStudentDetail->bindParam(":start_date", $start_date, PDO::PARAM_STR);
@@ -108,15 +114,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             $row = 2;
             foreach ($studentDetailData as $studentDetail) {
-                $sheet->setCellValue('D' . $row, $studentDetail['student_name']);
+                $sheet->setCellValue('D' . $row, $studentDetail['student_name'] . ' ' . $studentDetail['student_lastname']);
                 $sheet->setCellValue('E' . $row, $studentDetail['course_name']);
                 $sheet->setCellValue('F' . $row, $studentDetail['payment_date']);
                 $sheet->setCellValue('G' . $row, $studentDetail['payment_amount']);
+
+                // Map integer payment_method to its corresponding name
+                $paymentMethodNames = [
+                    1 => 'Nakit',
+                    2 => 'Kredi Kartı',
+                    3 => 'Havale / EFT',
+                    4 => 'Hediye Çeki',
+                    // Add more mappings as needed
+                ];
+
+                // Check if 'payment_method' key exists before using it
+                if (array_key_exists('payment_method', $studentDetail)) {
+                    $paymentMethod = isset($paymentMethodNames[$studentDetail['payment_method']])
+                        ? $paymentMethodNames[$studentDetail['payment_method']]
+                        : 'Bilinmeyen Yöntem';
+
+                    $sheet->setCellValue('H' . $row, $paymentMethod);
+                } else {
+                    $sheet->setCellValue('H' . $row, 'Kullanılamıyor');
+                }
+
                 $row++;
             }
         }
-
-        // Hata ayıklama
+            // Hata ayıklama
         error_reporting(E_ALL);
         ini_set('display_errors', TRUE);
         ini_set('display_startup_errors', TRUE);

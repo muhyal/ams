@@ -6,7 +6,14 @@ $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_er
 require_once "config.php";
 require_once "db_connection.php";
 
+// Oturum kontrolü
 session_start();
+session_regenerate_id(true);
+
+if (!isset($_SESSION["admin_id"])) {
+    header("Location: admin_login.php"); // Giriş sayfasına yönlendir
+    exit();
+}
 
 $allowedRoles = array(1); // "sa" rolü için rol değeri (örneğin 1)
 $currentUserRole = $_SESSION['admin_role'];

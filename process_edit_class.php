@@ -5,7 +5,9 @@ $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
 require_once "config.php";
 
+// Oturum kontrolü
 session_start();
+session_regenerate_id(true);
 
 // Oturum kontrolü
 if (!isset($_SESSION["admin_id"])) {

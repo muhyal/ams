@@ -1,13 +1,14 @@
 <?php
 // Veritabanı bağlantısı ve sorgu işlemleri gibi kodlar burada yer alır
-global $db, $siteUrl, $siteName, $siteShortName;
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-session_start();
+global $db, $showErrors, $siteUrl, $siteName, $siteShortName;
+// Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
+$showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
+$showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
 
 // Oturum kontrolü
+session_start();
+session_regenerate_id(true);
+
 if (!isset($_SESSION["admin_id"])) {
     header("Location: admin_login.php"); // Giriş sayfasına yönlendir
     exit();

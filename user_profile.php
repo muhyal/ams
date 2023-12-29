@@ -1,6 +1,7 @@
 <?php
 global $db;
 session_start();
+session_regenerate_id(true);
 
 // Kullanıcı girişi kontrolü
 if (!isset($_SESSION["admin_id"])) {

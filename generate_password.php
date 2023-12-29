@@ -1,4 +1,13 @@
 <?php
+// Oturum kontrolü
+session_start();
+session_regenerate_id(true);
+
+if (!isset($_SESSION["admin_id"])) {
+    header("Location: admin_login.php"); // Giriş sayfasına yönlendir
+    exit();
+}
+
 function generatePassword($length = 10) {
     $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()-_+=<>?';
     $password = '';

@@ -6,6 +6,7 @@ $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_er
 require_once "config.php";
 
 session_start();
+session_regenerate_id(true);
 
 // Oturum kontrolü
 if (!isset($_SESSION["admin_id"])) {

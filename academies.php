@@ -1,6 +1,7 @@
 <?php
 global $db, $showErrors, $siteName, $siteShortName, $siteUrl;
 session_start();
+session_regenerate_id(true);
 
 // Oturum kontrolü
 if (!isset($_SESSION["admin_id"])) {

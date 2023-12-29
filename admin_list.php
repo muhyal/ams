@@ -1,11 +1,14 @@
 <?php
 global $db, $showErrors, $siteName, $siteShortName, $siteUrl;
 session_start();
+session_regenerate_id(true);
+
 // Oturum kontrolü
 if (!isset($_SESSION["admin_id"])) {
     header("Location: admin_login.php"); // Giriş sayfasına yönlendir
     exit();
 }
+
 require_once "db_connection.php";
 require_once "config.php";
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir

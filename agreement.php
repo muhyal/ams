@@ -1,6 +1,10 @@
 <?php
 global $db, $showErrors, $siteName, $siteShortName, $siteUrl;
+
+// Oturum kontrolü
 session_start();
+session_regenerate_id(true);
+
 require_once "db_connection.php";
 require_once "config.php";
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir

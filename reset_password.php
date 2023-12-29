@@ -8,7 +8,10 @@ require_once "config.php";
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 
+// Oturum kontrolü
 session_start();
+session_regenerate_id(true);
+
 require_once "db_connection.php"; // Veritabanı bağlantısı
 // Load Composer's autoloader
 require 'vendor/autoload.php';
