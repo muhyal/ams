@@ -2,7 +2,7 @@
 config.php
 
 # PDFs folder
-/pdfs/*
+/assets/pdfs/*
 
 ##### Windows
 # Windows thumbnail cache files
