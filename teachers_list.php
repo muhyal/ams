@@ -61,6 +61,7 @@ require_once "admin_panel_header.php";
                             <th>Sınıf</th>
                             <th>Ders</th>
                             <th>İşlemler</th>
+
                         </tr>
                         </thead>
                         <tbody>
@@ -76,13 +77,18 @@ require_once "admin_panel_header.php";
                                 <td><?php echo $teacher['class_name']; ?></td>
                                 <td><?php echo $teacher['course_name']; ?></td>
                                 <td>
+                                    <a href="teacher_profile.php?id=<?php echo $teacher['id']; ?>" class="btn btn-info btn-sm">
+                                        <i class="fas fa-user"></i>
+                                    </a>
                                     <a href="edit_teacher.php?id=<?php echo $teacher['id']; ?>" class="btn btn-warning btn-sm">
                                         <i class="fas fa-pencil-alt"></i>
                                     </a>
                                     <a href="delete_teacher.php?id=<?php echo $teacher['id']; ?>" class="btn btn-danger btn-sm">
                                         <i class="fas fa-trash-alt"></i>
                                     </a>
+
                                 </td>
+
                             </tr>
                         <?php endforeach; ?>
                         </tbody>
