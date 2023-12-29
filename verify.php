@@ -5,7 +5,7 @@ $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
 require_once "config.php";
 require_once "db_connection.php"; // Veritabanı bağlantısı
-require_once "user_login_header.php";
+require_once "header.php";
 ?>
     <div class="px-4 py-5 my-5 text-center">
         <div class="col-lg-6 mx-auto">

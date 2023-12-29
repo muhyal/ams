@@ -52,5 +52,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Veritabanı bağlantısını kapat
     $db = null;
 }
-
 ?>

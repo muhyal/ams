@@ -102,7 +102,7 @@ if (isset($_POST["reset_request"])) {
         echo "Geçersiz ya da süresi dolmuş bir şifre sıfırlama bağlantısı.";
     }
 }
-require_once "user_login_header.php";
+require_once "header.php";
 ?>
     <div class="px-4 py-5 my-5 text-center">
     <h1 class="display-5 fw-bold text-body-emphasis"><?php echo $siteName ?> - <?php echo $siteShortName ?></h1>

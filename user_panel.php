@@ -23,25 +23,23 @@ $stmt->execute([$_SESSION["user_id"]]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if ($user) { // Kullanıcı bilgileri doğru şekilde alındı mı kontrol ediyoruz
-    ?>
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Kullanıcı Paneli</title>
-    </head>
-    <body>
-    <h1>Hoş Geldiniz, <?php echo $user["firstname"] . " " . $user["lastname"]; ?>!</h1>
-    <p>Profil bilgileriniz:</p>
-    <ul>
-        <li>Ad Soyad: <?php echo $user["firstname"] . " " . $user["lastname"]; ?></li>
-        <li>E-posta: <?php echo $user["email"]; ?></li>
-    </ul>
+require_once "header.php";
+?>
+    <div class="px-4 py-5 my-5 text-center">
+        <h4>Hoş Geldiniz, <?php echo $user["firstname"] . " " . $user["lastname"]; ?>!</h4>
+        <div class="col-lg-6 mx-auto">
+            <p>Profil bilgileriniz:</p>
+            Ad Soyad: <?php echo $user["firstname"] . " " . $user["lastname"]; ?><br>
+            E-posta: <?php echo $user["email"]; ?><br>
+            <p><a href="logout.php">Çıkış Yap</a></p>
+        </div>
+    </div>
 
-    <a href="logout.php">Çıkış Yap</a> <!-- Çıkış yapma bağlantısı -->
-    </body>
-    </html>
     <?php
 } else {
     echo "Kullanıcı bilgileri alınamadı.";
 }
+?>
+<?php
+require_once "footer.php";
 ?>

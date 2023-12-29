@@ -99,8 +99,51 @@ require_once "admin_panel_header.php";
         <label class="form-label" for="phone">Telefon:</label>
         <input class="form-control" type="text" name="phone" value="<?php echo $user["phone"]; ?>" required><br>
 
-         <label class="form-label" for="new_password">Yeni Şifre (Güncelleme olmayacak ise boş bırakabilirsiniz):</label>
-         <input class="form-control" type="password" id="new_password" name="new_password"><br>
+           <div class="form-group">
+                 <label class="form-label" for="new_password">Yeni Şifre (Güncelleme olmayacak ise boş bırakabilirsiniz):</label>
+                 <div class="input-group">
+                     <input class="form-control" type="password" name="new_password" id="new_password" required>
+                     <div class="input-group-append">
+                         <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('new_password')">Şifreyi Göster</button>
+                     </div>
+                     <div class="input-group-append">
+                         <button type="button" class="btn btn-outline-secondary" onclick="copyPassword('new_password')">Kopyala</button>
+                     </div>
+                     <div class="input-group-append">
+                         <button type="button" class="btn btn-outline-secondary" onclick="generatePassword('new_password')">Şifre Üret</button>
+                     </div>
+                 </div>
+             </div>
+
+             <script>
+                 function togglePassword(passwordId) {
+                     var passwordInput = document.getElementById(passwordId);
+                     if (passwordInput.type === "new_password") {
+                         passwordInput.type = "text";
+                     } else {
+                         passwordInput.type = "new_password";
+                     }
+                 }
+
+                 function copyPassword(passwordId) {
+                     var passwordInput = document.getElementById(passwordId);
+                     passwordInput.select();
+                     document.execCommand("copy");
+                     alert("Şifre kopyalandı: " + passwordInput.value);
+                 }
+
+                 function generatePassword(passwordId) {
+                     var generatedPasswordInput = document.getElementById(passwordId);
+                     var xhr = new XMLHttpRequest();
+                     xhr.onreadystatechange = function () {
+                         if (xhr.readyState === 4 && xhr.status === 200) {
+                             generatedPasswordInput.value = xhr.responseText;
+                         }
+                     };
+                     xhr.open("GET", "generate_password.php", true);
+                     xhr.send();
+                 }
+             </script>
 
         <button type="submit" class="btn btn-primary">Güncelle</button>
         <button onclick="history.back()" class="btn btn-primary">Geri dön</button>

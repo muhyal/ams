@@ -9,10 +9,6 @@ require_once "config.php";
 session_start();
 session_regenerate_id(true);
 
-if (!isset($_SESSION["admin_id"])) {
-    header("Location: admin_login.php"); // Giriş sayfasına yönlendir
-    exit();
-}
 
 // CSRF token oluşturma veya varsa alınması
 if (!isset($_SESSION['csrf_token'])) {

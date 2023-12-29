@@ -7,7 +7,7 @@
 <h2>Sözleşme Dosyaları</h2>
 <ul>
     <?php
-    $pdfFolder = 'pdfs/student-over-18-years-old/'; // PDF dosyalarının saklandığı klasör
+    $pdfFolder = './assets/pdfs/student-over-18-years-old/'; // PDF dosyalarının saklandığı klasör
     $pdfFiles = scandir($pdfFolder);
 
     foreach ($pdfFiles as $file) {
