@@ -248,8 +248,8 @@ require_once "admin_panel_header.php";
     <input class="form-control"type="email" name="email" class="form-control" aria-describedby="emailHelp" required>
       <div id="emailHelp" class="form-text">Geçerli bir e-posta adresi olmalıdır.</div>
       <br>
-    <label class="form-label" for="phone">Telefon:</label>
-    <input class="form-control" type="text" name="phone" required><br>
+      <label class="form-label" for="phone">Telefon:</label>
+      <input class="form-control" type="text" name="phone" value="90" required><br>
 
       <div class="form-group">
           <label class="form-label" for="password">Şifre:</label>

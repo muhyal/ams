@@ -61,7 +61,8 @@ require_once "admin_panel_header.php";
 
                 <div class="form-group">
                     <label for="parent_phone">Telefon:</label>
-                    <input type="text" id="parent_phone" name="parent_phone" class="form-control" required>
+                    <input type="text" id="parent_phone" name="parent_phone" value="90" class="form-control" required>
+
                 </div>
 
                 <div class="form-group">

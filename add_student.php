@@ -83,13 +83,17 @@ require_once "admin_panel_header.php";
 
     <!-- Veli Bilgileri -->
     <h5>Veli Bilgileri</h5>
-    <label class="form-label" for="parent_checkbox"><input class="form-control" type="checkbox" id="parent_checkbox" name="parent_checkbox">Kendi bilgilerimi kullanmak istiyorum</label><br>
+    <label class="form-label" for="parent_checkbox">
+        <input type="checkbox" id="parent_checkbox" name="parent_checkbox"> Kendi bilgilerimi kullanmak istiyorum
+    </label><br>
+
+
     <label class="form-label" for="parent_firstname">Veli Adı:</label>
     <input class="form-control" type="text" name="parent_firstname" id="parent_firstname" required><br>
     <label class="form-label" for="parent_lastname">Veli Soyadı:</label>
     <input class="form-control" type="text" name="parent_lastname" id="parent_lastname" required><br>
     <label class="form-label" for="parent_phone">Veli Cep Telefonu:</label>
-    <input class="form-control" type="text" name="parent_phone" id="parent_phone" required onclick="addPrefixToPhoneInput(this)"><br>
+    <input class="form-control" type="text" name="parent_phone" id="parent_phone" value="90" required onclick="addPrefixToPhoneInput(this)"><br>
     <label class="form-label" for="parent_email">Veli E-posta Adresi:</label>
     <input class="form-control" type="email" name="parent_email" id="parent_email" required><br>
 
