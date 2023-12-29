@@ -148,9 +148,10 @@ require_once "admin_panel_header.php";
                           <i class="fas fa-plus"></i> Yeni
                       </button>
                       <ul class="dropdown-menu">
-                          <li><a class="dropdown-item" href="#"><i class="fas fa-user"></i> Öğrenci</a></li>
-                          <li><a class="dropdown-item" href="#"><i class="fas fa-chalkboard-teacher"></i> Öğretmen</a></li>
-                          <li><a class="dropdown-item" href="#"><i class="fas fa-file-invoice-dollar"></i> Muhasebe kaydı</a></li>
+                          <li><a class="dropdown-item" href="add_user.php"><i class="fas fa-user"></i> Kullanıcı</a></li>
+                          <li><a class="dropdown-item" href="add_student.php"><i class="fas fa-user"></i> Öğrenci</a></li>
+                          <li><a class="dropdown-item" href="add_teacher.php"><i class="fas fa-chalkboard-teacher"></i> Öğretmen</a></li>
+                          <li><a class="dropdown-item" href="accounting.php"><i class="fas fa-file-invoice-dollar"></i> Muhasebe kaydı</a></li>
                       </ul>
                   </div>
 
