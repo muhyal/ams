@@ -26,8 +26,8 @@ require_once "header.php";
 
     <h1 class="h3 mb-3 font-weight-normal">Oturum aç</h1>
 
-    <label for="username" class="sr-only">E-posta adresiniz</label>
-    <input type="text" id="identifier" name="identifier" placeholder="E-posta" class="form-control" required="" autofocus=""><br>
+    <label for="username" class="sr-only">E-posta adresi ya da kullanıcı adı</label>
+    <input type="text" id="identifier" name="identifier" placeholder="E-posta / Kullanıcı adı" class="form-control" required="" autofocus=""><br>
 
     <label for="password" class="sr-only">Şifreniz</label>
     <input type="password" id="password" name="password" placeholder="Şifre" class="form-control" required=""><br>
