@@ -4,6 +4,16 @@ global $db, $showErrors;
 session_start();
 session_regenerate_id(true);
 
+require_once "config.php";
+require 'vendor/autoload.php';
+
+
+use Infobip\Api\SmsApi;
+use Infobip\Configuration;
+use Infobip\Model\SmsAdvancedTextualRequest;
+use Infobip\Model\SmsDestination;
+use Infobip\Model\SmsTextualMessage;
+
 require_once "db_connection.php";
 
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
@@ -38,6 +48,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($admin && password_verify($password, $admin["password"])) {
+
+            // Send an SMS using Infobip
+            global $config, $BASE_URL, $API_KEY, $username, $SENDER, $MESSAGE_TEXT, $siteName, $siteShortName;
+            $phone = $admin["phone"]; // Assuming you have a phone number in your admins table
+
+            $smsConfiguration = new Configuration(host: $BASE_URL, apiKey: $API_KEY);
+
+            $sendSmsApi = new SmsApi(config: $smsConfiguration);
+
+            $destination = new SmsDestination(
+                to: $phone
+            );
+
+            $message = new SmsTextualMessage(destinations: [$destination]);
+
+            $message = new SmsTextualMessage(destinations: [$destination], from: $SENDER, text: "Merhaba $username, $siteName - $siteShortName üzerinde yönetici oturumu açıldı. Bilginiz dışında ise lütfen kontrol ediniz.");
+
+            $request = new SmsAdvancedTextualRequest(messages: [$message]);
+
+            try {
+                $smsResponse = $sendSmsApi->sendSmsMessage($request);
+
+                // Handle the response, log or display relevant information
+                if ($smsResponse->getMessages()[0]->getStatus()->getGroupName() === 'PENDING') {
+                    echo 'SMS is pending.';
+                } else {
+                    echo 'SMS sent successfully.';
+                }
+            } catch (\Throwable $exception) {
+                echo 'Failed to send SMS. Error: ' . $exception->getMessage();
+            }
+
             $_SESSION["admin_id"] = $admin["id"];
             $_SESSION["admin_username"] = $admin["username"];
             $_SESSION["admin_role"] = $admin["role"]; // Kullanıcının rolünü ekleyin

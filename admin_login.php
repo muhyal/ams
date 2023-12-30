@@ -21,26 +21,26 @@ $csrf_token = $_SESSION['csrf_token'];
 require_once "admin_login_header.php";
 ?>
 <main class="form-signin w-100 m-auto">
-    <form method="post" action="admin_login_process.php">
+        <form method="post" action="admin_login_process.php">
 
-        <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
+            <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
 
-        <img class="mb-4" src="./assets/brand/bootstrap-logo.svg" alt="" width="72" height="57">
-        <h1 class="h3 mb-3 fw-normal">Oturum aç</h1>
+            <h1 class="h3 mb-3 fw-normal">Oturum aç</h1>
 
-        <div class="form-floating">
-            <input type="text" class="form-control" id="identifier" name="identifier" placeholder="@doremuzikakademi.com">
-            <label for="floatingInput">E-posta / Kullanıcı ad</label>
-        </div>
-        <div class="form-floating">
-            <input type="password" class="form-control" name="password" id="password" placeholder="Şifre">
-            <label for="floatingPassword">Şifre</label>
-            <p><a href="admin_reset_password.php">Şifremi unuttum</a></p>
-        </div>
+            <div class="form-floating">
+                <input type="text" class="form-control" id="identifier" name="identifier" placeholder="@doremuzikakademi.com">
+                <label for="floatingInput">E-posta / Kullanıcı ad</label>
+            </div>
+            <div class="form-floating">
+                <input type="password" class="form-control" name="password" id="password" placeholder="Şifre">
+                <label for="floatingPassword">Şifre</label>
+                <p><a href="admin_reset_password.php">Şifremi unuttum</a></p>
+            </div>
 
-        <button class="btn btn-primary w-100 py-2" type="submit">Sign in</button>
-        <p class="mt-5 mb-3 text-body-secondary">&copy; <?php echo (new DateTime())->format('Y') ?>, <?php echo $siteName ?>.</p>
-    </form>
+            <button class="btn btn-primary w-100 py-2" type="submit">Sign in</button>
+            <p class="mt-5 mb-3 text-body-secondary">&copy; <?php echo (new DateTime())->format('Y') ?>, <?php echo $siteName ?>.</p>
+        </form>
+
 </main>
 <?php
 require_once "footer.php";
