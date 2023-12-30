@@ -41,6 +41,7 @@ require_once "admin_panel_header.php";
             <tr>
         <th>#</th>
         <th>Kullanıcı Adı</th>
+        <th>Telefon</th>
         <th>E-posta</th>
         <th>Düzenle</th>
         <th>Sil</th>
@@ -51,6 +52,7 @@ require_once "admin_panel_header.php";
         <tr>
             <td><?php echo $admin['id']; ?></td>
             <td><?php echo $admin['username']; ?></td>
+            <td><?php echo $admin['phone']; ?></td>
             <td><?php echo $admin['email']; ?></td>
             <td><a href="edit_admin.php?id=<?php echo $admin['id']; ?>">Düzenle</a></td>
             <td><a href="delete_admin.php?id=<?php echo $admin['id']; ?>">Sil</a></td>

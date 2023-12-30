@@ -26,19 +26,20 @@ if (!in_array($currentUserRole, $allowedRoles)) {
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $admin_id = $_POST["admin_id"];
     $new_username = $_POST["new_username"];
+    $new_phone = $_POST["new_phone"];
     $new_email = $_POST["new_email"];
     $new_password = $_POST["new_password"];
 
     // Şifre değişikliği yapılacak mı kontrolü
     if (!empty($new_password)) {
         $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
-        $update_query = "UPDATE admins SET username = ?, email = ?, password = ? WHERE id = ?";
+        $update_query = "UPDATE admins SET username = ?, phone = ?, email = ?, password = ? WHERE id = ?";
         $stmt = $db->prepare($update_query);
-        $stmt->execute([$new_username, $new_email, $hashed_password, $admin_id]);
+        $stmt->execute([$new_username, $new_phone, $new_email, $hashed_password, $admin_id]);
     } else {
-        $update_query = "UPDATE admins SET username = ?, email = ? WHERE id = ?";
+        $update_query = "UPDATE admins SET username = ?, phone = ?, email = ? WHERE id = ?";
         $stmt = $db->prepare($update_query);
-        $stmt->execute([$new_username, $new_email, $admin_id]);
+        $stmt->execute([$new_username, $new_phone, $new_email, $admin_id]);
     }
 
     header("Location: admin_list.php"); // Yönetici listesine geri dön
@@ -71,6 +72,9 @@ require_once "admin_panel_header.php";
     <input type="hidden" name="admin_id" value="<?php echo $admin['id']; ?>">
     <label class="form-label"  for="new_username">Yeni Kullanıcı Adı:</label>
     <input class="form-control" type="text" id="new_username" name="new_username" value="<?php echo $admin['username']; ?>" required><br>
+
+    <label class="form-label"  for="new_phone">Yeni Telefon:</label>
+    <input class="form-control" type="text" id="new_phone" name="new_phone" value="<?php echo $admin['phone']; ?>" required><br>
 
     <label class="form-label"  for="new_email">Yeni E-posta:</label>
     <input class="form-control" type="email" id="new_email" name="new_email" value="<?php echo $admin['email']; ?>" required><br>

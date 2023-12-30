@@ -41,6 +41,11 @@ require_once "admin_panel_header.php";
                 </div>
 
                 <div class="form-group">
+                    <label for="phone">Telefon:</label>
+                    <input type="text" id="phone" name="phone" class="form-control" required>
+                </div>
+
+                <div class="form-group">
                     <label for="email">E-posta:</label>
                     <input type="email" id="email" name="email" class="form-control" required>
                 </div>
