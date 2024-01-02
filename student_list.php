@@ -116,12 +116,12 @@ require_once "admin_panel_header.php";
             <table>
     <thead>
     <tr>
-        <th>Öğrenci Adı</th>
-        <th>Öğrenci Soyadı</th>
-        <th>Öğrenci T.C. Kimlik No</th>
+        <th>Adı</th>
+        <th>Soyadı</th>
+        <th>T.C. Kimlik No</th>
         <th>Doğum Tarihi</th>
-        <th>Öğrenci Cep Telefonu</th>
-        <th>Öğrenci E-posta</th>
+        <th>Cep Telefonu</th>
+        <th>E-posta</th>
         <!-- <th>Veli Ad Soyad</th>
          <th>Veli Telefon</th>
          <th>Veli E-Posta</th>
@@ -142,7 +142,7 @@ require_once "admin_panel_header.php";
             <td><?php echo $student['firstname']; ?></td>
             <td><?php echo $student['lastname']; ?></td>
             <td><?php echo $student['tc_identity']; ?></td>
-            <td><?php echo $student['birthdate']; ?></td>
+            <td><?php echo date('d.m.Y', strtotime($student['birthdate'])); ?></td>
             <td><?php echo $student['phone']; ?></td>
             <td><?php echo $student['email']; ?></td>
             <!--<td><?php echo $student['parent_firstname'] . ' ' . $student['parent_lastname']; ?></td>
