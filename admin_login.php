@@ -48,17 +48,19 @@ require_once "admin_login_header.php";
             <h1 class="h3 mb-3 fw-normal">Oturum aç</h1>
 
             <div class="form-floating">
-                <input type="text" class="form-control" id="identifier" name="identifier" placeholder="@doremuzikakademi.com">
-                <label for="floatingInput">E-posta / Kullanıcı ad</label>
+                <input type="text" class="form-control" id="identifier" name="identifier" placeholder="@doremuzikakademi.com" autofocus="">
+                <label for="floatingInput">E-posta / Kullanıcı adı</label>
             </div>
             <div class="form-floating">
                 <input type="password" class="form-control" name="password" id="password" placeholder="Şifre">
                 <label for="floatingPassword">Şifre</label>
-                <p><a href="admin_reset_password.php">Şifremi unuttum</a></p>
+                <div class="form-group mt-3">
+                    <a href="admin_reset_password.php">Şifremi unuttum</a>
+                </div>
             </div>
-
-            <button class="btn btn-primary w-100 py-2" type="submit">Sign in</button>
-            <p class="mt-5 mb-3 text-body-secondary">&copy; <?php echo (new DateTime())->format('Y') ?>, <?php echo $siteName ?>.</p>
+            <div class="form-group mt-3">
+            <button class="btn btn-primary w-100 py-2" type="submit">Oturum aç</button>
+            </div>
         </form>
 
 </main>

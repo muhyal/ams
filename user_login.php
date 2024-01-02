@@ -1,4 +1,4 @@
-<?php
+<?php global $siteHeroDescription;
 /**
  * @copyright Copyright (c) 2024, KUTBU
  *
@@ -40,22 +40,52 @@ require_once "header.php";
 ?>
 <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
 
+    <div class="px-4 py-5 my-5 text-center">
+        <h1 class="display-5 fw-bold text-body-emphasis"><?php echo $siteName ?> - <?php echo $siteShortName ?></h1>
+        <div class="col-lg-6 mx-auto">
+            <p class="lead mb-4"><?php echo $siteHeroDescription ?></p>
+            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+
 <form class="form-signin" method="post" action="user_login_process.php">
 
     <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
 
-    <h1 class="h3 mb-3 font-weight-normal">Oturum aç</h1>
+    <main class="form-signin w-100 m-auto">
+        <form method="post" action="user_login_process.php">
 
-    <label for="username" class="sr-only">E-posta adresi ya da kullanıcı adı</label>
-    <input type="text" id="identifier" name="identifier" placeholder="E-posta / Kullanıcı adı" class="form-control" required="" autofocus=""><br>
+            <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
 
-    <label for="password" class="sr-only">Şifreniz</label>
-    <input type="password" id="password" name="password" placeholder="Şifre" class="form-control" required=""><br>
 
-    <p><a href="reset_password.php">Şifremi unuttum</a><p>
+            <h1 class="h3 mb-3 fw-normal">Kullanıcı Paneli</h1>
 
-    <button class="btn btn-lg btn-primary btn-block" type="submit">Oturum aç</button>
-    <p class="mt-5 mb-3 text-muted">© <?php echo (new DateTime())->format('Y') ?>, <?php echo $siteName ?>.</p>
+            <div class="form-floating">
+                <input type="text" class="form-control" id="username" name="username" placeholder="E-posta / Kullanıcı adı" autofocus="">
+                <label for="floatingInput">E-posta / Kullanıcı adı</label>
+            </div>
+            <div class="form-floating">
+                <input type="password" class="form-control" name="password" id="password" placeholder="Şifre">
+                <label for="floatingPassword">Şifre</label>
+                <div class="form-group mt-3">
+                    <a href="reset_password.php">Şifremi unuttum</a>
+                </div>
+            </div>
+            <div class="form-group mt-3">
+            <button class="btn btn-primary w-100 py-2" type="submit">Oturum aç</button>
+            </div>
+        </form>
+    </main>
+
+
+
+
+
+
+
+
+
+
+
+
 </form>
 </div>
 <?php
