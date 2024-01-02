@@ -28,14 +28,15 @@ $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_er
 ?>
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
-<head><script src="./assets/js/color-modes.js"></script>
+<head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <meta name="description" content="">
-      <meta name="author" content="">
-      <meta name="generator" content="">
+      <meta name="author" content="Muhammed Yalçınkaya">
+      <meta name="generator" content="OIM">
     <title><?php echo $siteName ?> - <?php echo $siteShortName ?></title>
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3">
+    <script src="./assets/js/color-modes.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3">
     <link href="./assets/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
@@ -151,21 +152,21 @@ $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_er
           <li>
               <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light" aria-pressed="false">
                   <svg class="bi me-2 opacity-50 theme-icon" width="1em" height="1em"><use href="#sun-fill"></use></svg>
-                  Light
+                  Aydınlık
                   <svg class="bi ms-auto d-none" width="1em" height="1em"><use href="#check2"></use></svg>
               </button>
           </li>
           <li>
               <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark" aria-pressed="false">
                   <svg class="bi me-2 opacity-50 theme-icon" width="1em" height="1em"><use href="#moon-stars-fill"></use></svg>
-                  Dark
+                  Karanlık
                   <svg class="bi ms-auto d-none" width="1em" height="1em"><use href="#check2"></use></svg>
               </button>
           </li>
           <li>
               <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="auto" aria-pressed="true">
                   <svg class="bi me-2 opacity-50 theme-icon" width="1em" height="1em"><use href="#circle-half"></use></svg>
-                  Auto
+                  Otomatik
                   <svg class="bi ms-auto d-none" width="1em" height="1em"><use href="#check2"></use></svg>
               </button>
           </li>
