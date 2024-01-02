@@ -1,4 +1,24 @@
 <?php
+/**
+ * @copyright Copyright (c) 2024, KUTBU
+ *
+ * @author Muhammed Yalçınkaya <muhammed.yalcinkaya@kutbu.com>
+ *
+ * @license AGPL-3.0
+ *
+ * This code is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License, version 3,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License, version 3,
+ * along with this program. If not, see <http://www.gnu.org/licenses/>
+ *
+ */
 global $db;
 session_start();
 session_regenerate_id(true);
@@ -71,11 +91,11 @@ require_once "admin_panel_sidebar.php";
                 <li><strong>Telefon:</strong> <?= $user['phone'] ?></li>
                 <li><strong>SMS Gönderilme Zamanı:</strong> <?= $user['verification_time_sms_sent'] ?></li>
                 <li><strong>SMS Onay Zamanı:</strong> <?= $user['verification_time_sms_confirmed'] ?></li>
-                <li><strong>SMS Onay Durumu:</strong> <?= $user['verification_time_sms_confirmed'] ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-times text-danger"></i>' ?></li>
+                <li><strong>SMS Onay Durumu:</strong> <?= $user['verification_time_sms_confirmed'] ? '<i class="fas fa-check text-success"></i> Doğrulandı' : '<i class="fas fa-times text-danger"></i> Doğrulanmadı' ?></li>
                 <li><strong>SMS Onay IP:</strong> <?= $user['verification_ip_sms'] ?></li>
                 <li><strong>E-posta Gönderilme Zamanı:</strong> <?= $user['verification_time_email_sent'] ?></li>
                 <li><strong>E-posta Onay Zamanı:</strong> <?= $user['verification_time_email_confirmed'] ?></li>
-                <li><strong>E-posta Onay Durumu:</strong> <?= $user['verification_time_email_confirmed'] ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-times text-danger"></i>' ?></li>
+                <li><strong>E-posta Onay Durumu:</strong> <?= $user['verification_time_email_confirmed'] ? '<i class="fas fa-check text-success"></i> Doğrulandı' : '<i class="fas fa-times text-danger"></i> Doğrulanmadı' ?></li>
                 <li><strong>E-posta Onay IP:</strong> <?= $user['verification_ip_email'] ?></li>
             </ul>
         </div>
