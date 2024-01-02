@@ -1,4 +1,24 @@
 <?php
+/**
+ * @copyright Copyright (c) 2024, KUTBU
+ *
+ * @author Muhammed Yalçınkaya <muhammed.yalcinkaya@kutbu.com>
+ *
+ * @license AGPL-3.0
+ *
+ * This code is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License, version 3,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License, version 3,
+ * along with this program. If not, see <http://www.gnu.org/licenses/>
+ *
+ */
 global $db, $showErrors, $siteName, $siteShortName, $siteUrl;
 session_start();
 session_regenerate_id(true);
@@ -116,7 +136,7 @@ require_once "admin_panel_header.php";
             <form method="post">
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="form-group">
+                        <div class="form-group mt-3">
                             <label for="academy_id_add">Akademi:</label>
                             <select name="academy_id_add" class="form-control">
                                 <?php foreach ($academies as $academy): ?>
@@ -125,7 +145,7 @@ require_once "admin_panel_header.php";
                             </select>
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group mt-3">
                             <label for="student_id_add">Öğrenci:</label>
                             <select name="student_id_add" class="form-control">
                                 <?php foreach ($students as $student): ?>
@@ -136,7 +156,7 @@ require_once "admin_panel_header.php";
                             </select>
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group mt-3">
                             <label for="course_id_add">Ders:</label>
                             <select name="course_id_add" class="form-control">
                                 <?php foreach ($courses as $course): ?>
@@ -147,17 +167,17 @@ require_once "admin_panel_header.php";
                     </div>
 
                     <div class="col-md-6">
-                        <div class="form-group">
+                        <div class="form-group mt-3">
                             <label for="amount_add">Tutar:</label>
                             <input type="text" name="amount_add" class="form-control" required>
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group mt-3">
                             <label for="entry_date_add">Tarih:</label>
                             <input type="datetime-local" name="entry_date_add" class="form-control" onchange="validateDate()" required>
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group mt-3">
                             <label for="payment_method_add">Ödeme yöntemi:</label>
                             <select name="payment_method_add" class="form-control">
                                 <?php foreach ($payment_methods as $method): ?>
@@ -167,7 +187,9 @@ require_once "admin_panel_header.php";
                         </div>
                     </div>
                 </div>
+                <div class="form-group mt-3">
                 <button type="submit" name="add_entry" class="btn btn-primary">Giriş Ekle</button>
+                </div>
             </form>
 
             <script>

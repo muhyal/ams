@@ -1,4 +1,24 @@
 <?php
+/**
+ * @copyright Copyright (c) 2024, KUTBU
+ *
+ * @author Muhammed Yalçınkaya <muhammed.yalcinkaya@kutbu.com>
+ *
+ * @license AGPL-3.0
+ *
+ * This code is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License, version 3,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License, version 3,
+ * along with this program. If not, see <http://www.gnu.org/licenses/>
+ *
+ */
 global $db, $showErrors, $siteName, $siteShortName, $siteUrl;
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
@@ -72,7 +92,7 @@ require_once "admin_panel_sidebar.php";
                             <button onclick="history.back()" class="btn btn-sm btn-outline-secondary">
                                 <i class="fas fa-arrow-left"></i> Geri dön
                             </button>
-                            <a href="teachers_list.php" class="btn btn-sm btn-outline-secondary">
+                            <a href="teacher_list.php" class="btn btn-sm btn-outline-secondary">
                                 <i class="fas fa-list"></i> Öğretmen Listesi
                             </a>
                         </div>
@@ -113,8 +133,9 @@ require_once "admin_panel_sidebar.php";
                 <label for="email" class="form-label">E-posta:</label>
                 <input type="email" class="form-control" id="email" name="email" value="<?php echo $teacher["email"]; ?>" required>
             </div>
-
+            <div class="form-group mt-3">
             <button type="submit" name="edit_teacher" class="btn btn-primary">Öğretmeni Düzenle</button>
+            </div>
         </form>
     </main>
 

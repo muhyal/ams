@@ -1,4 +1,24 @@
 <?php
+/**
+ * @copyright Copyright (c) 2024, KUTBU
+ *
+ * @author Muhammed Yalçınkaya <muhammed.yalcinkaya@kutbu.com>
+ *
+ * @license AGPL-3.0
+ *
+ * This code is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License, version 3,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License, version 3,
+ * along with this program. If not, see <http://www.gnu.org/licenses/>
+ *
+ */
 global $db, $showErrors, $siteName, $siteShortName, $siteUrl;
 session_start();
 session_regenerate_id(true);
@@ -64,117 +84,180 @@ require_once "admin_panel_header.php";
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
                 <h5>Öğrenci Ekle</h5>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group mr-2">
+                        <button onclick="history.back()" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Geri dön
+                        </button>
+                        <a href="student_list.php" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-list"></i> Öğrenci Listesi
+                        </a>
+                    </div>
+                </div>
             </div>
-<form action="process_add_student.php" method="post" id="studentForm">
-    <label class="form-label" for="firstname">Öğrenci Adı:</label>
-    <input class="form-control" type="text" name="firstname" required><br>
-    <label class="form-label" for="lastname">Öğrenci Soyadı:</label>
-    <input class="form-control" type="text" name="lastname" required><br>
-    <label class="form-label" for="tc_identity">TC Kimlik No:</label>
-    <input class="form-control" type="text" name="tc_identity" required><br>
-    <!-- Doğum Tarihi -->
-    <h5>Doğum Tarihi</h5>
-    <label class="form-label" for="birthdate">Doğum Tarihi:</label>
-    <input class="form-control" type="date" id="birthdate" name="birthdate" required><br>
-    <label class="form-label" for="phone">Cep Telefonu:</label>
-    <input class="form-control" type="text" name="phone" onclick="addPrefixToPhoneInput(this)"><br>
-    <label class="form-label" for="email">E-posta Adresi:</label>
-    <input class="form-control" type="email" name="email" required><br>
+            <form action="process_add_student.php" method="post" id="studentForm">
+                <div class="mb-3">
+                    <label class="form-label" for="firstname">Öğrenci Adı:</label>
+                    <input class="form-control" type="text" name="firstname" required>
+                </div>
 
-    <!-- Veli Bilgileri -->
-    <h5>Veli Bilgileri</h5>
-    <label class="form-label" for="parent_checkbox">
-        <input type="checkbox" id="parent_checkbox" name="parent_checkbox"> Kendi bilgilerimi kullanmak istiyorum
-    </label><br>
+                <div class="mb-3">
+                    <label class="form-label" for="lastname">Öğrenci Soyadı:</label>
+                    <input class="form-control" type="text" name="lastname" required>
+                </div>
 
+                <div class="mb-3">
+                    <label class="form-label" for="tc_identity">TC Kimlik No:</label>
+                    <input class="form-control" type="text" name="tc_identity" required>
+                </div>
 
-    <label class="form-label" for="parent_firstname">Veli Adı:</label>
-    <input class="form-control" type="text" name="parent_firstname" id="parent_firstname" required><br>
-    <label class="form-label" for="parent_lastname">Veli Soyadı:</label>
-    <input class="form-control" type="text" name="parent_lastname" id="parent_lastname" required><br>
-    <label class="form-label" for="parent_phone">Veli Cep Telefonu:</label>
-    <input class="form-control" type="text" name="parent_phone" id="parent_phone" value="90" required onclick="addPrefixToPhoneInput(this)"><br>
-    <label class="form-label" for="parent_email">Veli E-posta Adresi:</label>
-    <input class="form-control" type="email" name="parent_email" id="parent_email" required><br>
+                <div class="mb-3">
+                    <h5>Doğum Tarihi</h5>
+                    <label class="form-label" for="birthdate">Doğum Tarihi:</label>
+                    <input class="form-control" type="date" id="birthdate" name="birthdate" required>
+                </div>
 
-    <!-- Acil Durum İletişim Bilgileri -->
-    <h5>Acil Durum İletişim Bilgileri</h5>
-    <label class="form-label" for="emergency_contact">Acil Durumda Aranacak Kişi:</label>
-    <input class="form-control" type="text" name="emergency_contact" required><br>
-    <label class="form-label" for="emergency_phone">Acil Durumda Aranacak Kişi Telefonu:</label>
-    <input class="form-control" type="text" name="emergency_phone" required onclick="addPrefixToPhoneInput(this)"><br>
+                <div class="mb-3">
+                    <label class="form-label" for="phone">Cep Telefonu:</label>
+                    <input class="form-control" type="text" name="phone" onclick="addPrefixToPhoneInput(this)">
+                </div>
 
-    <!-- Adres Bilgileri -->
-    <h5>Adres Bilgileri</h5>
+                <div class="mb-3">
+                    <label class="form-label" for="email">E-posta Adresi:</label>
+                    <input class="form-control" type="email" name="email" required>
+                </div>
 
-    <label class="form-label" for="city">İl:</label>
-    <input class="form-control" type="text" name="city" required><br>
+                <!-- Veli Bilgileri -->
+                <div class="mb-3">
+                    <h5>Veli Bilgileri</h5>
+                    <label class="form-check">
+                        <input type="checkbox" id="parent_checkbox" name="parent_checkbox" class="form-check-input">
+                        Kendi bilgilerimi kullanmak istiyorum
+                    </label>
+                </div>
 
-    <label class="form-label" for="district">İlçe:</label>
-    <input class="form-control" type="text" name="district" required><br>
+                <div class="mb-3">
+                    <label class="form-label" for="parent_firstname">Veli Adı:</label>
+                    <input class="form-control" type="text" name="parent_firstname" id="parent_firstname" required>
+                </div>
 
-    <div class="form-group">
-        <label for="address">Adres:</label>
-        <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
-    </div>
+                <div class="mb-3">
+                    <label class="form-label" for="parent_lastname">Veli Soyadı:</label>
+                    <input class="form-control" type="text" name="parent_lastname" id="parent_lastname" required>
+                </div>
 
+                <div class="mb-3">
+                    <label class="form-label" for="parent_phone">Veli Cep Telefonu:</label>
+                    <input class="form-control" type="text" name="parent_phone" id="parent_phone" value="90" required onclick="addPrefixToPhoneInput(this)">
+                </div>
 
-    <!-- Kan Grubu ve Rahatsızlık Bilgisi -->
-    <h5>Kan Grubu ve Rahatsızlık Bilgisi</h5>
-    <label class="form-label" for="blood_type">Kan Grubu:</label>
-    <input class="form-control" type="text" name="blood_type" required><br>
-    <label class="form-label" for="health_issue">Bilinen Rahatsızlık:</label>
-    <input class="form-control" type="text" name="health_issue"><br>
+                <div class="mb-3">
+                    <label class="form-label" for="parent_email">Veli E-posta Adresi:</label>
+                    <input class="form-control" type="email" name="parent_email" id="parent_email" required>
+                </div>
 
-    <!-- Akademi Seçimi -->
-        <h5>Akademi Seçimi</h5>
-        <div class="form-group">
-            <select class="form-control" name="academy" required>
-                <option value="">Akademi Seçin</option>
-                <?php foreach ($academies as $academy): ?>
-                    <option value="<?php echo $academy['id']; ?>"><?php echo $academy['name']; ?></option>
-                <?php endforeach; ?>
-            </select>
-        </div>
+                <!-- Acil Durum İletişim Bilgileri -->
+                <div class="mb-3">
+                    <h5>Acil Durum İletişim Bilgileri</h5>
+                    <label class="form-label" for="emergency_contact">Acil Durumda Aranacak Kişi:</label>
+                    <input class="form-control" type="text" name="emergency_contact" required>
+                </div>
 
-    <!-- Öğretmen Seçimi -->
-        <h5>Öğretmen Seçimi</h5>
-        <div class="form-group">
-            <select class="form-control" name="teacher" required>
-                <option value="">Öğretmen Seçin</option>
-                <?php foreach ($teachers as $teacher): ?>
-                    <option value="<?php echo $teacher['id']; ?>"><?php echo $teacher['first_name'] . ' ' . $teacher['last_name']; ?></option>
-                <?php endforeach; ?>
-            </select>
-        </div>
+                <div class="mb-3">
+                    <label class="form-label" for="emergency_phone">Acil Durumda Aranacak Kişi Telefonu:</label>
+                    <input class="form-control" type="text" name="emergency_phone" required onclick="addPrefixToPhoneInput(this)">
+                </div>
 
-    <!-- Ders Seçimi -->
-        <h5>Ders Seçimi</h5>
-        <div class="form-group">
-            <select class="form-control" name="course" required>
-                <option value="">Ders Seçin</option>
-                <?php foreach ($courses as $course): ?>
-                    <option value="<?php echo $course['id']; ?>"><?php echo $course['course_name']; ?></option>
-                <?php endforeach; ?>
-            </select>
-        </div>
+                <!-- Adres Bilgileri -->
+                <div class="mb-3">
+                    <h5>Adres Bilgileri</h5>
+                    <label class="form-label" for="city">İl:</label>
+                    <input class="form-control" type="text" name="city" required>
+                </div>
 
-    <!-- Sınıf Seçimi -->
-        <h5>Sınıf Seçimi</h5>
-        <div class="form-group">
-            <select class="form-control" name="class" required>
-                <option value="">Sınıf Seçin</option>
-                <?php foreach ($classes as $class): ?>
-                    <option value="<?php echo $class['id']; ?>"><?php echo $class['class_name']; ?></option>
-                <?php endforeach; ?>
-            </select>
-        </div>
+                <div class="mb-3">
+                    <label class="form-label" for="district">İlçe:</label>
+                    <input class="form-control" type="text" name="district" required>
+                </div>
+
+                <div class="mb-3">
+                <label for="address">Adres:</label>
+                <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
+                </div>
 
 
-    <button type="submit" class="btn btn-primary">Ekle</button>
-    <button onclick="history.back()" class="btn btn-primary">Geri dön</button>
-    <button onclick="window.location.href='student_list.php'" class="btn btn-secondary">Öğrenci listesi</button>
-</form><br>
+                <!-- Kan Grubu ve Rahatsızlık Bilgisi -->
+                <div class="mb-3">
+                    <h5 class="mb-3">Kan Grubu ve Rahatsızlık Bilgisi</h5>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="blood_type">Kan Grubu:</label>
+                        <input class="form-control" type="text" name="blood_type" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="health_issue">Bilinen Rahatsızlık:</label>
+                        <input class="form-control" type="text" name="health_issue">
+                    </div>
+                </div>
+
+                <!-- Akademi Seçimi -->
+                <div class="mb-3">
+                    <h5 class="mb-3">Akademi Seçimi</h5>
+                    <div class="mb-3">
+                        <select class="form-control" name="academy" required>
+                            <option value="">Akademi Seçin</option>
+                            <?php foreach ($academies as $academy): ?>
+                                <option value="<?php echo $academy['id']; ?>"><?php echo $academy['name']; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Öğretmen Seçimi -->
+                <div class="mb-3">
+                    <h5 class="mb-3">Öğretmen Seçimi</h5>
+                    <div class="mb-3">
+                        <select class="form-control" name="teacher" required>
+                            <option value="">Öğretmen Seçin</option>
+                            <?php foreach ($teachers as $teacher): ?>
+                                <option value="<?php echo $teacher['id']; ?>"><?php echo $teacher['first_name'] . ' ' . $teacher['last_name']; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Ders Seçimi -->
+                <div class="mb-3">
+                    <h5 class="mb-3">Ders Seçimi</h5>
+                    <div class="mb-3">
+                        <select class="form-control" name="course" required>
+                            <option value="">Ders Seçin</option>
+                            <?php foreach ($courses as $course): ?>
+                                <option value="<?php echo $course['id']; ?>"><?php echo $course['course_name']; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Sınıf Seçimi -->
+                <div class="mb-3">
+                    <h5 class="mb-3">Sınıf Seçimi</h5>
+                    <div class="mb-3">
+                        <select class="form-control" name="class" required>
+                            <option value="">Sınıf Seçin</option>
+                            <?php foreach ($classes as $class): ?>
+                                <option value="<?php echo $class['id']; ?>"><?php echo $class['class_name']; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary">Öğrenci Ekle</button>
+                </div>
+
+            </form><br>
         </main>
     </div>
 </div>

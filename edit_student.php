@@ -1,4 +1,24 @@
 <?php
+/**
+ * @copyright Copyright (c) 2024, KUTBU
+ *
+ * @author Muhammed Yalçınkaya <muhammed.yalcinkaya@kutbu.com>
+ *
+ * @license AGPL-3.0
+ *
+ * This code is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License, version 3,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License, version 3,
+ * along with this program. If not, see <http://www.gnu.org/licenses/>
+ *
+ */
 global $db, $showErrors, $siteName, $siteShortName, $siteUrl;
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
@@ -220,77 +240,77 @@ $academies = $stmtAcademies->fetchAll(PDO::FETCH_ASSOC);
 
             <form method="post" action="">
                 <input type="hidden" name="student_id" value="<?php echo $student['id']; ?>">
-                <div class="form-group">
+                <div class="form-group mt-3">
                     <label for="new_firstname">Yeni Adı:</label>
                     <input type="text" id="new_firstname" name="new_firstname" class="form-control" value="<?php echo $student['firstname']; ?>" required>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group mt-3">
                     <label for="new_lastname">Yeni Soyadı:</label>
                     <input type="text" id="new_lastname" name="new_lastname" class="form-control" value="<?php echo $student['lastname']; ?>" required>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group mt-3">
                     <label for="new_tc_identity">Yeni TC Kimlik No:</label>
                     <input type="text" id="new_tc_identity" name="new_tc_identity" class="form-control" value="<?php echo $student['tc_identity']; ?>" required>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group mt-3">
                 <label for="new_phone">Yeni Cep Telefonu:</label>
                 <input type="text" id="new_phone" name="new_phone" class="form-control" value="<?php echo $student['phone']; ?>" required>
                 </div>
-                    <div class="form-group">
+                <div class="form-group mt-3">
                 <label for="new_email">Yeni E-posta:</label>
                 <input type="email" id="new_email" name="new_email" class="form-control" value="<?php echo $student['email']; ?>" required>
                     </div>
 
-                        <div class="form-group">
+                <div class="form-group mt-3">
                 <label for="new_blood_type">Yeni Kan Grubu:</label>
                 <input type="text" id="new_blood_type" name="new_blood_type" class="form-control" value="<?php echo $student['blood_type']; ?>" required>
                 </div>
-                <div class="form-group">
+                <div class="form-group mt-3">
                 <label for="new_health_issue">Yeni Sağlık Sorunu:</label>
                 <input type="text" id="new_health_issue" name="new_health_issue" class="form-control" value="<?php echo $student['health_issue']; ?>" required>
                 </div>
-                <div class="form-group">
+                <div class="form-group mt-3">
                     <label for="new_birthdate">Yeni Doğum Tarihi:</label>
                     <input type="date" id="new_birthdate" name="new_birthdate" class="form-control" value="<?php echo $student['birthdate']; ?>" required>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group mt-3">
                 <label for="new_blood_type">Yeni İl:</label>
                 <input type="text" id="new_city" name="new_city" class="form-control" value="<?php echo $student['city']; ?>" required>
                 </div>
-                <div class="form-group">
+                <div class="form-group mt-3">
                 <label for="new_health_issue">Yeni İlçe:</label>
                 <input type="text" id="new_district" name="new_district" class="form-control" value="<?php echo $student['district']; ?>" required>
                 </div>
-                <div class="form-group">
+                <div class="form-group mt-3">
                 <label for="new_health_issue">Yeni Adres:</label>
                 <input type="text" id="new_address" name="new_address" class="form-control" value="<?php echo $student['address']; ?>" required>
                 </div>
-                <div class="form-group">
+                <div class="form-group mt-3">
                     <label for="new_parent_firstname">Yeni Veli Adı:</label>
                     <input type="text" id="new_parent_firstname" name="new_parent_firstname" class="form-control" value="<?php echo $student['parent_firstname']; ?>" required>
                 </div>
-                <div class="form-group">
+                <div class="form-group mt-3">
                     <label for="new_parent_lastname">Yeni Veli Soyadı:</label>
                     <input type="text" id="new_parent_lastname" name="new_parent_lastname" class="form-control" value="<?php echo $student['parent_lastname']; ?>" required>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group mt-3">
                     <label for="new_parent_phone">Yeni Veli Telefonu:</label>
                     <input type="text" id="new_parent_phone" name="new_parent_phone" class="form-control" value="<?php echo $student['parent_phone']; ?>" required>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group mt-3">
                     <label for="new_parent_email">Yeni Veli E-posta:</label>
                     <input type="email" id="new_parent_email" name="new_parent_email" class="form-control" value="<?php echo $student['parent_email']; ?>" required>
                 </div>
 
                 <!-- Akademi Seçimi -->
-                <h5>Akademi Seçimi</h5>
-                <div class="form-group">
+                <div class="form-group mt-3">
+                    <h5>Akademi Seçimi</h5>
                     <select class="form-control" name="academy" required>
                         <option value="">Akademi Seçin</option>
                         <?php foreach ($academies as $academy): ?>
@@ -300,8 +320,8 @@ $academies = $stmtAcademies->fetchAll(PDO::FETCH_ASSOC);
                 </div>
 
                 <!-- Öğretmen Seçimi -->
-                <h5>Öğretmen Seçimi</h5>
-                <div class="form-group">
+                <div class="form-group mt-3">
+                    <h5>Öğretmen Seçimi</h5>
                     <select class="form-control" name="teacher" required>
                         <option value="">Öğretmen Seçin</option>
                         <?php foreach ($teachers as $teacher): ?>
@@ -311,8 +331,8 @@ $academies = $stmtAcademies->fetchAll(PDO::FETCH_ASSOC);
                 </div>
 
                 <!-- Ders Seçimi -->
-                <h5>Ders Seçimi</h5>
-                <div class="form-group">
+                <div class="form-group mt-3">
+                    <h5>Ders Seçimi</h5>
                     <select class="form-control" name="course" required>
                         <option value="">Ders Seçin</option>
                         <?php foreach ($courses as $course): ?>
@@ -322,8 +342,8 @@ $academies = $stmtAcademies->fetchAll(PDO::FETCH_ASSOC);
                 </div>
 
                 <!-- Sınıf Seçimi -->
-                <h5>Sınıf Seçimi</h5>
-                <div class="form-group">
+                <div class="form-group mt-3">
+                    <h5>Sınıf Seçimi</h5>
                     <select class="form-control" name="class" required>
                         <option value="">Sınıf Seçin</option>
                         <?php foreach ($classes as $class): ?>
@@ -332,7 +352,7 @@ $academies = $stmtAcademies->fetchAll(PDO::FETCH_ASSOC);
                     </select>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group mt-3">
                     <button type="submit" class="btn btn-primary">Güncelle</button>
                 </div>
             </form>

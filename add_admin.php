@@ -1,4 +1,24 @@
 <?php
+/**
+ * @copyright Copyright (c) 2024, KUTBU
+ *
+ * @author Muhammed Yalçınkaya <muhammed.yalcinkaya@kutbu.com>
+ *
+ * @license AGPL-3.0
+ *
+ * This code is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License, version 3,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License, version 3,
+ * along with this program. If not, see <http://www.gnu.org/licenses/>
+ *
+ */
 global $db, $showErrors, $siteName, $siteShortName, $siteUrl;
 session_start();
 session_regenerate_id(true);
@@ -35,22 +55,22 @@ require_once "admin_panel_header.php";
             </div>
 
             <form method="post" action="add_admin_process.php">
-                <div class="form-group">
+                <div class="form-group mt-3">
                     <label for="username">Yönetici Kullanıcı Adı:</label>
                     <input type="text" id="username" name="username" class="form-control" required>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group mt-3">
                     <label for="phone">Telefon:</label>
                     <input type="text" id="phone" name="phone" class="form-control" required>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group mt-3">
                     <label for="email">E-posta:</label>
                     <input type="email" id="email" name="email" class="form-control" required>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group mt-3">
                     <label for="password">Şifre:</label>
                     <div class="input-group">
                         <input type="password" id="password" name="password" class="form-control" required>
@@ -65,8 +85,9 @@ require_once "admin_panel_header.php";
                         </div>
                     </div>
                 </div>
-
+                <div class="form-group mt-3">
                 <button type="submit" class="btn btn-primary">Kaydet</button>
+                </div>
             </form>
         </main>
     </div>

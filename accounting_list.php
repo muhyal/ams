@@ -1,4 +1,24 @@
 <?php
+/**
+ * @copyright Copyright (c) 2024, KUTBU
+ *
+ * @author Muhammed Yalçınkaya <muhammed.yalcinkaya@kutbu.com>
+ *
+ * @license AGPL-3.0
+ *
+ * This code is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License, version 3,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License, version 3,
+ * along with this program. If not, see <http://www.gnu.org/licenses/>
+ *
+ */
 global $db, $showErrors, $siteName, $siteShortName, $siteUrl;
 session_start();
 session_regenerate_id(true);
@@ -103,61 +123,63 @@ function getPaymentMethodName($paymentMethodId)
     return "";
 }
 ?>
-<?php
-require_once "admin_panel_header.php";
-?>
-    <div class="container-fluid">
+<?php require_once "admin_panel_header.php"; ?>
+
+<div class="container-fluid">
     <div class="row">
-<?php
-require_once "admin_panel_sidebar.php";
-?>
-    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
-        <h2>Muhasebe Kayıtları</h2>
-    </div>
-<div class="table-responsive">
-    <table class="table table-bordered">
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Akademi</th>
-            <th>Öğrenci</th>
-            <th>Ders</th>
-            <th>Tutar</th>
-            <th>Tarih</th>
-            <th>Ödeme Yöntemi</th>
-        </tr>
-        </thead>
-        <tbody>
-        <?php if (!empty($entries) && is_array($entries)): ?>
-            <?php foreach ($entries as $entry): ?>
-                <tr>
-                    <td><?= $entry['id'] ?></td>
-                    <td><?= isset($entry['academy_id']) ? getAcademyName($entry['academy_id']) : 'Belirsiz' ?></td>
-                    <td><?= isset($entry['student_id']) ? getStudentName($entry['student_id']) : 'Belirsiz' ?></td>
-                    <td><?= isset($entry['course_id']) ? getCourseName($entry['course_id']) : 'Belirsiz' ?></td>
-                    <td><?= isset($entry['amount']) ? $entry['amount'] : 'Belirsiz' ?></td>
-                    <td><?php
-                    if (isset($entry['entry_date'])) {
-                        $timestamp = strtotime($entry['entry_date']);
-                        echo date('d.m.Y H:i', $timestamp);
-                    } else {
-                        echo 'Belirsiz';
-                    }
-                    ?></td>
-                    <td><?= isset($entry['payment_method']) ? getPaymentMethodName($entry['payment_method']) : 'Belirsiz' ?></td>
-                </tr>
-            <?php endforeach; ?>
-
-
-        <?php else: ?>
-            <tr>
-                <td colspan="7">Kayıt bulunamadı.</td>
-            </tr>
-        <?php endif; ?>
-        </tbody>
-    </table>
-</div>
-<?php
-require_once "footer.php";
+        <?php require_once "admin_panel_sidebar.php"; ?>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
+                <h2>Muhasebe Kayıtları</h2>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group mr-2">
+                        <a href="accounting.php" class="btn btn-sm btn-outline-secondary">Muhasebe Kaydı Ekle</a>
+                        <a href="accounting_reports.php" class="btn btn-sm btn-outline-secondary">Raporlar</a>
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th>No</th>
+                        <th>Akademi</th>
+                        <th>Öğrenci</th>
+                        <th>Ders</th>
+                        <th>Tutar</th>
+                        <th>Tarih</th>
+                        <th>Ödeme Yöntemi</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php if (!empty($entries) && is_array($entries)): ?>
+                        <?php foreach ($entries as $entry): ?>
+                            <tr>
+                                <td><?= $entry['id'] ?></td>
+                                <td><?= isset($entry['academy_id']) ? getAcademyName($entry['academy_id']) : 'Belirsiz' ?></td>
+                                <td><?= isset($entry['student_id']) ? getStudentName($entry['student_id']) : 'Belirsiz' ?></td>
+                                <td><?= isset($entry['course_id']) ? getCourseName($entry['course_id']) : 'Belirsiz' ?></td>
+                                <td><?= isset($entry['amount']) ? $entry['amount'] : 'Belirsiz' ?></td>
+                                <td>
+                                    <?php
+                                    if (isset($entry['entry_date'])) {
+                                        $timestamp = strtotime($entry['entry_date']);
+                                        echo date('d.m.Y H:i', $timestamp);
+                                    } else {
+                                        echo 'Belirsiz';
+                                    }
+                                    ?>
+                                </td>
+                                <td><?= isset($entry['payment_method']) ? getPaymentMethodName($entry['payment_method']) : 'Belirsiz' ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="7">Kayıt bulunamadı.</td>
+                        </tr>
+                    <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+            <?php require_once "footer.php"; ?>
 ?>

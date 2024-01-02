@@ -1,4 +1,25 @@
 <?php
+/**
+ * @copyright Copyright (c) 2024, KUTBU
+ *
+ * @author Muhammed Yalçınkaya <muhammed.yalcinkaya@kutbu.com>
+ *
+ * @license AGPL-3.0
+ *
+ * This code is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License, version 3,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License, version 3,
+ * along with this program. If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
 global $db, $showErrors, $siteName, $siteShortName, $siteUrl;
 session_start();
 session_regenerate_id(true);
@@ -100,22 +121,34 @@ require_once "admin_panel_header.php";
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
                 <h2>Akademi İşlemleri</h2>
+                <!-- Akademi Ekle Butonu -->
+                <button class="btn btn-primary" onclick="showAddForm()">Akademi Ekle</button>
             </div>
 
             <!-- Tüm Akademileri Listeleme -->
-            <h3>Tüm Akademiler</h3>
-            <ul>
-                <?php foreach ($academies as $academy): ?>
-                    <li>
-                        <?php echo $academy["name"]; ?>
-                        (<a href="?edit=<?php echo $academy["id"]; ?>" class="btn btn-warning btn-sm">Düzenle</a> |
-                        <button class="btn btn-danger btn-sm" onclick="confirmDelete(<?php echo $academy['id']; ?>)">Sil</button>)
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-
-            <!-- Akademi Ekle Butonu -->
-            <button class="btn btn-primary" onclick="showAddForm()">Akademi Ekle</button>
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Tüm Akademiler</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <?php foreach ($academies as $academy): ?>
+                            <div class="col-md-4 mb-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title"><?php echo $academy["name"]; ?></h5>
+                                        <p class="card-text">
+                                            <?php echo $academy["city"] . ', ' . $academy["district"]; ?>
+                                        </p>
+                                        <a href="?edit=<?php echo $academy["id"]; ?>" class="btn btn-warning btn-sm">Düzenle</a>
+                                        <button class="btn btn-danger btn-sm" onclick="confirmDelete(<?php echo $academy['id']; ?>)">Sil</button>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
 
             <!-- Akademi Ekleme Formu -->
             <form method="post" id="addForm" style="display: none;">
@@ -152,7 +185,9 @@ require_once "admin_panel_header.php";
                     <label for="working_hours" class="form-label">Çalışma Saatleri:</label>
                     <input type="text" name="working_hours" class="form-control" required>
                 </div>
+                <div class="mb-3">
                 <button type="submit" name="add_academy" class="btn btn-primary">Akademi Ekle</button>
+                </div>
             </form>
 
             <hr>
@@ -203,7 +238,9 @@ if (isset($_GET["edit"])) {
             <label for="working_hours" class="form-label">Çalışma Saatleri:</label>
             <input type="text" name="working_hours" class="form-control" value="<?php echo $editAcademy["working_hours"]; ?>" required>
         </div>
+        <div class="mb-3">
         <button type="submit" name="edit_academy" class="btn btn-primary">Akademi Düzenle</button>
+        </div>
     </form>
 
     <?php
