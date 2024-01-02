@@ -32,8 +32,9 @@ $loggedIn = isset($_SESSION["user_id"]);
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="<?php echo $siteHeroDescription ?>">
     <title><?php echo $siteName ?> - <?php echo $siteShortName ?></title>
+    <meta name="description" content="<?php echo $siteHeroDescription ?>">
+    <meta name="robots" content="noindex, nofollow" />
     <meta name="author" content="Muhammed Yalçınkaya">
     <meta name="generator" content="<?php echo $siteShortName ?> - <?php echo $oimVersion ?>">
     <script src="./assets/js/color-modes.js"></script>

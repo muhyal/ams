@@ -1,4 +1,4 @@
-<?php
+<?php global $siteHeroDescription, $oimVersion;
 /**
  * @copyright Copyright (c) 2024, KUTBU
  *
@@ -29,12 +29,13 @@ $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_er
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
 <head>
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="">
-      <meta name="author" content="Muhammed Yalçınkaya">
-      <meta name="generator" content="OIM">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?php echo $siteName ?> - <?php echo $siteShortName ?></title>
+    <meta name="description" content="<?php echo $siteHeroDescription ?>">
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="author" content="Muhammed Yalçınkaya">
+    <meta name="generator" content="<?php echo $siteShortName ?> - <?php echo $oimVersion ?>">
     <script src="./assets/js/color-modes.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3">
     <link href="./assets/dist/css/bootstrap.min.css" rel="stylesheet">
