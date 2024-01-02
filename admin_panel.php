@@ -142,7 +142,7 @@ require_once "admin_panel_header.php";
                       echo "<span id='current-datetime'>$current_datetime</span>";
                       ?>
                   </div>
-                  Selam 👋, <?php echo $adminUsername; ?>. Güzel bir gün geçirmeni dilerim 🍀
+                  Selam 👋, <?php echo $adminUsername; ?> 🍀
                   <div class="btn-group">
                       <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                           <i class="fas fa-plus"></i> Yeni
@@ -187,7 +187,7 @@ require_once "admin_panel_header.php";
     <h4 style="display: inline-block; margin-right: 10px;">Öğrenciler</h4>
     <small><a style="color: #2b2f32;" href="student_list.php">Tüm Öğrenciler</a></small>
               <div class="table-responsive small">
-                  <table class="table table-striped table-sm">
+                  <table class="table table-striped table-sm" style="border: 1px solid #ddd;">
         <thead>
         <tr>
             <!--  <th scope="col">#</th>-->
@@ -230,7 +230,7 @@ require_once "admin_panel_header.php";
             <h4 style="display: inline-block; margin-right: 10px;">Öğretmenler</h4>
             <small><a style="color: #2b2f32;" href="teachers_list.php">Tüm Öğretmenler</a></small>
               <div class="table-responsive small">
-                  <table class="table table-striped table-sm">
+                  <table class="table table-striped table-sm" style="border: 1px solid #ddd;">
                     <thead>
                     <tr>
                         <!--   <th scope="col">#</th>-->
@@ -273,7 +273,7 @@ require_once "admin_panel_header.php";
               <h4 style="display: inline-block; margin-right: 10px;">Kullanıcılar</h4>
               <small><a style="color: #2b2f32;" href="user_list.php">Tüm Kullanıcılar</a></small>
               <div class="table-responsive small">
-                  <table class="table table-striped table-sm">
+                  <table class="table table-striped table-sm" style="border: 1px solid #ddd;">
                       <thead>
                       <tr>
                           <!--  <th scope="col">#</th>-->
@@ -314,7 +314,7 @@ require_once "admin_panel_header.php";
             <h4 style="display: inline-block; margin-right: 10px;">Dersler</h4>
             <small><a style="color: #2b2f32;" href="courses.php">Tüm Dersler</a></small>
               <div class="table-responsive small">
-                  <table class="table table-striped table-sm">
+                  <table class="table table-striped table-sm" style="border: 1px solid #ddd;">
                     <thead>
                     <tr>
                         <!--  <th scope="col">#</th>-->
@@ -341,7 +341,7 @@ require_once "admin_panel_header.php";
                 <h4 style="display: inline-block; margin-right: 10px;">Sınıflar</h4>
                 <small><a style="color: #2b2f32;" href="class_list.php">Tüm Sınıflar</a></small>
               <div class="table-responsive small">
-                  <table class="table table-striped table-sm">
+                  <table class="table table-striped table-sm" style="border: 1px solid #ddd;">
                         <thead>
                         <tr>
                             <!--   <th scope="col">#</th>-->
