@@ -24,7 +24,7 @@
    </div>
    </div>
 <!-- Boş alan -->
-<div style="height: 55px;"></div>
+<div style="height: 75px;"></div>
 <!-- Footer -->
 <footer class="footer fixed-bottom bg-body-secondary">
     <div class="container-fluid">

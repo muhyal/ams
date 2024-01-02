@@ -118,29 +118,48 @@ if (isset($_POST["reset_request"])) {
     }
 }
 ?>
-<?php
-require_once "admin_panel_header.php";
-?>
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Şifre Sıfırlama (Yönetici)</title>
-</head>
-<body>
-<?php if (!isset($_GET["token"])): ?>
-    <!-- Şifre sıfırlama talebi gönderme formu -->
-    <form method="post" action="">
-        <label for="email">E-posta:</label>
-        <input type="email" id="email" name="email" required>
-        <input type="submit" name="reset_request" value="Şifre Sıfırlama Talebi Gönder">
-    </form>
-<?php else: ?>
-    <!-- Yeni şifre belirleme formu -->
-    <form method="post" action="">
-        <label for="new_password">Yeni Şifre:</label>
-        <input type="password" id="new_password" name="new_password" required>
-        <input type="submit" value="Şifreyi Güncelle">
-    </form>
-<?php endif; ?>
-</body>
-</html>
+
+<?php require_once "header.php"; ?>
+
+<div class="container mt-5">
+    <?php if (!isset($_GET["token"])): ?>
+        <!-- Şifre sıfırlama talebi gönderme formu -->
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <form method="post" action="">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">E-posta:</label>
+                        <input type="email" id="email" name="email" class="form-control" required>
+                    </div>
+                    <div class="form-group mt-3">
+                        <button class="btn btn-primary w-100 py-2" name="reset_request" type="submit">
+                            <i class="fas fa-sign-in-alt"></i> Şifre Sıfırlama Talebi Gönder
+                        </button>
+                    </div>
+                    <div class="form-group mt-2">
+                        <a href="<?php echo $siteUrl ?>" class="btn btn-secondary w-100 py-2">
+                            <i class="fas fa-home"></i> <?php echo $siteName ?> - <?php echo $siteShortName ?>
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    <?php else: ?>
+        <!-- Yeni şifre belirleme formu -->
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <form method="post" action="">
+                    <div class="mb-3">
+                        <label for="new_password" class="form-label">Yeni Şifre:</label>
+                        <input type="password" id="new_password" name="new_password" class="form-control" required>
+                    </div>
+                    <div class="form-group mt-3">
+                        <input type="submit" class="btn btn-primary w-100 py-2" value="Şifreyi Güncelle">
+                    </div>
+                </form>
+            </div>
+        </div>
+    <?php endif; ?>
+</div>
+
+<?php require_once "footer.php"; ?>
