@@ -1,4 +1,24 @@
 <?php
+/**
+ * @copyright Copyright (c) 2024, KUTBU
+ *
+ * @author Muhammed Yalçınkaya <muhammed.yalcinkaya@kutbu.com>
+ *
+ * @license AGPL-3.0
+ *
+ * This code is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License, version 3,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License, version 3,
+ * along with this program. If not, see <http://www.gnu.org/licenses/>
+ *
+ */
 global $db, $showErrors, $siteName, $siteShortName, $siteUrl, $config;
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
@@ -14,6 +34,8 @@ $loggedIn = isset($_SESSION["user_id"]);
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?php echo $siteName ?> - <?php echo $siteShortName ?></title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
     <link href="./assets/dist/css/bootstrap.min.css" rel="stylesheet">
 <body>
 <header class="p-3 mb-3 border-bottom">
@@ -37,6 +59,8 @@ $loggedIn = isset($_SESSION["user_id"]);
                     <?php } ?>
 
                     <?php if ($loggedIn) { // Oturum açıldıysa oturumu kapat butonunu göster ?>
+                        <li><a class="dropdown-item" href="user_panel.php">Kullanıcı Paneli</a></li>
+                        <li><a class="dropdown-item" href="user_profile_edit.php">Bilgileri güncelle</a></li>
                         <li><a class="dropdown-item" href="logout.php">Oturumu kapat</a></li>
                     <?php } ?>
                 </ul>
