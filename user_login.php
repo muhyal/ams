@@ -55,11 +55,10 @@ require_once "header.php";
 
             <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
 
-
             <h1 class="h3 mb-3 fw-normal">Kullanıcı Paneli</h1>
 
             <div class="form-floating">
-                <input type="text" class="form-control" id="username" name="username" placeholder="E-posta / Kullanıcı adı" autofocus="">
+                <input type="text" class="form-control" id="identifier" name="identifier" placeholder="E-posta / Kullanıcı adı" autofocus="">
                 <label for="floatingInput">E-posta / Kullanıcı adı</label>
             </div>
             <div class="form-floating">
@@ -70,22 +69,15 @@ require_once "header.php";
                 </div>
             </div>
             <div class="form-group mt-3">
-            <button class="btn btn-primary w-100 py-2" type="submit">Oturum aç</button>
+                <button class="btn btn-primary w-100 py-2" type="submit">
+                    <i class="fas fa-sign-in-alt"></i> Oturum aç
+                </button>
+                <a href="<?php echo $siteUrl ?>" class="btn btn-secondary w-100 py-2 mt-2">
+                    <i class="fas fa-home"></i> <?php echo $siteName ?> - <?php echo $siteShortName ?>
+                </a>
             </div>
         </form>
     </main>
-
-
-
-
-
-
-
-
-
-
-
-
 </form>
 </div>
 <?php
