@@ -188,16 +188,35 @@ $stmtAcademies = $db->prepare($queryAcademies);
 $stmtAcademies->execute();
 $academies = $stmtAcademies->fetchAll(PDO::FETCH_ASSOC);
 ?>
-<?php
-require_once "admin_panel_header.php";
-?>
-<div class="container-fluid">
+<?php require_once "admin_panel_header.php"; ?>
+
+    <div class="container-fluid">
     <div class="row">
-        <?php require_once "admin_panel_sidebar.php"; ?>
-        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
-                <h4>Öğrenci <?php echo $student['firstname']; ?> <?php echo $student['lastname']; ?> Düzenleniyor</h4>
+<?php require_once "admin_panel_sidebar.php"; ?>
+
+    <!-- Geri Dönme ve Öğrenci Listesi -->
+    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
+        <h4>Öğrenci <?php echo $student['firstname']; ?> <?php echo $student['lastname']; ?> Düzenleniyor</h4>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group mr-2">
+                        <button onclick="history.back()" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Geri dön
+                        </button>
+                        <a href="student_list.php" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-list"></i> Öğrenci Listesi
+                        </a>
+                    </div>
+                </div>
             </div>
+        </div>
+    </div>
+    <br>
 
             <form method="post" action="">
                 <input type="hidden" name="student_id" value="<?php echo $student['id']; ?>">
@@ -275,7 +294,7 @@ require_once "admin_panel_header.php";
                     <select class="form-control" name="academy" required>
                         <option value="">Akademi Seçin</option>
                         <?php foreach ($academies as $academy): ?>
-                            <option value="<?php echo $academy['id']; ?>" <?php echo ($academy['id'] == $student['academy_id']) ? 'selected' : ''; ?>><?php echo $academy['name']; ?></option>
+                            <option value="<?php echo $academy['id']; ?>"><?php echo $academy['name']; ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -286,7 +305,7 @@ require_once "admin_panel_header.php";
                     <select class="form-control" name="teacher" required>
                         <option value="">Öğretmen Seçin</option>
                         <?php foreach ($teachers as $teacher): ?>
-                            <option value="<?php echo $teacher['id']; ?>" <?php echo ($teacher['id'] == $student['teacher_id']) ? 'selected' : ''; ?>><?php echo $teacher['first_name'] . ' ' . $teacher['last_name']; ?></option>
+                            <option value="<?php echo $teacher['id']; ?>"><?php echo $teacher['first_name'] . ' ' . $teacher['last_name']; ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -297,7 +316,7 @@ require_once "admin_panel_header.php";
                     <select class="form-control" name="course" required>
                         <option value="">Ders Seçin</option>
                         <?php foreach ($courses as $course): ?>
-                            <option value="<?php echo $course['id']; ?>" <?php echo ($course['id'] == $student['course_id']) ? 'selected' : ''; ?>><?php echo $course['course_name']; ?></option>
+                            <option value="<?php echo $course['id']; ?>"><?php echo $course['course_name']; ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -308,15 +327,17 @@ require_once "admin_panel_header.php";
                     <select class="form-control" name="class" required>
                         <option value="">Sınıf Seçin</option>
                         <?php foreach ($classes as $class): ?>
-                            <option value="<?php echo $class['id']; ?>" <?php echo ($class['id'] == $student['class_id']) ? 'selected' : ''; ?>><?php echo $class['class_name']; ?></option>
+                            <option value="<?php echo $class['id']; ?>"><?php echo $class['class_name']; ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
-
 
                 <div class="form-group">
                     <button type="submit" class="btn btn-primary">Güncelle</button>
                 </div>
             </form>
+    </main>
+    </div>
+    </div>
 
 <?php require_once "footer.php"; ?>

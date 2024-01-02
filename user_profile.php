@@ -38,6 +38,27 @@ require_once "admin_panel_sidebar.php";
         <h2>Kullanıcı Profili</h2>
     </div>
 
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group mr-2">
+                        <button onclick="history.back()" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Geri dön
+                        </button>
+                        <a href="user_list.php" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-list"></i> Kullanıcı Listesi
+                        </a>
+                        <a href="edit_user.php?id=<?= $user['id'] ?>" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-edit"></i> Kullanıcı Düzenle
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
     <div class="row">
         <div class="col-md-6">
             <h3>Kullanıcı Bilgileri</h3>

@@ -76,6 +76,24 @@ require_once "admin_panel_header.php";
                 <h1 class="h2">Kullanıcı Düzenle</h1>
             </div>
 
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="btn-toolbar mb-2 mb-md-0">
+                            <div class="btn-group mr-2">
+                                <button onclick="history.back()" class="btn btn-sm btn-outline-secondary">
+                                    <i class="fas fa-arrow-left"></i> Geri dön
+                                </button>
+                                <a href="user_list.php" class="btn btn-sm btn-outline-secondary">
+                                    <i class="fas fa-list"></i> Kullanıcı Listesi
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br>
+
 <?php if (isset($user)): ?>
      <form method="post" action="">
 
@@ -144,11 +162,7 @@ require_once "admin_panel_header.php";
                      xhr.send();
                  }
              </script>
-
         <button type="submit" class="btn btn-primary">Güncelle</button>
-        <button onclick="history.back()" class="btn btn-primary">Geri dön</button>
-         <button onclick="window.location.href='user_list.php'" class="btn btn-secondary">Kullanıcı listesi</button>
-
      </form>
 
 

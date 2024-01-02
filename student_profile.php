@@ -60,9 +60,15 @@ if (isset($_GET['id'])) {
                 <div class="col-md-12">
                     <div class="btn-toolbar mb-2 mb-md-0">
                         <div class="btn-group mr-2">
-                            <button onclick="history.back()" class="btn btn-sm btn-outline-secondary">Geri dön</button>
-                            <a href="student_list.php" class="btn btn-sm btn-outline-secondary">Öğrenci Listesi</a>
-
+                            <button onclick="history.back()" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Geri dön
+                            </button>
+                            <a href="student_list.php" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-list"></i> Öğrenci Listesi
+                            </a>
+                            <a href="edit_student.php?id=<?php echo $student_id; ?>" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-edit"></i> Öğrenciyi Düzenle
+                            </a>
                         </div>
                     </div>
                 </div>

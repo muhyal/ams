@@ -37,8 +37,23 @@ require_once "admin_panel_header.php";
         <div class="col-md-12">
             <div class="btn-toolbar mb-2 mb-md-0">
                 <div class="btn-group mr-2">
-                    <button onclick="history.back()" class="btn btn-sm btn-outline-secondary">Geri dön</button>
-                    <a href="teachers_list.php" class="btn btn-sm btn-outline-secondary">Öğretmen Listesi</a>
+                    <button onclick="history.back()" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> Geri dön
+                    </button>
+                    <a href="teachers_list.php" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-list"></i> Öğretmen Listesi
+                    </a>
+                    <?php
+                    // "id" anahtarının $_GET dizisinde varlığını kontrol et
+                    if (isset($_GET['id'])) {
+                        $teacher_id = $_GET['id'];
+                        ?>
+                        <a href="edit_teacher.php?id=<?php echo $teacher_id; ?>" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-edit"></i> Öğretmeni Düzenle
+                        </a>
+                        <?php
+                    }
+                    ?>
                 </div>
             </div>
         </div>
