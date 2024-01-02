@@ -1,4 +1,4 @@
-<?php global $siteHeroDescription, $oimVersion;
+<?php global $siteHeroDescription, $oimVersion, $adminUsername;
 /**
  * @copyright Copyright (c) 2024, KUTBU
  *
@@ -43,6 +43,12 @@ $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_er
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
     <link href="./assets/css/dashboard.css" rel="stylesheet">
     <style>
+        .separator {
+            margin: 0 3px; /* Boşluk ayarlayabilirsiniz */
+            border-right: 1px solid white; /* Dikey çizgi ekleyebilirsiniz */
+            padding: 0 10px; /* İsteğe bağlı padding ayarı */
+        }
+
         .bd-placeholder-img {
             font-size: 1.125rem;
             text-anchor: middle;
@@ -245,5 +251,45 @@ $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_er
           <input class="form-control w-100 rounded-0 border-0" type="text" placeholder="Aranacak içerik..." aria-label="Search">
       </div>
 
-
+      <div class="container text-light">
+          <!-- Yeni buton ve dropdown menüsü -->
+          <div class="btn-group d-none d-md-block">
+              <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="fas fa-plus"></i> Yeni
+              </button>
+              <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="add_user.php"><i class="fas fa-user"></i> Kullanıcı</a></li>
+                  <li><a class="dropdown-item" href="add_student.php"><i class="fas fa-user"></i> Öğrenci</a></li>
+                  <li><a class="dropdown-item" href="add_teacher.php"><i class="fas fa-chalkboard-teacher"></i> Öğretmen</a></li>
+                  <li><a class="dropdown-item" href="accounting.php"><i class="fas fa-file-invoice-dollar"></i> Muhasebe kaydı</a></li>
+              </ul>
+          </div>
+          <!-- Saat ve tarih -->
+          <div id="datetime-container" class="text-light">
+              <i class="fas fa-clock-four"></i>
+              <?php
+              date_default_timezone_set('Europe/Istanbul');
+              $current_datetime = date("d.m.Y H:i");
+              echo "<span id='current-datetime'>$current_datetime</span>";
+              ?>
+          </div>
+          <!-- Profil düzenleme ve çıkış bağlantıları için flex container kullanın -->
+          <div class="row">
+              <div class="col-md-12">
+                  <div class="d-flex justify-content-end align-items-center">
+                      Selam 👋, <?php echo $adminUsername; ?> 🍀
+                      <!-- Boşluk ekleyin -->
+                      <div class="separator"></div>
+                      <a class="nav-link d-flex align-items-center" href="admin_profile_edit.php">
+                          <svg class="bi"><use xlink:href="#gear-wide-connected"/></svg>
+                      </a>
+                      <!-- Boşluk ekleyin -->
+                      <div class="separator"></div>
+                      <a class="nav-link d-flex align-items-center" href="logout.php">
+                          <svg class="bi"><use xlink:href="#door-closed"/></svg>
+                      </a>
+                  </div>
+              </div>
+          </div>
+      </div>
   </header>
