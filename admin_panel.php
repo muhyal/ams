@@ -152,31 +152,6 @@ require_once "admin_panel_header.php";
           <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
               <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                   <h1 class="h4"><i class="fas fa-dashboard"></i> Genel Bakış</h1>
-
-                  <div id="datetime-container">
-                      <i class="fas fa-clock-four"></i>
-                      <!-- This is where the date and time will be displayed -->
-                      <?php
-                      date_default_timezone_set('Europe/Istanbul');
-                      $current_datetime = date("d.m.Y H:i");
-                      echo "<span id='current-datetime'>$current_datetime</span>";
-                      ?>
-                  </div>
-                  Selam 👋, <?php echo $adminUsername; ?> 🍀
-                  <div class="btn-group">
-                      <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                          <i class="fas fa-plus"></i> Yeni
-                      </button>
-                      <ul class="dropdown-menu">
-                          <li><a class="dropdown-item" href="add_user.php"><i class="fas fa-user"></i> Kullanıcı</a></li>
-                          <li><a class="dropdown-item" href="add_student.php"><i class="fas fa-user"></i> Öğrenci</a></li>
-                          <li><a class="dropdown-item" href="add_teacher.php"><i class="fas fa-chalkboard-teacher"></i> Öğretmen</a></li>
-                          <li><a class="dropdown-item" href="accounting.php"><i class="fas fa-file-invoice-dollar"></i> Muhasebe kaydı</a></li>
-                      </ul>
-                  </div>
-
-
-
               </div>
 
 
@@ -205,7 +180,7 @@ require_once "admin_panel_header.php";
 
 
     <h4 style="display: inline-block; margin-right: 10px;">Öğrenciler</h4>
-    <small><a style="color: #2b2f32;" href="student_list.php">Tüm Öğrenciler</a></small>
+    <small><a href="student_list.php">Tüm Öğrenciler</a></small>
               <div class="table-responsive small">
                   <table class="table table-striped table-sm" style="border: 1px solid #ddd;">
         <thead>
@@ -248,7 +223,7 @@ require_once "admin_panel_header.php";
   </div>
             <!-- Öğretmenler Tablosu -->
             <h4 style="display: inline-block; margin-right: 10px;">Öğretmenler</h4>
-            <small><a style="color: #2b2f32;" href="teacher_list.php">Tüm Öğretmenler</a></small>
+            <small><a href="teacher_list.php">Tüm Öğretmenler</a></small>
               <div class="table-responsive small">
                   <table class="table table-striped table-sm" style="border: 1px solid #ddd;">
                     <thead>
@@ -291,7 +266,7 @@ require_once "admin_panel_header.php";
             </div>
 
               <h4 style="display: inline-block; margin-right: 10px;">Kullanıcılar</h4>
-              <small><a style="color: #2b2f32;" href="user_list.php">Tüm Kullanıcılar</a></small>
+              <small><a href="user_list.php">Tüm Kullanıcılar</a></small>
               <div class="table-responsive small">
                   <table class="table table-striped table-sm" style="border: 1px solid #ddd;">
                       <thead>
@@ -332,7 +307,7 @@ require_once "admin_panel_header.php";
 
             <!-- Dersler Tablosu -->
             <h4 style="display: inline-block; margin-right: 10px;">Dersler</h4>
-            <small><a style="color: #2b2f32;" href="courses.php">Tüm Dersler</a></small>
+            <small><a href="courses.php">Tüm Dersler</a></small>
               <div class="table-responsive small">
                   <table class="table table-striped table-sm" style="border: 1px solid #ddd;">
                     <thead>
@@ -359,7 +334,7 @@ require_once "admin_panel_header.php";
             </div>
 
                 <h4 style="display: inline-block; margin-right: 10px;">Sınıflar</h4>
-                <small><a style="color: #2b2f32;" href="class_list.php">Tüm Sınıflar</a></small>
+                <small><a href="class_list.php">Tüm Sınıflar</a></small>
               <div class="table-responsive small">
                   <table class="table table-striped table-sm" style="border: 1px solid #ddd;">
                         <thead>
