@@ -62,25 +62,22 @@ $stmtAcademies = $db->prepare($queryAcademies);
 $stmtAcademies->execute();
 $academies = $stmtAcademies->fetchAll(PDO::FETCH_ASSOC);
 ?>
-<?php
-require_once "admin_panel_header.php";
-?>
-    <script src="./assets/js/jquery.min.js"></script>
-    <script src="./assets/js/jquery.inputmask.min.js"></script>
-    <script>
-        function addPrefixToPhoneInput(input) {
-            // Inputa tıklanıldığında 90 değerini otomatik olarak ekleyin
-            if (!input.value.startsWith("90")) {
-                input.value = "90" + input.value;
-            }
+<?php require_once "admin_panel_header.php"; ?>
+
+<script src="./assets/js/jquery.min.js"></script>
+<script src="./assets/js/jquery.inputmask.min.js"></script>
+<script>
+    function addPrefixToPhoneInput(input) {
+        // Inputa tıklanıldığında 90 değerini otomatik olarak ekleyin
+        if (!input.value.startsWith("90")) {
+            input.value = "90" + input.value;
         }
-    </script>
+    }
+</script>
 
 <div class="container-fluid">
     <div class="row">
-        <?php
-        require_once "admin_panel_sidebar.php";
-        ?>
+        <?php require_once "admin_panel_sidebar.php"; ?>
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
                 <h5>Öğrenci Ekle</h5>
@@ -95,16 +92,20 @@ require_once "admin_panel_header.php";
                     </div>
                 </div>
             </div>
-            <form action="process_add_student.php" method="post" id="studentForm">
-                <div class="mb-3">
-                    <label class="form-label" for="firstname">Öğrenci Adı:</label>
-                    <input class="form-control" type="text" name="firstname" required>
-                </div>
 
-                <div class="mb-3">
-                    <label class="form-label" for="lastname">Öğrenci Soyadı:</label>
-                    <input class="form-control" type="text" name="lastname" required>
-                </div>
+            <form action="process_add_student.php" method="post" id="studentForm">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label" for="firstname">Öğrenci Adı:</label>
+                            <input class="form-control" type="text" name="firstname" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="lastname">Öğrenci Soyadı:</label>
+                            <input class="form-control" type="text" name="lastname" required>
+                        </div>
+
 
                 <div class="mb-3">
                     <label class="form-label" for="tc_identity">TC Kimlik No:</label>
@@ -112,7 +113,7 @@ require_once "admin_panel_header.php";
                 </div>
 
                 <div class="mb-3">
-                    <h5>Doğum Tarihi</h5>
+<!--                    <h5>Doğum Tarihi</h5>-->
                     <label class="form-label" for="birthdate">Doğum Tarihi:</label>
                     <input class="form-control" type="date" id="birthdate" name="birthdate" required>
                 </div>
@@ -126,6 +127,41 @@ require_once "admin_panel_header.php";
                     <label class="form-label" for="email">E-posta Adresi:</label>
                     <input class="form-control" type="email" name="email" required>
                 </div>
+
+                        <!-- Adres Bilgileri -->
+                        <div class="mb-3">
+                            <h5>Adres Bilgileri</h5>
+                            <label class="form-label" for="city">İl:</label>
+                            <input class="form-control" type="text" name="city" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="district">İlçe:</label>
+                            <input class="form-control" type="text" name="district" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="address">Adres:</label>
+                            <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
+                        </div>
+
+                        <!-- Kan Grubu ve Rahatsızlık Bilgisi -->
+                        <div class="mb-3">
+<!--                            <h5 class="mb-3">Kan Grubu ve Rahatsızlık Bilgisi</h5>-->
+
+                            <div class="mb-3">
+                                <label class="form-label" for="blood_type">Kan Grubu:</label>
+                                <input class="form-control" type="text" name="blood_type" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label" for="health_issue">Bilinen Rahatsızlık:</label>
+                                <input class="form-control" type="text" name="health_issue">
+                            </div>
+                        </div>
+
+                    </div>
+                        <div class="col-md-6">
 
                 <!-- Veli Bilgileri -->
                 <div class="mb-3">
@@ -168,38 +204,6 @@ require_once "admin_panel_header.php";
                     <input class="form-control" type="text" name="emergency_phone" required onclick="addPrefixToPhoneInput(this)">
                 </div>
 
-                <!-- Adres Bilgileri -->
-                <div class="mb-3">
-                    <h5>Adres Bilgileri</h5>
-                    <label class="form-label" for="city">İl:</label>
-                    <input class="form-control" type="text" name="city" required>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label" for="district">İlçe:</label>
-                    <input class="form-control" type="text" name="district" required>
-                </div>
-
-                <div class="mb-3">
-                <label for="address">Adres:</label>
-                <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
-                </div>
-
-
-                <!-- Kan Grubu ve Rahatsızlık Bilgisi -->
-                <div class="mb-3">
-                    <h5 class="mb-3">Kan Grubu ve Rahatsızlık Bilgisi</h5>
-
-                    <div class="mb-3">
-                        <label class="form-label" for="blood_type">Kan Grubu:</label>
-                        <input class="form-control" type="text" name="blood_type" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label" for="health_issue">Bilinen Rahatsızlık:</label>
-                        <input class="form-control" type="text" name="health_issue">
-                    </div>
-                </div>
 
                 <!-- Akademi Seçimi -->
                 <div class="mb-3">
@@ -252,12 +256,11 @@ require_once "admin_panel_header.php";
                         </select>
                     </div>
                 </div>
-
-                <div class="mb-3">
-                    <button type="submit" class="btn btn-primary">Öğrenci Ekle</button>
-                </div>
-
-            </form><br>
+                        </div>
+                            <div class="form-group mt-3">
+                                <button type="submit" class="btn btn-primary">Öğrenci Ekle</button>
+                            </div>
+            </form>
         </main>
     </div>
 </div>
