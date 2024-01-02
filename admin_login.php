@@ -38,7 +38,7 @@ if (!isset($_SESSION['csrf_token'])) {
 $csrf_token = $_SESSION['csrf_token'];
 ?>
 <?php
-require_once "admin_login_header.php";
+require_once "header.php";
 ?>
 <main class="form-signin w-100 m-auto">
         <form method="post" action="admin_login_process.php">
@@ -55,14 +55,18 @@ require_once "admin_login_header.php";
                 <input type="password" class="form-control" name="password" id="password" placeholder="Şifre">
                 <label for="floatingPassword">Şifre</label>
                 <div class="form-group mt-3">
-                    <a href="admin_reset_password.php">Şifremi unuttum</a>
+                    <a class="text-light-emphasis text-decoration-none" href="admin_reset_password.php">Şifremi unuttum</a>
                 </div>
             </div>
             <div class="form-group mt-3">
-            <button class="btn btn-primary w-100 py-2" type="submit">Oturum aç</button>
+                <button class="btn btn-primary w-100 py-2" type="submit">
+                    <i class="fas fa-sign-in-alt"></i> Oturum aç
+                </button>
+                <a href="<?php echo $siteUrl ?>" class="btn btn-secondary w-100 py-2 mt-2">
+                    <i class="fas fa-home"></i> <?php echo $siteName ?> - <?php echo $siteShortName ?>
+                </a>
             </div>
         </form>
-
 </main>
 <?php
 require_once "footer.php";
