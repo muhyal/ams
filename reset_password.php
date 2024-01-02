@@ -124,18 +124,27 @@ if (isset($_POST["reset_request"])) {
 }
 require_once "header.php";
 ?>
-    <div class="px-4 py-5 my-5 text-center">
-    <h1 class="display-5 fw-bold text-body-emphasis"><?php echo $siteName ?> - <?php echo $siteShortName ?></h1>
-    <div class="col-lg-6 mx-auto">
-        <p class="lead mb-4"><?php echo $resetPasswordDescription ?></p>
+    <main class="form-signin w-100 m-auto">
+        <img class="mb-4" src="./assets/brand/default_logo.png" alt="<?php echo $siteName ?>" title="<?php echo $siteName ?>" width="100" height="100">
             <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-
                 <?php if (!isset($_GET["token"])): ?>
                     <!-- Şifre sıfırlama talebi gönderme formu -->
                     <form method="post" action="">
                         <label class="form-label" for="email">E-posta:</label><br>
                         <input class="form-control" type="email" id="email" name="email" required><br>
-                        <input type="submit" class="btn btn-primary" name="reset_request" value="Şifre Sıfırlama Talebi Gönder">
+
+                        <p class="mb-4"><small><?php echo $resetPasswordDescription ?></small></p>
+
+                        <div class="form-group mt-3">
+                            <button class="btn btn-primary w-100 py-2" name="reset_request" type="submit">
+                                <i class="fas fa-sign-in-alt"></i> Şifre Sıfırlama Talebi Gönder
+                            </button>
+                        </div>
+                        <div class="form-group mt-2">
+                            <a href="<?php echo $siteUrl ?>" class="btn btn-secondary w-100 py-2">
+                                <i class="fas fa-home"></i> <?php echo $siteName ?> - <?php echo $siteShortName ?>
+                            </a>
+                        </div>
                     </form>
                 <?php else: ?>
                     <!-- Yeni şifre belirleme formu -->
@@ -147,6 +156,7 @@ require_once "header.php";
                 <?php endif; ?>
         </div>
     </div>
+    </main>
 
 <?php
 require_once "footer.php";

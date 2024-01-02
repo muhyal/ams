@@ -19,7 +19,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  *
  */
-global $db, $showErrors, $siteName, $siteShortName, $siteUrl;
+global $siteHeroDescription, $db, $showErrors, $siteName, $siteShortName, $siteUrl, $oimVersion;
 require_once "db_connection.php";
 require_once "config.php";
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
@@ -28,10 +28,13 @@ $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_er
 ?>
 <!doctype html>
 <html lang="en" class="h-100" data-bs-theme="auto">
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?php echo $siteName ?> - <?php echo $siteShortName ?></title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title><?php echo $siteName ?> - <?php echo $siteShortName ?></title>
+<meta name="description" content="<?php echo $siteHeroDescription ?>">
+<meta name="robots" content="noindex, nofollow" />
+<meta name="author" content="Muhammed Yalçınkaya">
+<meta name="generator" content="<?php echo $siteShortName ?> - <?php echo $oimVersion ?>">
     <link href="./assets/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .bd-placeholder-img {

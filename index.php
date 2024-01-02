@@ -34,11 +34,11 @@ require_once "header.php";
               <a href="<?php echo $siteVirtualClassroomUrl ?>" target="_blank" class="btn btn-success btn-md px-4 gap-3" role="button" aria-pressed="true">
                   <i class="bi bi-door-open"></i> Sanal Sınıf
               </a>
-              <a href="<?php echo $siteUrl ?>/agreement.php" target="_self" class="btn btn-primary btn-md px-4 gap-3" role="button" aria-pressed="true">
-                  <i class="bi bi-file-earmark-text"></i> Sözleşmeler
+          <a href="<?php echo $siteAcademyUrl ?>/" target="_blank" class="btn btn-primary btn-md px-4 gap-3" role="button" aria-pressed="true">
+               <i class="bi bi-file-earmark-text"></i> <?php echo $siteName ?>'ye git
               </a>
-              <a href="<?php echo $siteAcademyUrl ?>/" target="_blank" class="btn btn-outline-secondary btn-md px-4" role="button" aria-pressed="true">
-                  <i class="bi bi-arrow-right-circle"></i> <?php echo $siteName ?>'ye git
+          <a href="<?php echo $siteUrl ?>/agreement.php" target="_self" class="btn btn-outline-secondary btn-md px-4" role="button" aria-pressed="true">
+                  <i class="bi bi-arrow-right-circle"></i> Sözleşmeler
               </a>
           </div>
     </div>

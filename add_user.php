@@ -157,7 +157,7 @@ function sendVerificationSms($to, $verificationCode, $firstname, $lastname) {
     // Parametreleri şifrele
     $encryptedPhone = $to;
     $encryptedCode = $verificationCode;
-	
+
 
     // Gizli bağlantı oluştur
     $verificationLink = getVerificationLink($encryptedPhone, $encryptedCode,"phone");
@@ -201,7 +201,7 @@ function getVerificationLink($emailOrPhone, $code, $type="email") {
 	}else{
 		 return "$siteUrl/verify.php?email=$emailOrPhone&code=$code";
 	}
-   
+
 }
 ?>
 <?php

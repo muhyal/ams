@@ -1,4 +1,4 @@
-<?php global $siteHeroDescription;
+<?php
 /**
  * @copyright Copyright (c) 2024, KUTBU
  *
@@ -19,7 +19,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  *
  */
-global $showErrors, $siteName, $siteShortName, $siteUrl;
+global $siteHeroDescription, $showErrors, $siteName, $siteShortName, $siteUrl;
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
@@ -38,34 +38,20 @@ if (!isset($_SESSION['csrf_token'])) {
 $csrf_token = $_SESSION['csrf_token'];
 require_once "header.php";
 ?>
-<div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-
-    <div class="px-4 py-5 my-5 text-center">
-        <h1 class="display-5 fw-bold text-body-emphasis"><?php echo $siteName ?> - <?php echo $siteShortName ?></h1>
-        <div class="col-lg-6 mx-auto">
-            <p class="lead mb-4"><?php echo $siteHeroDescription ?></p>
-            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-
-<form class="form-signin" method="post" action="user_login_process.php">
-
-    <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-
-    <main class="form-signin w-100 m-auto">
+<main class="form-signin w-100 m-auto">
         <form method="post" action="user_login_process.php">
-
             <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-
+            <img class="mb-4" src="./assets/brand/default_logo.png" alt="<?php echo $siteName ?>" title="<?php echo $siteName ?>" width="100" height="100">
             <h1 class="h3 mb-3 fw-normal">Kullanıcı Paneli</h1>
-
             <div class="form-floating">
-                <input type="text" class="form-control" id="identifier" name="identifier" placeholder="E-posta / Kullanıcı adı" autofocus="">
+                <input type="text" class="form-control" id="identifier" name="identifier" placeholder="E-posta / Kullanıcı adı" autofocus="" required>
                 <label for="floatingInput">E-posta / Kullanıcı adı</label>
             </div>
             <div class="form-floating">
-                <input type="password" class="form-control" name="password" id="password" placeholder="Şifre">
+                <input type="password" class="form-control" name="password" id="password" placeholder="Şifre" required>
                 <label for="floatingPassword">Şifre</label>
                 <div class="form-group mt-3">
-                    <a href="reset_password.php">Şifremi unuttum</a>
+                    <a class="text-light-emphasis text-decoration-none" href="reset_password.php">Şifremi unuttum</a>
                 </div>
             </div>
             <div class="form-group mt-3">

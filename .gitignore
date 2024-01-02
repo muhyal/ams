@@ -3,6 +3,7 @@ config.php
 
 # Brand folder (Custom)
 /assets/brand/default_pp.png
+/assets/brand/default_logo.png
 
 # PDFs folder
 /assets/pdfs/*

@@ -77,7 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // Bu tarih aralığındaki alınan ödemeleri getir
             $sql = "
-        SELECT 
+        SELECT
             academies.name AS academy_name,
             SUM(accounting_entries.amount) AS total_amount
         FROM accounting_entries
@@ -110,7 +110,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // Öğrenci Detayları için sorgu
             $studentDetailSql = "
-    SELECT 
+    SELECT
         students.firstname AS student_name,
         students.lastname AS student_lastname,
         courses.course_name,

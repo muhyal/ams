@@ -42,17 +42,15 @@ require_once "header.php";
 ?>
 <main class="form-signin w-100 m-auto">
         <form method="post" action="admin_login_process.php">
-
             <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-
-            <h1 class="h3 mb-3 fw-normal">Oturum aç</h1>
-
+            <img class="mb-4" src="./assets/brand/default_logo.png" alt="<?php echo $siteName ?>" title="<?php echo $siteName ?>" width="100" height="100">
+            <h1 class="h3 mb-3 fw-normal">Yönetici Paneli</h1>
             <div class="form-floating">
-                <input type="text" class="form-control" id="identifier" name="identifier" placeholder="@doremuzikakademi.com" autofocus="">
+                <input type="text" class="form-control" id="identifier" name="identifier" placeholder="@doremuzikakademi.com" autofocus="" required>
                 <label for="floatingInput">E-posta / Kullanıcı adı</label>
             </div>
             <div class="form-floating">
-                <input type="password" class="form-control" name="password" id="password" placeholder="Şifre">
+                <input type="password" class="form-control" name="password" id="password" placeholder="Şifre" required>
                 <label for="floatingPassword">Şifre</label>
                 <div class="form-group mt-3">
                     <a class="text-light-emphasis text-decoration-none" href="admin_reset_password.php">Şifremi unuttum</a>
