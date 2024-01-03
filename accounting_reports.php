@@ -169,7 +169,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Excel dosyasını indir
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="rapor.xlsx"');
+        header('Content-Disposition: attachment;filename="ozel_tarih_araliginda_alinan_genel_rapor.xlsx"');
         header('Cache-Control: max-age=0');
 
         $writer = new Xlsx($spreadsheet);
@@ -186,7 +186,7 @@ require_once "admin_panel_header.php";
         <?php require_once "admin_panel_sidebar.php"; ?>
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
-                <h2>Muhasebe</h2>
+                <h2>Muhasebe Raporları</h2>
             </div>
 
             <!-- Uyarı Mesajları -->
@@ -196,27 +196,50 @@ require_once "admin_panel_header.php";
                 </div>
             <?php endif; ?>
 
-            <!-- Rapor Alma Formu -->
-            <h5>Rapor Al</h5>
-            <form method="post">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group mt-3">
-                            <label for="start_date">Başlangıç Tarihi:</label>
-                            <input type="date" name="start_date" class="form-control" required>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group mt-3">
-                            <label for="end_date">Bitiş Tarihi:</label>
-                            <input type="date" name="end_date" class="form-control" required>
-                        </div>
-                    </div>
+
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5>Özel Tarih Aralığında Rapor Al</h5>
                 </div>
-                <div class="form-group mt-3">
-                <button type="submit" name="generate_report" class="btn btn-primary">Rapor Al</button>
+                <div class="card-body">
+                    <form method="post">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mt-3">
+                                    <label for="start_date">Başlangıç Tarihi:</label>
+                                    <input type="date" name="start_date" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mt-3">
+                                    <label for="end_date">Bitiş Tarihi:</label>
+                                    <input type="date" name="end_date" class="form-control" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group mt-3">
+                            <button type="submit" name="generate_report" class="btn btn-primary">Rapor Al</button>
+                        </div>
+                    </form>                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5>Bu Ayın Genel Raporunu Al</h5>
                 </div>
-            </form>
+                <div class="card-body">
+                    <a href="general_report_for_the_current_month.php?generate_report" class="btn btn-primary" target="_blank">Raporu İndir</a>
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5>Geçen Ayın Genel Raporunu Al</h5>
+                </div>
+                <div class="card-body">
+                    <a href="general_report_for_last_month.php?generate_report" class="btn btn-primary" target="_blank">Raporu İndir</a>
+                </div>
+            </div>
 
             <?php require_once "footer.php"; ?>
         </main>
