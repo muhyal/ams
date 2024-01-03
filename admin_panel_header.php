@@ -25,6 +25,8 @@ require_once "config.php";
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
+// Kullanıcı adını al
+$adminUsername = $_SESSION['admin_username'];
 ?>
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
@@ -152,7 +154,7 @@ $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_er
               data-bs-toggle="dropdown"
               aria-label="Toggle theme (auto)">
           <svg class="bi my-1 theme-icon-active" width="1em" height="1em"><use href="#circle-half"></use></svg>
-          <span class="visually-hidden" id="bd-theme-text">Toggle theme</span>
+          <span class="visually-hidden" id="bd-theme-text">Temayı değiştir</span>
       </button>
       <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="bd-theme-text">
           <li>
@@ -262,6 +264,14 @@ $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_er
                   <li><a class="dropdown-item" href="add_teacher.php"><i class="fas fa-chalkboard-teacher"></i> Öğretmen</a></li>
                   <li><a class="dropdown-item" href="accounting.php"><i class="fas fa-file-invoice-dollar"></i> Muhasebe kaydı</a></li>
               </ul>
+          </div>
+          <div id="navbarSearch" class="navbar-search w-50">
+              <div class="input-group w-50">
+                  <input id="searchInput" class="form-control rounded-0 border-0 w-50" type="text" placeholder="Aranacak içerik..." aria-label="Search">
+                      <button id="searchButton" class="btn btn-secondary" type="button">
+                          <i class="fas fa-search"></i>
+                      </button>
+              </div>
           </div>
           <!-- Saat ve tarih -->
           <div id="datetime-container" class="text-light">
