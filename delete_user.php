@@ -50,7 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["id"])) {
     $stmt->execute([$userId]);
 
     // Kullanıcı silindikten sonra yönlendirme yapabilirsiniz
-    header("Location: user_list.php");
+    header("Location: users.php");
     exit();
 }
 
@@ -75,7 +75,7 @@ require_once "admin_panel_header.php";
                 </div>
 
                 <?php if (isset($user)): ?>
-                    <p><strong>Kullanıcı Adı:</strong> <?php echo $user["firstname"] . " " . $user["lastname"]; ?></p>
+                    <p><strong>Kullanıcı Adı:</strong> <?php echo $user["first_name"] . " " . $user["last_name"]; ?></p>
                     <p><strong>E-posta:</strong> <?php echo $user["email"]; ?></p>
                 <?php else: ?>
                     <p>Kullanıcı bulunamadı.</p>
@@ -84,7 +84,7 @@ require_once "admin_panel_header.php";
                 <form method="post" action="" class="mb-2">
                     <input type="hidden" name="id" value="<?php echo $userId; ?>">
                     <button type="submit" onclick="return confirm('Kullanıcıyı silmek istediğinizden emin misiniz?')" class="btn btn-danger">Kullanıcıyı Sil</button>
-                    <a href="user_list.php" class="btn btn-secondary ml-2">Kullanıcı Listesine Geri Dön</a>
+                    <a href="users.php" class="btn btn-secondary ml-2">Kullanıcı Listesine Geri Dön</a>
                 </form>
             </main>
         </div>

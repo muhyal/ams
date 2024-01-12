@@ -42,8 +42,6 @@ if (isset($_POST["reset_request"])) {
     $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($admin) {
-        // Belirlediğiniz zaman dilimini ayarlayın
-        date_default_timezone_set('Europe/Istanbul');
 
         // Şifre sıfırlama için token oluştur
         $token = bin2hex(random_bytes(32));

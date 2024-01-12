@@ -47,7 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         die("CSRF hatası! İşlem reddedildi.");
     }
 
-    $identifier = $_POST["identifier"]; // Kullanıcı adı veya E-posta
+    $identifier = $_POST["identifier"];
     $password = $_POST["password"];
 
     // Form alanlarının doğrulaması
@@ -56,11 +56,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Check if the identifier is a valid email format
-    if (filter_var($identifier, FILTER_VALIDATE_EMAIL)) {
-        $query = "SELECT * FROM admins WHERE email = ?";
-    } else {
-        $query = "SELECT * FROM admins WHERE username = ?";
-    }
+    $column = filter_var($identifier, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+    $query = "SELECT * FROM users WHERE $column = ?";
 
     try {
         $stmt = $db->prepare($query);
@@ -69,49 +66,58 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if ($admin && password_verify($password, $admin["password"])) {
 
-            // Send an SMS using Infobip
-            global $config, $BASE_URL, $API_KEY, $username, $SENDER, $MESSAGE_TEXT, $siteName, $siteShortName;
-            $phone = $admin["phone"]; // Assuming you have a phone number in your admins table
+            $allowedUserTypes = [1, 2, 3];
+            if (in_array($admin["user_type"], $allowedUserTypes)) {
+                // Send an SMS using Infobip
+                global $config, $BASE_URL, $API_KEY, $username, $SENDER, $MESSAGE_TEXT, $siteName, $siteShortName;
 
-            $smsConfiguration = new Configuration(host: $BASE_URL, apiKey: $API_KEY);
+                $phone = $admin["phone"]; // Assuming you have a phone number in your admins table
 
-            $sendSmsApi = new SmsApi(config: $smsConfiguration);
+                $smsConfiguration = new Configuration(host: $BASE_URL, apiKey: $API_KEY);
 
-            $destination = new SmsDestination(
-                to: $phone
-            );
+                $sendSmsApi = new SmsApi(config: $smsConfiguration);
 
-            $message = new SmsTextualMessage(destinations: [$destination]);
+                $destination = new SmsDestination(
+                    to: $phone
+                );
 
-            $message = new SmsTextualMessage(destinations: [$destination], from: $SENDER, text: "Merhaba $username, $siteName - $siteShortName üzerinde yönetici oturumu açıldı. Bilginiz dışında ise lütfen kontrol ediniz.");
+                $message = new SmsTextualMessage(destinations: [$destination]);
 
-            $request = new SmsAdvancedTextualRequest(messages: [$message]);
+                $message = new SmsTextualMessage(destinations: [$destination], from: $SENDER, text: "Merhaba $username, $siteName - $siteShortName üzerinde yönetici oturumu açıldı. Bilginiz dışında ise lütfen kontrol ediniz.");
 
-            try {
-                $smsResponse = $sendSmsApi->sendSmsMessage($request);
+                $request = new SmsAdvancedTextualRequest(messages: [$message]);
 
-                // Handle the response, log or display relevant information
-                if ($smsResponse->getMessages()[0]->getStatus()->getGroupName() === 'PENDING') {
-                    echo 'SMS is pending.';
-                } else {
-                    echo 'SMS sent successfully.';
+                try {
+                    $smsResponse = $sendSmsApi->sendSmsMessage($request);
+
+                    // Handle the response, log or display relevant information
+                    if ($smsResponse->getMessages()[0]->getStatus()->getGroupName() === 'PENDING') {
+                        echo 'SMS is pending.';
+                    } else {
+                        echo 'SMS sent successfully.';
+                    }
+                } catch (\Throwable $exception) {
+                    echo 'Failed to send SMS. Error: ' . $exception->getMessage();
                 }
-            } catch (\Throwable $exception) {
-                echo 'Failed to send SMS. Error: ' . $exception->getMessage();
-            }
 
-            $_SESSION["admin_id"] = $admin["id"];
-            $_SESSION["admin_username"] = $admin["username"];
-            $_SESSION["admin_role"] = $admin["role"]; // Kullanıcının rolünü ekleyin
-            header("Location: admin_panel.php"); // Yönlendirme admin paneline
-            exit();
+                $_SESSION["admin_id"] = $admin["id"];
+                $_SESSION["admin_username"] = $admin["username"];
+                $_SESSION["admin_first_name"] = $admin["first_name"];
+                $_SESSION["admin_last_name"] = $admin["last_name"];
+                $_SESSION["admin_type"] = $admin["user_type"];
+                header("Location: admin_panel.php");
+                exit();
+            } else {
+                echo "Bu kullanıcı tipine sahip kullanıcılar bu alana giriş yapamaz.";
+            }
         } else {
             echo "Hatalı giriş bilgileri.";
         }
     } catch (PDOException $e) {
         echo "Hata: " . $e->getMessage();
+    } finally {
+        // Veritabanı bağlantısını kapat
+        $db = null;
     }
-    // Veritabanı bağlantısını kapat
-    $db = null;
 }
 ?>

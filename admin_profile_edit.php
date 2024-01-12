@@ -37,7 +37,7 @@ if (!isset($_SESSION["admin_id"])) {
 
 // Admin bilgilerini çekme
 $admin_id = $_SESSION['admin_id'];
-$select_query = "SELECT * FROM admins WHERE id = ?";
+$select_query = "SELECT * FROM users WHERE id = ?";
 $stmt = $db->prepare($select_query);
 $stmt->execute([$admin_id]);
 $admin = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -45,19 +45,22 @@ $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 // Form işleme
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $new_username = $_POST["new_username"];
+    $new_first_name = $_POST["new_first_name"];
+    $new_last_name = $_POST["new_last_name"];
+    $new_phone = $_POST["new_phone"];
     $new_email = $_POST["new_email"];
     $new_password = $_POST["new_password"];
 
     // Şifre güncelleme kontrolü
     if (!empty($new_password)) {
         $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
-        $update_query = "UPDATE admins SET username = ?, email = ?, password = ? WHERE id = ?";
+        $update_query = "UPDATE users SET username = ?, first_name = ?, last_name = ?, phone = ?, email = ?, password = ? WHERE id = ?";
         $stmt = $db->prepare($update_query);
-        $stmt->execute([$new_username, $new_email, $hashed_password, $admin_id]);
+        $stmt->execute([$new_username,$new_first_name,$new_last_name, $new_phone, $new_email, $hashed_password, $admin_id]);
     } else {
-        $update_query = "UPDATE admins SET username = ?, email = ? WHERE id = ?";
+        $update_query = "UPDATE users SET username = ?, first_name = ?, last_name = ?, phone = ?, email = ? WHERE id = ?";
         $stmt = $db->prepare($update_query);
-        $stmt->execute([$new_username, $new_email, $admin_id]);
+        $stmt->execute([$new_username,$new_first_name,$new_last_name, $new_phone, $new_email, $admin_id]);
     }
 
     header("Location: admin_profile_edit.php?success=true");
@@ -88,6 +91,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <label class="form-label" for="new_username">Yeni Kullanıcı Adı:</label>
                 <input class="form-control" type="text" id="new_username" name="new_username" value="<?php echo $admin['username']; ?>" required><br>
 
+                <div class="form-group mt-3">
+                    <label for="phone">Yeni Ad:</label>
+                    <input type="text" id="new_first_name" name="new_first_name" class="form-control" value="<?php echo $admin['first_name']; ?>" required>
+                </div>
+
+                <div class="form-group mt-3">
+                    <label for="phone">Yeni Soyad:</label>
+                    <input type="text" id="new_last_name" name="new_last_name" class="form-control" value="<?php echo $admin['last_name']; ?>" required>
+                </div>
+
+                <div class="form-group mt-3">
+                    <label for="phone">Yeni Telefon:</label>
+                    <input type="text" id="new_phone" name="new_phone" class="form-control" value="<?php echo $admin['phone']; ?>" required>
+                </div>
+
                 <label class="form-label" for="new_email">Yeni E-posta:</label>
                 <input class="form-control" type="email" id="new_email" name="new_email" value="<?php echo $admin['email']; ?>" required><br>
 
@@ -95,7 +113,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input class="form-control" type="password" id="new_password" name="new_password"><br>
 
                 <button type="submit" class="btn btn-primary">Güncelle</button>
-                <a href="admin_list.php" class="btn btn-secondary">Yönetici Listesi</a>
+                <a href="admins.php" class="btn btn-secondary">Yönetici Listesi</a>
             </form>
         </main>
     </div>

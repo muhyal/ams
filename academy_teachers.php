@@ -69,14 +69,30 @@ require_once "admin_panel_header.php";
                                     <strong>Öğretmenler:</strong><br>
                                     <?php
                                     $academyId = $academy["id"];
-                                    $teachersInAcademyQuery = "SELECT DISTINCT teachers.* FROM teachers
-                                                              INNER JOIN teacher_courses ON teachers.id = teacher_courses.teacher_id
-                                                              WHERE teacher_courses.academy_id = ?";
+                                    $teachersInAcademyQuery = "SELECT DISTINCT users.*
+                           FROM users
+                           INNER JOIN course_plans ON users.id = course_plans.teacher_id
+                           WHERE course_plans.academy_id = ? AND users.user_type = 4";
                                     $teachersInAcademyStmt = $db->prepare($teachersInAcademyQuery);
                                     $teachersInAcademyStmt->execute([$academyId]);
                                     $teachersInAcademy = $teachersInAcademyStmt->fetchAll(PDO::FETCH_ASSOC);
+
                                     foreach ($teachersInAcademy as $teacher) {
                                         echo $teacher["first_name"] . " " . $teacher["last_name"] . "<br>";
+
+                                        // Öğretmenin verdiği dersleri listele
+                                        $teacherId = $teacher["id"];
+                                        $teacherCoursesQuery = "SELECT courses.course_name
+                                               FROM courses
+                                               INNER JOIN course_plans ON courses.id = course_plans.course_id
+                                               WHERE course_plans.teacher_id = ?";
+                                        $teacherCoursesStmt = $db->prepare($teacherCoursesQuery);
+                                        $teacherCoursesStmt->execute([$teacherId]);
+                                        $teacherCourses = $teacherCoursesStmt->fetchAll(PDO::FETCH_ASSOC);
+
+                                        foreach ($teacherCourses as $teacherCourse) {
+                                            echo "- " . $teacherCourse["course_name"] . "<br>";
+                                        }
                                     }
                                     ?>
                                 </li>
@@ -84,6 +100,7 @@ require_once "admin_panel_header.php";
                         </div>
                     </div>
                 <?php endforeach; ?>
+
             </div>
         </main>
     </div>

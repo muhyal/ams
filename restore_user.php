@@ -46,17 +46,17 @@ if (isset($_GET["id"]) && is_numeric($_GET["id"])) {
 
     if ($stmt->execute()) {
         // Başarıyla geri alındıysa kullanıcıları listeleme sayfasına yönlendir
-        header("Location: user_list.php");
+        header("Location: users.php");
         exit();
     } else {
         // Hata durumunda kullanıcıyı listeleme sayfasına yönlendir
         echo "Kullanıcı geri alınamadı.";
-        header("Location: user_list.php");
+        header("Location: users.php");
         exit();
     }
 } else {
     // Geçersiz veya eksik kullanıcı kimliği durumunda kullanıcıları listeleme sayfasına yönlendir
-    header("Location: user_list.php");
+    header("Location: users.php");
     exit();
 }
 ?>

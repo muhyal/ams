@@ -69,16 +69,17 @@ require_once "admin_panel_header.php";
                                     <strong>Öğrenci-Ders Bilgileri:</strong><br>
                                     <?php
                                     $academyId = $academy["id"];
-                                    $studentCoursesQuery = "SELECT students.firstname, students.lastname, courses.course_name
-                                                           FROM student_courses
-                                                           INNER JOIN students ON student_courses.student_id = students.id
-                                                           INNER JOIN courses ON student_courses.course_id = courses.id
-                                                           WHERE student_courses.academy_id = ?";
+                                    $studentCoursesQuery = "SELECT users.first_name, users.last_name, courses.course_name
+                       FROM course_plans
+                       INNER JOIN users ON course_plans.student_id = users.id
+                       INNER JOIN courses ON course_plans.course_id = courses.id
+                       WHERE course_plans.academy_id = ? AND users.user_type IN (4, 6)";
                                     $studentCoursesStmt = $db->prepare($studentCoursesQuery);
                                     $studentCoursesStmt->execute([$academyId]);
                                     $studentCourses = $studentCoursesStmt->fetchAll(PDO::FETCH_ASSOC);
+
                                     foreach ($studentCourses as $studentCourse) {
-                                        echo $studentCourse["firstname"] . " " . $studentCourse["lastname"] . " - " . $studentCourse["course_name"] . "<br>";
+                                        echo $studentCourse["first_name"] . " " . $studentCourse["last_name"] . " - " . $studentCourse["course_name"] . "<br>";
                                     }
                                     ?>
                                 </li>

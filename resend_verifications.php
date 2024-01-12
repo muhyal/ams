@@ -108,8 +108,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmtUpdate->execute([$verificationCodeEmail, $verificationCodeSms, $verificationTimeEmail, $verificationTimeSms, $user["id"]]);
 
         // E-posta ve SMS gönderme işlemleri
-        sendVerificationEmail($email, $verificationCodeEmail, $user["firstname"], $user["lastname"]);
-        sendVerificationSms($phone, $verificationCodeSms, $user["firstname"], $user["lastname"]);
+        sendVerificationEmail($email, $verificationCodeEmail, $user["first_name"], $user["last_name"]);
+        sendVerificationSms($phone, $verificationCodeSms, $user["first_name"], $user["last_name"]);
 
         $message = "Doğrulama kodları yeniden gönderildi.";
     } else {
@@ -123,7 +123,7 @@ function generateVerificationCode() {
 }
 
 // E-posta gönderme fonksiyonu
-function sendVerificationEmail($to, $verificationCode, $firstname, $lastname) {
+function sendVerificationEmail($to, $verificationCode, $first_name, $last_name) {
     global $config, $siteName, $agreementLink;
 
     $mail = new PHPMailer(true);
@@ -152,8 +152,18 @@ function sendVerificationEmail($to, $verificationCode, $firstname, $lastname) {
 
         // Gizli bağlantı oluştur
         $verificationLink = getVerificationLink($encryptedEmail, $encryptedCode);
-
-        $mail->Body = "Sayın $firstname $lastname, $siteName kaydınızı doğrulamanız ve sözleşmeleri okuyup onaylamanız gerekmektedir. Sözleşmeleri okumak için: $agreementLink - Sözleşmeleri onaylamak için (Bağlantı açıldığında sözleşmeler otomatik onaylanacaktır): $verificationLink";
+        $mail->isHTML(true);
+        $mail->Body = "
+    <html>
+    <body>
+       <p>👋 Selam $first_name,</p>
+        <p>$siteName 'e hoş geldin 🤗 Kaydının tamamlanabilmesi için sözleşmeleri okuyup onaylaman gerekiyor:</p>
+        <p>Sözleşmeleri okumak için 🤓 <a href='$agreementLink'>buraya tıklayabilirsin</a>.</p>
+        <p>Sözleşmeleri onaylamak için ✅ <a href='$verificationLink'>buraya tıklayabilirsin</a>.</p>
+        <p>Müzik dolu günler dileriz 🎸🎹</p>
+    </body>
+    </html>
+";
 
         // E-postayı gönder
         $mail->send();
@@ -164,7 +174,7 @@ function sendVerificationEmail($to, $verificationCode, $firstname, $lastname) {
 }
 
 // SMS gönderme fonksiyonu
-function sendVerificationSms($to, $verificationCode, $firstname, $lastname) {
+function sendVerificationSms($to, $verificationCode, $first_name, $last_name) {
     global $config, $BASE_URL, $API_KEY, $SENDER, $MESSAGE_TEXT, $siteName, $agreementLink;
 
     $smsConfiguration = new Configuration(host: $BASE_URL, apiKey: $API_KEY);
@@ -182,7 +192,7 @@ function sendVerificationSms($to, $verificationCode, $firstname, $lastname) {
     // Gizli bağlantı oluştur
     $verificationLink = getVerificationLink($encryptedPhone, $encryptedCode, "phone");
 
-    $message = new SmsTextualMessage(destinations: [$destination], from: $SENDER, text: "Sayın $firstname $lastname, $siteName kaydınızı doğrulamanız ve sözleşmeleri okuyup onaylamanız gerekmektedir. Sözleşmeleri görüntüleyin: $agreementLink Sözleşmeleri onaylayın (Bağlantı açıldığında sözleşmeler otomatik onaylanacaktır): $verificationLink");
+    $message = new SmsTextualMessage(destinations: [$destination], from: $SENDER, text: "Selam $first_name, $siteName 'e hoş geldin 🤗 Kaydının tamamlanabilmesi için sözleşmeleri okuyup onaylaman gerekiyor: $agreementLink - Sözleşmeleri onaylamak için ise şu bağlantıya tıklayabilirsin (Bağlantı açıldığında sözleşmeler otomatik onaylanacaktır): $verificationLink.");
 
     $request = new SmsAdvancedTextualRequest(messages: [$message]);
 
