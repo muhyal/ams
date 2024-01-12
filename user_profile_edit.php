@@ -18,22 +18,51 @@
  * You should have received a copy of the GNU Affero General Public License, version 3,
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
+
 global $db;
 session_start();
 session_regenerate_id(true);
 
-// Kullanıcı girişi kontrolü
+require_once "db_connection.php";
+
+// Kullanıcı oturum kontrolü yapılır
 if (!isset($_SESSION["user_id"])) {
     header("Location: user_login.php");
     exit();
 }
 
-require_once "db_connection.php";
+// Formdan gelen veriler alınır ve güncelleme işlemi yapılır
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $user_id = $_SESSION["user_id"];
+    $first_name = $_POST["first_name"];
+    $last_name = $_POST["last_name"];
+    $email = $_POST["email"];
+    $tc_identity = $_POST["tc_identity"];
+    $phone = $_POST["phone"];
 
-// Kullanıcı ID'sini al
-$user_id = $_SESSION["user_id"];
+    // Güncelleme sorgusu hazırlanır
+    $query = "UPDATE users SET first_name = ?, last_name = ?, email = ?, tc_identity = ?, phone = ? WHERE id = ?";
+    $stmt = $db->prepare($query);
+
+    // Güncelleme sorgusu çalıştırılır
+    $result = $stmt->execute([$first_name, $last_name, $email, $tc_identity, $phone, $user_id]);
+
+    if ($result) {
+        // Başarılı güncelleme durumunda kullanıcıyı bilgilendir
+        $_SESSION["success_message"] = "Profil bilgileriniz güncellendi.";
+    } else {
+        // Hata durumunda kullanıcıyı bilgilendir
+        $_SESSION["error_message"] = "Profil bilgileriniz güncellenirken bir hata oluştu.";
+    }
+
+ // Profil sayfasına yönlendirme yapılır
+    header("Location: user_panel.php");
+    exit();
+
+}
 
 // Veritabanından kullanıcı detaylarını çek
+$user_id = $_SESSION["user_id"];
 $query = "SELECT * FROM users WHERE id = :user_id";
 $stmt = $db->prepare($query);
 $stmt->bindParam(":user_id", $user_id, PDO::PARAM_INT);
@@ -45,68 +74,46 @@ require_once "header.php"; // Header dosyanızın adını ve konumunu güncelley
 ?>
 
 <!-- Ana içerik -->
-
-
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-lg-6">
-                <div class="card">
-                    <div class="container-fluid">
-                        <br>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="btn-toolbar mb-2 mb-md-0">
-                                    <div class="btn-group mr-2">
-                                        <button onclick="history.back()" class="btn btn-sm btn-outline-secondary">
-                                            <i class="fas fa-arrow-left"></i> Geri dön
-                                        </button>
-                                        <a href="user_panel.php" class="btn btn-sm btn-outline-secondary">
-                                            <i class="fas fa-list"></i> Kullanıcı Paneli
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="card-body">
-
-                        <h4 class="card-title text-center mb-4">Bilgileri Güncelle</h4>
-
-                        <form action="update_user_profile.php" method="post">
-                    <!-- Form alanlarını buraya ekleyin, örneğin: -->
-
-                            <div class="form-group mt-3">
-                        <label for="tc">T.C. Kimlik No:</label>
-                        <input type="text" class="form-control" name="tc" value="<?= $user['tc'] ?>" readonly style="background-color: #f8f9fa; cursor: not-allowed;">
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-4 mt-3">
+            <div class="card">
+                <!-- Form başlangıcı -->
+                <form action="" method="post">
+                    <!-- Form alanları buraya eklenir -->
+                    <div class="form-group mt-3 mx-3">
+                        <label for="tc_identity">T.C. Kimlik No:</label>
+                        <input type="text" class="form-control" name="tc_identity" value="<?= $user['tc_identity'] ?>" readonly style="background-color: #f8f9fa; cursor: not-allowed;">
                     </div>
 
-                            <div class="form-group mt-3">
-                        <label for="firstname">Ad:</label>
-                        <input type="text" class="form-control" name="firstname" value="<?= $user['firstname'] ?>" required>
+                    <div class="form-group mt-3 mx-3">
+                        <label for="first_name">Ad:</label>
+                        <input type="text" class="form-control" name="first_name" value="<?= $user['first_name'] ?>" required>
                     </div>
 
-                            <div class="form-group mt-3">
-                        <label for="lastname">Soyad:</label>
-                        <input type="text" class="form-control" name="lastname" value="<?= $user['lastname'] ?>" required>
+                    <div class="form-group mt-3 mx-3">
+                        <label for="last_name">Soyad:</label>
+                        <input type="text" class="form-control" name="last_name" value="<?= $user['last_name'] ?>" required>
                     </div>
 
-                            <div class="form-group mt-3">
+                    <div class="form-group mt-3 mx-3">
                         <label for="email">E-posta:</label>
                         <input type="email" class="form-control" name="email" value="<?= $user['email'] ?>" required>
                     </div>
 
-                            <div class="form-group mt-3">
+                    <div class="form-group mt-3 mx-3">
                         <label for="phone">Telefon:</label>
                         <input type="text" class="form-control" name="phone" value="<?= $user['phone'] ?>" required>
                     </div>
-                            <div class="form-group mt-3">
-                                <button type="submit" class="btn btn-primary">Bilgileri Güncelle</button>
-                            </div>
-                </form>
+
+                    <div class="form-group mt-3 mx-3 mb-3">
+                        <button type="submit" class="btn btn-primary">Bilgileri Güncelle</button>
                     </div>
-                </div>
+                </form>
+                <!-- Form bitişi -->
             </div>
         </div>
+    </div>
+</div>
 
 <?php require_once "footer.php"; ?>
