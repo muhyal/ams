@@ -27,6 +27,8 @@ $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
 // Kullanıcı adını al
 $adminUsername = $_SESSION['admin_username'];
+$adminFirstName = $_SESSION['admin_first_name'];
+$adminLastName = $_SESSION['admin_last_name'];
 ?>
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
@@ -42,6 +44,7 @@ $adminUsername = $_SESSION['admin_username'];
     <link href="./assets/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+
     <link href="./assets/css/dashboard.css" rel="stylesheet">
     <style>
         .separator {
@@ -251,7 +254,6 @@ $adminUsername = $_SESSION['admin_username'];
       <div id="navbarSearch" class="navbar-search w-100 collapse">
           <input class="form-control w-100 rounded-0 border-0" type="text" placeholder="Aranacak içerik..." aria-label="Search">
       </div>
-
       <div class="container text-light">
           <!-- Yeni buton ve dropdown menüsü -->
           <div class="btn-group d-none d-md-block">
@@ -259,34 +261,50 @@ $adminUsername = $_SESSION['admin_username'];
                   <i class="fas fa-plus"></i> Yeni
               </button>
               <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="add_user.php"><i class="fas fa-user"></i> Kullanıcı</a></li>
-                  <li><a class="dropdown-item" href="add_student.php"><i class="fas fa-user"></i> Öğrenci</a></li>
-                  <li><a class="dropdown-item" href="add_teacher.php"><i class="fas fa-chalkboard-teacher"></i> Öğretmen</a></li>
-                  <li><a class="dropdown-item" href="accounting.php"><i class="fas fa-file-invoice-dollar"></i> Muhasebe kaydı</a></li>
+                  <li><a class="dropdown-item" href="add_user.php"><i class="fas fa-user"></i> Kullanıcı Kaydet</a></li>
+                  <li><a class="dropdown-item" href="add_course_plan.php"><i class="fas fa-user"></i> Ders Planla</a></li>
+                  <li><a class="dropdown-item" href="add_introductory_course_plan.php"><i class="fas fa-user"></i> Tanışma Dersi Planla</a></li>
+                  <li><a class="dropdown-item" href="add_rescheduled_course_plan.php"><i class="fas fa-user"></i> Telafi Dersi Planla</a></li>
+                  <li><a class="dropdown-item" href="add_payment.php"><i class="fas fa-file-invoice-dollar"></i> Ödeme Al</a></li>
               </ul>
-          </div>
-          <div id="navbarSearch" class="navbar-search w-50">
-              <div class="input-group w-50">
-                  <input id="searchInput" class="form-control rounded-0 border-0 w-50" type="text" placeholder="Aranacak içerik..." aria-label="Search">
-                      <button id="searchButton" class="btn btn-secondary" type="button">
-                          <i class="fas fa-search"></i>
-                      </button>
-              </div>
           </div>
           <!-- Saat ve tarih -->
           <div id="datetime-container" class="text-light">
               <i class="fas fa-clock-four"></i>
               <?php
-              date_default_timezone_set('Europe/Istanbul');
               $current_datetime = date("d.m.Y H:i");
               echo "<span id='current-datetime'>$current_datetime</span>";
               ?>
           </div>
-          <!-- Profil düzenleme ve çıkış bağlantıları için flex container kullanın -->
+<!--          <div id="navbarSearch2" class="navbar-search w-25 mt-3">-->
+<!--              <form action="search_results.php" method="GET" class="input-group">-->
+<!--                  <input id="searchInput" class="form-control" type="text" name="q" placeholder="Ara..." aria-label="Search">-->
+<!--                  <select id="searchType" class="form-control" name="search_type">-->
+<!--                      <option value="user">Kullanıcı</option>-->
+<!--                      <option value="student">Öğrenci</option>-->
+<!--                      <option value="class">Sınıf</option>-->
+<!--                      <option value="teacher">Öğretmen</option>-->
+<!--                      <option value="course">Ders</option>-->
+<!--                  </select>-->
+<!--                  <button id="searchButton" class="btn btn-secondary" type="submit">-->
+<!--                      <i class="fas fa-search"></i>-->
+<!--                  </button>-->
+<!--              </form>-->
+<!--          </div>-->
+          <!--  <div id="navbarSearch" class="navbar-search w-40">
+                <div class="input-group w-40">
+                    <input id="searchInput" class="form-control rounded-0 border-0 w-50" type="text" placeholder="Aranacak içerik..." aria-label="Search">
+                    <button id="searchButton" class="btn btn-secondary" type="button">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>-->
+
+            <!-- Profil düzenleme ve çıkış bağlantıları için flex container kullanın -->
           <div class="row">
               <div class="col-md-12">
                   <div class="d-flex justify-content-end align-items-center">
-                      Selam 👋, <?php echo $adminUsername; ?> 🍀
+                      Selam 👋, <?php echo $adminFirstName . ' ' . $adminLastName; ?> 🍀
                       <!-- Boşluk ekleyin -->
                       <div class="separator"></div>
                       <a class="nav-link d-flex align-items-center" href="admin_profile_edit.php">

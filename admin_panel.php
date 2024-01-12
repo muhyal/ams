@@ -28,40 +28,84 @@ if (!isset($_SESSION["admin_id"])) {
     header("Location: admin_login.php"); // Giriş sayfasına yönlendir
     exit();
 }
-// Kullanıcı adını al
-$adminUsername = $_SESSION['admin_username'];
+
 require_once "db_connection.php";
 require_once "config.php";
+require_once "inc/functions.php";
+
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
 
-// Kullanıcıları veritabanından çekme
-$query = "SELECT * FROM users";
+// Kullanıcı ve akademi ilişkisini çekmek için bir SQL sorgusu
+$getUserAcademyQuery = "SELECT academy_id FROM user_academy_assignment WHERE user_id = :user_id";
+$stmtUserAcademy = $db->prepare($getUserAcademyQuery);
+$stmtUserAcademy->bindParam(':user_id', $_SESSION["admin_id"], PDO::PARAM_INT);
+$stmtUserAcademy->execute();
+$associatedAcademies = $stmtUserAcademy->fetchAll(PDO::FETCH_COLUMN);
+
+// Eğer kullanıcı hiçbir akademide ilişkilendirilmemişse veya bu akademilerden hiçbiri yoksa, uygun bir işlemi gerçekleştirin
+if (empty($associatedAcademies)) {
+    echo "Kullanıcınız bu işlem için yetkili değil!";
+    exit();
+}
+
+// Eğitim danışmanının erişebileceği akademilerin listesini güncelle
+$allowedAcademies = $associatedAcademies;
+
+// Kullanıcı bilgileri sorgusu
+$query = "
+    SELECT
+        users.id AS user_id,
+        users.first_name,
+        users.last_name,
+        users.email,
+        users.tc_identity,
+        users.phone,
+        user_types.type_name,
+        users.verification_time_email_confirmed,
+        users.verification_time_sms_confirmed
+    FROM users
+    INNER JOIN user_types ON users.user_type = user_types.id
+LIMIT 5;
+";
+
 $stmt = $db->prepare($query);
 $stmt->execute();
 $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$stmt->closeCursor();
+
 
 // Öğretmenler listesi sorgusu
 $query = "
-   SELECT 
-    teachers.id AS teacher_id,
-    teachers.first_name,
-    teachers.last_name,
-    teachers.tc_identity,
-    teachers.email,
-    teachers.phone,
-    classes.class_name,
-    courses.course_name
-FROM teachers
-LEFT JOIN teacher_courses ON teachers.id = teacher_courses.teacher_id
-LEFT JOIN courses ON teacher_courses.course_id = courses.id
-LEFT JOIN classes ON teacher_courses.class_id = classes.id;
+    SELECT
+        users.id AS user_id,
+        users.first_name,
+        users.last_name,
+        users.tc_identity,
+        users.email,
+        users.phone,
+        MAX(academies.name) AS academy_name,
+        MAX(academy_classes.class_name) AS class_name,
+        MAX(courses.course_name) AS course_name
+    FROM
+        users
+    INNER JOIN course_plans ON users.id = course_plans.teacher_id
+    INNER JOIN academies ON course_plans.academy_id = academies.id
+    INNER JOIN academy_classes ON course_plans.class_id = academy_classes.id
+    INNER JOIN courses ON course_plans.course_id = courses.id
+    WHERE
+        users.user_type = 4
+        AND academies.id IN (" . implode(",", $allowedAcademies) . ")
+    GROUP BY
+        users.id
+    LIMIT 5;
 ";
 
 $stmt = $db->prepare($query);
 $stmt->execute();
 $teachers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$stmt->closeCursor();
 
 // Dersler listesi sorgusu
 $query = "SELECT * FROM courses";
@@ -69,56 +113,163 @@ $stmt = $db->query($query);
 $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Sınıf listesi sorgusu
-$query = "SELECT * FROM classes";
+$query = "SELECT * FROM academy_classes";
 $stmt = $db->query($query);
-
-// Sınıf verilerini alın
 $classes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Öğrenci listesi sorgusu
 $query = "
-    SELECT students.id AS student_id, students.firstname, students.lastname, students.email, students.tc_identity, students.phone,
-           academies.name AS academy_name,classes.class_name AS class_name, courses.course_name, CONCAT(teachers.first_name, ' ', teachers.last_name) AS teacher_name
-    FROM students
-    INNER JOIN student_courses ON students.id = student_courses.student_id
-    INNER JOIN academies ON student_courses.academy_id = academies.id
-    INNER JOIN courses ON student_courses.course_id = courses.id
-    INNER JOIN teachers ON student_courses.teacher_id = teachers.id
-    INNER JOIN classes ON student_courses.class_id = classes.id
+    SELECT
+        users.id AS user_id,
+        users.first_name,
+        users.last_name,
+        users.email,
+        users.tc_identity,
+        users.phone,
+        MAX(academies.name) AS academy_name,
+        MAX(academy_classes.class_name) AS class_name,
+        MAX(courses.course_name) AS course_name,
+        CONCAT(MAX(users_teachers.first_name), ' ', MAX(users_teachers.last_name)) AS teacher_name
+    FROM users
+    INNER JOIN course_plans ON users.id = course_plans.student_id
+    INNER JOIN academies ON course_plans.academy_id = academies.id
+    INNER JOIN courses ON course_plans.course_id = courses.id
+    INNER JOIN users AS users_teachers ON course_plans.teacher_id = users_teachers.id AND users_teachers.user_type = 4
+    INNER JOIN academy_classes ON course_plans.class_id = academy_classes.id
+    WHERE
+        users.user_type = 6
+        AND academies.id IN (" . implode(",", $allowedAcademies) . ")
+    GROUP BY
+        users.id
+    LIMIT 5;
 ";
-
 
 $stmt = $db->prepare($query);
 $stmt->execute();
 $student_course_teacher_relations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$stmt->closeCursor();
 
 // Öğrenci sayısını getir
-$studentCountQuery = "SELECT COUNT(*) as student_count FROM students";
+$studentCountQuery = "SELECT COUNT(*) as student_count FROM users WHERE user_type = 6";
 $stmtStudentCount = $db->query($studentCountQuery);
 $studentCount = $stmtStudentCount->fetch(PDO::FETCH_ASSOC);
 
 // Öğretmen sayısını getir
-$teacherCountQuery = "SELECT COUNT(*) as teacher_count FROM teachers";
+$teacherCountQuery = "SELECT COUNT(*) as teacher_count FROM users WHERE user_type = 4";
 $stmtTeacherCount = $db->query($teacherCountQuery);
 $teacherCount = $stmtTeacherCount->fetch(PDO::FETCH_ASSOC);
+
 
 // Kullanıcı sayısını getir
 $userCountQuery = "SELECT COUNT(*) as user_count FROM users";
 $stmtUserCount = $db->query($userCountQuery);
 $userCount = $stmtUserCount->fetch(PDO::FETCH_ASSOC);
 
-// Kullanıcı sayısını getir
+// Akademi sayısını getir
 $academyCountQuery = "SELECT COUNT(*) as academy_count FROM academies";
 $stmtAcademyCount = $db->query($academyCountQuery);
 $academyCount = $stmtAcademyCount->fetch(PDO::FETCH_ASSOC);
 
 if (isset($_POST['get_datetime'])) {
     // Return current date and time in JSON format
-    date_default_timezone_set('Europe/Istanbul');
     $current_datetime = date("d.m.Y H:i");
     echo json_encode(['datetime' => $current_datetime]);
     exit();
 }
+
+// Bu haftanın başlangıç ve bitiş tarihlerini belirle
+$thisWeekStart = new DateTime();
+$thisWeekStart->setISODate(date('Y'), date('W'));
+$thisWeekStart->setTime(0, 0, 0);
+
+$thisWeekEnd = clone $thisWeekStart;
+$thisWeekEnd->modify('+6 days');
+$thisWeekEnd->setTime(23, 59, 59);
+
+// Bu hafta doğan öğrencileri seç
+$studentQuery = "SELECT id AS student_id, first_name, last_name, birth_date FROM users WHERE user_type = 6 AND DATE_FORMAT(birth_date, '%m-%d') BETWEEN DATE_FORMAT(:start, '%m-%d') AND DATE_FORMAT(:end, '%m-%d')";
+$stmtStudent = $db->prepare($studentQuery);
+$str = $thisWeekStart->format('Y-m-d');
+$stmtStudent->bindParam(':start', $str);
+$str1 = $thisWeekEnd->format('Y-m-d');
+$stmtStudent->bindParam(':end', $str1);
+$stmtStudent->execute();
+$studentBirthdays = $stmtStudent->fetchAll(PDO::FETCH_ASSOC);
+
+
+// Bu hafta doğan öğretmenleri seç
+$teacherQuery = "SELECT id AS teacher_id, first_name, last_name, birth_date FROM users WHERE user_type = 4 AND DATE_FORMAT(birth_date, '%m-%d') BETWEEN DATE_FORMAT(:start, '%m-%d') AND DATE_FORMAT(:end, '%m-%d')";
+$stmtTeacher = $db->prepare($teacherQuery);
+$stmtTeacher->bindParam(':start', $str);
+$stmtTeacher->bindParam(':end', $str1);
+$stmtTeacher->execute();
+$teacherBirthdays = $stmtTeacher->fetchAll(PDO::FETCH_ASSOC);
+
+// Tanışma Dersleri listesi sorgusu
+$introductoryCoursesQuery = "
+    SELECT
+        sc.id,
+        CONCAT(u_teacher.first_name, ' ', u_teacher.last_name) AS teacher_name,
+        u_teacher.id AS teacher_id,
+        a.name AS academy_name,
+        ac.class_name AS class_name,
+        CONCAT(u_student.first_name, ' ', u_student.last_name) AS student_name,
+        u_student.id AS student_id,
+        c.course_name AS lesson_name,
+        sc.course_date,
+        sc.course_attendance
+    FROM
+        introductory_course_plans sc
+        INNER JOIN users u_teacher ON sc.teacher_id = u_teacher.id AND u_teacher.user_type = 4
+        INNER JOIN academies a ON sc.academy_id = a.id
+        INNER JOIN academy_classes ac ON sc.class_id = ac.id
+        INNER JOIN users u_student ON sc.student_id = u_student.id AND u_student.user_type = 6
+        INNER JOIN courses c ON sc.course_id = c.id
+    WHERE
+        a.id IN (" . implode(",", $allowedAcademies) . ")
+    LIMIT 5;
+";
+
+$stmtIntroductoryCourses = $db->prepare($introductoryCoursesQuery);
+$stmtIntroductoryCourses->execute();
+$introductoryCourses = $stmtIntroductoryCourses->fetchAll(PDO::FETCH_ASSOC);
+$stmtIntroductoryCourses->closeCursor();
+
+// Ders Planları listesi sorgusu
+$coursePlansQuery = "
+    SELECT
+        sc.id,
+        CONCAT(u_teacher.first_name, ' ', u_teacher.last_name) AS teacher_name,
+        u_teacher.id AS teacher_id,
+        a.name AS academy_name,
+        ac.class_name AS class_name,
+        CONCAT(u_student.first_name, ' ', u_student.last_name) AS student_name,
+        u_student.id AS student_id,
+        c.course_name AS lesson_name,
+        sc.course_date_1,
+        sc.course_date_2,
+        sc.course_date_3,
+        sc.course_date_4,
+        sc.course_attendance_1,
+        sc.course_attendance_2,
+        sc.course_attendance_3,
+        sc.course_attendance_4
+    FROM
+        course_plans sc
+        INNER JOIN users u_teacher ON sc.teacher_id = u_teacher.id AND u_teacher.user_type = 4
+        INNER JOIN academies a ON sc.academy_id = a.id
+        INNER JOIN academy_classes ac ON sc.class_id = ac.id
+        INNER JOIN users u_student ON sc.student_id = u_student.id AND u_student.user_type = 6
+        INNER JOIN courses c ON sc.course_id = c.id
+    WHERE
+        a.id IN (" . implode(",", $allowedAcademies) . ")
+    LIMIT 5; 
+";
+
+$stmtCoursePlans = $db->prepare($coursePlansQuery);
+$stmtCoursePlans->execute();
+$coursePlans = $stmtCoursePlans->fetchAll(PDO::FETCH_ASSOC);
+$stmtCoursePlans->closeCursor();
 ?>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
@@ -157,30 +308,234 @@ require_once "admin_panel_header.php";
 
             <div class="row">
                 <div class="col-md-3">
-                    <div class="alert alert-info" role="alert">
+                    <div class="alert alert-success" role="alert">
                         Toplam Kullanıcı Sayısı: <?php echo $userCount['user_count']; ?>
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="alert alert-info" role="alert">
+                    <div class="alert alert-success" role="alert">
                         Toplam Öğrenci Sayısı: <?php echo $studentCount['student_count']; ?>
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="alert alert-info" role="alert">
+                    <div class="alert alert-success" role="alert">
                         Toplam Öğretmen Sayısı: <?php echo $teacherCount['teacher_count']; ?>
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="alert alert-info" role="alert">
+                    <div class="alert alert-success" role="alert">
                         Toplam Akademi Sayısı: <?php echo $academyCount['academy_count']; ?>
                     </div>
                 </div>
             </div>
 
+              <h4 style="display: inline-block; margin-right: 10px;">Tanışma Dersleri</h4>
+              <small><a href="introductory_courses.php">Tüm Tanışma Dersleri</a></small>
+              <div class="table-responsive small">
+                  <table class="table table-striped table-sm" style="border: 1px solid #ddd;">
+                      <thead>
+                      <tr>
+                          <th>Öğretmen</th>
+                          <th>Öğrenci</th>
+                          <th>Akademi</th>
+                          <th>Sınıf</th>
+                          <th>Ders</th>
+                          <th>Ders Tarihi</th>
+                          <th>Katılım Durumu</th>
+                          <th></th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      <?php foreach ($introductoryCourses as $introductoryCourse): ?>
+                          <tr>
+                              <td><a class="text-decoration-none text-black" href='user_profile.php?id=<?= $introductoryCourse['teacher_id'] ?>'><i class='fas fa-user text-secondary'></i> <?= $introductoryCourse['teacher_name'] ?></a></td>
+                              <td><a class="text-decoration-none text-black" href='user_profile.php?id=<?= $introductoryCourse['student_id'] ?>'><i class='fas fa-user text-secondary'></i> <?= $introductoryCourse['student_name'] ?></td>
+                              <td><?= $introductoryCourse['academy_name'] ?></td>
+                              <td><?= $introductoryCourse['class_name'] ?></td>
+                              <td><?= $introductoryCourse['lesson_name'] ?></td>
+                              <td style="font-size: small;"><?= date(DATETIME_FORMAT, strtotime($introductoryCourse['course_date'])); ?></td>
+                              <td><?= ($introductoryCourse['course_attendance'] == 1) ? '<i class="fas fa-check text-success"></i> Katıldı' : '<i class="fas fa-times text-danger"></i> Katılmadı'; ?></td>
+                              <td>
+                                  <a href="edit_introductory_course_plan.php?id=<?php echo $introductoryCourse['id']; ?>" class="btn btn-primary btn-sm">
+                                      <i class="fas fa-edit"></i>
+                                  </a>
+                              </td>
+                          </tr>
+                      <?php endforeach; ?>
+                      </tbody>
+                  </table>
+              </div>
 
-    <h4 style="display: inline-block; margin-right: 10px;">Öğrenciler</h4>
-    <small><a href="student_list.php">Tüm Öğrenciler</a></small>
+              <h4 style="display: inline-block; margin-right: 10px;">Ders Planları</h4>
+              <small><a href="course_plans.php">Tüm Ders Planları</a></small>
+              <div class="table-responsive small">
+                  <table class="table table-striped table-sm" style="border: 1px solid #ddd;">
+                      <thead>
+                      <tr>
+                          <th>Öğretmen</th>
+                          <th>Öğrenci</th>
+                          <th>Akademi</th>
+                          <th>Sınıf</th>
+                          <th>Ders</th>
+                          <th>1. Ders</th>
+                          <th>2. Ders</th>
+                          <th>3. Ders</th>
+                          <th>4. Ders</th>
+                          <th><i class="fas fa-clipboard-check"></i> 1</th>
+                          <th><i class="fas fa-clipboard-check"></i> 2</th>
+                          <th><i class="fas fa-clipboard-check"></i> 3</th>
+                          <th><i class="fas fa-clipboard-check"></i> 4</th>
+                          <th></th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      <?php foreach ($coursePlans as $coursePlan): ?>
+                          <tr>
+                              <td><a class="text-decoration-none text-black" href='user_profile.php?id=<?= $coursePlan['teacher_id'] ?>'><i class='fas fa-user text-secondary'></i> <?= $coursePlan['teacher_name'] ?></a></td>
+                              <td><a class="text-decoration-none text-black" href='user_profile.php?id=<?= $coursePlan['student_id'] ?>'><i class='fas fa-user text-secondary'></i> <?= $coursePlan['student_name'] ?></td>
+                              <td><?= $coursePlan['academy_name'] ?></td>
+                              <td><?= $coursePlan['class_name'] ?></td>
+                              <td><?= $coursePlan['lesson_name'] ?></td>
+                              <td style="font-size: small;"><?= date(DATETIME_FORMAT, strtotime($coursePlan['course_date_1'])); ?></td>
+                              <td style="font-size: small;"><?= date(DATETIME_FORMAT, strtotime($coursePlan['course_date_2'])); ?></td>
+                              <td style="font-size: small;"><?= date(DATETIME_FORMAT, strtotime($coursePlan['course_date_3'])); ?></td>
+                              <td style="font-size: small;"><?= date(DATETIME_FORMAT, strtotime($coursePlan['course_date_4'])); ?></td>
+
+                              <?php for ($i = 1; $i <= 4; $i++): ?>
+                                  <td>
+                                      <?php
+                                      $attendanceStatus = $coursePlan["course_attendance_$i"];
+
+                                      switch ($attendanceStatus) {
+                                          case 1:
+                                              echo "<i class='fas fa-check text-success'></i>";
+                                              break;
+                                          case 0:
+                                              echo "<i class='fas fa-check text-info'></i>";
+                                              break;
+                                          case 2:
+                                              echo "<i class='fas fa-times text-danger'></i>";
+                                              break;
+                                          case 3:
+                                              echo "<i class='fas fa-calendar-xmark text-warning'></i>";
+                                              break;
+                                          default:
+                                              echo "<i class='fas fa-question text-secondary'></i>";
+                                              break;
+                                      }
+                                      ?>
+                                  </td>
+                              <?php endfor; ?>
+
+
+                              <td>
+                                  <a href="edit_course_plan.php?id=<?= $coursePlan['id']; ?>" class="btn btn-primary btn-sm">
+                                      <i class="fas fa-edit"></i>
+                                  </a>
+                              </td>
+                          </tr>
+                      <?php endforeach; ?>
+
+                      </tbody>
+                  </table>
+              </div>
+
+              <h4 style="display: inline-block; margin-right: 10px;">Telafi Dersleri</h4>
+              <small><a href="rescheduled_courses.php">Tüm Telafi Dersleri</a></small>
+              <div class="table-responsive small">
+                  <table class="table table-striped table-sm" style="border: 1px solid #ddd;">
+                      <thead>
+                      <tr>
+                                  <th>Telafi Edilen Ders Planı</th>
+                                  <th>Öğretmen</th>
+                                  <th>Akademi</th>
+                                  <th>Sınıf</th>
+                                  <th>Öğrenci</th>
+                                  <th>Ders</th>
+                                  <th>Telafi Dersi Tarihi</th>
+                                  <th>Telafi Dersine Katılım</th>
+                                  <th>İşlemler</th>
+                              </tr>
+                              </thead>
+                              <tbody>
+                              <?php
+                              // Veritabanı sorgularını burada gerçekleştirin ve sonuçları tabloya ekleyin
+                              $rescheduled_courses_query = "
+    SELECT
+        rc.id,
+        cp.id AS course_plan_id,
+        CONCAT(u_teacher.first_name, ' ', u_teacher.last_name) AS teacher_name,
+        u_teacher.id AS teacher_id,
+        a.name AS academy_name,
+        ac.class_name AS class_name,
+        CONCAT(u_student.first_name, ' ', u_student.last_name) AS student_name,
+        u_student.id AS student_id,
+        c.course_name AS lesson_name,
+        rc.course_date,
+        rc.course_attendance
+    FROM
+        rescheduled_courses rc
+        INNER JOIN course_plans cp ON rc.course_plan_id = cp.id
+        INNER JOIN users u_teacher ON cp.teacher_id = u_teacher.id AND u_teacher.user_type = 4
+        INNER JOIN academies a ON cp.academy_id = a.id
+        INNER JOIN academy_classes ac ON cp.class_id = ac.id
+        INNER JOIN users u_student ON cp.student_id = u_student.id AND u_student.user_type = 6
+        INNER JOIN courses c ON cp.course_id = c.id
+    WHERE
+        a.id IN (" . implode(",", $allowedAcademies) . ")
+    LIMIT 5;
+";
+
+                              $stmt = $db->query($rescheduled_courses_query);
+                              $rescheduled_courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                              foreach ($rescheduled_courses as $rescheduled_course) {
+                                  echo "<tr>";
+                                  echo "<td><a href='course_plans.php?id={$rescheduled_course['course_plan_id']}' class='btn btn-outline-success btn-sm'>İlgili Ders Planını Görüntüle</a></td>"; // View button added
+                                  echo "<td><a href='user_profile.php?id={$rescheduled_course['teacher_id']}'>{$rescheduled_course['teacher_name']}</a></td>";
+                                  echo "<td>{$rescheduled_course['academy_name']}</td>";
+                                  echo "<td>{$rescheduled_course['class_name']}</td>";
+                                  echo "<td><a href='user_profile.php?id={$rescheduled_course['student_id']}'>{$rescheduled_course['student_name']}</a></td>";
+                                  echo "<td>{$rescheduled_course['lesson_name']}</td>";
+                                  // Tarih ve saatleri Türkiye tarih ve saat dilimine göre biçimlendir
+                                  echo "<td>" . date('d.m.Y H:i', strtotime($rescheduled_course['course_date'])) . "</td>";
+
+                                  // Ders katılımları
+                                  echo "<td>";
+
+                                  switch ($rescheduled_course['course_attendance']) {
+                                      case 0:
+                                          echo "<i class='fas fa-calendar-check text-primary'></i> Henüz katılmadı"; // Henüz katılmadı ve planlandı durumu için takvim simgesi
+                                          break;
+                                      case 1:
+                                          echo "<i class='fas fa-check text-success'></i> Katıldı"; // Katılım varsa yeşil tik
+                                          break;
+                                      case 2:
+                                          echo "<i class='fas fa-times text-danger'></i> Katılmadı"; // Katılmadı durumu için kırmızı çarpı
+                                          break;
+                                      case 3:
+                                          echo "<a href='reschedule_the_course.php?id={$rescheduled_course['id']}' class='btn btn-warning btn-sm'><i class='fas fa-calendar-times'></i></a>"; // Mazeretli durumu için sarı çarpı
+                                          break;
+                                      default:
+                                          echo "<i class='fas fa-question text-secondary'></i>"; // Belirli bir duruma uygun işlem yapılmadıysa soru işareti
+                                          break;
+                                  }
+
+                                  echo "</td>";
+                                  echo "<td><a href='edit_rescheduled_course_plan.php?id={$rescheduled_course['id']}' class='btn btn-primary btn-sm'><i class='fas fa-edit'></i></a></td>";
+
+                                  echo "</tr>";
+
+                              }
+                              ?>
+                              </tbody>
+                          </table>
+
+              </div>
+
+
+              <h4 style="display: inline-block; margin-right: 10px;">Öğrenciler</h4>
+    <small><a href="students.php">Tüm Öğrenciler</a></small>
               <div class="table-responsive small">
                   <table class="table table-striped table-sm" style="border: 1px solid #ddd;">
         <thead>
@@ -202,8 +557,8 @@ require_once "admin_panel_header.php";
       <?php foreach ($student_course_teacher_relations as $relation): ?>
           <tr>
               <!--   <th scope="row"><?= $relation['student_id'] ?></th>-->
-              <td><?= $relation['firstname'] ?></td>
-              <td><?= $relation['lastname'] ?></td>
+              <td><?= $relation['first_name'] ?></td>
+              <td><?= $relation['last_name'] ?></td>
               <td><?= $relation['email'] ?></td>
               <td><?= $relation['tc_identity'] ?></td>
               <td><?= $relation['phone'] ?></td>
@@ -212,8 +567,8 @@ require_once "admin_panel_header.php";
               <td><?= $relation['course_name'] ?></td>
               <td><?= $relation['teacher_name'] ?></td>
               <td>
-                  <a href="student_profile.php?id=<?php echo $relation['student_id']; ?>" class="btn btn-primary btn-sm">
-                      <i class="fas fa-arrow-right"></i>
+                  <a href="user_profile.php?id=<?php echo $relation['user_id']; ?>" class="btn btn-primary btn-sm">
+                      <i class="fas fa-user"></i>
                   </a>
               </td>
           </tr>
@@ -223,12 +578,12 @@ require_once "admin_panel_header.php";
   </div>
             <!-- Öğretmenler Tablosu -->
             <h4 style="display: inline-block; margin-right: 10px;">Öğretmenler</h4>
-            <small><a href="teacher_list.php">Tüm Öğretmenler</a></small>
+            <small><a href="teachers.php">Tüm Öğretmenler</a></small>
               <div class="table-responsive small">
                   <table class="table table-striped table-sm" style="border: 1px solid #ddd;">
                     <thead>
                     <tr>
-                        <!--   <th scope="col">#</th>-->
+                        <!--  <th scope="col">#</th>-->
                           <th scope="col">Ad</th>
                           <th scope="col">Soyad</th>
                           <th scope="col">Sınıf</th>
@@ -244,7 +599,7 @@ require_once "admin_panel_header.php";
                     <tbody>
                     <?php foreach ($teachers as $teacher): ?>
                         <tr>
-                            <!--  <th scope="row"><?= isset($teacher['teacher_id']) ? $teacher['teacher_id'] : '' ?></th>-->
+<!--                            <td>--><?php //= isset($teacher['user_id']) ? $teacher['user_id'] : '' ?><!--</td>-->
                             <td><?= isset($teacher['first_name']) ? $teacher['first_name'] : '' ?></td>
                             <td><?= isset($teacher['last_name']) ? $teacher['last_name'] : '' ?></td>
                             <td><?= isset($teacher['class_name']) ? $teacher['class_name'] : '' ?></td>
@@ -253,8 +608,8 @@ require_once "admin_panel_header.php";
                             <td><?= isset($teacher['email']) ? $teacher['email'] : '' ?></td>
                             <td><?= isset($teacher['phone']) ? $teacher['phone'] : '' ?></td>
                             <td>
-                                <a href="teacher_profile.php?id=<?= $teacher['teacher_id'] ?>" class="btn btn-primary btn-sm">
-                                    <i class="fas fa-arrow-right"></i>
+                                <a href="user_profile.php?id=<?= $teacher['user_id'] ?>" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-user"></i>
                                 </a>
                             </td>
 
@@ -266,7 +621,7 @@ require_once "admin_panel_header.php";
             </div>
 
               <h4 style="display: inline-block; margin-right: 10px;">Kullanıcılar</h4>
-              <small><a href="user_list.php">Tüm Kullanıcılar</a></small>
+              <small><a href="users.php">Tüm Kullanıcılar</a></small>
               <div class="table-responsive small">
                   <table class="table table-striped table-sm" style="border: 1px solid #ddd;">
                       <thead>
@@ -279,6 +634,7 @@ require_once "admin_panel_header.php";
                           <th scope="col">Telefon</th>
                           <th scope="col">E-posta Doğrulaması</th>
                           <th scope="col">SMS Doğrulaması</th>
+                          <th scope="col">Rolü</th>
                           <th scope="col"></th>
 
                       </tr>
@@ -287,16 +643,17 @@ require_once "admin_panel_header.php";
                       <?php foreach ($users as $user): ?>
                           <tr>
                               <!--  <th scope="row"><?= $user['id'] ?></th>-->
-                              <td><?= $user['firstname'] ?></td>
-                              <td><?= $user['lastname'] ?></td>
+                              <td><?= $user['first_name'] ?></td>
+                              <td><?= $user['last_name'] ?></td>
                               <td><?= $user['email'] ?></td>
-                              <td><?= $user['tc'] ?></td>
+                              <td><?= $user['tc_identity'] ?></td>
                               <td><?= $user['phone'] ?></td>
                               <td><?= $user['verification_time_email_confirmed'] ? '<i class="fas fa-check text-success"></i> Doğrulandı' : '<i class="fas fa-times text-danger"></i> Doğrulanmadı' ?></td>
                               <td><?= $user['verification_time_sms_confirmed'] ? '<i class="fas fa-check text-success"></i> Doğrulandı' : '<i class="fas fa-times text-danger"></i> Doğrulanmadı' ?></td>
+                              <td><?= $user['type_name'] ?></td>
                               <td>
-                                  <a href="user_profile.php?id=<?= $user['id'] ?>" class="btn btn-primary btn-sm">
-                                      <i class="fas fa-arrow-right"></i>
+                                  <a href="user_profile.php?id=<?= $user['user_id'] ?>" class="btn btn-primary btn-sm">
+                                      <i class="fas fa-user"></i>
                                   </a>
                               </td>
                           </tr>
@@ -305,58 +662,75 @@ require_once "admin_panel_header.php";
                   </table>
               </div>
 
-            <!-- Dersler Tablosu -->
-            <h4 style="display: inline-block; margin-right: 10px;">Dersler</h4>
-            <small><a href="courses.php">Tüm Dersler</a></small>
-              <div class="table-responsive small">
-                  <table class="table table-striped table-sm" style="border: 1px solid #ddd;">
-                    <thead>
-                    <tr>
-                        <!--  <th scope="col">#</th>-->
-                          <th scope="col">Ders Adı</th>
-                          <th scope="col">Ders Kodu</th>
-                          <th scope="col">Açıklama</th>
-                          <!-- Diğer ders sütunları -->
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <?php foreach ($courses as $course): ?>
-                        <tr>
-                            <!--    <th scope="row"><?= $course['id'] ?></th>-->
-                            <td><?= $course['course_name'] ?></td>
-                            <td><?= $course['course_code'] ?></td>
-                            <td><?= $course['description'] ?></td>
-                            <!-- Diğer ders verileri -->
-                        </tr>
-                    <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
 
-                <h4 style="display: inline-block; margin-right: 10px;">Sınıflar</h4>
-                <small><a href="class_list.php">Tüm Sınıflar</a></small>
-              <div class="table-responsive small">
-                  <table class="table table-striped table-sm" style="border: 1px solid #ddd;">
-                        <thead>
-                        <tr>
-                            <!--   <th scope="col">#</th>-->
-                            <th scope="col">Ad</th>
-                            <th scope="col">Kod</th>
-                            <th scope="col">Açıklama</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <?php foreach ($classes as $class): ?>
-                            <tr>
-                             <!--   <th scope="row"><?= $class['id'] ?></th>-->
-                                <td><?= $class['class_name'] ?></td>
-                                <td><?= $class['class_code'] ?></td>
-                                <td><?= $class['class_description'] ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
+              <div class="container">
+                  <div class="row">
+                      <div class="col-md-6">
+                          <h5><i class="fas fa-birthday-cake"></i> Öğrenci Doğum Günleri (Bu Hafta)</h5>
+                              <table class="table table-striped table-sm" style="border: 1px solid #ddd;">
+                                  <thead>
+                                  <tr>
+                                  <th>Ad</th>
+                                  <th>Soyad</th>
+                                  <th>Yaş</th>
+                                  <th>Doğum Tarihi</th>
+                                  <th>Profil</th>
+                              </tr>
+                              </thead>
+                              <tbody>
+                              <?php foreach ($studentBirthdays as $student): ?>
+                                  <?php
+                                  $birthdayDate = new DateTime($student['birth_date']);
+                                  $todayDate = new DateTime();
+                                  $age = $todayDate->diff($birthdayDate)->y;
+                                  ?>
+                                  <tr>
+                                      <td><?php echo $student['first_name']; ?></td>
+                                      <td><?php echo $student['last_name']; ?></td>
+                                      <td><?php echo $age; ?></td>
+                                      <td><?php echo $birthdayDate->format('d.m.Y'); ?></td>
+                                      <td><a href="user_profile.php?id=<?php echo $student['student_id']; ?>" class="btn btn-primary btn-sm">
+                                              <i class="fas fa-user"></i>
+                                          </a></td>
+                                  </tr>
+                              <?php endforeach; ?>
+                              </tbody>
+                          </table>
+                      </div>
+                      <div class="col-md-6">
+                          <h5><i class="fas fa-birthday-cake"></i> Öğretmen Doğum Günleri (Bu Hafta)</h5>
+                              <table class="table table-striped table-sm" style="border: 1px solid #ddd;">
+                              <thead>
+                              <tr>
+                                  <th>Ad</th>
+                                  <th>Soyad</th>
+                                  <th>Yaş</th>
+                                  <th>Doğum Tarihi</th>
+                                  <th>Profil</th>
+                              </tr>
+                              </thead>
+                              <tbody>
+                              <?php foreach ($teacherBirthdays as $teacher): ?>
+                                  <?php
+                                  $birthdayDate = new DateTime($teacher['birth_date']);
+                                  $todayDate = new DateTime();
+                                  $age = $todayDate->diff($birthdayDate)->y;
+                                  ?>
+                                  <tr>
+                                      <td><?php echo $teacher['first_name']; ?></td>
+                                      <td><?php echo $teacher['last_name']; ?></td>
+                                      <td><?php echo $age; ?></td>
+                                      <td><?php echo $birthdayDate->format('d.m.Y'); ?></td>
+                                      <td><a href="user_profile.php?id=<?php echo $teacher['teacher_id']; ?>" class="btn btn-primary btn-sm">
+                                              <i class="fas fa-user"></i>
+                                          </a></td>
+                                  </tr>
+                              <?php endforeach; ?>
+                              </tbody>
+                          </table>
+                      </div>
+                  </div>
+              </div>
       </div>
 </div>
 <?php
