@@ -8,8 +8,14 @@ Kurum içi gereksinim nedeniyle oluşturulmuş basit bir öğrenci işleri merke
 * Veritabanı için oim.sql dosyası kullanılabilir
 
 ### Özellikler
+* Ders planlayabilme (Öğretmen - Öğrenci - Ders - Akademi - Sınıf)
+* Tanışma dersi planlayabilme (Öğretmen - Öğrenci - Ders - Akademi - Sınıf)
+* Telafi dersi planlayabilme (Öğretmen - Öğrenci - Ders - Akademi - Sınıf)
+* Öğrencilerin kendi panellerinden ders planları ve ödemelerinin takibi
+* Öğretmenlerin kendi panellerinden ders planları ve ödemelerinin takibi
 * Kullanıcılara özel oturum aç, şifremi unuttum özelliği
 * Kullanıcıların kendi bilgilerini güncelleyebildikleri kontrol paneli
+* Kullanıcı ile birimlerin ilişkilendirilmesi
 * Yöneticilere özel oturum aç, şifremi unuttum özelliği
 * Yönetici oturum açtığında mobil telefon numarasına SMS gönderilmesi
 * Yöneticinin kendi bilgilerini güncelleyebilmesi
