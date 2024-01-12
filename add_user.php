@@ -51,20 +51,32 @@ use Infobip\Model\SmsDestination;
 use Infobip\Model\SmsTextualMessage;
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $tc = $_POST["tc"];
-    $firstname = $_POST["firstname"];
-    $lastname = $_POST["lastname"];
+    $tc_identity = $_POST["tc_identity"];
+    $first_name = $_POST["first_name"];
+    $last_name = $_POST["last_name"];
     $email = $_POST["email"];
     $phone = $_POST["phone"];
-    $password = password_hash($_POST["password"], PASSWORD_DEFAULT);
+    $birth_date = $_POST["birth_date"];
+    $city = $_POST["city"];
+    $district = $_POST["district"];
+    $blood_type = $_POST["blood_type"];
+    $health_issue = $_POST["health_issue"];
+    $emergency_contact = $_POST["emergency_contact"];
+    $emergency_phone = $_POST["emergency_phone"];
 
-    // Eklenen satır - Kullanıcı tipi bilgisini al
+    // Hash'lenmemiş şifreyi al
+    $plainPassword = $_POST["password"];
+
+    // Şifreyi hash'leyerek bir değişkene atayalım
+    $hashedPassword = password_hash($plainPassword, PASSWORD_DEFAULT);
+
+    // Kullanıcı tipi bilgisini al
     $userType = $_POST["user_type"];
 
     // Kullanıcının daha önce kayıtlı olup olmadığını kontrol et
-    $queryCheck = "SELECT * FROM users WHERE email = ? OR tc = ? OR phone = ?";
+    $queryCheck = "SELECT * FROM users WHERE email = ? OR tc_identity = ? OR phone = ?";
     $stmtCheck = $db->prepare($queryCheck);
-    $stmtCheck->execute([$email, $tc, $phone]);
+    $stmtCheck->execute([$email, $tc_identity, $phone]);
     $existingUser = $stmtCheck->fetch(PDO::FETCH_ASSOC);
 
     if ($existingUser) {
@@ -76,22 +88,63 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $verificationTimeEmail = date("Y-m-d H:i:s", time());
         $verificationTimeSms = date("Y-m-d H:i:s", time());
 
-        $insertQuery = "INSERT INTO users (tc, firstname, lastname, email, phone, password, verification_code_email, verification_code_sms, verification_time_email_sent, verification_time_sms_sent, user_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $insertQuery = "INSERT INTO users (
+    tc_identity, 
+    first_name, 
+    last_name, 
+    email, 
+    phone, 
+    password, 
+    verification_code_email, 
+    verification_code_sms, 
+    verification_time_email_sent, 
+    verification_time_sms_sent, 
+    user_type, 
+    birth_date,
+    city,
+    district,
+    blood_type,
+    health_issue,
+    emergency_contact,
+    emergency_phone,
+    created_at
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try {
             $stmt = $db->prepare($insertQuery);
-            $stmt->execute([$tc, $firstname, $lastname, $email, $phone, $password, $verificationCodeEmail, $verificationCodeSms, $verificationTimeEmail, $verificationTimeSms, $userType]);
+            $stmt->execute([
+                $tc_identity,
+                $first_name,
+                $last_name,
+                $email,
+                $phone,
+                $hashedPassword,
+                $verificationCodeEmail,
+                $verificationCodeSms,
+                $verificationTimeEmail,
+                $verificationTimeSms,
+                $userType,
+                $birth_date,
+                $city,
+                $district,
+                $blood_type,
+                $health_issue,
+                $emergency_contact,
+                $emergency_phone,
+                date("Y-m-d H:i:s")
+            ]);
 
             // E-posta ve SMS gönderme işlemleri
-    sendVerificationEmail($email, $verificationCodeEmail, $firstname, $lastname);
-    sendVerificationSms($phone, $verificationCodeSms, $firstname, $lastname);
+            sendVerificationEmail($email, $verificationCodeEmail, $first_name, $last_name, $plainPassword);
+            sendVerificationSms($phone, $verificationCodeSms, $first_name, $last_name, $plainPassword);
 
-    // Kullanıcı kaydedildiğini bildiren mesajı $message değişkenine atıyoruz
-    $message = "Kullanıcı kaydedildi, doğrulama e-postası ve SMS gönderildi.";
-} catch (PDOException $e) {
-    // Hata durumunda hata mesajını $message değişkenine atıyoruz
-    $message = "Hata: " . $e->getMessage();
-}
+            // Kullanıcı kaydedildiğini bildiren mesajı $message değişkenine atıyoruz
+            $message = "Kullanıcı kaydedildi, doğrulama e-postası ve SMS gönderildi.";
+        } catch (PDOException $e) {
+            // Hata durumunda hata mesajını $message değişkenine atıyoruz
+            $message = "Hata: " . $e->getMessage();
+        }
+
     }
 }
 
@@ -101,8 +154,8 @@ function generateVerificationCode() {
 }
 
 // E-posta gönderme fonksiyonu
-function sendVerificationEmail($to, $verificationCode, $firstname, $lastname) {
-    global $config, $siteName, $agreementLink;
+function sendVerificationEmail($to, $verificationCode, $first_name, $last_name, $plainPassword) {
+    global $config, $siteName, $agreementLink, $siteUrl;
 
     $mail = new PHPMailer(true);
 
@@ -122,7 +175,8 @@ function sendVerificationEmail($to, $verificationCode, $firstname, $lastname) {
         $mail->setFrom($config['smtp']['username'], $siteName);
         $mail->addAddress($to);
 
-        $mail->Subject = '=?UTF-8?B?' . base64_encode('Sözleşme Onayı') . '?='; // Encode subject in UTF-8
+        $mail->isHTML(true);
+        $mail->Subject = '=?UTF-8?B?' . base64_encode($siteName . ' - Hoş Geldiniz 👋') . '?='; // Encode subject in UTF-8
 
         // Parametreleri şifrele
         $encryptedEmail = $to;
@@ -131,8 +185,18 @@ function sendVerificationEmail($to, $verificationCode, $firstname, $lastname) {
         // Gizli bağlantı oluştur
         $verificationLink = getVerificationLink($encryptedEmail, $encryptedCode);
 
-        $mail->Body = "Sayın $firstname $lastname, $siteName kaydınızı doğrulamanız ve sözleşmeleri okuyup onaylamanız gerekmektedir. Sözleşmeleri okuyun: $agreementLink - Sözleşmeleri onaylayın (Bağlantı açıldığında sözleşmeler otomatik onaylanacaktır): $verificationLink";
-
+        $mail->Body = "
+    <html>
+    <body>
+        <p>👋 Selam $first_name,</p>
+        <p>$siteName 'e hoş geldin 🤗 Kaydının tamamlanabilmesi için sözleşmeleri okuyup onaylaman gerekiyor:</p>
+        <p>Sözleşmeleri okumak için 🤓 <a href='$agreementLink'>buraya tıklayabilirsin</a>.</p>
+        <p>Sözleşmeleri onaylamak için ✅ <a href='$verificationLink'>buraya tıklayabilirsin</a>.</p>
+        <p>🧐 $siteName paneline $siteUrl adresinden e-postan ve şifren ($plainPassword) ile oturum açabilirsin.</p>
+        <p>Müzik dolu günler dileriz 🎸🎹</p>
+    </body>
+    </html>
+";
         // E-postayı gönder
         $mail->send();
     } catch (Exception $e) {
@@ -143,8 +207,8 @@ function sendVerificationEmail($to, $verificationCode, $firstname, $lastname) {
 
 
 // SMS gönderme fonksiyonu
-function sendVerificationSms($to, $verificationCode, $firstname, $lastname) {
-    global $config, $BASE_URL, $API_KEY, $SENDER, $MESSAGE_TEXT, $siteName, $agreementLink;
+function sendVerificationSms($to, $verificationCode, $first_name, $last_name) {
+    global $BASE_URL, $API_KEY, $SENDER, $siteName, $agreementLink, $plainPassword, $siteUrl;
 
     $smsConfiguration = new Configuration(host: $BASE_URL, apiKey: $API_KEY);
 
@@ -162,7 +226,7 @@ function sendVerificationSms($to, $verificationCode, $firstname, $lastname) {
     // Gizli bağlantı oluştur
     $verificationLink = getVerificationLink($encryptedPhone, $encryptedCode,"phone");
 
-    $message = new SmsTextualMessage(destinations: [$destination], from: $SENDER, text: "Sayın $firstname $lastname, $siteName kaydınızı doğrulamanız ve sözleşmeleri okuyup onaylamanız gerekmektedir. Sözleşmeleri okumak için: $agreementLink - Sözleşmeleri onaylamak için (Bağlantı açıldığında sözleşmeler otomatik onaylanacaktır): $verificationLink");
+    $message = new SmsTextualMessage(destinations: [$destination], from: $SENDER, text: "Selam $first_name, $siteName 'e hoş geldin 🤗 Kaydının tamamlanabilmesi için sözleşmeleri okuyup onaylaman gerekiyor: $agreementLink - Sözleşmeleri onaylamak için ise şu bağlantıya tıklayabilirsin (Bağlantı açıldığında sözleşmeler otomatik onaylanacaktır): $verificationLink.  $siteUrl üzerinden e-posta adresin ve şifren ( $plainPassword ) ile $siteName panelinde oturum açabilirsin.");
 
     $request = new SmsAdvancedTextualRequest(messages: [$message]);
 
@@ -222,7 +286,7 @@ require_once "admin_panel_header.php";
                       <button onclick="history.back()" class="btn btn-sm btn-outline-secondary">
                           <i class="fas fa-arrow-left"></i> Geri dön
                       </button>
-                      <a href="user_list.php" class="btn btn-sm btn-outline-secondary">
+                      <a href="users.php" class="btn btn-sm btn-outline-secondary">
                           <i class="fas fa-list"></i> Kullanıcı Listesi
                       </a>
                   </div>
@@ -257,31 +321,107 @@ require_once "admin_panel_header.php";
     </div>
     <?php endif; ?>
 
-  <form method="post" action="">
-      <label class="form-label" for="tc">Kullanıcı tipi:</label>
-      <select class="form-control" name="user_type" required>
-          <option value="6">Öğrenci</option>
-          <option value="5">Öğretmen</option>
-          <option value="4">Veli</option>
-          <option value="3">Koordinatör</option>
-          <option value="2">Eğitim Danışmanı</option>
-          <option value="1">Yönetici</option>
-      </select><br>
+            <form method="post" action="" class="needs-validation" onsubmit="return validateForm()" name="addUserForm">
+                <div class="row">
+                    <div class="col-md-6">
+                        <!-- Sol sütun form alanları -->
+                        <div class="mb-3">
+                            <label class="form-label" for="user_type">Kullanıcı tipi:</label>
+                            <select class="form-select" name="user_type" required>
+                                <option value="6">Öğrenci</option>
+                                <option value="5">Veli</option>
+                                <option value="4">Öğretmen</option>
+                                <option value="3">Eğitim Danışmanı</option>
+                                <option value="2">Koordinatör</option>
+                                <option value="1">Yönetici</option>
+                            </select>
+                            <div class="invalid-feedback">Kullanıcı tipini seçin.</div>
+                        </div>
 
-    <label class="form-label" for="tc">TC Kimlik No:</label>
-    <input class="form-control" type="text" name="tc" required><br>
-    <label class="form-label" for="firstname">Ad:</label>
-    <input class="form-control"type="text" name="firstname" required><br>
-    <label class="form-label" for="lastname">Soyad:</label>
-    <input class="form-control"type="text" name="lastname" required><br>
-    <label for="email" class="form-label">E-posta:</label>
-    <input class="form-control"type="email" name="email" class="form-control" aria-describedby="emailHelp" required>
-      <div id="emailHelp" class="form-text">Geçerli bir e-posta adresi olmalıdır.</div>
-      <br>
-      <label class="form-label" for="phone">Telefon:</label>
-      <input class="form-control" type="text" name="phone" value="90" required><br>
+                        <div class="mb-3">
+                            <label class="form-label" for="tc_identity">TC Kimlik No:</label>
+                            <input class="form-control" type="text" name="tc_identity" required>
+                            <div class="invalid-feedback">Bu alan gereklidir.</div>
+                        </div>
 
-      <div class="form-group">
+                        <div class="mb-3">
+                            <label class="form-label" for="first_name">Ad:</label>
+                            <input class="form-control" type="text" name="first_name" required>
+                            <div class="invalid-feedback">Bu alan gereklidir.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="last_name" class="form-label">Soyad:</label>
+                            <input type="text" name="last_name" class="form-control" required>
+                            <div class="invalid-feedback">Bu alan gereklidir.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">E-posta:</label>
+                            <input type="email" name="email" class="form-control" aria-describedby="emailHelp" required>
+                            <div id="emailHelp" class="form-text">Geçerli bir e-posta adresi olmalıdır.</div>
+                            <div class="invalid-feedback">Bu alan gereklidir.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Telefon:</label>
+                            <div class="input-group">
+                                <span class="input-group-text" id="phone-addon">+90</span>
+                                <input type="text" name="phone" class="form-control" aria-describedby="phone-addon" required>
+                                <div class="invalid-feedback">Geçerli bir telefon numarası girin.</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="birth_date" class="form-label">Doğum Tarihi:</label>
+                            <input type="date" name="birth_date" class="form-control" required>
+                            <div class="invalid-feedback">Bu alan gereklidir.</div>
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6">
+                        <!-- Sağ sütun form alanları -->
+
+                        <div class="mb-3">
+                            <label for="city" class="form-label">Şehir:</label>
+                            <input type="text" name="city" class="form-control" required>
+                            <div class="invalid-feedback">Bu alan gereklidir.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="district" class="form-label">İlçe:</label>
+                            <input type="text" name="district" class="form-control" required>
+                            <div class="invalid-feedback">Bu alan gereklidir.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="blood_type" class="form-label">Kan Grubu:</label>
+                            <input type="text" name="blood_type" class="form-control" required>
+                            <div class="invalid-feedback">Bu alan gereklidir.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="health_issue" class="form-label">Sağlık Sorunu:</label>
+                            <input type="text" name="health_issue" class="form-control">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="emergency_contact" class="form-label">Acil Durum Kişisi:</label>
+                            <input type="text" name="emergency_contact" class="form-control" required>
+                            <div class="invalid-feedback">Bu alan gereklidir.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="emergency_phone" class="form-label">Acil Durum Kişisi Telefon:</label>
+                            <input type="tel" name="emergency_phone" class="form-control" required>
+                            <div class="invalid-feedback">Geçerli bir telefon numarası girin.</div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
           <label class="form-label" for="password">Şifre:</label>
           <div class="input-group">
               <input class="form-control" type="password" name="password" id="password" required>
@@ -333,6 +473,7 @@ require_once "admin_panel_header.php";
 </main>
 </div>
 </div>
+
 <?php
 require_once "footer.php";
 ?>
