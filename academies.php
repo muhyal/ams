@@ -37,6 +37,24 @@ require_once "config.php";
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
 
+require_once "inc/functions.php";
+
+// Kullanıcı ve akademi ilişkisini çekmek için bir SQL sorgusu
+$getUserAcademyQuery = "SELECT academy_id FROM user_academy_assignment WHERE user_id = :user_id";
+$stmtUserAcademy = $db->prepare($getUserAcademyQuery);
+$stmtUserAcademy->bindParam(':user_id', $_SESSION["admin_id"], PDO::PARAM_INT);
+$stmtUserAcademy->execute();
+$associatedAcademies = $stmtUserAcademy->fetchAll(PDO::FETCH_COLUMN);
+
+// Eğer kullanıcı hiçbir akademide ilişkilendirilmemişse veya bu akademilerden hiçbiri yoksa, uygun bir işlemi gerçekleştirin
+if (empty($associatedAcademies)) {
+    echo "Kullanıcınız bu işlem için yetkili değil!";
+    exit();
+}
+
+// Eğitim danışmanının erişebileceği akademilerin listesini güncelle
+$allowedAcademies = $associatedAcademies;
+
 // Akademi işlemleri
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST["add_academy"])) {
@@ -99,7 +117,7 @@ if (isset($_GET["delete"])) {
 }
 
 // Tüm akademileri getir
-$query = "SELECT * FROM academies";
+$query = "SELECT * FROM academies WHERE id IN (" . implode(",", $allowedAcademies) . ")";
 $stmt = $db->query($query);
 $academies = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -142,6 +160,60 @@ require_once "admin_panel_header.php";
                                         </p>
                                         <a href="?edit=<?php echo $academy["id"]; ?>" class="btn btn-warning btn-sm">Düzenle</a>
                                         <button class="btn btn-danger btn-sm" onclick="confirmDelete(<?php echo $academy['id']; ?>)">Sil</button>
+
+
+                                        <?php
+                                        // Öğretmenleri listele
+                                        $teachersQuery = "SELECT DISTINCT u.id, u.first_name, u.last_name
+                  FROM course_plans cp
+                  JOIN users u ON cp.teacher_id = u.id
+                  WHERE cp.academy_id = ?";
+                                        $teachersStmt = $db->prepare($teachersQuery);
+                                        $teachersStmt->execute([$academy["id"]]);
+                                        $teachers = $teachersStmt->fetchAll(PDO::FETCH_ASSOC);
+
+                                        echo '<h3>Öğretmenler:</h3>';
+                                        echo '<ul>';
+                                        foreach ($teachers as $teacher) {
+                                            echo '<li><a href="user_profile.php?id=' . $teacher["id"] . '">' . $teacher["first_name"] . ' ' . $teacher["last_name"] . '</a></li>';
+                                        }
+                                        echo '</ul>';
+
+                                        // Öğrencileri listele
+                                        $studentsQuery = "SELECT DISTINCT u.id, u.first_name, u.last_name
+                  FROM course_plans cp
+                  JOIN users u ON cp.student_id = u.id
+                  WHERE cp.academy_id = ?";
+                                        $studentsStmt = $db->prepare($studentsQuery);
+                                        $studentsStmt->execute([$academy["id"]]);
+                                        $students = $studentsStmt->fetchAll(PDO::FETCH_ASSOC);
+
+                                        echo '<h3>Öğrenciler:</h3>';
+                                        echo '<ul>';
+                                        foreach ($students as $student) {
+                                            echo '<li><a href="user_profile.php?id=' . $student["id"] . '">' . $student["first_name"] . ' ' . $student["last_name"] . '</a></li>';
+                                        }
+                                        echo '</ul>';
+
+                                        // Dersleri listele
+                                        $coursesQuery = "SELECT DISTINCT c.course_name
+                 FROM course_plans cp
+                 JOIN courses c ON cp.course_id = c.id
+                 WHERE cp.academy_id = ?";
+                                        $coursesStmt = $db->prepare($coursesQuery);
+                                        $coursesStmt->execute([$academy["id"]]);
+                                        $courses = $coursesStmt->fetchAll(PDO::FETCH_ASSOC);
+
+                                        echo '<h3>Dersler:</h3>';
+                                        echo '<ul>';
+                                        foreach ($courses as $course) {
+                                            echo '<li>' . $course["course_name"] . '</li>';
+                                        }
+                                        echo '</ul>';
+
+
+                                        ?>
+
                                     </div>
                                 </div>
                             </div>
