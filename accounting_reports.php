@@ -79,12 +79,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $sql = "
         SELECT
             academies.name AS academy_name,
-            SUM(accounting_entries.amount) AS total_amount
-        FROM accounting_entries
-        INNER JOIN academies ON accounting_entries.academy_id = academies.id
+            SUM(accounting.amount) AS total_amount
+        FROM accounting
+        INNER JOIN academies ON accounting.academy_id = academies.id
         WHERE academies.id = :academy_id
-        AND accounting_entries.entry_date BETWEEN :start_date AND :end_date
-        GROUP BY accounting_entries.academy_id
+        AND accounting.payment_date BETWEEN :start_date AND :end_date
+        GROUP BY accounting.academy_id
     ";
 
             $stmt = $db->prepare($sql);
@@ -111,17 +111,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Öğrenci Detayları için sorgu
             $studentDetailSql = "
     SELECT
-        students.firstname AS student_name,
-        students.lastname AS student_lastname,
+        students.first_name AS student_name,
+        students.last_name AS student_lastname,
         courses.course_name,
-        accounting_entries.entry_date AS payment_date,
-        accounting_entries.amount AS payment_amount,
-        accounting_entries.payment_method
-    FROM accounting_entries
-    INNER JOIN students ON accounting_entries.student_id = students.id
-    INNER JOIN courses ON accounting_entries.course_id = courses.id
-    WHERE accounting_entries.academy_id = :academy_id
-    AND accounting_entries.entry_date BETWEEN :start_date AND :end_date
+        accounting.payment_date AS payment_date,
+        accounting.amount AS payment_amount,
+        accounting.payment_method
+    FROM accounting
+    INNER JOIN students ON accounting.student_id = students.id
+    INNER JOIN courses ON accounting.course_id = courses.id
+    WHERE accounting.academy_id = :academy_id
+    AND accounting.payment_date BETWEEN :start_date AND :end_date
 ";
 
             // Öğrenci Detayları için sorgu
@@ -228,7 +228,7 @@ require_once "admin_panel_header.php";
                     <h5>Bu Ayın Genel Raporunu Al</h5>
                 </div>
                 <div class="card-body">
-                    <a href="general_report_for_the_current_month.php?generate_report" class="btn btn-primary" target="_blank">Raporu İndir</a>
+                    <a href="general_accounting_report_for_the_current_month.php?generate_report" class="btn btn-primary" target="_blank">Raporu İndir</a>
                 </div>
             </div>
 
@@ -237,7 +237,7 @@ require_once "admin_panel_header.php";
                     <h5>Geçen Ayın Genel Raporunu Al</h5>
                 </div>
                 <div class="card-body">
-                    <a href="general_report_for_last_month.php?generate_report" class="btn btn-primary" target="_blank">Raporu İndir</a>
+                    <a href="general_accounting_report_for_last_month.php?generate_report" class="btn btn-primary" target="_blank">Raporu İndir</a>
                 </div>
             </div>
 

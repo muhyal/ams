@@ -30,6 +30,25 @@ if (!isset($_SESSION["admin_id"])) {
 }
 require_once "db_connection.php";
 require_once "config.php";
+require_once "inc/functions.php";
+
+// Kullanıcı ve akademi ilişkisini çekmek için bir SQL sorgusu
+$getUserAcademyQuery = "SELECT academy_id FROM user_academy_assignment WHERE user_id = :user_id";
+$stmtUserAcademy = $db->prepare($getUserAcademyQuery);
+$stmtUserAcademy->bindParam(':user_id', $_SESSION["admin_id"], PDO::PARAM_INT);
+$stmtUserAcademy->execute();
+$associatedAcademies = $stmtUserAcademy->fetchAll(PDO::FETCH_COLUMN);
+
+// Eğer kullanıcı hiçbir akademide ilişkilendirilmemişse veya bu akademilerden hiçbiri yoksa, uygun bir işlemi gerçekleştirin
+if (empty($associatedAcademies)) {
+    echo "Kullanıcınız bu işlem için yetkili değil!";
+    exit();
+}
+
+// Eğitim danışmanının erişebileceği akademilerin listesini güncelle
+$allowedAcademies = $associatedAcademies;
+
+
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
@@ -39,46 +58,98 @@ $admin_id = $_SESSION["admin_id"];
 $admin_username = $_SESSION["admin_username"];
 
 // Akademileri çek
-$sql = "SELECT * FROM academies";
-$stmt = $db->query($sql);
-$academies = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$sql_academies = "SELECT * FROM academies";
+$stmt_academies = $db->query($sql_academies);
+$academies = $stmt_academies->fetchAll(PDO::FETCH_ASSOC);
 
-// Öğrencileri çek
-$sql = "SELECT * FROM students";
-$stmt = $db->query($sql);
-$students = $stmt->fetchAll(PDO::FETCH_ASSOC);
+// Kullanıcıları ve rollerini çek
+$sql_users_roles = "SELECT users.*, user_types.type_name FROM users 
+                    LEFT JOIN user_types ON users.id = user_types.id";
+$stmt_users_roles = $db->query($sql_users_roles);
+$users_roles = $stmt_users_roles->fetchAll(PDO::FETCH_ASSOC);
 
-// Öğretmenleri çek
-$sql = "SELECT * FROM teachers";
-$stmt = $db->query($sql);
-$teachers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+// Öğrencileri ve öğretmenleri ayır
+$students = [];
+$teachers = [];
 
-// Dersleri çek
+foreach ($users_roles as $user) {
+    if ($user['user_type'] == 6) {
+        $students[] = $user;
+    } elseif ($user['user_type'] == 4) {
+        $teachers[] = $user;
+    }
+}
+
 $sql = "SELECT * FROM courses";
 $stmt = $db->query($sql);
 $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Ödeme yöntemlerini çek
-$sql = "SELECT * FROM payment_methods";
-$stmt = $db->query($sql);
-$payment_methods = $stmt->fetchAll(PDO::FETCH_ASSOC);
+// Ders planlarını çek
+$sql_course_plans = "
+    SELECT 
+        course_plans.*,
+        academies.name AS academy_name,
+        courses.course_name,
+        academy_classes.class_name,
+        teachers.first_name AS teacher_first_name,
+        teachers.last_name AS teacher_last_name,
+        students.first_name AS student_first_name,
+        students.last_name AS student_last_name
+    FROM course_plans
+    LEFT JOIN academies ON course_plans.academy_id = academies.id
+    LEFT JOIN courses ON course_plans.course_id = courses.id
+    LEFT JOIN academy_classes ON course_plans.class_id = academy_classes.id
+    LEFT JOIN users AS teachers ON course_plans.teacher_id = teachers.id
+    LEFT JOIN users AS students ON course_plans.student_id = students.id
+    WHERE teachers.user_type = 4 AND students.user_type = 5"
+;
 
-// Muhasebe girdilerini çek
+$stmt_course_plans = $db->query($sql_course_plans);
+$course_plans = $stmt_course_plans->fetchAll(PDO::FETCH_ASSOC);
+
+// Ödeme yöntemlerini çek
+$sql_payment_methods = "SELECT * FROM payment_methods";
+$stmt_payment_methods = $db->query($sql_payment_methods);
+$payment_methods = $stmt_payment_methods->fetchAll(PDO::FETCH_ASSOC);
+
+// Sadece ilişkilendirilmiş olduğu akademilere ait kayıtları çek
 $sql_entries = "
     SELECT 
-        accounting_entries.id,
-        accounting_entries.academy_id,
-        accounting_entries.student_id,
-        accounting_entries.course_id,
-        accounting_entries.amount,
-        accounting_entries.entry_date,
-        accounting_entries.payment_method
-    FROM accounting_entries
+        accounting.id,
+        accounting.course_plan_id,
+        accounting.amount,
+        accounting.payment_date,
+        accounting.payment_method,
+        accounting.payment_notes
+    FROM accounting
+    WHERE course_plan_id IN (SELECT id FROM course_plans WHERE academy_id IN (" . implode(",", $allowedAcademies) . "))
 ";
 $stmt_entries = $db->query($sql_entries);
 $entries = $stmt_entries->fetchAll(PDO::FETCH_ASSOC) ?? [];
 
+
 // Yardımcı fonksiyonlar
+function getCoursePlanDetails($coursePlanId)
+{
+    global $db;
+
+    $sql = "
+        SELECT 
+            academy_id,
+            course_id,
+            class_id,
+            teacher_id,
+            student_id
+        FROM course_plans
+        WHERE id = ?
+    ";
+    $stmt = $db->prepare($sql);
+    $stmt->execute([$coursePlanId]);
+    $details = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    return $details;
+}
+
 function getAcademyName($academyId)
 {
     global $academies;
@@ -95,11 +166,28 @@ function getStudentName($studentId)
     global $students;
     foreach ($students as $student) {
         if ($student['id'] == $studentId) {
-            return $student['firstname'] . ' ' . $student['lastname'];
+            return $student['first_name'] . ' ' . $student['last_name'];
         }
     }
     return "";
 }
+
+function getTeacherName($teacherId)
+{
+    global $teachers; // $teachers dizisi, öğretmen bilgilerini içeren bir dizi olarak varsayılmış.
+
+    foreach ($teachers as $teacher) {
+        if ($teacher['id'] == $teacherId) {
+            return $teacher['first_name'] . ' ' . $teacher['last_name'];
+        }
+    }
+
+    // Eğer belirtilen öğretmen kimliği ile eşleşen bir öğretmen bulunamazsa boş bir dize döndürülür.
+    return "";
+}
+
+
+
 
 function getCourseName($courseId)
 {
@@ -122,6 +210,7 @@ function getPaymentMethodName($paymentMethodId)
     }
     return "";
 }
+
 ?>
 <?php require_once "admin_panel_header.php"; ?>
 
@@ -138,48 +227,60 @@ function getPaymentMethodName($paymentMethodId)
                     </div>
                 </div>
             </div>
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped">
-                    <thead class="thead-dark">
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead class="thead-dark">
+            <tr>
+                <th>No</th>
+                <th>Plan No</th>
+                <th>Akademi</th>
+                <th>Öğrenci</th>
+                <th>Öğretmen</th>
+                <th>Ders</th>
+                <th>Tutar</th>
+                <th>Tarih</th>
+                <th>Ödeme Yöntemi</th>
+                <th>Not</th>
+            </tr>
+            </thead>
+            <tbody>
+            <?php if (!empty($entries) && is_array($entries)): ?>
+                <?php foreach ($entries as $entry): ?>
                     <tr>
-                        <th>No</th>
-                        <th>Akademi</th>
-                        <th>Öğrenci</th>
-                        <th>Ders</th>
-                        <th>Tutar</th>
-                        <th>Tarih</th>
-                        <th>Ödeme Yöntemi</th>
+                        <td><?= $entry['id'] ?></td>
+                        <td><?= isset($entry['course_plan_id']) ? $entry['course_plan_id'] : 'Belirsiz' ?></td>
+                        <?php
+                        $coursePlanDetails = getCoursePlanDetails($entry['course_plan_id']);
+                        $academyName = isset($coursePlanDetails['academy_id']) ? getAcademyName($coursePlanDetails['academy_id']) : 'Belirsiz';
+                        $studentName = isset($coursePlanDetails['student_id']) ? getStudentName($coursePlanDetails['student_id']) : 'Belirsiz';
+                        $teacherName = isset($coursePlanDetails['teacher_id']) ? getTeacherName($coursePlanDetails['teacher_id']) : 'Belirsiz';
+                        $courseName = isset($coursePlanDetails['course_id']) ? getCourseName($coursePlanDetails['course_id']) : 'Belirsiz';
+                        ?>
+                        <td><?= $academyName ?></td>
+                        <td><?= $studentName ?></td>
+                        <td><?= $teacherName ?></td>
+                        <td><?= $courseName ?></td>
+                        <td><?= isset($entry['amount']) ? $entry['amount'] : 'Belirsiz' ?></td>
+                        <td>
+                            <?php
+                            if (isset($entry['payment_date'])) {
+                                $timestamp = strtotime($entry['payment_date']);
+                                echo date('d.m.Y H:i', $timestamp);
+                            } else {
+                                echo 'Belirsiz';
+                            }
+                            ?>
+                        </td>
+                        <td><?= isset($entry['payment_method']) ? getPaymentMethodName($entry['payment_method']) : 'Belirsiz' ?></td>
+                        <td><?= isset($entry['payment_notes']) ? $entry['payment_notes'] : 'Belirsiz' ?></td>
                     </tr>
-                    </thead>
-                    <tbody>
-                    <?php if (!empty($entries) && is_array($entries)): ?>
-                        <?php foreach ($entries as $entry): ?>
-                            <tr>
-                                <td><?= $entry['id'] ?></td>
-                                <td><?= isset($entry['academy_id']) ? getAcademyName($entry['academy_id']) : 'Belirsiz' ?></td>
-                                <td><?= isset($entry['student_id']) ? getStudentName($entry['student_id']) : 'Belirsiz' ?></td>
-                                <td><?= isset($entry['course_id']) ? getCourseName($entry['course_id']) : 'Belirsiz' ?></td>
-                                <td><?= isset($entry['amount']) ? $entry['amount'] : 'Belirsiz' ?></td>
-                                <td>
-                                    <?php
-                                    if (isset($entry['entry_date'])) {
-                                        $timestamp = strtotime($entry['entry_date']);
-                                        echo date('d.m.Y H:i', $timestamp);
-                                    } else {
-                                        echo 'Belirsiz';
-                                    }
-                                    ?>
-                                </td>
-                                <td><?= isset($entry['payment_method']) ? getPaymentMethodName($entry['payment_method']) : 'Belirsiz' ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <tr>
-                            <td colspan="7">Kayıt bulunamadı.</td>
-                        </tr>
-                    <?php endif; ?>
-                    </tbody>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <tr>
+                    <td colspan="10">Kayıt bulunamadı.</td>
+                </tr>
+            <?php endif; ?>
+            </tbody>
                 </table>
             </div>
-            <?php require_once "footer.php"; ?>
-?>
+<?php require_once "footer.php"; ?>
