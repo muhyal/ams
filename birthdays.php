@@ -36,16 +36,17 @@ $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
 
 // Öğrenci doğum günleri
-$studentQuery = "SELECT firstname, lastname, birthdate FROM students";
+$studentQuery = "SELECT first_name, last_name, birth_date FROM users WHERE user_type = 6";
 $stmtStudent = $db->prepare($studentQuery);
 $stmtStudent->execute();
 $studentBirthdays = $stmtStudent->fetchAll(PDO::FETCH_ASSOC);
 
 // Öğretmen doğum günleri
-$teacherQuery = "SELECT first_name, last_name, birth_date FROM teachers";
+$teacherQuery = "SELECT first_name, last_name, birth_date FROM users WHERE user_type = 4";
 $stmtTeacher = $db->prepare($teacherQuery);
 $stmtTeacher->execute();
 $teacherBirthdays = $stmtTeacher->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
 <?php
 require_once "admin_panel_header.php";
@@ -81,11 +82,11 @@ require_once "admin_panel_header.php";
             <?php foreach ($studentBirthdays as $student): ?>
                 <?php
                 // Doğum günü tarihini alın
-                $birthdayDate = new DateTime($student['birthdate']);
+                $birthdayDate = new DateTime($student['birth_date']);
                 $todayDate = new DateTime();
                 $age = $todayDate->diff($birthdayDate)->y;
                 ?>
-                <li><?php echo $student['firstname'] . ' ' . $student['lastname'] . ' (' . $age . ' yaşında) - ' . $birthdayDate->format('d.m.Y'); ?></li>
+                <li><?php echo $student['first_name'] . ' ' . $student['last_name'] . ' (' . $age . ' yaşında) - ' . $birthdayDate->format('d.m.Y'); ?></li>
             <?php endforeach; ?>
         </ul>
     </div>

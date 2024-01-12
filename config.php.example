@@ -42,6 +42,12 @@ $siteVerifyDescription = 'Size gönderilen onay bağlantısı ile dijital olarak
 $agreementLink = 'https://oim.example.com/agreement.php';
 $siteAcademyUrl = 'https://www.example.com';
 
+// Türkiye saat dilimini kullan
+date_default_timezone_set('Europe/Istanbul');
+
+// Tarih ve saat gösterim formatını belirle
+define('DATE_FORMAT', 'd.m.Y H:i:s');
+
 $mailFromAddress = 'noreply@example.com';
 $mailFromName = 'OIM';
 $mailCharset = 'UTF-8';
