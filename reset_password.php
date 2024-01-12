@@ -47,8 +47,6 @@ if (isset($_POST["reset_request"])) {
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($user) {
-        // Belirlediğiniz zaman dilimini ayarlayın
-        date_default_timezone_set('Europe/Istanbul');
 
         // Şifre sıfırlama için token oluştur
         $token = bin2hex(random_bytes(32));
@@ -78,11 +76,20 @@ if (isset($_POST["reset_request"])) {
 
             // E-posta ayarları
             $mail->setFrom($config['smtp']['username'], $siteName);
-            $mail->addAddress($email, $user["firstname"]); // Alıcı adresi ve adı
+            $mail->addAddress($email, $user["first_name"]); // Alıcı adresi ve adı
 
             $mail->isHTML(true);
             $mail->Subject = '=?UTF-8?B?' . base64_encode('Şifre Sıfırlama Talebi') . '?='; // Encode subject in UTF-8
-            $mail->Body    = "Merhaba, eğer bu şifre sıfırlama isteğini siz talep ettiyseniz, <a href='$siteUrl/$resetLink'>şifrenizi sıfırlamak için tıklayın</a>. Siz talep etmediyseniz farklı bir işlem yapmanız gerekmeyecektir.";
+            $mail->Body = "
+    <html>
+    <body>
+        <p>👋 Selam,</p>
+        <p>🧐 Eğer bu şifre sıfırlama isteğini sen talep ettiysen, <a href='$siteUrl/$resetLink'>şifreni sıfırlamak için tıkla</a>.</p>
+        <p>Sen talep etmediysen farklı bir işlem yapmana gerek yok.</p>
+    <p>Müzik dolu günler dileriz 🎸🎹</p>    
+    </body>
+    </html>
+";
 
             $mail->send();
 
