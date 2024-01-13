@@ -176,19 +176,21 @@ require_once "admin_panel_sidebar.php";
 
                 foreach ($coursePlans as $plan) {
                     $courseDates = implode(", ", array_filter([$plan["course_date_1"], $plan["course_date_2"], $plan["course_date_3"], $plan["course_date_4"]]));
-                    $optionClass = ($plan["debt_amount"] == 0) ? 'text-success' : 'text-danger';
                     $isSelected = ($plan["id"] == $selectedPlanId) ? 'selected' : '';
 
+                    // Renk stilini doğrudan yazdırarak belirt
                     echo "<option value='{$plan["id"]}' data-studentfirstname='{$plan["student_first_name"]}' data-studentlastname='{$plan["student_last_name"]}' 
         data-teacherfirstname='{$plan["teacher_first_name"]}' data-teacherlastname='{$plan["teacher_last_name"]}' 
         data-coursename='{$plan["course_name"]}' data-academyname='{$plan["academy_name"]}' 
-        data-coursefee='{$plan["course_fee"]}' data-debtamount='{$plan["debt_amount"]}' data-coursedates='{$courseDates}' class='{$optionClass}' {$isSelected}>
+        data-coursefee='{$plan["course_fee"]}' data-debtamount='{$plan["debt_amount"]}' data-coursedates='{$courseDates}' 
+        {$isSelected}>
         {$plan["student_first_name"]} {$plan["student_last_name"]} - {$plan["teacher_first_name"]} {$plan["teacher_last_name"]} 
         - {$plan["course_name"]} - Ders ücreti: {$plan["course_fee"]} TL - Kalan borç: {$plan["debt_amount"]} TL
-        </option>";
+    </option>";
                 }
                 ?>
             </select>
+
         </div>
 
         <div class="form-group">

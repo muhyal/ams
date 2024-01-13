@@ -50,38 +50,58 @@ $stmt->execute();
 $searchResults = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
-<h2>Arama Sonuçları</h2>
-
 <?php if (empty($searchResults)) { ?>
-    <p>Hiçbir sonuç bulunamadı.</p>
+    <div class="alert alert-info" role="alert">
+        Hiçbir sonuç bulunamadı.
+    </div>
 <?php } else { ?>
-    <ul>
-        <?php foreach ($searchResults as $result) { ?>
-            <li>
+    <h2>Arama Sonuçları</h2>
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+            <tr>
                 <?php if ($searchType === "user" || $searchType === "student" || $searchType === "teacher") { ?>
-                    Kullanıcı Adı: <?php echo $result['username']; ?><br>
-                    Adı Soyadı: <?php echo $result['first_name'] . ' ' . $result['last_name']; ?><br>
-                    E-posta: <?php echo $result['email']; ?><br>
-                    Telefon: <?php echo $result['phone']; ?>
+                    <th>Kullanıcı Adı</th>
+                    <th>Adı Soyadı</th>
+                    <th>E-posta</th>
+                    <th>Telefon</th>
                 <?php } elseif ($searchType === "class") { ?>
-                    Sınıf Adı: <?php echo $result['class_name']; ?>
+                    <th>Sınıf Adı</th>
                 <?php } elseif ($searchType === "course") { ?>
-                    Ders: <?php echo $result['course_name']; ?>
+                    <th>Ders</th>
                 <?php } ?>
-
-                <!-- Düzenleme ve Silme Bağlantıları -->
-                <?php if ($searchType === "user" || $searchType === "student" || $searchType === "teacher") { ?>
-                    <a href="user_profile.php?id=<?php echo $result['id']; ?>">Profil</a>
-                    <a href="edit_user.php?id=<?php echo $result['id']; ?>">Düzenle</a>
-                    <a href="delete_user.php?id=<?php echo $result['id']; ?>" onclick="return confirm('Bu kullanıcıyı silmek istediğinizden emin misiniz?')">Sil</a>
-                <?php } elseif ($searchType === "class") { ?>
-                    <a href="classes.php?edit_id=<?php echo $result['id']; ?>">Düzenle</a>
-                    <a href="classes.php?delete_id=<?php echo $result['id']; ?>" onclick="return confirm('Bu sınıfı silmek istediğinizden emin misiniz?')">Sil</a>
-                <?php } elseif ($searchType === "course") { ?>
-                    <a href="courses.php?edit_id=<?php echo $result['id']; ?>">Düzenle</a>
-                    <a href="courses.php?delete_id=<?php echo $result['id']; ?>" onclick="return confirm('Bu dersi silmek istediğinizden emin misiniz?')">Sil</a>
-                <?php } ?>
-            </li>
-        <?php } ?>
-    </ul>
+                <th>İşlemler</th>
+            </tr>
+            </thead>
+            <tbody>
+            <?php foreach ($searchResults as $result) { ?>
+                <tr>
+                    <?php if ($searchType === "user" || $searchType === "student" || $searchType === "teacher") { ?>
+                        <td><?php echo $result['username']; ?></td>
+                        <td><?php echo $result['first_name'] . ' ' . $result['last_name']; ?></td>
+                        <td><?php echo $result['email']; ?></td>
+                        <td><?php echo $result['phone']; ?></td>
+                    <?php } elseif ($searchType === "class") { ?>
+                        <td><?php echo $result['class_name']; ?></td>
+                    <?php } elseif ($searchType === "course") { ?>
+                        <td><?php echo $result['course_name']; ?></td>
+                    <?php } ?>
+                    <td>
+                        <?php if ($searchType === "user" || $searchType === "student" || $searchType === "teacher") { ?>
+                            <a href="user_profile.php?id=<?php echo $result['id']; ?>" class="btn btn-info btn-sm"><i class="fas fa-user"></i></a>
+                            <a href="edit_user.php?id=<?php echo $result['id']; ?>" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
+                            <a href="delete_user.php?id=<?php echo $result['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Bu kullanıcıyı silmek istediğinizden emin misiniz?')"><i class="fas fa-trash-alt"></i></a>
+                        <?php } elseif ($searchType === "class") { ?>
+                            <a href="classes.php?edit_id=<?php echo $result['id']; ?>" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
+                            <a href="classes.php?delete_id=<?php echo $result['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Bu sınıfı silmek istediğinizden emin misiniz?')"><i class="fas fa-trash-alt"></i></a>
+                        <?php } elseif ($searchType === "course") { ?>
+                            <a href="courses.php?edit_id=<?php echo $result['id']; ?>" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
+                            <a href="courses.php?delete_id=<?php echo $result['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Bu dersi silmek istediğinizden emin misiniz?')"><i class="fas fa-trash-alt"></i></a>
+                        <?php } ?>
+                    </td>
+                </tr>
+            <?php } ?>
+            </tbody>
+        </table>
+    </div>
 <?php } ?>

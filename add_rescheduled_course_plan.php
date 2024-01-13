@@ -39,51 +39,54 @@ $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_er
 
 $selectedPlanId = isset($_GET['id']) ? $_GET['id'] : null;
 
-
 // course_plan_id'yi URL parametresinden al
 $selectedCoursePlanId = isset($_GET['course_plan_id']) ? $_GET['course_plan_id'] : null;
-$selectedCoursePlan = null;
+
+// Eğer başka bir formdan veri gelmişse, o değeri kullan
+if (isset($_POST['course_plan_id_from_form'])) {
+    $selectedCoursePlanId = $_POST['course_plan_id_from_form'];
+}
 
 // Eğer course_plan_id varsa, ilgili ders planını getir
 if ($selectedCoursePlanId) {
-    $querySelectedCoursePlan = "
-        SELECT
-            sc.id,
-            CONCAT(u_teacher.first_name, ' ', u_teacher.last_name) AS teacher_name,
-            u_teacher.id AS teacher_id,
-            a.name AS academy_name,
-            ac.class_name AS class_name,
-            CONCAT(u_student.first_name, ' ', u_student.last_name) AS student_name,
-            u_student.id AS student_id,
-            c.course_name AS lesson_name,
-            sc.course_date_1,
-            sc.course_date_2,
-            sc.course_date_3,
-            sc.course_date_4,
-            sc.course_attendance_1,
-            sc.course_attendance_2,
-            sc.course_attendance_3,
-            sc.course_attendance_4
-        FROM
-            course_plans sc
-            INNER JOIN users u_teacher ON sc.teacher_id = u_teacher.id AND u_teacher.user_type = 4
-            INNER JOIN academies a ON sc.academy_id = a.id
-            INNER JOIN academy_classes ac ON sc.class_id = ac.id
-            INNER JOIN users u_student ON sc.student_id = u_student.id AND u_student.user_type = 6
-            INNER JOIN courses c ON sc.course_id = c.id
-        WHERE
-            sc.id = :coursePlanId
-    ";
+    $querySelectedCoursePlan = "SELECT
+        sc.id,
+        CONCAT(u_teacher.first_name, ' ', u_teacher.last_name) AS teacher_name,
+        u_teacher.id AS teacher_id,
+        a.name AS academy_name,
+        ac.class_name AS class_name,
+        CONCAT(u_student.first_name, ' ', u_student.last_name) AS student_name,
+        u_student.id AS student_id,
+        c.course_name AS lesson_name,
+        sc.course_date_1,
+        sc.course_date_2,
+        sc.course_date_3,
+        sc.course_date_4,
+        sc.course_attendance_1,
+        sc.course_attendance_2,
+        sc.course_attendance_3,
+        sc.course_attendance_4
+    FROM
+        course_plans sc
+        INNER JOIN users u_teacher ON sc.teacher_id = u_teacher.id AND u_teacher.user_type = 4
+        INNER JOIN academies a ON sc.academy_id = a.id
+        INNER JOIN academy_classes ac ON sc.class_id = ac.id
+        INNER JOIN users u_student ON sc.student_id = u_student.id AND u_student.user_type = 6
+        INNER JOIN courses c ON sc.course_id = c.id
+    WHERE
+        sc.id = :coursePlanId";
 
     $stmtSelectedCoursePlan = $db->prepare($querySelectedCoursePlan);
     $stmtSelectedCoursePlan->bindParam(':coursePlanId', $selectedCoursePlanId, PDO::PARAM_INT);
     $stmtSelectedCoursePlan->execute();
     $selectedCoursePlan = $stmtSelectedCoursePlan->fetch(PDO::FETCH_ASSOC);
+
 }
 
 // Post işlemi kontrolü
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Formdan gelen verileri alın
+    $course_plan_id = isset($_POST["course_plan_id"]) ? $_POST["course_plan_id"] : $selectedCoursePlanId;
     $teacher_id = $_POST["teacher_id"];
     $academy_id = $_POST["academy_id"];
     $class_id = $_POST["class_id"];
@@ -91,6 +94,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $course_id = $_POST["course_id"];
     $course_date = $_POST["course_date"]; // Use $_POST to get the value
     $course_attendance = isset($_POST["course_attendance"]) ? 1 : 0;
+
 
 
     $query = "INSERT INTO rescheduled_courses (course_plan_id, teacher_id, academy_id, class_id, student_id, course_id, 
@@ -172,20 +176,20 @@ require_once "admin_panel_sidebar.php";
             <?php
             if ($selectedCoursePlan) {
                 echo "
-        <div class='card border-success mb-3'>
-            <div class='card-header bg-success text-white'>
-                <h5 class='card-title'>Telafisi Yapılacak Dersin Bilgileri</h5>
-            </div>
-            <div class='card-body'>
-                <p class='card-text'><strong>Öğretmen:</strong> " . $selectedCoursePlan['teacher_name'] . "</p>
-                <p class='card-text'><strong>Akademi:</strong> " . $selectedCoursePlan['academy_name'] . "</p>
-                <p class='card-text'><strong>Sınıf:</strong> " . $selectedCoursePlan['class_name'] . "</p>
-                <p class='card-text'><strong>Öğrenci:</strong> " . $selectedCoursePlan['student_name'] . "</p>
-                <p class='card-text'><strong>Ders:</strong> " . $selectedCoursePlan['lesson_name'] . "</p>
-                
-                <p class='card-text'><strong>Katılım Durumları:</strong> " . getAttendanceStatus($selectedCoursePlan) . "</p>
-            </div>
-        </div>";
+            <div class='card border-success mb-3'>
+                <div class='card-header bg-success text-white'>
+                    <h5 class='card-title'>Telafisi Yapılacak Dersin Bilgileri</h5>
+                </div>
+                <div class='card-body'>
+                    <p class='card-text'><strong>Öğretmen:</strong> " . $selectedCoursePlan['teacher_name'] . "</p>
+                    <p class='card-text'><strong>Akademi:</strong> " . $selectedCoursePlan['academy_name'] . "</p>
+                    <p class='card-text'><strong>Sınıf:</strong> " . $selectedCoursePlan['class_name'] . "</p>
+                    <p class='card-text'><strong>Öğrenci:</strong> " . $selectedCoursePlan['student_name'] . "</p>
+                    <p class='card-text'><strong>Ders:</strong> " . $selectedCoursePlan['lesson_name'] . "</p>
+                    
+                    <p class='card-text'><strong>Katılım Durumları:</strong> " . getAttendanceStatus($selectedCoursePlan) . "</p>
+                </div>
+            </div>";
             }
 
             function getAttendanceStatus($plan)
@@ -230,7 +234,7 @@ require_once "admin_panel_sidebar.php";
 
             ?>
 
-            <form action="" method="post">
+            <div class="form-group">
                 <div class="form-group">
                     <label for="rowId">Ders Planı Seç:</label>
                     <select class="form-control" name="rowId" required>
