@@ -303,31 +303,54 @@ require_once "admin_panel_header.php";
           <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
               <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                   <h1 class="h4"><i class="fas fa-dashboard"></i> Genel Bakış</h1>
+
+                  <form id="searchForm" class="mb-3">
+                      <div class="row">
+                          <div class="col-md-6">
+                              <input type="text" class="form-control" id="searchQuery" name="q" required placeholder="Arama yapılacak kelime">
+                          </div>
+                          <div class="col-md-4">
+                              <select class="form-select" id="searchType" name="search_type">
+                                  <option value="user">Kullanıcı</option>
+                                  <option value="student">Öğrenci</option>
+                                  <option value="teacher">Öğretmen</option>
+                                  <option value="course">Ders</option>
+                                  <option value="class">Sınıf</option>
+                              </select>
+                          </div>
+                          <div class="col-md-2">
+                              <button type="button" class="btn btn-primary" onclick="performSearch()">Ara</button>
+                          </div>
+                      </div>
+                  </form>
               </div>
 
+              <div id="searchResults"></div>
 
-            <div class="row">
-                <div class="col-md-3">
-                    <div class="alert alert-success" role="alert">
-                        Toplam Kullanıcı Sayısı: <?php echo $userCount['user_count']; ?>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="alert alert-success" role="alert">
-                        Toplam Öğrenci Sayısı: <?php echo $studentCount['student_count']; ?>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="alert alert-success" role="alert">
-                        Toplam Öğretmen Sayısı: <?php echo $teacherCount['teacher_count']; ?>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="alert alert-success" role="alert">
-                        Toplam Akademi Sayısı: <?php echo $academyCount['academy_count']; ?>
-                    </div>
-                </div>
-            </div>
+
+              <div class="row">
+                  <div class="col-md-3">
+                      <div class="alert alert-success" role="alert">
+                          <i class="fas fa-users"></i> Toplam Kullanıcı: <?php echo $userCount['user_count']; ?>
+                      </div>
+                  </div>
+                  <div class="col-md-3">
+                      <div class="alert alert-success" role="alert">
+                          <i class="fas fa-graduation-cap"></i> Toplam Öğrenci: <?php echo $studentCount['student_count']; ?>
+                      </div>
+                  </div>
+                  <div class="col-md-3">
+                      <div class="alert alert-success" role="alert">
+                          <i class="fas fa-chalkboard-teacher"></i> Toplam Öğretmen: <?php echo $teacherCount['teacher_count']; ?>
+                      </div>
+                  </div>
+                  <div class="col-md-3">
+                      <div class="alert alert-success" role="alert">
+                          <i class="fas fa-university"></i> Toplam Akademi: <?php echo $academyCount['academy_count']; ?>
+                      </div>
+                  </div>
+              </div>
+
 
               <h4 style="display: inline-block; margin-right: 10px;">Tanışma Dersleri</h4>
               <small><a href="introductory_courses.php">Tüm Tanışma Dersleri</a></small>
@@ -354,8 +377,29 @@ require_once "admin_panel_header.php";
                               <td><?= $introductoryCourse['class_name'] ?></td>
                               <td><?= $introductoryCourse['lesson_name'] ?></td>
                               <td style="font-size: small;"><?= date(DATETIME_FORMAT, strtotime($introductoryCourse['course_date'])); ?></td>
-                              <td><?= ($introductoryCourse['course_attendance'] == 1) ? '<i class="fas fa-check text-success"></i> Katıldı' : '<i class="fas fa-times text-danger"></i> Katılmadı'; ?></td>
                               <td>
+                                  <?php
+                                  $attendanceStatus = $introductoryCourse['course_attendance'];
+
+                                  switch ($attendanceStatus) {
+                                      case 0:
+                                          echo "<i class='fas fa-calendar-day text-primary'></i> Planlandı"; // Henüz katılmadı ve planlandı durumu için takvim simgesi
+                                          break;
+                                      case 1:
+                                          echo "<i class='fas fa-calendar-check text-success'></i> Katıldı"; // Katılım varsa yeşil tik
+                                          break;
+                                      case 2:
+                                          echo "<i class='fas fa-calendar-times text-danger'></i> Katılmadı"; // Katılmadı durumu için kırmızı çarpı
+                                          break;
+                                      case 3:
+                                          echo "<i class='fas fa-calendar-times text-warning'></i> Mazeretli"; // Mazeretli durumu için sarı çarpı
+                                          break;
+                                      default:
+                                          echo "<i class='fas fa-question text-secondary'></i> Belirsiz"; // Belirli bir duruma uygun işlem yapılmadıysa soru işareti
+                                          break;
+                                  }
+                                  ?>
+                              </td>                              <td>
                                   <a href="edit_introductory_course_plan.php?id=<?php echo $introductoryCourse['id']; ?>" class="btn btn-primary btn-sm">
                                       <i class="fas fa-edit"></i>
                                   </a>
@@ -407,20 +451,20 @@ require_once "admin_panel_header.php";
                                       $attendanceStatus = $coursePlan["course_attendance_$i"];
 
                                       switch ($attendanceStatus) {
-                                          case 1:
-                                              echo "<i class='fas fa-check text-success'></i>";
-                                              break;
                                           case 0:
-                                              echo "<i class='fas fa-check text-info'></i>";
+                                              echo "<i class='fas fa-calendar-day text-primary'></i>"; // Henüz katılmadı ve planlandı durumu için takvim simgesi
+                                              break;
+                                          case 1:
+                                              echo "<i class='fas fa-calendar-check text-success'></i>"; // Katılım varsa yeşil tik
                                               break;
                                           case 2:
-                                              echo "<i class='fas fa-times text-danger'></i>";
+                                              echo "<i class='fas fa-calendar-times text-danger'></i>"; // Katılmadı durumu için kırmızı çarpı
                                               break;
                                           case 3:
-                                              echo "<i class='fas fa-calendar-xmark text-warning'></i>";
+                                              echo "<i class='fas fa-calendar-times text-warning'></i></a>"; // Mazeretli durumu için sarı çarpı
                                               break;
                                           default:
-                                              echo "<i class='fas fa-question text-secondary'></i>";
+                                              echo "<i class='fas fa-question text-secondary'></i>"; // Belirli bir duruma uygun işlem yapılmadıysa soru işareti
                                               break;
                                       }
                                       ?>
@@ -446,14 +490,14 @@ require_once "admin_panel_header.php";
                   <table class="table table-striped table-sm" style="border: 1px solid #ddd;">
                       <thead>
                       <tr>
-                                  <th>Telafi Edilen Ders Planı</th>
+                                  <th>Telafi Ders Planı</th>
                                   <th>Öğretmen</th>
                                   <th>Akademi</th>
                                   <th>Sınıf</th>
                                   <th>Öğrenci</th>
                                   <th>Ders</th>
                                   <th>Telafi Dersi Tarihi</th>
-                                  <th>Telafi Dersine Katılım</th>
+                                  <th>Telafi Dersi Katılım</th>
                                   <th>İşlemler</th>
                               </tr>
                               </thead>
@@ -491,7 +535,7 @@ require_once "admin_panel_header.php";
 
                               foreach ($rescheduled_courses as $rescheduled_course) {
                                   echo "<tr>";
-                                  echo "<td><a href='course_plans.php?id={$rescheduled_course['course_plan_id']}' class='btn btn-outline-success btn-sm'>İlgili Ders Planını Görüntüle</a></td>"; // View button added
+                                  echo "<td><a href='course_plans.php?id={$rescheduled_course['course_plan_id']}' class='btn btn-outline-success btn-sm'><i class='fas fa-external-link-alt'></i> İlgili Ders Planı</a></td>"; // View button added
                                   echo "<td><a href='user_profile.php?id={$rescheduled_course['teacher_id']}'>{$rescheduled_course['teacher_name']}</a></td>";
                                   echo "<td>{$rescheduled_course['academy_name']}</td>";
                                   echo "<td>{$rescheduled_course['class_name']}</td>";
@@ -505,19 +549,19 @@ require_once "admin_panel_header.php";
 
                                   switch ($rescheduled_course['course_attendance']) {
                                       case 0:
-                                          echo "<i class='fas fa-calendar-check text-primary'></i> Henüz katılmadı"; // Henüz katılmadı ve planlandı durumu için takvim simgesi
+                                          echo "<i class='fas fa-calendar-check text-primary'></i> Planlandı"; // Henüz katılmadı ve planlandı durumu için takvim simgesi
                                           break;
                                       case 1:
-                                          echo "<i class='fas fa-check text-success'></i> Katıldı"; // Katılım varsa yeşil tik
+                                          echo "<i class='fas fa-calendar-check text-success'></i> Katıldı"; // Katılım varsa yeşil tik
                                           break;
                                       case 2:
-                                          echo "<i class='fas fa-times text-danger'></i> Katılmadı"; // Katılmadı durumu için kırmızı çarpı
+                                          echo "<i class='fas fa-calendar-times text-danger'></i> Katılmadı"; // Katılmadı durumu için kırmızı çarpı
                                           break;
                                       case 3:
-                                          echo "<a href='reschedule_the_course.php?id={$rescheduled_course['id']}' class='btn btn-warning btn-sm'><i class='fas fa-calendar-times'></i></a>"; // Mazeretli durumu için sarı çarpı
+                                          echo "<i class='fas fa-calendar-times text-warning'></i></a> Mazeretli"; // Mazeretli durumu için sarı çarpı
                                           break;
                                       default:
-                                          echo "<i class='fas fa-question text-secondary'></i>"; // Belirli bir duruma uygun işlem yapılmadıysa soru işareti
+                                          echo "<i class='fas fa-question text-secondary'></i> Belirsiz"; // Belirli bir duruma uygun işlem yapılmadıysa soru işareti
                                           break;
                                   }
 
@@ -592,8 +636,6 @@ require_once "admin_panel_header.php";
                           <th scope="col">E-posta</th>
                           <th scope="col">Telefon</th>
                           <th scope="col"></th>
-
-                          <!-- Diğer öğretmen sütunları -->
                     </tr>
                     </thead>
                     <tbody>
@@ -612,8 +654,6 @@ require_once "admin_panel_header.php";
                                     <i class="fas fa-user"></i>
                                 </a>
                             </td>
-
-                            <!-- Diğer öğretmen verileri -->
                         </tr>
                     <?php endforeach; ?>
                     </tbody>
@@ -733,6 +773,32 @@ require_once "admin_panel_header.php";
               </div>
       </div>
 </div>
-<?php
+
+              <script>
+                  // Enter tuşuna basıldığında performSearch fonksiyonunu çağırma
+                  document.getElementById("searchForm").addEventListener("keydown", function(event) {
+                      if (event.key === "Enter") {
+                          event.preventDefault();
+                          performSearch();
+                      }
+                  });
+
+                  function performSearch() {
+                      const searchQuery = document.getElementById("searchQuery").value;
+                      const searchType = document.getElementById("searchType").value;
+
+                      // AJAX isteği gönderme
+                      const xhr = new XMLHttpRequest();
+                      xhr.open("GET", `search_results.php?q=${searchQuery}&search_type=${searchType}`, true);
+                      xhr.onreadystatechange = function() {
+                          if (xhr.readyState === 4 && xhr.status === 200) {
+                              document.getElementById("searchResults").innerHTML = xhr.responseText;
+                          }
+                      };
+                      xhr.send();
+                  }
+              </script>
+
+              <?php
 require_once "footer.php";
 ?>

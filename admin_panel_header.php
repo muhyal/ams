@@ -255,7 +255,7 @@ $adminLastName = $_SESSION['admin_last_name'];
           <input class="form-control w-100 rounded-0 border-0" type="text" placeholder="Aranacak içerik..." aria-label="Search">
       </div>
       <div class="container text-light">
-          <!-- Yeni buton ve dropdown menüsü -->
+          <!-- Yeni butonu menüsü -->
           <div class="btn-group d-none d-md-block">
               <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                   <i class="fas fa-plus"></i> Yeni
@@ -276,31 +276,8 @@ $adminLastName = $_SESSION['admin_last_name'];
               echo "<span id='current-datetime'>$current_datetime</span>";
               ?>
           </div>
-<!--          <div id="navbarSearch2" class="navbar-search w-25 mt-3">-->
-<!--              <form action="search_results.php" method="GET" class="input-group">-->
-<!--                  <input id="searchInput" class="form-control" type="text" name="q" placeholder="Ara..." aria-label="Search">-->
-<!--                  <select id="searchType" class="form-control" name="search_type">-->
-<!--                      <option value="user">Kullanıcı</option>-->
-<!--                      <option value="student">Öğrenci</option>-->
-<!--                      <option value="class">Sınıf</option>-->
-<!--                      <option value="teacher">Öğretmen</option>-->
-<!--                      <option value="course">Ders</option>-->
-<!--                  </select>-->
-<!--                  <button id="searchButton" class="btn btn-secondary" type="submit">-->
-<!--                      <i class="fas fa-search"></i>-->
-<!--                  </button>-->
-<!--              </form>-->
-<!--          </div>-->
-          <!--  <div id="navbarSearch" class="navbar-search w-40">
-                <div class="input-group w-40">
-                    <input id="searchInput" class="form-control rounded-0 border-0 w-50" type="text" placeholder="Aranacak içerik..." aria-label="Search">
-                    <button id="searchButton" class="btn btn-secondary" type="button">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </div>
-            </div>-->
 
-            <!-- Profil düzenleme ve çıkış bağlantıları için flex container kullanın -->
+            <!-- Profil düzenleme ve çıkış bağlantıları -->
           <div class="row">
               <div class="col-md-12">
                   <div class="d-flex justify-content-end align-items-center">

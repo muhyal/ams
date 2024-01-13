@@ -41,7 +41,7 @@
                         <li class="nav-item">
                             <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'search.php') ? 'active' : ''; ?>" href="search.php">
                                 <svg class="bi"><use xlink:href="#search"/></svg>
-                                Gelişmiş Arama
+                                Arama
                             </a>
                         </li>
 
@@ -56,19 +56,16 @@
                                 <ul class="nav flex-column">
                                     <li class="nav-item">
                                         <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'accounting.php') ? 'active' : ''; ?>" href="accounting.php">
-                                            <i class="bi bi-list"></i>
                                             Muhasebe
                                         </a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'accounting_list.php') ? 'active' : ''; ?>" href="accounting_list.php">
-                                            <i class="bi bi-list"></i>
                                             Muhasebe Listesi
                                         </a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'accounting_reports.php') ? 'active' : ''; ?>" href="accounting_reports.php">
-                                            <i class="bi bi-graph-up"></i>
                                             Muhasebe Raporları
                                         </a>
                                     </li>
@@ -87,25 +84,21 @@
                                 <ul class="nav flex-column">
                                     <li class="nav-item">
                                         <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'academies.php') ? 'active' : ''; ?>" href="academies.php">
-                                            <i class="bi bi-list"></i>
                                             Akademiler
                                         </a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'course_plans.php') ? 'active' : ''; ?>" href="course_plans.php">
-                                            <i class="bi bi-people"></i>
                                             Ders Planları
                                         </a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'introductory_courses.php') ? 'active' : ''; ?>" href="introductory_courses.php">
-                                            <i class="bi bi-people"></i>
                                             Tanışma Dersleri
                                         </a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'rescheduled_courses.php') ? 'active' : ''; ?>" href="rescheduled_courses.php">
-                                            <i class="bi bi-people"></i>
                                             Telafi Dersleri
                                         </a>
                                     </li>
@@ -119,7 +112,7 @@
                         <li class="nav-item <?php echo (basename($_SERVER['PHP_SELF']) == 'users.php' || basename($_SERVER['PHP_SELF']) == 'add_user.php' || basename($_SERVER['PHP_SELF']) == 'admins.php' || basename($_SERVER['PHP_SELF']) == 'add_admin.php' || basename($_SERVER['PHP_SELF']) == 'students.php' || basename($_SERVER['PHP_SELF']) == 'add_student.php' || basename($_SERVER['PHP_SELF']) == 'teachers.php') ? 'active show' : ''; ?>">
                             <a class="nav-link" data-bs-toggle="collapse" href="#usersMenu">
                                 <i class="bi bi-people"></i>
-                                Kullanıcı İşlemleri
+                                Kullanıcılar
                                 <i class="bi bi-caret-down-fill"></i>
                             </a>
 
@@ -128,11 +121,6 @@
                                     <li class="nav-item">
                                         <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'users.php') ? 'active' : ''; ?>" href="users.php">
                                             Kullanıcılar
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'add_user.php') ? 'active' : ''; ?>" href="add_user.php">
-                                            Kullanıcı Ekle
                                         </a>
                                     </li>
                                     <li class="nav-item">
