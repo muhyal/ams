@@ -181,7 +181,7 @@ ALTER TABLE `rescheduled_courses`
   ADD KEY `academy_courses_ibfk_4` (`class_id`),
   ADD KEY `student_courses_ibfk_5` (`student_id`),
   ADD KEY `student_courses_ibfk_3` (`teacher_id`),
-  ADD KEY `course_plan_id` (`course_plan_id`);
+  ADD KEY `rescheduled_courses_ibfk_1` (`course_plan_id`);
 
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
@@ -243,8 +243,20 @@ ALTER TABLE `course_plans`
   ADD CONSTRAINT `course_plans_ibfk_4` FOREIGN KEY (`student_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `course_plans_ibfk_5` FOREIGN KEY (`teacher_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
+ALTER TABLE `introductory_course_plans`
+  ADD CONSTRAINT `introductory_course_plans_ibfk_1` FOREIGN KEY (`academy_id`) REFERENCES `academies` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `introductory_course_plans_ibfk_2` FOREIGN KEY (`class_id`) REFERENCES `academy_classes` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `introductory_course_plans_ibfk_3` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `introductory_course_plans_ibfk_4` FOREIGN KEY (`student_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `introductory_course_plans_ibfk_5` FOREIGN KEY (`teacher_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
 ALTER TABLE `rescheduled_courses`
-  ADD CONSTRAINT `rescheduled_courses_ibfk_1` FOREIGN KEY (`course_plan_id`) REFERENCES `course_plans` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `rescheduled_courses_ibfk_1` FOREIGN KEY (`course_plan_id`) REFERENCES `course_plans` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `rescheduled_courses_ibfk_2` FOREIGN KEY (`academy_id`) REFERENCES `academies` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `rescheduled_courses_ibfk_3` FOREIGN KEY (`class_id`) REFERENCES `academy_classes` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `rescheduled_courses_ibfk_4` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `rescheduled_courses_ibfk_5` FOREIGN KEY (`student_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `rescheduled_courses_ibfk_6` FOREIGN KEY (`teacher_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 ALTER TABLE `users`
   ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`user_type`) REFERENCES `user_types` (`id`) ON DELETE CASCADE;
