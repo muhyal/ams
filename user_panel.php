@@ -149,6 +149,59 @@ WHERE
     $stmt_student_introductory_courses->execute([$student_id]);
     $student_introductory_courses = $stmt_student_introductory_courses->fetchAll(PDO::FETCH_ASSOC);
 
+    $select_student_rescheduled_courses_query = "
+SELECT 
+    rescheduled_courses.*, 
+    academies.name AS academy_name, 
+    courses.course_name,
+    academy_classes.class_name, 
+    teachers.first_name AS teacher_first_name, 
+    teachers.last_name AS teacher_last_name,
+    rescheduled_courses.course_date,
+    rescheduled_courses.course_attendance
+FROM 
+    rescheduled_courses
+LEFT JOIN academies ON rescheduled_courses.academy_id = academies.id
+LEFT JOIN courses ON rescheduled_courses.course_id = courses.id
+LEFT JOIN academy_classes ON rescheduled_courses.class_id = academy_classes.id
+LEFT JOIN users AS teachers ON rescheduled_courses.teacher_id = teachers.id AND teachers.user_type = 4
+WHERE 
+    rescheduled_courses.student_id = ?";
+
+    $stmt_student_rescheduled_courses = $db->prepare($select_student_rescheduled_courses_query);
+    $stmt_student_rescheduled_courses->execute([$student_id]);
+    $student_rescheduled_courses = $stmt_student_rescheduled_courses->fetchAll(PDO::FETCH_ASSOC);
+
+
+    $teacher_id = $user['id'];
+    $select_teacher_rescheduled_courses_query = "
+
+SELECT 
+    rescheduled_courses.*, 
+    academies.name AS academy_name, 
+    courses.course_name,
+    academy_classes.class_name, 
+    teachers.first_name AS teacher_first_name, 
+    teachers.last_name AS teacher_last_name,
+    students.first_name AS student_first_name,
+    students.last_name AS student_last_name,
+    rescheduled_courses.course_date,
+    rescheduled_courses.course_attendance
+FROM 
+    rescheduled_courses
+LEFT JOIN academies ON rescheduled_courses.academy_id = academies.id
+LEFT JOIN courses ON rescheduled_courses.course_id = courses.id
+LEFT JOIN academy_classes ON rescheduled_courses.class_id = academy_classes.id
+LEFT JOIN users AS teachers ON rescheduled_courses.teacher_id = teachers.id AND teachers.user_type = 4
+LEFT JOIN users AS students ON rescheduled_courses.student_id = students.id
+WHERE 
+    rescheduled_courses.teacher_id = ?";
+
+    $stmt_teacher_rescheduled_courses = $db->prepare($select_teacher_rescheduled_courses_query);
+    $stmt_teacher_rescheduled_courses->execute([$teacher_id]);
+    $teacher_rescheduled_courses = $stmt_teacher_rescheduled_courses->fetchAll(PDO::FETCH_ASSOC);
+
+
 
 // Öğretmen ders planı  bilgilerini çekmek için öğretmen ID'sini alıyoruz
     $teacher_id = $user['id'];
@@ -300,14 +353,13 @@ WHERE
                                 <!-- Öğretmenin Diğer Bilgileri -->
                                 <div class="card mt-4">
                                     <div class="card-header">
-                                        <h5 class="card-title">Öğrencilerimle Eğitim Planlarım</h5>
+                                        <h5 class="card-title">Eğitim Planlarım</h5>
                                     </div>
                                     <div class="card-body">
                                         <table class="table">
                                             <thead>
                                             <tr>
-                                                <th>Öğrenci Adı</th>
-                                                <th>Öğrenci Soyadı</th>
+                                                <th>Öğrenci</th>
                                                 <th>Ders</th>
                                                 <th>Sınıf</th>
                                                 <th>Akademi</th>
@@ -315,18 +367,17 @@ WHERE
                                                 <th>2. Ders</th>
                                                 <th>3. Ders</th>
                                                 <th>4. Ders</th>
-                                                <th><i class="fas fa-clipboard-check"></i> 1</th>
-                                                <th><i class="fas fa-clipboard-check"></i> 2</th>
-                                                <th><i class="fas fa-clipboard-check"></i> 3</th>
-                                                <th><i class="fas fa-clipboard-check"></i> 4</th>
+                                                <th>1. <i class="fas fa-clipboard-check"></i></th>
+                                                <th>2. <i class="fas fa-clipboard-check"></i></th>
+                                                <th>3. <i class="fas fa-clipboard-check"></i></th>
+                                                <th>4. <i class="fas fa-clipboard-check"></i></th>
                                             </tr>
                                             </thead>
                                             <tbody>
 
                                             <?php foreach ($teacher_courses as $course): ?>
                                                 <tr>
-                                                    <td><?php echo isset($course['student_first_name']) ? $course['student_first_name'] : ''; ?></td>
-                                                    <td><?php echo isset($course['student_last_name']) ? $course['student_last_name'] : ''; ?></td>
+                                                    <td><?php echo isset($course['student_first_name']) ? $course['student_first_name'] . ' ' . $course['student_last_name'] : ''; ?></td>
                                                     <td><?php echo isset($course['course_name']) ? $course['course_name'] : ''; ?></td>
                                                     <td><?php echo isset($course['class_name']) ? $course['class_name'] : ''; ?></td>
                                                     <td><?php echo isset($course['academy_name']) ? $course['academy_name'] : ''; ?></td>
@@ -334,10 +385,31 @@ WHERE
                                                     <td style="font-size: small;"><?php echo isset($course['course_date_2']) ? date("d.m.Y H:i", strtotime($course['course_date_2'])) : ''; ?></td>
                                                     <td style="font-size: small;"><?php echo isset($course['course_date_3']) ? date("d.m.Y H:i", strtotime($course['course_date_3'])) : ''; ?></td>
                                                     <td style="font-size: small;"><?php echo isset($course['course_date_4']) ? date("d.m.Y H:i", strtotime($course['course_date_4'])) : ''; ?></td>
-                                                    <td><?php echo (isset($course['course_attendance_1']) && $course['course_attendance_1'] ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-times text-danger"></i>'); ?></td>
-                                                    <td><?php echo (isset($course['course_attendance_2']) && $course['course_attendance_2'] ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-times text-danger"></i>'); ?></td>
-                                                    <td><?php echo (isset($course['course_attendance_3']) && $course['course_attendance_3'] ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-times text-danger"></i>'); ?></td>
-                                                    <td><?php echo (isset($course['course_attendance_4']) && $course['course_attendance_4'] ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-times text-danger"></i>'); ?></td>
+                                                    <?php for ($i = 1; $i <= 4; $i++): ?>
+                                                        <td>
+                                                            <?php
+                                                            $attendanceStatus = $course["course_attendance_$i"];
+
+                                                            switch ($attendanceStatus) {
+                                                                case 0:
+                                                                    echo "<i class='fas fa-calendar-day text-primary'></i>"; // Henüz katılmadı ve planlandı durumu için takvim simgesi
+                                                                    break;
+                                                                case 1:
+                                                                    echo "<i class='fas fa-calendar-check text-success'></i>"; // Katılım varsa yeşil tik
+                                                                    break;
+                                                                case 2:
+                                                                    echo "<i class='fas fa-calendar-times text-danger'></i>"; // Katılmadı durumu için kırmızı çarpı
+                                                                    break;
+                                                                case 3:
+                                                                    echo "<i class='fas fa-calendar-times text-warning'></i></a>"; // Mazeretli durumu için sarı çarpı
+                                                                    break;
+                                                                default:
+                                                                    echo "<i class='fas fa-question text-secondary'></i>"; // Belirli bir duruma uygun işlem yapılmadıysa soru işareti
+                                                                    break;
+                                                            }
+                                                            ?>
+                                                        </td>
+                                                    <?php endfor; ?>
                                                 </tr>
 
 
@@ -350,14 +422,13 @@ WHERE
                                 <!-- Öğretmenin Diğer Bilgileri -->
                                 <div class="card mt-4">
                                     <div class="card-header">
-                                        <h5 class="card-title">Öğrencilerle Tanışma Dersleri</h5>
+                                        <h5 class="card-title">Tanışma Derslerim</h5>
                                     </div>
                                     <div class="card-body">
                                         <table class="table">
                                             <thead>
                                             <tr>
-                                                <th>Öğrenci Adı</th>
-                                                <th>Öğrenci Soyadı</th>
+                                                <th>Öğrenci</th>
                                                 <th>Ders</th>
                                                 <th>Sınıf</th>
                                                 <th>Akademi</th>
@@ -368,13 +439,34 @@ WHERE
                                             <tbody>
                                             <?php foreach ($teacher_introductory_courses as $introductory_course): ?>
                                                 <tr>
-                                                    <td><?php echo isset($introductory_course['student_first_name']) ? $introductory_course['student_first_name'] : ''; ?></td>
-                                                    <td><?php echo isset($introductory_course['student_last_name']) ? $introductory_course['student_last_name'] : ''; ?></td>
+                                                    <td><?php echo isset($introductory_course['student_first_name']) ? $introductory_course['student_first_name'] . ' ' . $introductory_course['student_last_name'] : ''; ?></td>
                                                     <td><?php echo isset($introductory_course['course_name']) ? $introductory_course['course_name'] : ''; ?></td>
                                                     <td><?php echo isset($introductory_course['class_name']) ? $introductory_course['class_name'] : ''; ?></td>
                                                     <td><?php echo isset($introductory_course['academy_name']) ? $introductory_course['academy_name'] : ''; ?></td>
                                                     <td><?php echo isset($introductory_course['course_date']) ? date("d.m.Y H:i", strtotime($introductory_course['course_date'])) : ''; ?></td>
-                                                    <td><?php echo (isset($introductory_course['course_attendance']) && $introductory_course['course_attendance'] ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-times text-danger"></i>'); ?></td>
+                                                    <td>
+                                                        <?php
+                                                        $attendanceStatus = $introductory_course["course_attendance"];
+
+                                                        switch ($attendanceStatus) {
+                                                            case 0:
+                                                                echo "<i class='fas fa-calendar-day text-primary'></i> Planlandı"; // Henüz katılmadı ve planlandı durumu için takvim simgesi
+                                                                break;
+                                                            case 1:
+                                                                echo "<i class='fas fa-calendar-check text-success'></i> Katıldı"; // Katılım varsa yeşil tik
+                                                                break;
+                                                            case 2:
+                                                                echo "<i class='fas fa-calendar-times text-danger'></i> Katılmadı"; // Katılmadı durumu için kırmızı çarpı
+                                                                break;
+                                                            case 3:
+                                                                echo "<i class='fas fa-calendar-times text-warning'></i></a> Mazeretli"; // Mazeretli durumu için sarı çarpı
+                                                                break;
+                                                            default:
+                                                                echo "<i class='fas fa-question text-secondary'></i> Belirsiz"; // Belirli bir duruma uygun işlem yapılmadıysa soru işareti
+                                                                break;
+                                                        }
+                                                        ?>
+                                                    </td>
                                                 </tr>
                                             <?php endforeach; ?>
                                             </tbody>
@@ -382,6 +474,62 @@ WHERE
                                     </div>
                                 </div>
 
+
+                                <div class="card mt-4">
+                                    <div class="card-header">
+                                        <h5 class="card-title">Telafi Derslerim</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <table class="table">
+                                            <thead>
+                                            <tr>
+                                                <th>Öğrenci</th>
+                                                <th>Ders</th>
+                                                <th>Sınıf</th>
+                                                <th>Akademi</th>
+                                                <th>Telafi Dersi Tarihi</th>
+                                                <th>Telafi Dersine Katılım</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <?php foreach ($teacher_rescheduled_courses as $teacher_rescheduled_course): ?>
+                                                <tr>
+                                                    <td><?php echo isset($teacher_rescheduled_course['student_first_name']) ? $teacher_rescheduled_course['student_first_name'] . ' ' . $teacher_rescheduled_course['student_last_name'] : ''; ?></td>
+                                                    <td><?php echo isset($teacher_rescheduled_course['course_name']) ? $teacher_rescheduled_course['course_name'] : ''; ?></td>
+                                                    <td><?php echo isset($teacher_rescheduled_course['class_name']) ? $teacher_rescheduled_course['class_name'] : ''; ?></td>
+                                                    <td><?php echo isset($teacher_rescheduled_course['academy_name']) ? $teacher_rescheduled_course['academy_name'] : ''; ?></td>
+                                                    <td><?php echo isset($teacher_rescheduled_course['course_date']) ? date("d.m.Y H:i", strtotime($teacher_rescheduled_course['course_date'])) : ''; ?></td>
+                                                    <td>
+                                                        <?php
+                                                        $attendanceStatus = $teacher_rescheduled_course["course_attendance"];
+
+                                                        switch ($attendanceStatus) {
+                                                            case 0:
+                                                                echo "<i class='fas fa-calendar-day text-primary'></i> Planlandı";
+                                                                break;
+                                                            case 1:
+                                                                echo "<i class='fas fa-calendar-check text-success'></i> Katıldı";
+                                                                break;
+                                                            case 2:
+                                                                echo "<i class='fas fa-calendar-times text-danger'></i> Katılmadı";
+                                                                break;
+                                                            case 3:
+                                                                echo "<i class='fas fa-calendar-times text-warning'></i> Mazeretli";
+                                                                break;
+                                                            default:
+                                                                echo "<i class='fas fa-question text-secondary'></i> Belirsiz";
+                                                                break;
+                                                        }
+                                                        ?>
+                                                    </td>
+                                                </tr>
+                                            <?php endforeach; ?>
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                </div>
 
 
                             <?php elseif ($user['user_type'] == '5'): ?>
@@ -391,7 +539,7 @@ WHERE
                                 <!-- Öğrencinin Diğer Bilgileri -->
                                 <div class="card mt-4">
                                     <div class="card-header">
-                                        <h5 class="card-title">Öğretmenlerimle Eğitim Planlarım</h5>
+                                        <h5 class="card-title">Eğitim Planlarım</h5>
                                     </div>
                                     <div class="card-body">
                                         <table class="table">
@@ -405,10 +553,10 @@ WHERE
                                                 <th>2. Ders</th>
                                                 <th>3. Ders</th>
                                                 <th>4. Ders</th>
-                                                <th>1. Katılım</th>
-                                                <th>2. Katılım</th>
-                                                <th>3. Katılım</th>
-                                                <th>4. Katılım</th>
+                                                <th>1. <i class="fas fa-clipboard-check"></i></th>
+                                                <th>2. <i class="fas fa-clipboard-check"></i></th>
+                                                <th>3. <i class="fas fa-clipboard-check"></i></th>
+                                                <th>4. <i class="fas fa-clipboard-check"></i></th>
                                                 <th>Ders Ücreti</th>
                                                 <th>Kalan Ücret</th>
                                             </tr>
@@ -420,15 +568,35 @@ WHERE
                                                     <td><?php echo isset($course['course_name']) ? $course['course_name'] : ''; ?></td>
                                                     <td><?php echo isset($course['class_name']) ? $course['class_name'] : ''; ?></td>
                                                     <td><?php echo isset($course['academy_name']) ? $course['academy_name'] : ''; ?></td>
-                                                    <td><?php echo isset($course['course_date_1']) ? date("d.m.Y H:i", strtotime($course['course_date_1'])) : ''; ?></td>
-                                                    <td><?php echo isset($course['course_date_2']) ? date("d.m.Y H:i", strtotime($course['course_date_2'])) : ''; ?></td>
-                                                    <td><?php echo isset($course['course_date_3']) ? date("d.m.Y H:i", strtotime($course['course_date_3'])) : ''; ?></td>
-                                                    <td><?php echo isset($course['course_date_4']) ? date("d.m.Y H:i", strtotime($course['course_date_4'])) : ''; ?></td>
-                                                    <td><?php echo (isset($course['course_attendance_1']) && $course['course_attendance_1'] ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-times text-danger"></i>'); ?></td>
-                                                    <td><?php echo (isset($course['course_attendance_2']) && $course['course_attendance_2'] ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-times text-danger"></i>'); ?></td>
-                                                    <td><?php echo (isset($course['course_attendance_3']) && $course['course_attendance_3'] ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-times text-danger"></i>'); ?></td>
-                                                    <td><?php echo (isset($course['course_attendance_4']) && $course['course_attendance_4'] ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-times text-danger"></i>'); ?></td>
-                                                    <td><?php echo isset($course['course_fee']) ? $course['course_fee'] : ''; ?> TL</td>
+                                                    <td style="font-size: small;"><?php echo isset($course['course_date_1']) ? date("d.m.Y H:i", strtotime($course['course_date_1'])) : ''; ?></td>
+                                                    <td style="font-size: small;"><?php echo isset($course['course_date_2']) ? date("d.m.Y H:i", strtotime($course['course_date_2'])) : ''; ?></td>
+                                                    <td style="font-size: small;"><?php echo isset($course['course_date_3']) ? date("d.m.Y H:i", strtotime($course['course_date_3'])) : ''; ?></td>
+                                                    <td style="font-size: small;"><?php echo isset($course['course_date_4']) ? date("d.m.Y H:i", strtotime($course['course_date_4'])) : ''; ?></td>
+                                                    <?php for ($i = 1; $i <= 4; $i++): ?>
+                                                        <td>
+                                                            <?php
+                                                            $attendanceStatus = $course["course_attendance_$i"];
+
+                                                            switch ($attendanceStatus) {
+                                                                case 0:
+                                                                    echo "<i class='fas fa-calendar-day text-primary'></i>"; // Henüz katılmadı ve planlandı durumu için takvim simgesi
+                                                                    break;
+                                                                case 1:
+                                                                    echo "<i class='fas fa-calendar-check text-success'></i>"; // Katılım varsa yeşil tik
+                                                                    break;
+                                                                case 2:
+                                                                    echo "<i class='fas fa-calendar-times text-danger'></i>"; // Katılmadı durumu için kırmızı çarpı
+                                                                    break;
+                                                                case 3:
+                                                                    echo "<i class='fas fa-calendar-times text-warning'></i></a>"; // Mazeretli durumu için sarı çarpı
+                                                                    break;
+                                                                default:
+                                                                    echo "<i class='fas fa-question text-secondary'></i>"; // Belirli bir duruma uygun işlem yapılmadıysa soru işareti
+                                                                    break;
+                                                            }
+                                                            ?>
+                                                        </td>
+                                                    <?php endfor; ?><td><?php echo isset($course['course_fee']) ? $course['course_fee'] : ''; ?> TL</td>
 
                                                     <td>
                                                         <?php
@@ -451,8 +619,6 @@ WHERE
                                         </table>
                                     </div>
                                 </div>
-
-
 
                                 <!-- Öğrencinin Diğer Bilgileri -->
                                 <div class="card mt-4">
@@ -479,7 +645,86 @@ WHERE
                                                     <td><?php echo isset($introductory_course['class_name']) ? $introductory_course['class_name'] : ''; ?></td>
                                                     <td><?php echo isset($introductory_course['academy_name']) ? $introductory_course['academy_name'] : ''; ?></td>
                                                     <td><?php echo isset($introductory_course['course_date']) ? date("d.m.Y H:i", strtotime($introductory_course['course_date'])) : ''; ?></td>
-                                                    <td><?php echo (isset($introductory_course['course_attendance']) && $introductory_course['course_attendance'] ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-times text-danger"></i>'); ?></td>
+                                                    <td>
+                                                        <?php
+                                                        $attendanceStatus = $introductory_course["course_attendance"];
+
+                                                        switch ($attendanceStatus) {
+                                                            case 0:
+                                                                echo "<i class='fas fa-calendar-day text-primary'></i> Planlandı"; // Henüz katılmadı ve planlandı durumu için takvim simgesi
+                                                                break;
+                                                            case 1:
+                                                                echo "<i class='fas fa-calendar-check text-success'></i> Katıldı"; // Katılım varsa yeşil tik
+                                                                break;
+                                                            case 2:
+                                                                echo "<i class='fas fa-calendar-times text-danger'></i> Katılmadı"; // Katılmadı durumu için kırmızı çarpı
+                                                                break;
+                                                            case 3:
+                                                                echo "<i class='fas fa-calendar-times text-warning'></i></a> Mazeretli"; // Mazeretli durumu için sarı çarpı
+                                                                break;
+                                                            default:
+                                                                echo "<i class='fas fa-question text-secondary'></i> Belirsiz"; // Belirli bir duruma uygun işlem yapılmadıysa soru işareti
+                                                                break;
+                                                        }
+                                                        ?>
+                                                    </td>
+                                                </tr>
+                                            <?php endforeach; ?>
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+
+                                <!-- Öğrencinin Diğer Bilgileri -->
+                                <div class="card mt-4">
+                                    <div class="card-header">
+                                        <h5 class="card-title">Telafi Derslerim</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <table class="table">
+                                            <thead>
+                                            <tr>
+                                                <th>Öğretmen</th>
+                                                <th>Ders</th>
+                                                <th>Sınıf</th>
+                                                <th>Akademi</th>
+                                                <th>Telafi Dersi Tarihi</th>
+                                                <th>Telafi Dersine Katılım</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <?php foreach ($student_rescheduled_courses as $student_rescheduled_course): ?>
+                                                <tr>
+                                                    <td><?php echo isset($student_rescheduled_course['teacher_first_name']) ? $student_rescheduled_course['teacher_first_name'] . ' ' . $student_rescheduled_course['teacher_last_name'] : ''; ?></td>
+                                                    <td><?php echo isset($student_rescheduled_course['course_name']) ? $student_rescheduled_course['course_name'] : ''; ?></td>
+                                                    <td><?php echo isset($student_rescheduled_course['class_name']) ? $student_rescheduled_course['class_name'] : ''; ?></td>
+                                                    <td><?php echo isset($student_rescheduled_course['academy_name']) ? $student_rescheduled_course['academy_name'] : ''; ?></td>
+                                                    <td><?php echo isset($student_rescheduled_course['course_date']) ? date("d.m.Y H:i", strtotime($student_rescheduled_course['course_date'])) : ''; ?></td>
+                                                    <td>
+                                                        <?php
+                                                        $attendanceStatus = $student_rescheduled_course["course_attendance"];
+
+                                                        switch ($attendanceStatus) {
+                                                            case 0:
+                                                                echo "<i class='fas fa-calendar-day text-primary'></i> Planlandı"; // Henüz katılmadı ve planlandı durumu için takvim simgesi
+                                                                break;
+                                                            case 1:
+                                                                echo "<i class='fas fa-calendar-check text-success'></i> Katıldı"; // Katılım varsa yeşil tik
+                                                                break;
+                                                            case 2:
+                                                                echo "<i class='fas fa-calendar-times text-danger'></i> Katılmadı"; // Katılmadı durumu için kırmızı çarpı
+                                                                break;
+                                                            case 3:
+                                                                echo "<i class='fas fa-calendar-times text-warning'></i></a> Mazeretli"; // Mazeretli durumu için sarı çarpı
+                                                                break;
+                                                            default:
+                                                                echo "<i class='fas fa-question text-secondary'></i> Belirsiz"; // Belirli bir duruma uygun işlem yapılmadıysa soru işareti
+                                                                break;
+                                                        }
+                                                        ?>
+                                                    </td>
                                                 </tr>
                                             <?php endforeach; ?>
 
@@ -572,11 +817,46 @@ WHERE
 
                             <?php endif; ?>
                         </ul>
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="card-title">Simgeler ve açıklamaları</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>Simge</th>
+                                    <th>Durum Açıklaması</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td><i class='fas fa-calendar-day text-primary'></i></td>
+                                    <td>Planlandı - Ders planlandı ancak henüz katılım sağlanmadı için takvim simgesi</td>
+                                </tr>
+                                <tr>
+                                    <td><i class='fas fa-calendar-check text-success'></i></td>
+                                    <td>Katıldı - Derse katılım sağlandı için yeşil tikli takvim simgesi</td>
+                                </tr>
+                                <tr>
+                                    <td><i class='fas fa-calendar-times text-danger'></i></td>
+                                    <td>Katılmadı - Derse mazaretsiz katılım sağlanmadı için kırmızı çarpılı takvim simgesi</td>
+                                </tr>
+                                <tr>
+                                    <td><i class='fas fa-calendar-times text-warning'></i></td>
+                                    <td>Mazeretli - Derse mazaretli katılım sağlanmadı için turuncu çarpılı takvim simgesi</td>
+                                </tr>
+                                <tr>
+                                    <td><i class='fas fa-question text-secondary'></i></td>
+                                    <td>Belirsiz - Belirli bir duruma uygun işlem yapılmadıysa soru işareti simgesi</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
+
                 </div>
             </div>
-
-
         </div>
     </div>
     <?php
