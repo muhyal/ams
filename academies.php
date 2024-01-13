@@ -1,9 +1,7 @@
 <?php
 /**
  * @copyright Copyright (c) 2024, KUTBU
- *
  * @author Muhammed Yalçınkaya <muhammed.yalcinkaya@kutbu.com>
- *
  * @license AGPL-3.0
  *
  * This code is free software: you can redistribute it and/or modify
@@ -17,7 +15,6 @@
  *
  * You should have received a copy of the GNU Affero General Public License, version 3,
  * along with this program. If not, see <http://www.gnu.org/licenses/>
- *
  */
 
 global $db, $showErrors, $siteName, $siteShortName, $siteUrl;
@@ -55,8 +52,19 @@ if (empty($associatedAcademies)) {
 // Eğitim danışmanının erişebileceği akademilerin listesini güncelle
 $allowedAcademies = $associatedAcademies;
 
+// Yetki kontrolü fonksiyonu
+function checkPermission() {
+    if ($_SESSION["admin_type"] != 1) {
+        // Yetki hatası
+        echo "Bu işlemi gerçekleştirmek için yetkiniz yok!";
+        exit();
+    }
+}
+
 // Akademi işlemleri
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    checkPermission();
+
     if (isset($_POST["add_academy"])) {
         // Akademi ekleme işlemi
         $name = $_POST["name"];
@@ -83,16 +91,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $address = $_POST["address"];
         $email = $_POST["email"];
         $working_hours = $_POST["working_hours"];
-
         $query = "UPDATE academies 
                   SET name = ?, phone_number = ?, mobile_number = ?, city = ?, district = ?, address = ?, email = ?, working_hours = ?
                   WHERE id = ?";
         $stmt = $db->prepare($query);
         $stmt->execute([$name, $phone_number, $mobile_number, $city, $district, $address, $email, $working_hours, $academyId]);
     } elseif (isset($_POST["delete_academy"])) {
+        checkPermission();
+
+
         // Akademi silme işlemi
         $academyId = $_POST["academy_id"];
-
         // Uyarı mesajı
         echo '<script>
                 var confirmDelete = confirm("Bu akademiyi silmek istediğinizden emin misiniz?");
@@ -161,59 +170,68 @@ require_once "admin_panel_header.php";
                                         <a href="?edit=<?php echo $academy["id"]; ?>" class="btn btn-warning btn-sm">Düzenle</a>
                                         <button class="btn btn-danger btn-sm" onclick="confirmDelete(<?php echo $academy['id']; ?>)">Sil</button>
 
-
+                                        <!-- Öğretmenler -->
                                         <?php
-                                        // Öğretmenleri listele
                                         $teachersQuery = "SELECT DISTINCT u.id, u.first_name, u.last_name
-                  FROM course_plans cp
-                  JOIN users u ON cp.teacher_id = u.id
-                  WHERE cp.academy_id = ?";
+                                FROM course_plans cp
+                                JOIN users u ON cp.teacher_id = u.id
+                                WHERE cp.academy_id = ?
+                                LIMIT 5";
                                         $teachersStmt = $db->prepare($teachersQuery);
                                         $teachersStmt->execute([$academy["id"]]);
                                         $teachers = $teachersStmt->fetchAll(PDO::FETCH_ASSOC);
 
-                                        echo '<h3>Öğretmenler:</h3>';
-                                        echo '<ul>';
-                                        foreach ($teachers as $teacher) {
-                                            echo '<li><a href="user_profile.php?id=' . $teacher["id"] . '">' . $teacher["first_name"] . ' ' . $teacher["last_name"] . '</a></li>';
+                                        if (!empty($teachers)) {
+                                            echo '<h5 class="card-title mt-3">Öğretmenler:</h5>';
+                                            echo '<ul>';
+                                            foreach ($teachers as $teacher) {
+                                                echo '<li><a class="text-decoration-none text-black" href="user_profile.php?id=' . $teacher["id"] . '">' . $teacher["first_name"] . ' ' . $teacher["last_name"] . '</a></li>';
+                                            }
+                                            echo '</ul>';
                                         }
-                                        echo '</ul>';
+                                        ?>
 
-                                        // Öğrencileri listele
+                                        <!-- Öğrenciler -->
+                                        <?php
                                         $studentsQuery = "SELECT DISTINCT u.id, u.first_name, u.last_name
-                  FROM course_plans cp
-                  JOIN users u ON cp.student_id = u.id
-                  WHERE cp.academy_id = ?";
+                                FROM course_plans cp
+                                JOIN users u ON cp.student_id = u.id
+                                WHERE cp.academy_id = ?
+                                LIMIT 5";
                                         $studentsStmt = $db->prepare($studentsQuery);
                                         $studentsStmt->execute([$academy["id"]]);
                                         $students = $studentsStmt->fetchAll(PDO::FETCH_ASSOC);
 
-                                        echo '<h3>Öğrenciler:</h3>';
-                                        echo '<ul>';
-                                        foreach ($students as $student) {
-                                            echo '<li><a href="user_profile.php?id=' . $student["id"] . '">' . $student["first_name"] . ' ' . $student["last_name"] . '</a></li>';
+                                        if (!empty($students)) {
+                                            echo '<h5 class="card-title">Öğrenciler:</h5>';
+                                            echo '<ul>';
+                                            foreach ($students as $student) {
+                                                echo '<li><a class="text-decoration-none text-black" href="user_profile.php?id=' . $student["id"] . '">' . $student["first_name"] . ' ' . $student["last_name"] . '</a></li>';
+                                            }
+                                            echo '</ul>';
                                         }
-                                        echo '</ul>';
+                                        ?>
 
-                                        // Dersleri listele
+                                        <!-- Dersler -->
+                                        <?php
                                         $coursesQuery = "SELECT DISTINCT c.course_name
-                 FROM course_plans cp
-                 JOIN courses c ON cp.course_id = c.id
-                 WHERE cp.academy_id = ?";
+                                FROM course_plans cp
+                                JOIN courses c ON cp.course_id = c.id
+                                WHERE cp.academy_id = ?
+                                LIMIT 5";
                                         $coursesStmt = $db->prepare($coursesQuery);
                                         $coursesStmt->execute([$academy["id"]]);
                                         $courses = $coursesStmt->fetchAll(PDO::FETCH_ASSOC);
 
-                                        echo '<h3>Dersler:</h3>';
-                                        echo '<ul>';
-                                        foreach ($courses as $course) {
-                                            echo '<li>' . $course["course_name"] . '</li>';
+                                        if (!empty($courses)) {
+                                            echo '<h5 class="card-title">Dersler:</h5>';
+                                            echo '<ul>';
+                                            foreach ($courses as $course) {
+                                                echo '<li>' . $course["course_name"] . '</li>';
+                                            }
+                                            echo '</ul>';
                                         }
-                                        echo '</ul>';
-
-
                                         ?>
-
                                     </div>
                                 </div>
                             </div>
@@ -221,6 +239,7 @@ require_once "admin_panel_header.php";
                     </div>
                 </div>
             </div>
+
 
             <!-- Akademi Ekleme Formu -->
             <form method="post" id="addForm" style="display: none;">
@@ -323,6 +342,12 @@ if (isset($_GET["edit"])) {
         ?>
             <script>
                 function confirmDelete(academyId) {
+                    // Additional permission check for delete operation
+                    if (<?php echo $_SESSION["admin_type"]; ?> !== 1) {
+                        alert("Bu işlemi gerçekleştirmek için yetkiniz yok!");
+                        return;
+                    }
+
                     var confirmDelete = confirm("Bu akademiyi silmek istediğinizden emin misiniz?");
                     if (confirmDelete) {
                         window.location.href = "?delete=" + academyId;
@@ -343,6 +368,7 @@ if (isset($_GET["edit"])) {
                     document.getElementById('teachersList').style.display = 'block';
                 }
             </script>
-    </main>
+
+        </main>
     </div>
     </div>

@@ -31,12 +31,23 @@ if (!isset($_SESSION["admin_id"])) {
 }
 require_once "db_connection.php";
 require_once "config.php";
+
+// Yetki kontrolü fonksiyonu
+function checkPermission() {
+    if ($_SESSION["admin_type"] != 1) {
+        // Yetki hatası
+        echo "Bu işlemi gerçekleştirmek için yetkiniz yok!";
+        exit();
+    }
+}
+
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
 
 // Ders ekleme işlemi
 if (isset($_POST["add_course"])) {
+    checkPermission(); // Yetki kontrolü
     $courseName = $_POST["course_name"];
     $courseCode = $_POST["course_code"];
     $courseDescription = $_POST["description"];
@@ -48,6 +59,7 @@ if (isset($_POST["add_course"])) {
 
 // Ders düzenleme işlemi
 if (isset($_POST["edit_course"])) {
+    checkPermission(); // Yetki kontrolü
     $id = $_POST["id"];
     $courseName = $_POST["course_name"];
     $courseCode = $_POST["course_code"];
@@ -60,6 +72,7 @@ if (isset($_POST["edit_course"])) {
 
 // Ders silme işlemi
 if (isset($_GET["delete_id"])) {
+    checkPermission(); // Yetki kontrolü
     $deleteId = $_GET["delete_id"];
 
     $query = "DELETE FROM courses WHERE id = ?";

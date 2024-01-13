@@ -33,6 +33,19 @@ if (!isset($_SESSION["admin_id"])) {
 require_once "db_connection.php"; // Veritabanı bağlantısı
 require_once "config.php";
 
+// Yetki kontrolü fonksiyonu
+function checkPermission() {
+    if ($_SESSION["admin_type"] != 1) {
+        // Yetki hatası
+        echo "Bu işlemi gerçekleştirmek için yetkiniz yok!";
+        exit();
+    }
+}
+
+// Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
+$showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
+$showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
+
 // Sınıf ekleme işlemi
 if (isset($_POST["add_class"])) {
     $className = $_POST["class_name"];
@@ -46,6 +59,7 @@ if (isset($_POST["add_class"])) {
 
 // Sınıf düzenleme işlemi
 if (isset($_POST["edit_class"])) {
+    checkPermission(); // Yetki kontrolü
     $id = $_POST["id"];
     $className = $_POST["class_name"];
     $classCode = $_POST["class_code"];
@@ -58,6 +72,7 @@ if (isset($_POST["edit_class"])) {
 
 // Sınıf silme işlemi
 if (isset($_GET["delete_id"])) {
+    checkPermission(); // Yetki kontrolü
     $deleteId = $_GET["delete_id"];
 
     $query = "DELETE FROM academy_classes WHERE id = ?";
