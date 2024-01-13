@@ -27,7 +27,6 @@ session_regenerate_id(true);
 require_once "config.php";
 require 'vendor/autoload.php';
 
-
 use Infobip\Api\SmsApi;
 use Infobip\Configuration;
 use Infobip\Model\SmsAdvancedTextualRequest;
@@ -92,12 +91,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                     // Handle the response, log or display relevant information
                     if ($smsResponse->getMessages()[0]->getStatus()->getGroupName() === 'PENDING') {
-                        echo 'SMS is pending.';
+                        echo 'SMS gönderim bekliyor.';
                     } else {
-                        echo 'SMS sent successfully.';
+                        echo 'SMS başarıyla gönderildi.';
                     }
                 } catch (\Throwable $exception) {
-                    echo 'Failed to send SMS. Error: ' . $exception->getMessage();
+                    echo 'SMS gönderimi başarısız. Hata: ' . $exception->getMessage();
                 }
 
                 $_SESSION["admin_id"] = $admin["id"];
@@ -108,7 +107,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 header("Location: admin_panel.php");
                 exit();
             } else {
-                echo "Bu kullanıcı tipine sahip kullanıcılar bu alana giriş yapamaz.";
+                echo "Bu alana giriş yapma yetkiniz yok!";
             }
         } else {
             echo "Hatalı giriş bilgileri.";

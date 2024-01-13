@@ -115,6 +115,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <button type="submit" class="btn btn-primary">Güncelle</button>
                 <a href="admins.php" class="btn btn-secondary">Yönetici Listesi</a>
             </form>
+
+
+            <?php
+            $academyAssignmentQuery = "SELECT DISTINCT a.name, a.city, a.district
+                            FROM academies a
+                            JOIN user_academy_assignment uaa ON a.id = uaa.academy_id
+                            WHERE uaa.user_id = ?";
+            $academyAssignmentStmt = $db->prepare($academyAssignmentQuery);
+            $academyAssignmentStmt->execute([$admin_id]);
+            $assignedAcademies = $academyAssignmentStmt->fetchAll(PDO::FETCH_ASSOC);
+            ?>
+
+            <div class="form-group mt-3">
+                <label for="assigned_academies" class="mb-2">Yetkili Olduğu Akademiler:</label>
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <?php if (!empty($assignedAcademies)): ?>
+                            <ul class="list-group list-group-flush">
+                                <?php foreach ($assignedAcademies as $assignedAcademy): ?>
+                                    <li class="list-group-item py-2">
+                                        <?php echo $assignedAcademy['city'] . ' ili ' . $assignedAcademy['district'] . ' ilçesindeki ' . $assignedAcademy['name'] . ' akademisi'; ?>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        <?php else: ?>
+                            <p class="card-text m-0">Kullanıcıya atanmış akademi bulunmamaktadır.</p>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+
+
         </main>
     </div>
 </div>

@@ -89,7 +89,7 @@ require_once "admin_panel_header.php";
                         rescheduled_courses rc
                         INNER JOIN course_plans cp ON rc.course_plan_id = cp.id
                         INNER JOIN users u_teacher ON cp.teacher_id = u_teacher.id AND u_teacher.user_type = 4
-                        INNER JOIN academies a ON sc.academy_id = a.id AND a.id IN (" . implode(",", $allowedAcademies) . ")
+                        INNER JOIN academies a ON rc.academy_id = a.id AND a.id IN (" . implode(",", $allowedAcademies) . ")
                         INNER JOIN academy_classes ac ON cp.class_id = ac.id
                         INNER JOIN users u_student ON cp.student_id = u_student.id AND u_student.user_type = 6
                         INNER JOIN courses c ON cp.course_id = c.id

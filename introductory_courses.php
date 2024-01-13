@@ -120,16 +120,16 @@ require_once "admin_panel_header.php";
 
                     switch ($result['course_attendance']) {
                         case 0:
-                            echo "<i class='fas fa-calendar-check text-primary'></i>"; // Henüz katılmadı ve planlandı durumu için takvim simgesi
+                            echo "<i class='fas fa-calendar-day text-primary'></i>"; // Henüz katılmadı ve planlandı durumu için takvim simgesi
                             break;
                         case 1:
-                            echo "<i class='fas fa-check text-success'></i>"; // Katılım varsa yeşil tik
+                            echo "<i class='fas fa-calendar-check text-success'></i>"; // Katılım varsa yeşil tik
                             break;
                         case 2:
-                            echo "<i class='fas fa-times text-danger'></i>"; // Katılmadı durumu için kırmızı çarpı
+                            echo "<i class='fas fa-calendar-times text-danger'></i>"; // Katılmadı durumu için kırmızı çarpı
                             break;
                         case 3:
-                            echo "<a href='reschedule_the_course.php?id={$result['id']}' class='btn btn-warning btn-sm'><i class='fas fa-calendar-times'></i></a>"; // Mazeretli durumu için sarı çarpı
+                            echo "<i class='fas fa-calendar-times text-warning'></i></a>"; // Mazeretli durumu için sarı çarpı
                             break;
                         default:
                             echo "<i class='fas fa-question text-secondary'></i>"; // Belirli bir duruma uygun işlem yapılmadıysa soru işareti

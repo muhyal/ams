@@ -82,7 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             unset($_SESSION['previous_page']); // Session'dan URL'yi temizle
         } else {
             // Eğer geçerli bir URL değilse, varsayılan bir sayfaya yönlendirin
-            $previousPage = "introductory_courses.php"; // Burada yönlendirmek istediğiniz sayfanın adını belirtin
+            $previousPage = "rescheduled_courses.php"; // Burada yönlendirmek istediğiniz sayfanın adını belirtin
         }
 
         header("Location: $previousPage");
