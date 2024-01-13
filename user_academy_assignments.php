@@ -30,6 +30,14 @@ if (!isset($_SESSION["admin_id"])) {
     exit();
 }
 
+// "user_type" kontrolü ekleniyor
+if (!isset($_SESSION["admin_type"])) {
+    // Hata: "user_type" tanımlı değil
+    echo "Hata: Kullanıcı türü belirtilmemiş.";
+    exit();
+}
+
+
 require_once "db_connection.php";
 require_once "config.php";
 
@@ -37,56 +45,55 @@ require_once "config.php";
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
 
-// Form gönderildiğinde
+// Form submit kontrolü
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SESSION["admin_type"] == 1) { // Sadece user_type 1 olan kullanıcılar için kontrol ekledik
     if (isset($_POST["update_submit"])) {
-        // Güncelleme formu gönderildiğinde
-        $userId = $_POST["user_id"];
-        $selectedAcademies = isset($_POST["academies"]) ? $_POST["academies"] : array();
+        // Güncelleme işlemleri
+        foreach ($_POST["update_submit"] as $userId => $value) {
+            // Kullanıcının ilişkilendirildiği akademileri al
+            $selectedAcademies = $_POST["academies"][$userId];
 
-        // Kullanıcının mevcut yetkili olduğu akademileri çek
-        $currentAcademiesQuery = "SELECT academy_id FROM user_academy_assignment WHERE user_id = :user_id";
-        $currentAcademiesStatement = $db->prepare($currentAcademiesQuery);
-        $currentAcademiesStatement->bindParam(':user_id', $userId, PDO::PARAM_INT);
-        $currentAcademiesStatement->execute();
-        $currentAcademies = $currentAcademiesStatement->fetchAll(PDO::FETCH_COLUMN);
+            // Güncelleme işlemlerini gerçekleştir
+            $updateQuery = "DELETE FROM user_academy_assignment WHERE user_id = :user_id";
+            $updateStmt = $db->prepare($updateQuery);
+            $updateStmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
 
-        // Yeni seçilen akademileri ekle
-        $addAcademies = array_diff($selectedAcademies, $currentAcademies);
-        foreach ($addAcademies as $academyId) {
-            $addQuery = "INSERT INTO user_academy_assignment (user_id, academy_id) VALUES (:user_id, :academy_id)";
-            $addStatement = $db->prepare($addQuery);
-            $addStatement->bindParam(':academy_id', $academyId, PDO::PARAM_INT);
-            $addStatement->bindParam(':user_id', $userId, PDO::PARAM_INT);
-            $addStatement->execute();
+            // Önce tüm mevcut ilişkileri sil
+            if ($updateStmt->execute()) {
+                // Silme işlemi başarılı olduysa, yeni ilişkileri ekleyin
+                foreach ($selectedAcademies as $academyId) {
+                    $insertQuery = "INSERT INTO user_academy_assignment (user_id, academy_id) VALUES (:user_id, :academy_id)";
+                    $insertStmt = $db->prepare($insertQuery);
+                    $insertStmt->bindParam(':academy_id', $academyId, PDO::PARAM_INT);
+                    $insertStmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+
+                    if ($insertStmt->execute()) {
+                        $successMessage = "Kullanıcının akademi ilişkileri başarıyla güncellendi.";
+                    } else {
+                        $errorMessage = "Hata: Kullanıcının akademi ilişkileri güncellenemedi.";
+                    }
+                }
+            } else {
+                $errorMessage = "Hata: Kullanıcının akademi ilişkileri silinemedi.";
+            }
         }
-
-        // Kaldırılan akademileri sil
-        $removeAcademies = array_diff($currentAcademies, $selectedAcademies);
-        foreach ($removeAcademies as $academyId) {
-            $removeQuery = "DELETE FROM user_academy_assignment WHERE user_id = :user_id AND academy_id = :academy_id";
-            $removeStatement = $db->prepare($removeQuery);
-            $removeStatement->bindParam(':academy_id', $academyId, PDO::PARAM_INT);
-            $removeStatement->bindParam(':user_id', $userId, PDO::PARAM_INT);
-            $removeStatement->execute();
-        }
-
-        // Güncelleme işlemi başarılı olduysa, sayfayı yeniden yükle
-        header("Location: ".$_SERVER['PHP_SELF']);
-        exit();
     } elseif (isset($_POST["delete_submit"])) {
-        // Silme formu gönderildiğinde
-        $userId = $_POST["user_id"];
+        // Silme işlemleri
+        foreach ($_POST["delete_submit"] as $userId => $value) {
+            $userIdToDelete = $userId;
 
-        // Kullanıcının yetkilendirildiği akademileri sil
-        $deleteQuery = "DELETE FROM user_academy_assignment WHERE user_id = :user_id";
-        $deleteStatement = $db->prepare($deleteQuery);
-        $deleteStatement->bindParam(':user_id', $userId, PDO::PARAM_INT);
-        $deleteStatement->execute();
+            // Kullanıcıya ait tüm akademi ilişkilerini sil
+            $deleteQuery = "DELETE FROM user_academy_assignment WHERE user_id = :user_id";
+            $deleteStmt = $db->prepare($deleteQuery);
+            $deleteStmt->bindParam(":user_id", $userIdToDelete, PDO::PARAM_INT);
 
-        // Silme işlemi başarılı olduysa, sayfayı yeniden yükle
-        header("Location: ".$_SERVER['PHP_SELF']);
-        exit();
+            if ($deleteStmt->execute()) {
+                $successMessage = "Kullanıcıya ait akademi ilişkileri başarıyla silindi.";
+            } else {
+                $errorMessage = "Hata: Kullanıcıya ait akademi ilişkileri silinemedi.";
+            }
+        }
     } elseif (isset($_POST["add_submit"])) {
         // Yetki ekleme formu gönderildiğinde
         $userId = $_POST["user_id"];
@@ -97,22 +104,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $addStatement = $db->prepare($addQuery);
         $addStatement->bindParam(':academy_id', $selectedAcademy, PDO::PARAM_INT);
         $addStatement->bindParam(':user_id', $userId, PDO::PARAM_INT);
-        $addStatement->execute();
 
-        // Ekleme işlemi başarılı olduysa, sayfayı yeniden yükle
-        header("Location: ".$_SERVER['PHP_SELF']);
-        exit();
+        if ($addStatement->execute()) {
+            // Ekleme işlemi başarılı olduysa, sayfayı yeniden yükle
+            header("Location: ".$_SERVER['PHP_SELF']);
+            exit();
+        } else {
+            $errorMessage = "Hata: İlişki eklenemedi.";
+        }
     }
+} else {
+    $errorMessage = "Bu işlemi gerçekleştirmek için yeterli yetkiye sahip değilsiniz.";
+}
 }
 
+
 // Kullanıcı bilgilerini ve yetkili olduğu akademileri çekmek için sorgu
-$query = "SELECT ua.user_id, u.username, GROUP_CONCAT(a.id) AS assigned_academies
-          FROM user_academy_assignment ua
-          JOIN users u ON ua.user_id = u.id
-          JOIN academies a ON ua.academy_id = a.id
+$query = "SELECT u.id AS user_id, u.username, GROUP_CONCAT(a.id) AS assigned_academies, u.user_type
+          FROM users u
+          LEFT JOIN user_academy_assignment ua ON u.id = ua.user_id
+          LEFT JOIN academies a ON ua.academy_id = a.id
           JOIN user_types ut ON u.user_type = ut.id
-          WHERE u.user_type NOT IN (4,5,6)
-          GROUP BY ua.user_id, u.username";
+          WHERE ut.id IN (1, 2, 3)
+          GROUP BY u.id, u.username, u.user_type";
 $stmt = $db->query($query);
 $userAssignments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -122,10 +136,9 @@ $academyStmt = $db->query($academyQuery);
 $academies = $academyStmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Tüm kullanıcı tiplerini çekmek için sorgu
-$userTypeQuery = "SELECT id, type_name FROM user_types WHERE id NOT IN (4,5,6)";
+$userTypeQuery = "SELECT id, type_name FROM user_types WHERE id IN (1, 2, 3)";
 $userTypeStmt = $db->query($userTypeQuery);
 $userTypes = $userTypeStmt->fetchAll(PDO::FETCH_ASSOC);
-
 ?>
 <?php require_once "admin_panel_header.php"; ?>
 <div class="container-fluid">
@@ -135,6 +148,18 @@ $userTypes = $userTypeStmt->fetchAll(PDO::FETCH_ASSOC);
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
                 <h2 class="mb-3">Kullanıcı - Akademi İlişkileri</h2>
             </div>
+
+            <?php if (isset($successMessage)): ?>
+                <div class="alert alert-success" role="alert">
+                    <?= $successMessage ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if (isset($errorMessage)): ?>
+                <div class="alert alert-danger" role="alert">
+                    <?= $errorMessage ?>
+                </div>
+            <?php endif; ?>
 
             <form method="post">
                 <div class="table-responsive">
@@ -148,6 +173,7 @@ $userTypes = $userTypeStmt->fetchAll(PDO::FETCH_ASSOC);
                         </tr>
                         </thead>
                         <tbody>
+                        <?php if (!empty($userAssignments) && !empty($academies)): ?>
                         <?php foreach ($userAssignments as $assignment): ?>
                             <tr>
                                 <td><?= $assignment['user_id'] ?></td>
@@ -155,49 +181,35 @@ $userTypes = $userTypeStmt->fetchAll(PDO::FETCH_ASSOC);
                                 <td>
                                     <?php foreach ($academies as $academy): ?>
                                         <?php
-                                        $checked = in_array($academy['id'], explode(",", $assignment['assigned_academies'])) ? "checked" : "";
+                                        // assigned_academies değeri null değilse ve bir dizeyse işlem yap
+                                        if (!empty($assignment['assigned_academies']) && is_string($assignment['assigned_academies'])) {
+                                            $checked = in_array($academy['id'], explode(",", $assignment['assigned_academies'])) ? "checked" : "";
+                                        } else {
+                                            $checked = "";
+                                        }
                                         ?>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="checkbox" name="academies[]" value="<?= $academy['id'] ?>" <?= $checked ?>>
+                                            <input class="form-check-input" type="checkbox" name="academies[<?= $assignment['user_id'] ?>][]" value="<?= $academy['id'] ?>" <?= $checked ?>>
                                             <label class="form-check-label"><?= $academy['name'] ?></label>
                                         </div>
                                     <?php endforeach; ?>
+
                                 </td>
                                 <td>
                                     <input type="hidden" name="user_id" value="<?= $assignment['user_id'] ?>">
-                                    <button type="submit" class="btn btn-primary" name="update_submit">Güncelle</button>
-                                    <button type="submit" class="btn btn-danger" name="delete_submit">Sil</button>
+                                    <button type="submit" class="btn btn-primary" name="update_submit[<?= $assignment['user_id'] ?>]">Güncelle</button>
+                                    <button type="submit" class="btn btn-danger" name="delete_submit[<?= $assignment['user_id'] ?>]">Sil</button>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
+                        <?php endif; ?>
+
                         </tbody>
                     </table>
                 </div>
-
-                <div class="mt-4">
-                    <h3>İlişki Ekle</h3>
-                    <div class="form-row">
-                        <div class="col-md-4 mb-3">
-                            <label for="add_user">Kullanıcı seç:</label>
-                            <select class="form-control" name="user_id" id="add_user">
-                                <?php foreach ($userAssignments as $assignment): ?>
-                                    <option value="<?= $assignment['user_id'] ?>"><?= $assignment['username'] ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="add_academy">Akademi seç:</label>
-                            <select class="form-control" name="add_academy" id="add_academy">
-                                <?php foreach ($academies as $academy): ?>
-                                    <option value="<?= $academy['id'] ?>"><?= $academy['name'] ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div class="col-md-2 mb-3">
-                            <button type="submit" class="btn btn-success" name="add_submit">İlişki Ekle</button>
-                        </div>
-                    </div>
-                </div>
             </form>
+
+
+
 
             <?php require_once "footer.php"; ?>
