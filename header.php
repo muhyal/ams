@@ -150,6 +150,21 @@ $loggedIn = isset($_SESSION["user_id"]);
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
                 <li><a href="<?php echo $siteUrl ?>" class="nav-link px-2 link-secondary"></a></li>
             </ul>
+
+
+            <!-- Sosyal Medya İkonları -->
+            <div class="social-icons ms-3 mx-5">
+                <a href="#" class="text-decoration-none me-2 text-dark">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="#" class="text-decoration-none me-2 text-dark">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="#" class="text-decoration-none text-dark">
+                    <i class="fab fa-instagram"></i>
+                </a>
+            </div>
+
             <div class="dropdown text-end">
                 <a href="<?php echo $siteUrl ?>" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                     <img src="./assets/brand/default_pp.png" alt="mdo" width="32" height="32" class="rounded-circle">
@@ -168,6 +183,7 @@ $loggedIn = isset($_SESSION["user_id"]);
                     <?php } ?>
                 </ul>
             </div>
+
         </div>
     </div>
 </header>

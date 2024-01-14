@@ -755,8 +755,8 @@ WHERE
                                                             <th>Katılım Durumu 2</th>
                                                             <th>Katılım Durumu 3</th>
                                                             <th>Katılım Durumu 4</th>-->
-                                                            <th>Miktar</th>
-                                                            <th>Yöntem</th>
+                                                            <th>Ödenen Miktar</th>
+                                                            <th>Ödeme Yöntem</th>
                                                             <th>Ödeme Tarihi</th>
                                                             <!--<th>Notlar</th>-->
                                                         </tr>
