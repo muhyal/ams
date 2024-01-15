@@ -49,10 +49,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $course_date_2 = $_POST["course_date_2"];
     $course_date_3 = $_POST["course_date_3"];
     $course_date_4 = $_POST["course_date_4"];
-    $course_attendance_1 = 0;
-    $course_attendance_2 = 0;
-    $course_attendance_3 = 0;
-    $course_attendance_4 = 0;
     $course_fee = $_POST["course_fee"]; // Ders ücreti
 
     // Debt amount'u course_fee ile aynı olarak ayarla
@@ -63,11 +59,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $query = "INSERT INTO course_plans (teacher_id, academy_id, class_id, student_id, course_id, 
           course_date_1, course_date_2, course_date_3, course_date_4,
-          course_attendance_1, course_attendance_2, course_attendance_3, course_attendance_4,
           course_fee, debt_amount)
           VALUES (:teacher_id, :academy_id, :class_id, :student_id, :course_id, 
                   :course_date_1, :course_date_2, :course_date_3, :course_date_4,
-                  :course_attendance_1, :course_attendance_2, :course_attendance_3, :course_attendance_4,
                   :course_fee, :debt_amount)";
 
 
@@ -82,10 +76,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->bindParam(":course_date_2", $course_date_2, PDO::PARAM_STR);
     $stmt->bindParam(":course_date_3", $course_date_3, PDO::PARAM_STR);
     $stmt->bindParam(":course_date_4", $course_date_4, PDO::PARAM_STR);
-    $stmt->bindParam(":course_attendance_1", $course_attendance_1, PDO::PARAM_INT);
-    $stmt->bindParam(":course_attendance_2", $course_attendance_2, PDO::PARAM_INT);
-    $stmt->bindParam(":course_attendance_3", $course_attendance_3, PDO::PARAM_INT);
-    $stmt->bindParam(":course_attendance_4", $course_attendance_4, PDO::PARAM_INT);
     $stmt->bindParam(":course_fee", $course_fee, PDO::PARAM_INT);
     $stmt->bindParam(":debt_amount", $debt_amount, PDO::PARAM_INT);
 
@@ -223,27 +213,6 @@ require_once "admin_panel_sidebar.php";
             <div class="form-group mt-3">
                 <label for="course_date_4">4. Ders Tarihi</label>
                 <input type="datetime-local" name="course_date_4" class="form-control" value="<?= $today ?>">
-            </div>
-
-            <!-- Ders Katılımları -->
-            <div class="form-group mt-3">
-                <label>Katılım Durumu</label><br>
-                <div class="form-check form-check-inline">
-                    <input type="checkbox" name="course_attendance_1" class="form-check-input">
-                    <label class="form-check-label">1. Ders</label>
-                </div>
-                <div class="form-check form-check-inline">
-                    <input type="checkbox" name="course_attendance_2" class="form-check-input">
-                    <label class="form-check-label">2. Ders</label>
-                </div>
-                <div class="form-check form-check-inline">
-                    <input type="checkbox" name="course_attendance_3" class="form-check-input">
-                    <label class="form-check-label">3. Ders</label>
-                </div>
-                <div class="form-check form-check-inline">
-                    <input type="checkbox" name="course_attendance_4" class="form-check-input">
-                    <label class="form-check-label">4. Ders</label>
-                </div>
             </div>
 
             <button type="submit" class="btn btn-success mt-3">Ekle</button>
