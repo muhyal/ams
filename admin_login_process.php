@@ -1,4 +1,4 @@
-<?php
+<?php global $username;
 /**
  * @copyright Copyright (c) 2024, KUTBU
  *
@@ -17,8 +17,8 @@
  *
  * You should have received a copy of the GNU Affero General Public License, version 3,
  * along with this program. If not, see <http://www.gnu.org/licenses/>
- *
  */
+
 global $db, $showErrors;
 // Oturum kontrolü
 session_start();
@@ -64,41 +64,47 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($admin && password_verify($password, $admin["password"])) {
-
             $allowedUserTypes = [1, 2, 3];
             if (in_array($admin["user_type"], $allowedUserTypes)) {
-                // Send an SMS using Infobip
-                global $config, $BASE_URL, $API_KEY, $username, $SENDER, $MESSAGE_TEXT, $siteName, $siteShortName;
+                // Check if Infobip is enabled
+                global $config, $siteName, $siteShortName;
 
-                $phone = $admin["phone"]; // Assuming you have a phone number in your admins table
+                if ($config['infobip']['enabled']) {
+                    // Send an SMS using Infobip
+                    $phone = $admin["phone"];
 
-                $smsConfiguration = new Configuration(host: $BASE_URL, apiKey: $API_KEY);
+                    $smsConfiguration = new Configuration(
+                        host: $config['infobip']['BASE_URL'],
+                        apiKey: $config['infobip']['API_KEY']
+                    );
 
-                $sendSmsApi = new SmsApi(config: $smsConfiguration);
+                    $sendSmsApi = new SmsApi(config: $smsConfiguration);
 
-                $destination = new SmsDestination(
-                    to: $phone
-                );
+                    $destination = new SmsDestination(
+                        to: $phone
+                    );
 
-                $message = new SmsTextualMessage(destinations: [$destination]);
+                    $message = new SmsTextualMessage(destinations: [$destination]);
 
-                $message = new SmsTextualMessage(destinations: [$destination], from: $SENDER, text: "Merhaba $username, $siteName - $siteShortName üzerinde yönetici oturumu açıldı. Bilginiz dışında ise lütfen kontrol ediniz.");
+                    // Assuming $username is set somewhere in your code
+                    $message = new SmsTextualMessage(destinations: [$destination], from: $config['infobip']['SENDER'], text: "Merhaba $username, $siteName - $siteShortName üzerinde yönetici oturumu açıldı. Bilginiz dışında ise lütfen kontrol ediniz.");
 
-                $request = new SmsAdvancedTextualRequest(messages: [$message]);
+                    $request = new SmsAdvancedTextualRequest(messages: [$message]);
 
-                try {
-                    $smsResponse = $sendSmsApi->sendSmsMessage($request);
+                    try {
+                        $smsResponse = $sendSmsApi->sendSmsMessage($request);
 
-                    // Handle the response, log or display relevant information
-                    if ($smsResponse->getMessages()[0]->getStatus()->getGroupName() === 'PENDING') {
-                        echo 'SMS gönderim bekliyor.';
-                    } else {
-                        echo 'SMS başarıyla gönderildi.';
+                        if ($smsResponse->getMessages()[0]->getStatus()->getGroupName() === 'PENDING') {
+                            echo 'SMS gönderim bekliyor.';
+                        } else {
+                            echo 'SMS başarıyla gönderildi.';
+                        }
+                    } catch (\Throwable $exception) {
+                        echo 'SMS gönderimi başarısız. Hata: ' . $exception->getMessage();
                     }
-                } catch (\Throwable $exception) {
-                    echo 'SMS gönderimi başarısız. Hata: ' . $exception->getMessage();
                 }
 
+                // Set session variables and redirect to admin panel
                 $_SESSION["admin_id"] = $admin["id"];
                 $_SESSION["admin_username"] = $admin["username"];
                 $_SESSION["admin_first_name"] = $admin["first_name"];

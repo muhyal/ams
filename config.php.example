@@ -25,13 +25,22 @@ use PHPMailer\PHPMailer\PHPMailer;
 
 $config = array(
     'smtp' => array(
-        'host' => 'smtp.example.com', // SMTP sunucusu adresi
-        'username' => 'noreply@example.com', // SMTP hesabı e-posta adresi
-        'password' => 'PASSWORD', // SMTP hesabı şifresi
+        'enabled' => true, // E-posta göndermeyi etkinleştirmek veya devre dışı bırakmak için kullanılır
+        'host' => '', // SMTP sunucusu adresi
+        'username' => '', // SMTP hesabı e-posta adresi
+        'password' => '', // SMTP hesabı şifresi
         'encryption' => PHPMailer::ENCRYPTION_SMTPS, // Güvenli bağlantı türü
         'port' => 465 // SMTP port numarası
-    )
+    ),
+
+    'infobip' => array(
+        'enabled' => true, // SMS göndermeyi etkinleştirmek veya devre dışı bırakmak için kullanılır
+        'BASE_URL' => '',
+        'API_KEY' => '',
+        'SENDER' => '',
+)
 );
+
 $siteName = 'Example';
 $siteShortName = 'OIM';
 $siteUrl = 'https://oim.example.com';
@@ -52,10 +61,6 @@ $mailFromAddress = 'noreply@example.com';
 $mailFromName = 'OIM';
 $mailCharset = 'UTF-8';
 $mailContentType = 'text/plain; charset=UTF-8';
-
-$BASE_URL = "https://BASEURL.api.infobip.com";
-$API_KEY = "APIKEY";
-$SENDER = "SENDERID";
 
 $oimVersion = "Beta";
 
