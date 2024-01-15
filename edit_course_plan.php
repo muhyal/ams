@@ -270,8 +270,8 @@ $students = $studentStatement->fetchAll(PDO::FETCH_ASSOC);
         <select class="form-control" id='attendance2' name='attendance2' required>
             <option value='0' <?php echo ($result["course_attendance_2"] == 0) ? "selected" : ""; ?>>Henüz katılmadı</option>
             <option value='1' <?php echo ($result["course_attendance_2"] == 1) ? "selected" : ""; ?>>Katıldı</option>
-            <option value='2' <?php echo ($result["course_attendance_3"] == 2) ? "selected" : ""; ?>>Katılmadı</option>
-            <option value='3' <?php echo ($result["course_attendance_3"] == 3) ? "selected" : ""; ?>>Mazeretli</option>
+            <option value='2' <?php echo ($result["course_attendance_2"] == 2) ? "selected" : ""; ?>>Katılmadı</option>
+            <option value='3' <?php echo ($result["course_attendance_2"] == 3) ? "selected" : ""; ?>>Mazeretli</option>
         </select>
 
         <label for='attendance3'>3. Katılım:</label>

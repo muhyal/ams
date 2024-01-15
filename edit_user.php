@@ -63,50 +63,72 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $last_name = isset($_POST["last_name"]) ? $_POST["last_name"] : "";
     $email = $_POST["email"];
     $phone = $_POST["phone"];
+    $birth_date = $_POST["birth_date"];
+    $city = $_POST["city"];
+    $district = $_POST["district"];
+    $blood_type = $_POST["blood_type"];
+    $health_issue = $_POST["health_issue"];
+    $emergency_contact = $_POST["emergency_contact"];
+    $emergency_phone = $_POST["emergency_phone"];
     $new_password = $_POST["new_password"];
     $user_type = $_POST["user_type"];
     $notes = $_POST["notes"];
 
     // Kurumsal bilgileri alın
     $invoice_type = isset($_POST["invoice_type"]) ? $_POST["invoice_type"] : "";
-
-    if ($invoice_type === "individual" || $invoice_type === "corporate") {
-        // Geçerli bir invoice_type değeri var, bu değeri kullanabilirsiniz.
-        // İşlemlerinizi burada devam ettirin.
-    } else {
-        // Geçersiz bir invoice_type değeri varsa, hata işlemlerini yapabilir veya kullanıcıya bir hata mesajı gösterebilirsiniz.
-        echo "Geçersiz invoice_type değeri!";
-    }
     $tax_company_name = isset($_POST["tax_company_name"]) ? $_POST["tax_company_name"] : "";
     $tax_office = isset($_POST["tax_office"]) ? $_POST["tax_office"] : "";
     $tax_number = isset($_POST["tax_number"]) ? $_POST["tax_number"] : "";
 
+    // Güncelleme sorgusunu oluşturun
+    $updateQuery = "UPDATE users SET 
+        username = ?, 
+        tc_identity = ?, 
+        first_name = ?, 
+        last_name = ?, 
+        email = ?, 
+        phone = ?, 
+        user_type = ?, 
+        notes = ?, 
+        invoice_type = ?, 
+        tax_company_name = ?, 
+        tax_office = ?, 
+        tax_number = ?, 
+        birth_date = ?, 
+        city = ?, 
+        district = ?, 
+        blood_type = ?, 
+        health_issue = ?, 
+        emergency_contact = ?, 
+        emergency_phone = ?, 
+        updated_at = ?";
+
     // Şifre değişikliği yapılacak mı kontrolü
+    $params = [
+        $username, $tc_identity, $first_name, $last_name, $email, $phone,
+        $user_type, $notes, $invoice_type, $tax_company_name, $tax_office, $tax_number,
+        $birth_date, $city, $district, $blood_type, $health_issue, $emergency_contact,
+        $emergency_phone, date("Y-m-d H:i:s")
+    ];
+
     if (!empty($new_password)) {
+        // Şifre değişikliği yapılacaksa
+        $updateQuery .= ", password = ?";
         $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
-        $updateQuery = "UPDATE users SET username = ?, tc_identity = ?, first_name = ?, last_name = ?, email = ?, phone = ?, password = ?, user_type = ?, notes = ?, invoice_type = ?, tax_company_name = ?, tax_office = ?, tax_number = ?, updated_at = ? WHERE id = ?";
-        $stmt = $db->prepare($updateQuery);
-        $stmt->execute([$username, $tc_identity, $first_name, $last_name, $email, $phone, $hashed_password, $user_type, $notes, $invoice_type, $tax_company_name, $tax_office, $tax_number, date("Y-m-d H:i:s"), $userId]);
-    } else {
-        // Eğer kurumsal kullanıcı ise ilgili alanları güncelle
-        if ($user_type == "corporate") {
-            $updateCorporateQuery = "UPDATE users SET username = ?, tc_identity = ?, first_name = ?, last_name = ?, email = ?, phone = ?, user_type = ?, notes = ?, invoice_type = ?, tax_company_name = ?, tax_office = ?, tax_number = ?, updated_at = ? WHERE id = ?";
-            $stmtCorporate = $db->prepare($updateCorporateQuery);
-            $stmtCorporate->execute([$username, $tc_identity, $first_name, $last_name, $email, $phone, $user_type, $notes, $invoice_type, $tax_company_name, $tax_office, $tax_number, date("Y-m-d H:i:s"), $userId]);
-        } else {
-            // Eğer bireysel kullanıcı ise ilgili alanları güncelle
-            $updateQuery = "UPDATE users SET username = ?, tc_identity = ?, first_name = ?, last_name = ?, email = ?, phone = ?, user_type = ?, notes = ?, invoice_type = ?, tax_company_name = ?, tax_office = ?, tax_number  = ?, updated_at = ? WHERE id = ?";
-            $stmt = $db->prepare($updateQuery);
-            $stmt->execute([$username, $tc_identity, $first_name, $last_name, $email, $phone, $user_type, $notes, $invoice_type, $tax_company_name, $tax_office, $tax_number, date("Y-m-d H:i:s"), $userId]);
-        }
+        $params[] = $hashed_password;
     }
 
+    $updateQuery .= " WHERE id = ?";
+    $params[] = $userId;
+
+    // Şimdi güncelleme sorgusunu çalıştırın
+    $stmt = $db->prepare($updateQuery);
+    $stmt->execute($params);
 
     // Kullanıcıyı güncelledikten sonra yönlendirme yapabilirsiniz
     header("Location: users.php");
     exit();
 }
-
 ?>
 <?php
 require_once "admin_panel_header.php";
@@ -163,6 +185,34 @@ require_once "admin_panel_header.php";
 
                                 <label class="form-label mt-3" for="phone">Telefon:</label>
                                 <input class="form-control" type="text" name="phone" value="<?php echo $user["phone"]; ?>" required>
+
+                                <!-- Doğum Tarihi -->
+                                <label class="form-label mt-3" for="birth_date">Doğum Tarihi:</label>
+                                <input class="form-control" type="date" name="birth_date" value="<?php echo $user["birth_date"]; ?>" required>
+
+                                <!-- Şehir -->
+                                <label class="form-label mt-3" for="city">Şehir:</label>
+                                <input class="form-control" type="text" name="city" value="<?php echo $user["city"]; ?>" required>
+
+                                <!-- İlçe -->
+                                <label class="form-label mt-3" for="district">İlçe:</label>
+                                <input class="form-control" type="text" name="district" value="<?php echo $user["district"]; ?>" required>
+
+                                <!-- Kan Grubu -->
+                                <label class="form-label mt-3" for="blood_type">Kan Grubu:</label>
+                                <input class="form-control" type="text" name="blood_type" value="<?php echo $user["blood_type"]; ?>" required>
+
+                                <!-- Sağlık Sorunu -->
+                                <label class="form-label mt-3" for="health_issue">Sağlık Sorunu:</label>
+                                <input class="form-control" type="text" name="health_issue" value="<?php echo $user["health_issue"]; ?>" required>
+
+                                <!-- Acil Durum Kişisi -->
+                                <label class="form-label mt-3" for="emergency_contact">Acil Durum Kişisi:</label>
+                                <input class="form-control" type="text" name="emergency_contact" value="<?php echo $user["emergency_contact"]; ?>" required>
+
+                                <!-- Acil Durum Telefonu -->
+                                <label class="form-label mt-3" for="emergency_phone">Acil Durum Telefonu:</label>
+                                <input class="form-control" type="text" name="emergency_phone" value="<?php echo $user["emergency_phone"]; ?>" required>
 
 
                                 <!-- Bireysel ve Kurumsal alanlarına ID eklendi -->

@@ -51,6 +51,7 @@ use Infobip\Model\SmsDestination;
 use Infobip\Model\SmsTextualMessage;
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $username = $_POST["username"];
     $tc_identity = $_POST["tc_identity"];
     $first_name = $_POST["first_name"];
     $last_name = $_POST["last_name"];
@@ -74,9 +75,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $userType = $_POST["user_type"];
 
     // Kullanıcının daha önce kayıtlı olup olmadığını kontrol et
-    $queryCheck = "SELECT * FROM users WHERE email = ? OR tc_identity = ? OR phone = ?";
+    $queryCheck = "SELECT * FROM users WHERE email = ? OR tc_identity = ? OR phone = ? OR username = ?";
     $stmtCheck = $db->prepare($queryCheck);
-    $stmtCheck->execute([$email, $tc_identity, $phone]);
+    $stmtCheck->execute([$email, $tc_identity, $phone, $username]);
     $existingUser = $stmtCheck->fetch(PDO::FETCH_ASSOC);
 
     if ($existingUser) {
@@ -89,6 +90,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $verificationTimeSms = date("Y-m-d H:i:s", time());
 
         $insertQuery = "INSERT INTO users (
+    username, 
     tc_identity, 
     first_name, 
     last_name, 
@@ -113,6 +115,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         try {
             $stmt = $db->prepare($insertQuery);
             $stmt->execute([
+                $username,
                 $tc_identity,
                 $first_name,
                 $last_name,
@@ -207,54 +210,70 @@ function sendVerificationEmail($to, $verificationCode, $first_name, $last_name, 
 
 
 // SMS gönderme fonksiyonu
-function sendVerificationSms($to, $verificationCode, $first_name, $last_name) {
-    global $BASE_URL, $API_KEY, $SENDER, $siteName, $agreementLink, $plainPassword, $siteUrl;
+function sendVerificationSms($to, $verificationCode, $first_name, $last_name, $plainPassword) {
+    global $siteName, $agreementLink, $siteUrl, $config;
 
-    $smsConfiguration = new Configuration(host: $BASE_URL, apiKey: $API_KEY);
+    // Check if Infobip configuration is enabled and valid
+    if (
+        $config['infobip']['enabled']
+        && !empty($config['infobip']['BASE_URL'])
+        && !empty($config['infobip']['API_KEY'])
+        && !empty($config['infobip']['SENDER'])
+    ) {
+        $BASE_URL = $config['infobip']['BASE_URL'];
+        $API_KEY = $config['infobip']['API_KEY'];
+        $SENDER = $config['infobip']['SENDER'];
 
-    $sendSmsApi = new SmsApi(config: $smsConfiguration);
+        // Infobip Configuration sınıfını oluştur
+        $infobipConfig = new \Infobip\Configuration($BASE_URL, $API_KEY, $SENDER);
 
-    $destination = new SmsDestination(
-        to: $to
-    );
+        // Infobip SmsApi sınıfını başlat
+        $sendSmsApi = new \Infobip\Api\SmsApi(config: $infobipConfig);
 
-    // Parametreleri şifrele
-    $encryptedPhone = $to;
-    $encryptedCode = $verificationCode;
+        $destination = new SmsDestination(
+            to: $to
+        );
 
+        // Parametreleri şifrele
+        $encryptedPhone = $to;
+        $encryptedCode = $verificationCode;
 
-    // Gizli bağlantı oluştur
-    $verificationLink = getVerificationLink($encryptedPhone, $encryptedCode,"phone");
+        // Gizli bağlantı oluştur
+        $verificationLink = getVerificationLink($encryptedPhone, $encryptedCode, "phone");
 
-    $message = new SmsTextualMessage(destinations: [$destination], from: $SENDER, text: "Selam $first_name, $siteName 'e hoş geldin 🤗 Kaydının tamamlanabilmesi için sözleşmeleri okuyup onaylaman gerekiyor: $agreementLink - Sözleşmeleri onaylamak için ise şu bağlantıya tıklayabilirsin (Bağlantı açıldığında sözleşmeler otomatik onaylanacaktır): $verificationLink.  $siteUrl üzerinden e-posta adresin ve şifren ( $plainPassword ) ile $siteName panelinde oturum açabilirsin.");
+        $message = new SmsTextualMessage(destinations: [$destination], from: $SENDER, text: "Selam $first_name, $siteName 'e hoş geldin 🤗 Kaydının tamamlanabilmesi için sözleşmeleri okuyup onaylaman gerekiyor: $agreementLink - Sözleşmeleri onaylamak için ise şu bağlantıya tıklayabilirsin (Bağlantı açıldığında sözleşmeler otomatik onaylanacaktır): $verificationLink.  $siteUrl üzerinden e-posta adresin ve şifren ( $plainPassword ) ile $siteName panelinde oturum açabilirsin.");
 
-    $request = new SmsAdvancedTextualRequest(messages: [$message]);
+        $request = new SmsAdvancedTextualRequest(messages: [$message]);
 
-    try {
-    $smsResponse = $sendSmsApi->sendSmsMessage($request);
+        try {
+            $smsResponse = $sendSmsApi->sendSmsMessage($request);
 
-    // Mesajları gönderim sonuçları ile ilgili bilgileri saklayacak değişkenler
-    $smsStatusMessages = [];
-    $smsBulkId = $smsResponse->getBulkId();
+            // Mesajları gönderim sonuçları ile ilgili bilgileri saklayacak değişkenler
+            $smsStatusMessages = [];
+            $smsBulkId = $smsResponse->getBulkId();
 
-    foreach ($smsResponse->getMessages() ?? [] as $message) {
-        $smsStatusMessages[] = sprintf('SMS Gönderim No: %s, Durum: %s', $message->getMessageId(), $message->getStatus()?->getName());
+            foreach ($smsResponse->getMessages() ?? [] as $message) {
+                $smsStatusMessages[] = sprintf('SMS Gönderim No: %s, Durum: %s', $message->getMessageId(), $message->getStatus()?->getName());
+            }
+
+            // Başarılı mesajları gösteren bir mesaj oluşturuyoruz
+            $smsSuccessMessage = "SMS gönderimi başarılı, Gönderim No: $smsBulkId";
+
+            // Hata mesajını temsil edecek değişkeni boş olarak başlatıyoruz
+            $smsErrorMessage = "";
+        } catch (Throwable $apiException) {
+            // Hata durumunda hata mesajını saklayan değişkeni ayarlıyoruz
+            $smsErrorMessage = "SMS gönderimi sırasında bir hata oluştu: " . $apiException->getMessage();
+
+            // Başarılı ve hata mesajlarını boş olarak başlatıyoruz
+            $smsSuccessMessage = "";
+            $smsStatusMessages = [];
+        }
+    } else {
+        // Log or handle the case where Infobip configuration is not valid
+        $smsErrorMessage = "Infobip configuration is not valid.";
+        // You may want to log this information or handle it appropriately.
     }
-
-    // Başarılı mesajları gösteren bir mesaj oluşturuyoruz
-    $smsSuccessMessage = "SMS gönderimi başarılı, Gönderim No: $smsBulkId";
-
-    // Hata mesajını temsil edecek değişkeni boş olarak başlatıyoruz
-    $smsErrorMessage = "";
-
-} catch (Throwable $apiException) {
-    // Hata durumunda hata mesajını saklayan değişkeni ayarlıyoruz
-    $smsErrorMessage = "SMS gönderimi sırasında bir hata oluştu: " . $apiException->getMessage();
-
-    // Başarılı ve hata mesajlarını boş olarak başlatıyoruz
-    $smsSuccessMessage = "";
-    $smsStatusMessages = [];
-}
 }
 
 // Doğrulama bağlantısı oluşturma
@@ -336,6 +355,12 @@ require_once "admin_panel_header.php";
                                 <option value="1">Yönetici</option>
                             </select>
                             <div class="invalid-feedback">Kullanıcı tipini seçin.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="username">Kullanıcı adı:</label>
+                            <input class="form-control" type="text" name="username" required>
+                            <div class="invalid-feedback">Bu alan gereklidir.</div>
                         </div>
 
                         <div class="mb-3">
