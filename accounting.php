@@ -215,155 +215,97 @@ require_once "admin_panel_header.php";
                 <h2>Muhasebe</h2>
             </div>
 
-            <!-- Uyarı Mesajları -->
-            <?php if (!empty($alertMessage)): ?>
-                <div class="alert alert-<?= $alertColor ?>" role="alert">
-                    <?= $alertMessage ?>
-                </div>
-            <?php endif; ?>
+            <?php
+            $counter = 0; // Satır sayısını takip etmek için sayaç
+            // Her akademi için kartları oluştur
+            foreach ($academies as $academy) {
+                // Akademi bilgilerini al
+                $academyId = $academy['id'];
+                $academyName = $academy['name'];
 
-            <!-- Veri Ekleme Formu -->
-            <h5>Kayıt Ekle</h5>
-            <form method="post">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group mt-3">
-                            <label for="academy_id_add">Akademi:</label>
-                            <select name="academy_id_add" class="form-control" id="academyDropdown" onchange="fetchStudentsByAcademy()">
-                                <?php foreach ($academies as $academy): ?>
-                                    <option value="<?= $academy['id'] ?>"><?= $academy['name'] ?></option>
-                                <?php endforeach; ?>
-                            </select>
+                // Akademiye ait muhasebe girişlerini çek
+                $sql_academy_entries = "
+                    SELECT 
+                        a.id,
+                        a.amount,
+                        a.payment_date,
+                        a.payment_method,
+                        a.payment_notes,
+                        cp.id AS course_plan_id,
+                        cp.academy_id,
+                        cp.course_id,
+                        cp.class_id,
+                        cp.teacher_id,
+                        cp.student_id
+                    FROM accounting a
+                    LEFT JOIN course_plans cp ON a.course_plan_id = cp.id
+                    WHERE a.course_plan_id IN (SELECT id FROM course_plans WHERE academy_id = ?)
+                ";
+
+                $stmt_academy_entries = $db->prepare($sql_academy_entries);
+                $stmt_academy_entries->execute([$academyId]);
+                $academy_entries = $stmt_academy_entries->fetchAll(PDO::FETCH_ASSOC);
+
+                // Öğrenci sayısı
+                $sql_student_count = "SELECT COUNT(DISTINCT student_id) AS student_count FROM course_plans WHERE academy_id = ?";
+                $stmt_student_count = $db->prepare($sql_student_count);
+                $stmt_student_count->execute([$academyId]);
+                $student_count = $stmt_student_count->fetchColumn();
+
+                // Öğretmen sayısı
+                $sql_teacher_count = "SELECT COUNT(DISTINCT teacher_id) AS teacher_count FROM course_plans WHERE academy_id = ?";
+                $stmt_teacher_count = $db->prepare($sql_teacher_count);
+                $stmt_teacher_count->execute([$academyId]);
+                $teacher_count = $stmt_teacher_count->fetchColumn();
+
+                // Toplam borç
+                $sql_total_debt = "SELECT SUM(debt_amount) AS total_debt FROM course_plans WHERE academy_id = ?";
+                $stmt_total_debt = $db->prepare($sql_total_debt);
+                $stmt_total_debt->execute([$academyId]);
+                $total_debt = $stmt_total_debt->fetchColumn();
+
+                // Toplam alınan ödeme
+                $sql_total_payment = "SELECT SUM(amount) AS total_payment FROM accounting WHERE course_plan_id IN (SELECT id FROM course_plans WHERE academy_id = ?)";
+                $stmt_total_payment = $db->prepare($sql_total_payment);
+                $stmt_total_payment->execute([$academyId]);
+                $total_payment = $stmt_total_payment->fetchColumn();
+
+                // Toplam planlanan ders sayısı
+                $sql_total_course_plans = "SELECT COUNT(*) AS total_course_plans FROM course_plans WHERE academy_id = ?";
+                $stmt_total_course_plans = $db->prepare($sql_total_course_plans);
+                $stmt_total_course_plans->execute([$academyId]);
+                $total_course_plans = $stmt_total_course_plans->fetchColumn();
+
+                // Kartı oluştur
+                if ($counter % 3 == 0) {
+                    // Yeni bir satır başlat
+                    echo '<div class="row">';
+                }
+
+                echo '<div class="col-md-4">
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h5 class="card-title">' . $academyName . '</h5>
                         </div>
-
-                        <div class="form-group mt-3">
-                            <label for="student_id_add">Öğrenci:</label>
-                            <select name="student_id_add" class="form-control" id="studentDropdown"></select>
-                        </div>
-
-                        <div id="coursePlansContainer" class="mt-3"></div>
-
-                        <div class="form-group mt-3">
-                            <label for="course_id_add">Ders:</label>
-                            <select name="course_id_add" class="form-control">
-                                <?php foreach ($courses as $course): ?>
-                                    <option value="<?= $course['id'] ?>"><?= $course['course_name'] ?></option>
-                                <?php endforeach; ?>
-                            </select>
+                        <div class="card-body">
+                            <p>Toplam Planlanan Ders Sayısı: ' . $total_course_plans . '</p>
+                            <p>Toplam Alınan Ödeme: ' . $total_payment . '</p>
+                            <p>Toplam Borç: ' . $total_debt . '</p>    
+                            <p>Mevcut Öğrenci Sayısı: ' . $student_count . '</p>
+                            <p>Mevcut Öğretmen Sayısı: ' . $teacher_count . '</p>                      
                         </div>
                     </div>
+                </div>';
 
-
-                    <div class="col-md-6">
-                        <div class="form-group mt-3">
-                            <label for="amount_add">Tutar:</label>
-                            <input type="text" name="amount_add" class="form-control" required>
-                        </div>
-
-                        <div class="form-group mt-3">
-                            <label for="payment_date_add">Tarih:</label>
-                            <input type="datetime-local" name="payment_date_add" class="form-control" onchange="validateDate()" required>
-                        </div>
-
-                        <div class="form-group mt-3">
-                            <label for="payment_method_add">Ödeme yöntemi:</label>
-                            <select name="payment_method_add" class="form-control">
-                                <?php foreach ($payment_methods as $method): ?>
-                                    <option value="<?= $method['id'] ?>"><?= $method['name'] ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group mt-3">
-                <button type="submit" name="add_entry" class="btn btn-primary">Giriş Ekle</button>
-                </div>
-            </form>
-
-            <script>
-                function getCurrentDateTime() {
-                    var currentDate = new Date();
-                    var year = currentDate.getFullYear();
-                    var month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
-                    var day = currentDate.getDate().toString().padStart(2, '0');
-                    var hours = currentDate.getHours().toString().padStart(2, '0');
-                    var minutes = currentDate.getMinutes().toString().padStart(2, '0');
-                    var seconds = currentDate.getSeconds().toString().padStart(2, '0');
-                    return `${year}-${month}-${day}T${hours}:${minutes}`;
+                if ($counter % 3 == 2 || $counter == count($academies) - 1) {
+                    // Satırın sonu veya son akademiyse satırı kapat
+                    echo '</div>';
                 }
 
-                function validateDate() {
-                    var dateInput = document.querySelector('input[name="payment_date_add"]');
-                    if (!dateInput.value) {
-                        // Eğer tarih seçilmemişse, otomatik doldur
-                        dateInput.value = getCurrentDateTime();
-                    }
-                }
+                $counter++;
+            }
 
-                // Sayfa yüklendiğinde tarih alanını otomatik doldur
-                document.addEventListener("DOMContentLoaded", function () {
-                    validateDate();
-                });
-            </script>
-            <script>
-                function fetchAndDisplayCoursePlans(studentId) {
-                    // AJAX request to fetch course plans
-                    var xhttp = new XMLHttpRequest();
-                    xhttp.onreadystatechange = function () {
-                        if (this.readyState == 4 && this.status == 200) {
-                            document.getElementById("coursePlansContainer").innerHTML = this.responseText;
-
-                            // Create checkboxes for course plans
-                            var coursePlansContainer = document.getElementById('coursePlansCheckboxes');
-                            var coursePlans = JSON.parse(this.responseText);
-
-                            coursePlansContainer.innerHTML = ''; // Clear previous content
-
-                            for (var i = 0; i < coursePlans.length; i++) {
-                                var coursePlan = coursePlans[i];
-                                var checkbox = document.createElement('input');
-                                checkbox.type = 'checkbox';
-                                checkbox.name = 'course_plan_ids[]';
-                                checkbox.value = coursePlan.id;
-                                checkbox.id = 'course_plan_' + coursePlan.id;
-
-                                var label = document.createElement('label');
-                                label.htmlFor = 'course_plan_' + coursePlan.id;
-                                label.appendChild(document.createTextNode(coursePlan.academy_name + ' - ' + coursePlan.course_name + ' - ' + coursePlan.class_name + ' - ' + coursePlan.teacher_first_name + ' ' + coursePlan.teacher_last_name));
-
-                                var div = document.createElement('div');
-                                div.appendChild(checkbox);
-                                div.appendChild(label);
-
-                                coursePlansContainer.appendChild(div);
-                            }
-                        }
-                    };
-                    xhttp.open("GET", "accounting.php?action=fetch_course_plans&student_id=" + studentId, true);
-                    xhttp.send();
-                }
-
-                // Function to fetch students based on the selected academy
-                function fetchStudentsByAcademy() {
-                    // Get the selected academy ID
-                    var academyId = document.getElementById("academyDropdown").value;
-
-                    // AJAX request to fetch students
-                    var xhttp = new XMLHttpRequest();
-                    xhttp.onreadystatechange = function () {
-                        if (this.readyState == 4 && this.status == 200) {
-                            // Update the student dropdown
-                            document.getElementById("studentDropdown").innerHTML = this.responseText;
-                        }
-                    };
-                    xhttp.open("GET", "accounting.php?action=fetch_students_by_academy&academy_id=" + academyId, true);
-                    xhttp.send();
-                }
-
-                // Initial fetch for the default selected academy
-                fetchStudentsByAcademy();
-            </script>
-
+            ?>
 
             <?php require_once "footer.php"; ?>
         </main>
