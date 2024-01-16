@@ -230,7 +230,6 @@ $students = $studentStatement->fetchAll(PDO::FETCH_ASSOC);
             <option value='0' <?php echo ($result["course_attendance"] == 0) ? "selected" : ""; ?>>Henüz katılmadı</option>
             <option value='1' <?php echo ($result["course_attendance"] == 1) ? "selected" : ""; ?>>Katıldı</option>
             <option value='2' <?php echo ($result["course_attendance"] == 2) ? "selected" : ""; ?>>Katılmadı</option>
-            <option value='3' <?php echo ($result["course_attendance"] == 3) ? "selected" : ""; ?>>Mazeretli</option>
         </select>
 
         <button type='submit' class="btn btn-primary mt-3">Güncelle</button>
