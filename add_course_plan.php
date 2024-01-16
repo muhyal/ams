@@ -200,6 +200,28 @@ require_once "admin_panel_sidebar.php";
                 <input type="datetime-local" name="course_date_1" class="form-control" value="<?= $today ?>">
             </div>
 
+            <script>
+                // Birinci ders tarihini seçildiğinde diğer ders tarihlerini ayarla
+                document.querySelector('[name="course_date_1"]').addEventListener('change', function (event) {
+                    var firstDate = new Date(event.target.value);
+
+                    // İkinci ders tarihini ayarla (1 hafta sonrası)
+                    var secondDate = new Date(firstDate);
+                    secondDate.setDate(firstDate.getDate() + 7);
+                    document.querySelector('[name="course_date_2"]').value = secondDate.toISOString().slice(0, 16);
+
+                    // Üçüncü ders tarihini ayarla (2 hafta sonrası)
+                    var thirdDate = new Date(firstDate);
+                    thirdDate.setDate(firstDate.getDate() + 14);
+                    document.querySelector('[name="course_date_3"]').value = thirdDate.toISOString().slice(0, 16);
+
+                    // Dördüncü ders tarihini ayarla (3 hafta sonrası)
+                    var fourthDate = new Date(firstDate);
+                    fourthDate.setDate(firstDate.getDate() + 21);
+                    document.querySelector('[name="course_date_4"]').value = fourthDate.toISOString().slice(0, 16);
+                });
+            </script>
+
             <div class="form-group mt-3">
                 <label for="course_date_2">2. Ders Tarihi</label>
                 <input type="datetime-local" name="course_date_2" class="form-control" value="<?= $today ?>">
@@ -214,6 +236,7 @@ require_once "admin_panel_sidebar.php";
                 <label for="course_date_4">4. Ders Tarihi</label>
                 <input type="datetime-local" name="course_date_4" class="form-control" value="<?= $today ?>">
             </div>
+
 
             <button type="submit" class="btn btn-success mt-3">Ekle</button>
         </form>
