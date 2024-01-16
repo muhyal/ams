@@ -195,7 +195,7 @@ function sendVerificationEmail($to, $verificationCode, $first_name, $last_name, 
         <p>$siteName 'e hoş geldin 🤗 Kaydının tamamlanabilmesi için sözleşmeleri okuyup onaylaman gerekiyor:</p>
         <p>Sözleşmeleri okumak için 🤓 <a href='$agreementLink'>buraya tıklayabilirsin</a>.</p>
         <p>Sözleşmeleri onaylamak için ✅ <a href='$verificationLink'>buraya tıklayabilirsin</a>.</p>
-        <p>🧐 $siteName paneline $siteUrl adresinden e-postan ve şifren ($plainPassword) ile oturum açabilirsin.</p>
+        <p>🧐 $siteName paneline $siteUrl adresinden e-postan ve şifren $plainPassword ile oturum açabilirsin.</p>
         <p>Müzik dolu günler dileriz 🎸🎹</p>
     </body>
     </html>
@@ -241,7 +241,7 @@ function sendVerificationSms($to, $verificationCode, $first_name, $last_name, $p
         // Gizli bağlantı oluştur
         $verificationLink = getVerificationLink($encryptedPhone, $encryptedCode, "phone");
 
-        $message = new SmsTextualMessage(destinations: [$destination], from: $SENDER, text: "Selam $first_name, $siteName 'e hoş geldin 🤗 Kaydının tamamlanabilmesi için sözleşmeleri okuyup onaylaman gerekiyor: $agreementLink - Sözleşmeleri onaylamak için ise şu bağlantıya tıklayabilirsin (Bağlantı açıldığında sözleşmeler otomatik onaylanacaktır): $verificationLink.  $siteUrl üzerinden e-posta adresin ve şifren ( $plainPassword ) ile $siteName panelinde oturum açabilirsin.");
+        $message = new SmsTextualMessage(destinations: [$destination], from: $SENDER, text: "Selam $first_name, $siteName 'e hoş geldin 🤗 Kaydının tamamlanabilmesi için sözleşmeleri okuyup onaylaman gerekiyor: $agreementLink - Sözleşmeleri onaylamak için ise şu bağlantıya tıklayabilirsin (Bağlantı açıldığında sözleşmeler otomatik onaylanacaktır): $verificationLink.  $siteUrl üzerinden e-posta adresin ve şifren $plainPassword ile $siteName panelinde oturum açabilirsin.");
 
         $request = new SmsAdvancedTextualRequest(messages: [$message]);
 
@@ -347,21 +347,94 @@ require_once "admin_panel_header.php";
                         <div class="mb-3">
                             <label class="form-label" for="user_type">Kullanıcı tipi:</label>
                             <select class="form-select" name="user_type" required>
-                                <option value="6">Öğrenci</option>
-                                <option value="5">Veli</option>
-                                <option value="4">Öğretmen</option>
-                                <option value="3">Eğitim Danışmanı</option>
-                                <option value="2">Koordinatör</option>
-                                <option value="1">Yönetici</option>
+                                <?php
+                                // Kullanıcı oturumunu kontrol et
+                                session_start();
+
+                                // Eğer kullanıcı oturum açmışsa ve user_type değeri varsa, onu kullan
+                                $currentUserType = isset($_SESSION['admin_type']) ? $_SESSION['admin_type'] : null;
+
+                                // Kullanıcı rollerine bağlı olarak mevcut seçenekleri tanımla
+                                $options = [
+                                    1 => ["Yönetici"],
+                                    2 => ["Koordinatör"],
+                                    3 => ["Eğitim Danışmanı"],
+                                    4 => ["Öğretmen"],
+                                    5 => ["Veli"],
+                                    6 => ["Öğrenci"],
+                                ];
+
+                                // Kullanıcı tipine bağlı olarak seçenekleri göster
+                                foreach ($options as $type => $labels) {
+                                    if ($currentUserType == 1) {
+                                        // Yönetici, tüm seçenekleri görebilir
+                                        echo "<option value=\"$type\">" . $labels[0] . "</option>";
+                                    } elseif ($currentUserType == 2) {
+                                        // Koordinatör, sadece belirli seçenekleri görebilir
+                                        if ($type >= 3 && $type <= 6) {
+                                            echo "<option value=\"$type\">" . $labels[0] . "</option>";
+                                        }
+                                    } elseif ($currentUserType == 3) {
+                                        // Eğitim Danışmanı sadece Öğrenci ve Veli'yi görebilir
+                                        if ($type == 6 || $type == 5) {
+                                            echo "<option value=\"$type\">" . $labels[0] . "</option>";
+                                        }
+                                    }
+                                }
+                                ?>
                             </select>
                             <div class="invalid-feedback">Kullanıcı tipini seçin.</div>
                         </div>
 
+
+                        <?php
+                        // Rastgele 3 karakter oluşturan fonksiyon
+                        function generateRandomChars() {
+                            $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
+                            $length = 3;
+                            return substr(str_shuffle($characters), 0, $length);
+                        }
+
+                        // Veritabanı bağlantısı
+                        require_once "db_connection.php";
+
+                        // Benzersiz bir kullanıcı adı oluşturana kadar dönen fonksiyon
+                        function getUniqueRandomUsername($db) {
+                            $isUnique = false;
+                            $maxAttempts = 10; // Maksimum deneme sayısı
+                            $attempts = 0;
+
+                            while (!$isUnique && $attempts < $maxAttempts) {
+                                $generatedChars = generateRandomChars();
+                                $currentDate = date('dmy'); // Bugünün gün, ay ve yıl bilgisi (2 haneli yıl)
+
+                                $generatedUsername = "d" . $generatedChars . $currentDate;
+
+                                $checkQuery = "SELECT COUNT(*) as count FROM users WHERE username = ?";
+                                $stmt = $db->prepare($checkQuery);
+                                $stmt->execute([$generatedUsername]);
+                                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                                if ($result['count'] == 0) {
+                                    $isUnique = true;
+                                }
+
+                                $attempts++;
+                            }
+
+                            return $isUnique ? $generatedUsername : null;
+                        }
+
+                        // Oluşturulan benzersiz kullanıcı adını alın
+                        $generatedUsername = getUniqueRandomUsername($db);
+                        ?>
+
                         <div class="mb-3">
                             <label class="form-label" for="username">Kullanıcı adı:</label>
-                            <input class="form-control" type="text" name="username" required>
+                            <input class="form-control" type="text" name="username" value="<?php echo strtolower($generatedUsername); ?>" required>
                             <div class="invalid-feedback">Bu alan gereklidir.</div>
                         </div>
+
 
                         <div class="mb-3">
                             <label class="form-label" for="tc_identity">TC Kimlik No:</label>
@@ -447,51 +520,57 @@ require_once "admin_panel_header.php";
 
 
                 <div class="form-group">
-          <label class="form-label" for="password">Şifre:</label>
-          <div class="input-group">
-              <input class="form-control" type="password" name="password" id="password" required>
-              <div class="input-group-append">
-                  <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('password')">Şifreyi Göster</button>
-              </div>
-              <div class="input-group-append">
-                  <button type="button" class="btn btn-outline-secondary" onclick="copyPassword('password')">Kopyala</button>
-              </div>
-              <div class="input-group-append">
-                  <button type="button" class="btn btn-outline-secondary" onclick="generatePassword('password')">Şifre Üret</button>
-              </div>
-          </div>
-      </div>
+                    <label class="form-label" for="password">Şifre:</label>
+                    <div class="input-group">
+                        <input class="form-control" type="password" name="password" id="password" required>
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('password')">Şifreyi Göster</button>
+                        </div>
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-outline-secondary" onclick="copyPassword('password')">Kopyala</button>
+                        </div>
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-outline-secondary" onclick="generateAndSetPassword('password')">Şifre Üret</button>
+                        </div>
+                    </div>
+                </div>
 
-      <script>
-          function togglePassword(passwordId) {
-              var passwordInput = document.getElementById(passwordId);
-              if (passwordInput.type === "password") {
-                  passwordInput.type = "text";
-              } else {
-                  passwordInput.type = "password";
-              }
-          }
+                <script>
+                    function togglePassword(passwordId) {
+                        var passwordInput = document.getElementById(passwordId);
+                        if (passwordInput.type === "password") {
+                            passwordInput.type = "text";
+                        } else {
+                            passwordInput.type = "password";
+                        }
+                    }
 
-          function copyPassword(passwordId) {
-              var passwordInput = document.getElementById(passwordId);
-              passwordInput.select();
-              document.execCommand("copy");
-              alert("Şifre kopyalandı: " + passwordInput.value);
-          }
+                    function copyPassword(passwordId) {
+                        var passwordInput = document.getElementById(passwordId);
+                        passwordInput.select();
+                        document.execCommand("copy");
+                        alert("Şifre kopyalandı: " + passwordInput.value);
+                    }
 
-          function generatePassword(passwordId) {
-              var generatedPasswordInput = document.getElementById(passwordId);
-              var xhr = new XMLHttpRequest();
-              xhr.onreadystatechange = function () {
-                  if (xhr.readyState === 4 && xhr.status === 200) {
-                      generatedPasswordInput.value = xhr.responseText;
-                  }
-              };
-              xhr.open("GET", "generate_password.php", true);
-              xhr.send();
-          }
-      </script>
-      <div class="form-group mt-3">
+                    function generateAndSetPassword(passwordId) {
+                        var generatedPasswordInput = document.getElementById(passwordId);
+                        var xhr = new XMLHttpRequest();
+                        xhr.onreadystatechange = function () {
+                            if (xhr.readyState === 4 && xhr.status === 200) {
+                                generatedPasswordInput.value = xhr.responseText;
+                            }
+                        };
+                        xhr.open("GET", "generate_password.php", true);
+                        xhr.send();
+                    }
+
+                    // Sayfa yüklendiğinde otomatik olarak şifre üretme fonksiyonunu çağırabilirsiniz
+                    window.onload = function () {
+                        generateAndSetPassword('password');
+                    };
+                </script>
+
+                <div class="form-group mt-3">
       <button type="submit" class="btn btn-primary">Kaydet</button>
       </div>
   </form>
