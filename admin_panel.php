@@ -587,10 +587,9 @@ require_once "admin_panel_header.php";
         <thead>
         <tr>
             <!--  <th scope="col">#</th>-->
-            <th scope="col">Ad</th>
-            <th scope="col">Soyad</th>
+            <th scope="col">Tam Ad</th>
             <th scope="col">E-posta</th>
-            <th scope="col">T.C. Kimlik No</th>
+            <th scope="col">T.C. No</th>
             <th scope="col">Telefon</th>
             <th scope="col">Akademi</th>
             <th scope="col">Sınıf</th>
@@ -603,8 +602,7 @@ require_once "admin_panel_header.php";
       <?php foreach ($student_course_teacher_relations as $relation): ?>
           <tr>
               <!--   <th scope="row"><?= $relation['student_id'] ?></th>-->
-              <td><?= $relation['first_name'] ?></td>
-              <td><?= $relation['last_name'] ?></td>
+              <td><?= $relation['first_name'] ?> <?= $relation['last_name'] ?></td>
               <td><?= $relation['email'] ?></td>
               <td><?= $relation['tc_identity'] ?></td>
               <td><?= $relation['phone'] ?></td>
@@ -630,11 +628,10 @@ require_once "admin_panel_header.php";
                     <thead>
                     <tr>
                         <!--  <th scope="col">#</th>-->
-                          <th scope="col">Ad</th>
-                          <th scope="col">Soyad</th>
+                        <th scope="col">Tam Ad</th>
                           <th scope="col">Sınıf</th>
                           <th scope="col">Ders</th>
-                          <th scope="col">T.C. Kimlik No</th>
+                          <th scope="col">T.C. No</th>
                           <th scope="col">E-posta</th>
                           <th scope="col">Telefon</th>
                           <th scope="col"></th>
@@ -644,13 +641,27 @@ require_once "admin_panel_header.php";
                     <?php foreach ($teachers as $teacher): ?>
                         <tr>
 <!--                            <td>--><?php //= isset($teacher['user_id']) ? $teacher['user_id'] : '' ?><!--</td>-->
-                            <td><?= isset($teacher['first_name']) ? $teacher['first_name'] : '' ?></td>
-                            <td><?= isset($teacher['last_name']) ? $teacher['last_name'] : '' ?></td>
+                            <td><?= isset($teacher['first_name']) ? $teacher['first_name'] : '' ?> <?= isset($teacher['last_name']) ? $teacher['last_name'] : '' ?></td>
                             <td><?= isset($teacher['class_name']) ? $teacher['class_name'] : '' ?></td>
                             <td><?= isset($teacher['course_name']) ? $teacher['course_name'] : '' ?></td>
-                            <td><?= isset($teacher['tc_identity']) ? $teacher['tc_identity'] : '' ?></td>
-                            <td><?= isset($teacher['email']) ? $teacher['email'] : '' ?></td>
-                            <td><?= isset($teacher['phone']) ? $teacher['phone'] : '' ?></td>
+                            <td onmouseover="revealOriginal(this)" onmouseout="hideOriginal(this)">
+                                <span class="hidden-value" style="display: none;"><?= isset($teacher['tc_identity']) ? $teacher['tc_identity'] : '' ?></span>
+                                <span class="masked-value"><?= isset($teacher['tc_identity']) ? '*******' . substr($teacher['tc_identity'], -4) : '' ?></span>
+                            </td>
+
+                            <script>
+                                function revealOriginal(element) {
+                                    element.querySelector('.hidden-value').style.display = 'inline';
+                                    element.querySelector('.masked-value').style.display = 'none';
+                                }
+
+                                function hideOriginal(element) {
+                                    element.querySelector('.hidden-value').style.display = 'none';
+                                    element.querySelector('.masked-value').style.display = 'inline';
+                                }
+                            </script>
+                            <td onmouseover="this.innerHTML='<?= isset($teacher['email']) ? $teacher['email'] : '' ?>'" onmouseout="this.innerHTML='<?= isset($teacher['email']) ? '******************' . strstr($teacher['email'], '@') : '' ?>'"><?= isset($teacher['email']) ? '*******************' . strstr($teacher['email'], '@') : '' ?></td>
+                            <td onmouseover="this.innerHTML='<?= isset($teacher['phone']) ? $teacher['phone'] : '' ?>'" onmouseout="this.innerHTML='<?= isset($teacher['phone']) ? '******' . substr($teacher['phone'], -4) : '' ?>'"><?= isset($teacher['phone']) ? '******' . substr($teacher['phone'], -4) : '' ?></td>
                             <td>
                                 <a href="user_profile.php?id=<?= $teacher['user_id'] ?>" class="btn btn-primary btn-sm">
                                     <i class="fas fa-user"></i>
@@ -669,13 +680,12 @@ require_once "admin_panel_header.php";
                       <thead>
                       <tr>
                           <!--  <th scope="col">#</th>-->
-                          <th scope="col">Ad</th>
-                          <th scope="col">Soyad</th>
+                          <th scope="col">Tam Ad</th>
                           <th scope="col">E-posta</th>
-                          <th scope="col">T.C. Kimlik No</th>
+                          <th scope="col">T.C. No</th>
                           <th scope="col">Telefon</th>
-                          <th scope="col">E-posta Doğrulaması</th>
-                          <th scope="col">SMS Doğrulaması</th>
+                          <th scope="col">E-posta</th>
+                          <th scope="col">SMS</th>
                           <th scope="col">Rolü</th>
                           <th scope="col"></th>
 
@@ -685,11 +695,10 @@ require_once "admin_panel_header.php";
                       <?php foreach ($users as $user): ?>
                           <tr>
                               <!--  <th scope="row"><?= $user['id'] ?></th>-->
-                              <td><?= $user['first_name'] ?></td>
-                              <td><?= $user['last_name'] ?></td>
-                              <td><?= $user['email'] ?></td>
-                              <td><?= $user['tc_identity'] ?></td>
-                              <td><?= $user['phone'] ?></td>
+                              <td><?= $user['first_name'] ?> <?= $user['last_name'] ?></td>
+                              <td onmouseover="this.innerHTML='<?= isset($user['email']) ? $user['email'] : '' ?>'" onmouseout="this.innerHTML='<?= isset($user['email']) ? '******************' . strstr($user['email'], '@') : '' ?>'"><?= isset($user['email']) ? '*******************' . strstr($user['email'], '@') : '' ?></td>
+                              <td onmouseover="this.innerHTML='<?= isset($user['tc_identity']) ? $user['tc_identity'] : '' ?>'" onmouseout="this.innerHTML='<?= isset($user['tc_identity']) ? '*******' . substr($user['tc_identity'], -4) : '' ?>'"><?= isset($user['tc_identity']) ? '*******' . substr($user['tc_identity'], -4) : '' ?></td>
+                              <td onmouseover="this.innerHTML='<?= isset($user['phone']) ? $user['phone'] : '' ?>'" onmouseout="this.innerHTML='<?= isset($teacher['phone']) ? '******' . substr($user['phone'], -4) : '' ?>'"><?= isset($user['phone']) ? '******' . substr($user['phone'], -4) : '' ?></td>
                               <td><?= $user['verification_time_email_confirmed'] ? '<i class="fas fa-check text-success"></i> Doğrulandı' : '<i class="fas fa-times text-danger"></i> Doğrulanmadı' ?></td>
                               <td><?= $user['verification_time_sms_confirmed'] ? '<i class="fas fa-check text-success"></i> Doğrulandı' : '<i class="fas fa-times text-danger"></i> Doğrulanmadı' ?></td>
                               <td><?= $user['type_name'] ?></td>
