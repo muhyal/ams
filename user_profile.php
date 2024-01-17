@@ -86,6 +86,13 @@ if (empty($associatedAcademies)) {
 // Eğitim danışmanının erişebileceği akademilerin listesini güncelle
 $allowedAcademies = $associatedAcademies;
 
+$queryUserType = "SELECT type_name FROM user_types WHERE id = :user_type_id";
+$stmtUserType = $db->prepare($queryUserType);
+$stmtUserType->bindParam(":user_type_id", $user['user_type'], PDO::PARAM_INT);
+$stmtUserType->execute();
+$userType = $stmtUserType->fetchColumn();
+
+
 // Header ve sidebar dosyalarını dahil et
 require_once "admin_panel_header.php";
 require_once "admin_panel_sidebar.php";
@@ -129,6 +136,9 @@ require_once "admin_panel_sidebar.php";
                         <a href="edit_user.php?id=<?= $user['id'] ?>" class="btn btn-sm btn-outline-secondary">
                             <i class="fas fa-edit"></i> Kullanıcı Düzenle
                         </a>
+                        <a href="user_profile.php?id=<?= $user['id'] ?>" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-user-lock"></i> Şifre Gönder
+                        </a>
                     </div>
                 </div>
             </div>
@@ -140,6 +150,7 @@ require_once "admin_panel_sidebar.php";
             <h3>Kullanıcı Bilgileri</h3>
             <ul>
                 <li><strong>No:</strong> <?= $user['id'] ?></li>
+                <li><strong>Kullanıcı adı:</strong> <?= $user['username'] ?></li>
                 <li><strong>T.C. Kimlik No:</strong> <?= $user['tc_identity'] ?></li>
                 <li><strong>Ad:</strong> <?= $user['first_name'] ?></li>
                 <li><strong>Soyad:</strong> <?= $user['last_name'] ?></li>
@@ -186,7 +197,7 @@ require_once "admin_panel_sidebar.php";
         <div class="col-md-6">
             <h3>Diğer Bilgiler</h3>
             <ul>
-               <li><strong>Kullanıcı Türü:</strong> <?= $user['user_type'] ?></li>
+                <li><strong>Kullanıcı Türü:</strong> <?= $userType ?></li>
                 <li><strong>Oluşturan:</strong> <?= $user['created_by_name'] ?></li>
                 <li><strong>Oluşturulma:</strong> <?= $user['created_at'] ? date(DATETIME_FORMAT, strtotime($user['created_at'])) : 'Henüz belli değil'; ?></li>
                 <li><strong>Güncelleyen:</strong> <?= $user['updated_by_name'] ?></li>

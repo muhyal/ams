@@ -88,11 +88,11 @@ require_once "admin_panel_header.php";
                         <th scope="col" class="text-sm">Telefon</th>
                         <!--<th scope="col" class="text-sm">SMS Doğrulaması Gönderildi</th>-->
                         <!--<th scope="col" class="text-sm">SMS Doğrulaması Onaylandı</th>-->
-                        <th scope="col" class="text-sm">SMS Doğrulama</th>
+                        <th scope="col" class="text-sm">SMS</th>
                         <!--<th scope="col" class="text-sm">SMS Doğrulama IP</th>
                         <!--<th scope="col" class="text-sm">E-Posta Doğrulaması Gönderildi</th>-->
                         <!--<th scope="col" class="text-sm">E-Posta Doğrulaması Onaylandı</th>-->
-                        <th scope="col" class="text-sm">E-posta Doğrulama</th>
+                        <th scope="col" class="text-sm">E-posta</th>
                         <!--<th scope="col" class="text-sm">E-posta Doğrulama IP</th>-->
                         <th scope="col" class="text-sm">Rolü</th>
                         <th scope="col" class="text-sm">İşlemler</th>
@@ -121,6 +121,8 @@ require_once "admin_panel_header.php";
                                     <a class="btn btn-primary btn-sm" href="restore_user.php?id=<?php echo $user["id"]; ?>" onclick="return confirm('Bu kullanıcıyı silmeyi geri almak istediğinizden emin misiniz?')">
                                         <i class="fa-solid fa-clock-rotate-left"></i>
                                     </a>
+                                    <a class="btn btn-primary btn-sm" href="user_profile.php?id=<?php echo $user['id']; ?>"><i class="fas fa-user fa-sm"></i></a>
+
                                 <?php else: ?>
                                 <!-- Silinmeyen kullanıcılar için düzenleme ve silme bağlantıları -->
                                     <a class="btn btn-primary btn-sm" href="resend_verifications.php?id=<?php echo $user["id"]; ?>"><i class="fas fa-repeat fa-sm"></i></a>
