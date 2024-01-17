@@ -34,7 +34,9 @@ CREATE TABLE `accounting` (
   `amount` decimal(10,2) NOT NULL,
   `payment_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `payment_method` int(11) DEFAULT NULL,
-  `payment_notes` varchar(250) DEFAULT NULL
+  `bank_name` int(11) DEFAULT NULL,
+  `payment_notes` varchar(250) DEFAULT NULL,
+  `received_by_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `courses` (
@@ -60,7 +62,12 @@ CREATE TABLE `course_plans` (
   `course_attendance_3` tinyint(1) DEFAULT NULL,
   `course_attendance_4` tinyint(1) DEFAULT NULL,
   `course_fee` int(11) DEFAULT NULL,
-  `debt_amount` int(11) DEFAULT NULL
+  `debt_amount` int(11) DEFAULT NULL,
+  `created_by_user_id` int(11) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `updated_by_user_id` int(11) DEFAULT NULL,
+  `deleted_by_user_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `introductory_course_plans` (
@@ -71,7 +78,11 @@ CREATE TABLE `introductory_course_plans` (
   `teacher_id` int(11) DEFAULT NULL,
   `student_id` int(11) DEFAULT NULL,
   `course_date` datetime DEFAULT NULL,
-  `course_attendance` tinyint(1) DEFAULT NULL
+  `course_attendance` tinyint(1) DEFAULT NULL,
+  `created_by_user_id` int(11) DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_by_user_id` int(11) DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `payment_methods` (
@@ -125,7 +136,12 @@ CREATE TABLE `users` (
   `invoice_type` enum('individual','corporate') DEFAULT 'individual',
   `tax_company_name` varchar(255) DEFAULT NULL,
   `tax_office` varchar(255) DEFAULT NULL,
-  `tax_number` varchar(20) DEFAULT NULL
+  `tax_number` varchar(20) DEFAULT NULL,
+  `email_verify_signature` varchar(1000) DEFAULT NULL,
+  `phone_verify_signature` varchar(1000) DEFAULT NULL,
+  `created_by_user_id` int(11) DEFAULT NULL,
+  `updated_by_user_id` int(11) DEFAULT NULL,
+  `deleted_by_user_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `user_academy_assignment` (
