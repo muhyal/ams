@@ -56,6 +56,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $attendance3 = $_POST["attendance3"];
         $attendance4 = $_POST["attendance4"];
 
+        // Kullanıcı bilgilerini al
+        $loggedInUserId = $_SESSION["admin_id"];
+        $currentTimestamp = date("Y-m-d H:i:s");
+
         // Veritabanında güncelleme sorgusunu hazırlayın
         $updateQuery = "UPDATE course_plans SET 
             academy_id = :academyId,
@@ -70,7 +74,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             course_attendance_1 = :attendance1,
             course_attendance_2 = :attendance2,
             course_attendance_3 = :attendance3,
-            course_attendance_4 = :attendance4
+            course_attendance_4 = :attendance4,
+            updated_at = :currentTimestamp,
+            updated_by_user_id = :loggedInUserId
             WHERE id = :rowId";
 
         $updateStatement = $db->prepare($updateQuery);
@@ -90,6 +96,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $updateStatement->bindParam(':attendance3', $attendance3, PDO::PARAM_INT);
         $updateStatement->bindParam(':attendance4', $attendance4, PDO::PARAM_INT);
         $updateStatement->bindParam(':rowId', $rowId, PDO::PARAM_INT);
+
+        // Kullanıcı bilgilerini bağlayın
+        $updateStatement->bindParam(':currentTimestamp', $currentTimestamp, PDO::PARAM_STR);
+        $updateStatement->bindParam(':loggedInUserId', $loggedInUserId, PDO::PARAM_INT);
 
         // Sorguyu çalıştırın
         $updateStatement->execute();

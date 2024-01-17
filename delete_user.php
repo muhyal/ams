@@ -45,9 +45,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["id"])) {
     $userId = $_POST["id"];
 
     // Kullanıcının deleted_at sütunu üzerine silme tarihini güncelle
-    $deleteQuery = "UPDATE users SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?";
+    $deleteQuery = "UPDATE users SET deleted_at = CURRENT_TIMESTAMP, deleted_by_user_id = ? WHERE id = ?";
     $stmt = $db->prepare($deleteQuery);
-    $stmt->execute([$userId]);
+    $stmt->execute([$admin_id, $userId]); // Assuming $admin_id is the ID of the admin user who is deleting
 
     // Kullanıcı silindikten sonra yönlendirme yapabilirsiniz
     header("Location: users.php");

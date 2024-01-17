@@ -101,14 +101,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         health_issue = ?, 
         emergency_contact = ?, 
         emergency_phone = ?, 
-        updated_at = ?";
+        updated_at = ?,
+        updated_by_user_id = ?"; // Include the updated_by_user_id field
+
 
     // Şifre değişikliği yapılacak mı kontrolü
     $params = [
         $username, $tc_identity, $first_name, $last_name, $email, $phone,
         $user_type, $notes, $invoice_type, $tax_company_name, $tax_office, $tax_number,
         $birth_date, $city, $district, $blood_type, $health_issue, $emergency_contact,
-        $emergency_phone, date("Y-m-d H:i:s")
+        $emergency_phone, date("Y-m-d H:i:s"),
+        $admin_id // Assuming $admin_id is the ID of the admin user making the update
     ];
 
     if (!empty($new_password)) {

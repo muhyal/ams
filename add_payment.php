@@ -49,7 +49,6 @@ if (empty($associatedAcademies)) {
 // Eğitim danışmanının erişebileceği akademilerin listesini güncelle
 $allowedAcademies = $associatedAcademies;
 
-
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
@@ -60,7 +59,6 @@ $selectedPlanId = isset($_GET['id']) ? $_GET['id'] : null;
 $successMessage = "";
 $errorMessage = "";
 
-
 // Eğer form gönderilmişse
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Diğer form alanlarından gelen verileri alın
@@ -69,7 +67,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $paymentMethod = isset($_POST["paymentMethod"]) ? $_POST["paymentMethod"] : null;
     $paymentNotes = isset($_POST["paymentNotes"]) ? $_POST["paymentNotes"] : null;
 
-// Ek bilgileri alın
+    // Ek bilgileri alın
     $firstName = isset($_POST["firstname"]) ? $_POST["firstname"] : null;
     $lastName = isset($_POST["lastname"]) ? $_POST["lastname"] : null;
     $courseName = isset($_POST["coursename"]) ? $_POST["coursename"] : null;
@@ -77,7 +75,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $courseFee = isset($_POST["coursefee"]) ? $_POST["coursefee"] : null;
     $debtAmount = isset($_POST["debtamount"]) ? $_POST["debtamount"] : null;
     $courseDates = isset($_POST["coursedates"]) ? $_POST["coursedates"] : null;
-
 
     try {
         // Ödeme yapılan ders planını alın
@@ -107,13 +104,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $updateDebtStatement->execute();
 
         // Accounting tablosuna ödeme kaydını ekle
-        $insertPaymentQuery = "INSERT INTO accounting (course_plan_id, amount, payment_method, payment_notes)
-                      VALUES (:coursePlanId, :paymentAmount, :paymentMethod, :paymentNotes)";
+        $insertPaymentQuery = "INSERT INTO accounting (course_plan_id, amount, payment_method, payment_notes, bank_name, received_by_id)
+                      VALUES (:coursePlanId, :paymentAmount, :paymentMethod, :paymentNotes, :bankId, :receivedById)";
         $insertPaymentStatement = $db->prepare($insertPaymentQuery);
         $insertPaymentStatement->bindParam(':coursePlanId', $rowId, PDO::PARAM_INT);
         $insertPaymentStatement->bindParam(':paymentAmount', $paymentAmount, PDO::PARAM_INT);
         $insertPaymentStatement->bindParam(':paymentMethod', $paymentMethod, PDO::PARAM_STR);
         $insertPaymentStatement->bindParam(':paymentNotes', $paymentNotes, PDO::PARAM_STR);
+
+        // Eğer ödeme yöntemi "Banka Transferi" ise banka ID'sini kaydet
+        if ($paymentMethod == "bank_transfer" || $paymentMethod == "2" || $paymentMethod == "3") {
+            $bankId = isset($_POST["bankId"]) ? $_POST["bankId"] : null;
+            $insertPaymentStatement->bindParam(':bankId', $bankId, PDO::PARAM_INT);
+        } else {
+            $bankId = null;
+            $insertPaymentStatement->bindParam(':bankId', $bankId, PDO::PARAM_NULL);
+        }
+
+        // Ödemeyi alan kullanıcının ID'sini al
+        $receivedById = $_SESSION["admin_id"];
+        $insertPaymentStatement->bindParam(':receivedById', $receivedById, PDO::PARAM_INT);
+
         $insertPaymentStatement->execute();
 
         // Başarı mesajını ayarla
@@ -128,6 +139,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 require_once "admin_panel_header.php";
 require_once "admin_panel_sidebar.php";
 ?>
+
 
 <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
@@ -200,7 +212,7 @@ require_once "admin_panel_sidebar.php";
 
         <div class="form-group">
             <label for="paymentMethod">Ödeme Yöntemi:</label>
-            <select class="form-control" name="paymentMethod" required>
+            <select class="form-control" name="paymentMethod" id="paymentMethod" required>
                 <?php
                 // Fetch payment methods from the database
                 $paymentMethodsQuery = "SELECT * FROM payment_methods";
@@ -210,11 +222,35 @@ require_once "admin_panel_sidebar.php";
 
                 // Display payment methods in the dropdown
                 foreach ($paymentMethods as $method) {
-                    echo "<option value='{$method["id"]}'>{$method["name"]}</option>";
+                    // ID'si 2 veya 3 ise banka seçeneklerini göster
+                    if ($method["id"] === "2" || $method["id"] === "3") {
+                        echo "<option value='{$method["id"]}'>{$method["name"]}</option>";
+                    } else {
+                        echo "<option value='{$method["id"]}'>{$method["name"]}</option>";
+                    }
                 }
                 ?>
             </select>
         </div>
+
+        <!-- Banka seçimi sadece "Banka Transferi" seçildiğinde görüntülenecek -->
+        <div class="form-group" id="bankSelection" style="display: none;">
+            <label for="bankId">Banka Seçimi:</label>
+            <select class="form-control" name="bankId">
+                <option value="1">Ziraat Bankası</option>
+                <option value="2">VakıfBank</option>
+                <option value="3">İş Bankası</option>
+                <option value="4">Halkbank</option>
+                <option value="5">Garanti BBVA</option>
+                <option value="6">Yapı Kredi</option>
+                <option value="7">Akbank</option>
+                <option value="8">QNB Finansbank</option>
+                <option value="9">DenizBank</option>
+                <option value="10">TEB</option>
+            </select>
+        </div>
+
+
 
         <div class="form-group">
             <label for="paymentNotes">Ödeme Notları:</label>
@@ -223,6 +259,33 @@ require_once "admin_panel_sidebar.php";
 
         <button type="submit" class="btn btn-primary">Ödeme Yap</button>
     </form>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var paymentMethodSelect = document.getElementById("paymentMethod");
+            var bankSelection = document.getElementById("bankSelection");
+
+            // Sayfa yüklendiğinde kontrol et
+            if (paymentMethodSelect.value === "bank_transfer" || paymentMethodSelect.value === "2" || paymentMethodSelect.value === "3") {
+                bankSelection.style.display = "block";
+            } else {
+                bankSelection.style.display = "none";
+            }
+
+            // Ödeme yöntemi değiştiğinde kontrol et
+            paymentMethodSelect.addEventListener("change", function () {
+                var selectedPaymentMethod = this.value;
+
+                // Ödeme yöntemi "bank_transfer" ise veya seçilen ödeme yöntemi bir banka ID'si ise banka seçimini göster
+                if (selectedPaymentMethod === "bank_transfer" || selectedPaymentMethod === "2" || selectedPaymentMethod === "3") {
+                    bankSelection.style.display = "block";
+                } else {
+                    bankSelection.style.display = "none";
+                }
+            });
+        });
+    </script>
+
+
 </main>
 
 <?php require_once "footer.php"; ?>

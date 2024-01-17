@@ -49,6 +49,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $studentId = $_POST["studentId"];
         $courseDate1 = $_POST["courseDate"];
         $attendance1 = $_POST["attendance"];
+        $updatedByUserId = $_SESSION["admin_id"];
+        $updatedAt = date("Y-m-d H:i:s");
 
         // Veritabanında güncelleme sorgusunu hazırlayın
         $updateQuery = "UPDATE introductory_course_plans SET 
@@ -58,7 +60,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             teacher_id = :teacherId,
             student_id = :studentId,
             course_date = :courseDate,
-            course_attendance = :attendance
+            course_attendance = :attendance,
+             updated_by_user_id = :updatedByUserId,
+            updated_at = :updatedAt
             WHERE id = :rowId";
 
         $updateStatement = $db->prepare($updateQuery);
@@ -71,6 +75,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $updateStatement->bindParam(':studentId', $studentId, PDO::PARAM_INT);
         $updateStatement->bindParam(':courseDate', $courseDate1, PDO::PARAM_STR);
         $updateStatement->bindParam(':attendance', $attendance1, PDO::PARAM_INT);
+        $updateStatement->bindParam(':updatedByUserId', $updatedByUserId, PDO::PARAM_INT);
+        $updateStatement->bindParam(':updatedAt', $updatedAt, PDO::PARAM_STR);
         $updateStatement->bindParam(':rowId', $rowId, PDO::PARAM_INT);
 
         // Sorguyu çalıştırın

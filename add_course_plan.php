@@ -57,13 +57,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Debt amount'u otomatik olarak hesapla (örneğin, course_fee'nin %10'u)
     // $debt_amount = $course_fee * 0.10;
 
-    $query = "INSERT INTO course_plans (teacher_id, academy_id, class_id, student_id, course_id, 
-          course_date_1, course_date_2, course_date_3, course_date_4,
-          course_fee, debt_amount)
-          VALUES (:teacher_id, :academy_id, :class_id, :student_id, :course_id, 
-                  :course_date_1, :course_date_2, :course_date_3, :course_date_4,
-                  :course_fee, :debt_amount)";
+    $createdByUserId = $_SESSION["admin_id"];
+    $currentDateTime = date('Y-m-d H:i:s');
 
+
+    $query = "INSERT INTO course_plans (teacher_id, academy_id, class_id, student_id, course_id, 
+              course_date_1, course_date_2, course_date_3, course_date_4,
+              course_fee, debt_amount, created_by_user_id, created_at, updated_at, updated_by_user_id)
+              VALUES (:teacher_id, :academy_id, :class_id, :student_id, :course_id, 
+                      :course_date_1, :course_date_2, :course_date_3, :course_date_4,
+                      :course_fee, :debt_amount, :created_by_user_id, :created_at, :updated_at, :updated_by_user_id)";
 
     $stmt = $db->prepare($query);
 
@@ -78,6 +81,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->bindParam(":course_date_4", $course_date_4, PDO::PARAM_STR);
     $stmt->bindParam(":course_fee", $course_fee, PDO::PARAM_INT);
     $stmt->bindParam(":debt_amount", $debt_amount, PDO::PARAM_INT);
+    $stmt->bindParam(":created_by_user_id", $createdByUserId, PDO::PARAM_INT);
+    $stmt->bindParam(":created_at", $currentDateTime, PDO::PARAM_STR);
+    $stmt->bindParam(":updated_at", $currentDateTime, PDO::PARAM_STR);
+    $stmt->bindParam(":updated_by_user_id", $createdByUserId, PDO::PARAM_INT);
+
 
     // Sorguyu çalıştırın
     if ($stmt->execute()) {

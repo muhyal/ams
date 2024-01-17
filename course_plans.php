@@ -68,7 +68,7 @@ require_once "admin_panel_header.php";
 
             if ($selectedPlanId) {
                 $querySelectedPlan = "
-                     SELECT
+    SELECT
         sc.id,
         CONCAT(u_teacher.first_name, ' ', u_teacher.last_name) AS teacher_name,
         u_teacher.id AS teacher_id,
@@ -84,7 +84,13 @@ require_once "admin_panel_header.php";
         sc.course_attendance_1,
         sc.course_attendance_2,
         sc.course_attendance_3,
-        sc.course_attendance_4
+        sc.course_attendance_4,
+        u_created_by.first_name AS created_by_first_name,
+        u_created_by.last_name AS created_by_last_name,
+        sc.created_at,
+        u_updated_by.first_name AS updated_by_first_name,
+        u_updated_by.last_name AS updated_by_last_name,
+        sc.updated_at
     FROM
         course_plans sc
         INNER JOIN users u_teacher ON sc.teacher_id = u_teacher.id AND u_teacher.user_type = 4
@@ -92,15 +98,37 @@ require_once "admin_panel_header.php";
         INNER JOIN academy_classes ac ON sc.class_id = ac.id
         INNER JOIN users u_student ON sc.student_id = u_student.id AND u_student.user_type = 6
         INNER JOIN courses c ON sc.course_id = c.id
+        LEFT JOIN users u_created_by ON sc.created_by_user_id = u_created_by.id
+        LEFT JOIN users u_updated_by ON sc.updated_by_user_id = u_updated_by.id
     WHERE
         sc.id = :planId
-                ";
+";
+
 
                 $stmtSelectedPlan = $db->prepare($querySelectedPlan);
                 $stmtSelectedPlan->bindParam(':planId', $selectedPlanId, PDO::PARAM_INT);
                 $stmtSelectedPlan->execute();
                 $selectedPlan = $stmtSelectedPlan->fetch(PDO::FETCH_ASSOC);
             }
+
+
+            function getAttendanceStatus($status)
+            {
+                switch ($status) {
+                    case 0:
+                        return 'Planlandı';
+                    case 1:
+                        return 'Katıldı';
+                    case 2:
+                        return 'Katılmadı';
+                    case 3:
+                        return 'Mazeretli';
+                    default:
+                        return 'Bilinmeyen Durum';
+                }
+            }
+
+
             ?>
 
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
@@ -119,7 +147,23 @@ require_once "admin_panel_header.php";
                 <p class='card-text'><strong>Akademi:</strong> {$selectedPlan['academy_name']}</p>
                 <p class='card-text'><strong>Sınıf:</strong> {$selectedPlan['class_name']}</p>
                 <p class='card-text'><strong>Öğrenci:</strong> {$selectedPlan['student_name']}</p>
-                <p class='card-text'><strong>Ders:</strong> {$selectedPlan['lesson_name']}</p>
+                <p class='card-text'><strong>Ders:</strong> {$selectedPlan['lesson_name']}
+<p class='card-text'><strong>1. Ders:</strong> {$selectedPlan['course_date_1']}</p>
+<p class='card-text'><strong>2. Ders:</strong> {$selectedPlan['course_date_2']}</p>
+<p class='card-text'><strong>3. Ders:</strong> {$selectedPlan['course_date_3']}</p>
+<p class='card-text'><strong>4. Ders:</strong> {$selectedPlan['course_date_4']}</p>
+
+
+<p class='card-text'><strong>1. Katılım:</strong> {$selectedPlan['course_attendance_1']}</p>
+<p class='card-text'><strong>2. Katılım:</strong> {$selectedPlan['course_attendance_2']}</p>
+<p class='card-text'><strong>3. Katılım:</strong> {$selectedPlan['course_attendance_3']}</p>
+<p class='card-text'><strong>4. Katılım:</strong> {$selectedPlan['course_attendance_4']}</p>
+
+<p class='card-text'><strong>Oluşturan:</strong> {$selectedPlan['created_by_first_name']} {$selectedPlan['created_by_last_name']}</p>
+<p class='card-text'><strong>Oluşturulma:</strong> {$selectedPlan['created_at']}</p>
+<p class='card-text'><strong>Güncelleyen:</strong> {$selectedPlan['updated_by_first_name']} {$selectedPlan['updated_by_last_name']}</p>
+<p class='card-text'><strong>Güncelleme:</strong> {$selectedPlan['updated_at']}</p>
+    
             </div>
         </div>";
             }
@@ -223,8 +267,8 @@ require_once "admin_panel_header.php";
                     }
 
                     // İşlemler column (Actions)
-                    echo "<td><a href='edit_course_plan.php?id={$result['id']}' class='btn btn-primary btn-sm'><i class='fas fa-edit'></i></a></td>";
-
+                    echo "<td><a href='edit_course_plan.php?id={$result['id']}' class='btn btn-warning btn-sm'><i class='fas fa-edit'></i></a>
+                    <a href='course_plans.php?id={$result['id']}' class='btn btn-primary btn-sm'><i class='fas fa-user-graduate'></i></a></td>";
                     echo "</tr>";
                 }
 
