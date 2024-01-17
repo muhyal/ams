@@ -603,9 +603,9 @@ require_once "admin_panel_header.php";
           <tr>
               <!--   <th scope="row"><?= $relation['student_id'] ?></th>-->
               <td><?= $relation['first_name'] ?> <?= $relation['last_name'] ?></td>
-              <td><?= $relation['email'] ?></td>
-              <td><?= $relation['tc_identity'] ?></td>
-              <td><?= $relation['phone'] ?></td>
+              <td onmouseover="this.innerHTML='<?= isset($relation['email']) ? $relation['email'] : '' ?>'" onmouseout="this.innerHTML='<?= isset($relation['email']) ? '******************' . strstr($relation['email'], '@') : '' ?>'"><?= isset($relation['email']) ? '*******************' . strstr($relation['email'], '@') : '' ?></td>
+              <td onmouseover="this.innerHTML='<?= isset($relation['tc_identity']) ? $relation['tc_identity'] : '' ?>'" onmouseout="this.innerHTML='<?= isset($relation['tc_identity']) ? '*******' . substr($relation['tc_identity'], -4) : '' ?>'"><?= isset($relation['tc_identity']) ? '*******' . substr($relation['tc_identity'], -4) : '' ?></td>
+              <td onmouseover="this.innerHTML='<?= isset($relation['phone']) ? $relation['phone'] : '' ?>'" onmouseout="this.innerHTML='<?= isset($relation['phone']) ? '******' . substr($relation['phone'], -4) : '' ?>'"><?= isset($relation['phone']) ? '******' . substr($relation['phone'], -4) : '' ?></td>
               <td><?= $relation['academy_name'] ?></td>
               <td><?= $relation['class_name'] ?></td>
               <td><?= $relation['course_name'] ?></td>
@@ -634,7 +634,7 @@ require_once "admin_panel_header.php";
                           <th scope="col">T.C. No</th>
                           <th scope="col">E-posta</th>
                           <th scope="col">Telefon</th>
-                          <th scope="col"></th>
+                        <th scope="col"></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -698,7 +698,7 @@ require_once "admin_panel_header.php";
                               <td><?= $user['first_name'] ?> <?= $user['last_name'] ?></td>
                               <td onmouseover="this.innerHTML='<?= isset($user['email']) ? $user['email'] : '' ?>'" onmouseout="this.innerHTML='<?= isset($user['email']) ? '******************' . strstr($user['email'], '@') : '' ?>'"><?= isset($user['email']) ? '*******************' . strstr($user['email'], '@') : '' ?></td>
                               <td onmouseover="this.innerHTML='<?= isset($user['tc_identity']) ? $user['tc_identity'] : '' ?>'" onmouseout="this.innerHTML='<?= isset($user['tc_identity']) ? '*******' . substr($user['tc_identity'], -4) : '' ?>'"><?= isset($user['tc_identity']) ? '*******' . substr($user['tc_identity'], -4) : '' ?></td>
-                              <td onmouseover="this.innerHTML='<?= isset($user['phone']) ? $user['phone'] : '' ?>'" onmouseout="this.innerHTML='<?= isset($teacher['phone']) ? '******' . substr($user['phone'], -4) : '' ?>'"><?= isset($user['phone']) ? '******' . substr($user['phone'], -4) : '' ?></td>
+                              <td onmouseover="this.innerHTML='<?= isset($user['phone']) ? $user['phone'] : '' ?>'" onmouseout="this.innerHTML='<?= isset($user['phone']) ? '******' . substr($user['phone'], -4) : '' ?>'"><?= isset($user['phone']) ? '******' . substr($user['phone'], -4) : '' ?></td>
                               <td><?= $user['verification_time_email_confirmed'] ? '<i class="fas fa-check text-success"></i> Doğrulandı' : '<i class="fas fa-times text-danger"></i> Doğrulanmadı' ?></td>
                               <td><?= $user['verification_time_sms_confirmed'] ? '<i class="fas fa-check text-success"></i> Doğrulandı' : '<i class="fas fa-times text-danger"></i> Doğrulanmadı' ?></td>
                               <td><?= $user['type_name'] ?></td>
