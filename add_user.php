@@ -51,19 +51,21 @@ use Infobip\Model\SmsDestination;
 use Infobip\Model\SmsTextualMessage;
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = $_POST["username"];
-    $tc_identity = $_POST["tc_identity"];
-    $first_name = $_POST["first_name"];
-    $last_name = $_POST["last_name"];
-    $email = $_POST["email"];
-    $phone = $_POST["phone"];
-    $birth_date = $_POST["birth_date"];
-    $city = $_POST["city"];
-    $district = $_POST["district"];
-    $blood_type = $_POST["blood_type"];
-    $health_issue = $_POST["health_issue"];
-    $emergency_contact = $_POST["emergency_contact"];
-    $emergency_phone = $_POST["emergency_phone"];
+    // Diğer form alanlarını al
+    $username = isset($_POST["username"]) ? $_POST["username"] : "";
+    $tc_identity = isset($_POST["tc_identity"]) ? $_POST["tc_identity"] : "";
+    $first_name = isset($_POST["first_name"]) ? $_POST["first_name"] : "";
+    $last_name = isset($_POST["last_name"]) ? $_POST["last_name"] : "";
+    $email = isset($_POST["email"]) ? $_POST["email"] : "";
+    $phone = isset($_POST["phone"]) ? $_POST["phone"] : "";
+    $birth_date = isset($_POST["birth_date"]) ? $_POST["birth_date"] : "";
+    $city = isset($_POST["city"]) ? $_POST["city"] : "";
+    $district = isset($_POST["district"]) ? $_POST["district"] : "";
+    $blood_type = isset($_POST["blood_type"]) ? $_POST["blood_type"] : "";
+    $health_issue = isset($_POST["health_issue"]) ? $_POST["health_issue"] : "";
+    $emergency_contact = isset($_POST["emergency_contact"]) ? $_POST["emergency_contact"] : "";
+    $emergency_phone = isset($_POST["emergency_phone"]) ? $_POST["emergency_phone"] : "";
+
 
     // Hash'lenmemiş şifreyi al
     $plainPassword = $_POST["password"];
@@ -144,8 +146,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             ]);
 
             // E-posta ve SMS gönderme işlemleri
-            sendVerificationEmail($email, $verificationCodeEmail, $first_name, $last_name, $plainPassword);
-            sendVerificationSms($phone, $verificationCodeSms, $first_name, $last_name, $plainPassword);
+            sendVerificationEmail($email, $verificationCodeEmail, $first_name, $last_name, $plainPassword, $username, $email);
+            sendVerificationSms($phone, $verificationCodeSms, $first_name, $last_name, $plainPassword, $username, $email);
 
             // Kullanıcı kaydedildiğini bildiren mesajı $message değişkenine atıyoruz
             $message = "Kullanıcı kaydedildi, doğrulama e-postası ve SMS gönderildi.";
@@ -163,8 +165,8 @@ function generateVerificationCode() {
 }
 
 // E-posta gönderme fonksiyonu
-function sendVerificationEmail($to, $verificationCode, $first_name, $last_name, $plainPassword) {
-    global $config, $siteName, $agreementLink, $siteUrl;
+function sendVerificationEmail($to, $verificationCode, $first_name, $last_name, $plainPassword, $username, $email) {
+    global $config, $siteName, $agreementLink, $siteUrl, $first_name, $last_name, $plainPassword, $username, $email;
 
     $mail = new PHPMailer(true);
 
@@ -201,7 +203,7 @@ function sendVerificationEmail($to, $verificationCode, $first_name, $last_name, 
         <p>$siteName 'e hoş geldin 🤗 Kaydının tamamlanabilmesi için sözleşmeleri okuyup onaylaman gerekiyor:</p>
         <p>Sözleşmeleri okumak için 🤓 <a href='$agreementLink'>buraya tıklayabilirsin</a>.</p>
         <p>Sözleşmeleri onaylamak için ✅ <a href='$verificationLink'>buraya tıklayabilirsin</a>.</p>
-        <p>🧐 $siteName paneline $siteUrl adresinden e-postan ve şifren $plainPassword ile oturum açabilirsin.</p>
+        <p>🧐 $siteName paneline $siteUrl adresinden $username kullanıcı adın ya da $email e-postan ve şifren $plainPassword ile oturum açabilirsin.</p>
         <p>Müzik dolu günler dileriz 🎸🎹</p>
     </body>
     </html>
@@ -216,8 +218,8 @@ function sendVerificationEmail($to, $verificationCode, $first_name, $last_name, 
 
 
 // SMS gönderme fonksiyonu
-function sendVerificationSms($to, $verificationCode, $first_name, $last_name, $plainPassword) {
-    global $siteName, $agreementLink, $siteUrl, $config;
+function sendVerificationSms($to, $verificationCode, $first_name, $last_name, $plainPassword, $username, $email) {
+    global $siteName, $agreementLink, $siteUrl, $config, $first_name, $last_name, $plainPassword, $username, $email;
 
     // Check if Infobip configuration is enabled and valid
     if (
@@ -247,7 +249,7 @@ function sendVerificationSms($to, $verificationCode, $first_name, $last_name, $p
         // Gizli bağlantı oluştur
         $verificationLink = getVerificationLink($encryptedPhone, $encryptedCode, "phone");
 
-        $message = new SmsTextualMessage(destinations: [$destination], from: $SENDER, text: "Selam $first_name, $siteName 'e hoş geldin 🤗 Kaydının tamamlanabilmesi için sözleşmeleri okuyup onaylaman gerekiyor: $agreementLink - Sözleşmeleri onaylamak için ise şu bağlantıya tıklayabilirsin (Bağlantı açıldığında sözleşmeler otomatik onaylanacaktır): $verificationLink.  $siteUrl üzerinden e-posta adresin ve şifren $plainPassword ile $siteName panelinde oturum açabilirsin.");
+        $message = new SmsTextualMessage(destinations: [$destination], from: $SENDER, text: "Selam $first_name, $siteName 'e hoş geldin 🤗 Kaydının tamamlanabilmesi için sözleşmeleri okuyup onaylaman gerekiyor: $agreementLink - Sözleşmeleri onaylamak için ise şu bağlantıya tıklayabilirsin (Bağlantı açıldığında sözleşmeler otomatik onaylanacaktır): $verificationLink.  $siteUrl üzerinden $email e-posta adresin ya da $username ve şifren $plainPassword ile $siteName panelinde oturum açabilirsin.");
 
         $request = new SmsAdvancedTextualRequest(messages: [$message]);
 
