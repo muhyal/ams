@@ -112,7 +112,6 @@ $sql_payment_methods = "SELECT * FROM payment_methods";
 $stmt_payment_methods = $db->query($sql_payment_methods);
 $payment_methods = $stmt_payment_methods->fetchAll(PDO::FETCH_ASSOC);
 
-// Sadece ilişkilendirilmiş olduğu akademilere ait kayıtları çek
 $sql_entries = "
     SELECT 
         accounting.id,
@@ -120,12 +119,18 @@ $sql_entries = "
         accounting.amount,
         accounting.payment_date,
         accounting.payment_method,
-        accounting.payment_notes
+        accounting.payment_notes,
+        accounting.bank_name,
+        users.first_name AS received_by_first_name,
+        users.last_name AS received_by_last_name
     FROM accounting
-    WHERE course_plan_id IN (SELECT id FROM course_plans WHERE academy_id IN (" . implode(",", $allowedAcademies) . "))
+    LEFT JOIN course_plans ON accounting.course_plan_id = course_plans.id
+    LEFT JOIN users ON accounting.received_by_id = users.id
+    WHERE course_plans.academy_id IN (" . implode(",", $allowedAcademies) . ")
 ";
 $stmt_entries = $db->query($sql_entries);
 $entries = $stmt_entries->fetchAll(PDO::FETCH_ASSOC) ?? [];
+
 
 
 // Yardımcı fonksiyonlar
@@ -211,6 +216,25 @@ function getPaymentMethodName($paymentMethodId)
     return "";
 }
 
+function getBankName($bankId)
+{
+    // Banka ID'lerini ve isimlerini içeren bir dizi
+    $banks = [
+        1 => 'Ziraat Bankası',
+        2 => 'VakıfBank',
+        3 => 'İş Bankası',
+        4 => 'Halkbank',
+        5 => 'Garanti BBVA',
+        6 => 'Yapı Kredi',
+        7 => 'Akbank',
+        8 => 'QNB Finansbank',
+        9 => 'DenizBank',
+        10 => 'TEB',
+    ];
+
+    // Eğer belirtilen banka ID'si dizide varsa, banka ismini döndür; yoksa 'Belirsiz' döndür.
+    return isset($banks[$bankId]) ? $banks[$bankId] : 'Belirsiz';
+}
 ?>
 <?php require_once "admin_panel_header.php"; ?>
 
@@ -222,7 +246,7 @@ function getPaymentMethodName($paymentMethodId)
                 <h2>Muhasebe Kayıtları</h2>
                 <div class="btn-toolbar mb-2 mb-md-0">
                     <div class="btn-group mr-2">
-                        <a href="accounting.php" class="btn btn-sm btn-outline-secondary">Muhasebe Kaydı Ekle</a>
+                        <a href="add_payment.php" class="btn btn-sm btn-outline-secondary">Muhasebe Kaydı Ekle</a>
                         <a href="accounting_reports.php" class="btn btn-sm btn-outline-secondary">Raporlar</a>
                     </div>
                 </div>
@@ -231,8 +255,7 @@ function getPaymentMethodName($paymentMethodId)
         <table class="table table-bordered table-striped">
             <thead class="thead-dark">
             <tr>
-                <th>No</th>
-                <th>Plan No</th>
+                <th>Plan</th>
                 <th>Akademi</th>
                 <th>Öğrenci</th>
                 <th>Öğretmen</th>
@@ -240,15 +263,21 @@ function getPaymentMethodName($paymentMethodId)
                 <th>Tutar</th>
                 <th>Tarih</th>
                 <th>Ödeme Yöntemi</th>
+                <th>Banka</th>
                 <th>Not</th>
+                <th>Ödemeyi İşleyen</th>
             </tr>
             </thead>
             <tbody>
             <?php if (!empty($entries) && is_array($entries)): ?>
                 <?php foreach ($entries as $entry): ?>
                     <tr>
-                        <td><?= $entry['id'] ?></td>
-                        <td><?= isset($entry['course_plan_id']) ? $entry['course_plan_id'] : 'Belirsiz' ?></td>
+                        <td>
+                            <?php
+                            $coursePlanId = isset($entry['course_plan_id']) ? $entry['course_plan_id'] : 'Belirsiz';
+                            echo "<a href='course_plans.php?id=$coursePlanId' class='btn btn-success btn-sm'><i class='bi bi-eye-fill'></i></a>";
+                            ?>
+                        </td>
                         <?php
                         $coursePlanDetails = getCoursePlanDetails($entry['course_plan_id']);
                         $academyName = isset($coursePlanDetails['academy_id']) ? getAcademyName($coursePlanDetails['academy_id']) : 'Belirsiz';
@@ -272,7 +301,9 @@ function getPaymentMethodName($paymentMethodId)
                             ?>
                         </td>
                         <td><?= isset($entry['payment_method']) ? getPaymentMethodName($entry['payment_method']) : 'Belirsiz' ?></td>
+                        <td><?= isset($entry['bank_name']) ? getBankName($entry['bank_name']) : 'Belirsiz' ?></td>
                         <td><?= isset($entry['payment_notes']) ? $entry['payment_notes'] : 'Belirsiz' ?></td>
+                        <td><?= isset($entry['received_by_first_name']) ? $entry['received_by_first_name'] . ' ' . $entry['received_by_last_name'] : 'Belirsiz' ?></td>
                     </tr>
                 <?php endforeach; ?>
             <?php else: ?>
