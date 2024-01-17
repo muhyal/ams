@@ -40,9 +40,43 @@ require_once "db_connection.php"; // Veritabanı bağlantısı
 $admin_id = $_SESSION["admin_id"];
 $admin_username = $_SESSION["admin_username"];
 
-// Kullanıcı ID'sini alın
+// Düzenleyen kullanıcının id ve tipini al
+$editorUserId = $_SESSION['admin_id'];
+$editorUserType = $_SESSION['admin_type'];
+
+// Kullanıcı ID'sini ve düzenlenen kullanıcının tipini alın
 if (isset($_GET["id"])) {
     $userId = $_GET["id"];
+
+    // Kullanıcı tipini ve düzenleyen kullanıcının tipini al
+    $queryUserType = "SELECT user_type FROM users WHERE id = :user_id";
+    $stmtUserType = $db->prepare($queryUserType);
+    $stmtUserType->bindParam(":user_id", $userId, PDO::PARAM_INT);
+    $stmtUserType->execute();
+    $userTypeResult = $stmtUserType->fetch(PDO::FETCH_ASSOC);
+
+    // Eğer düzenleyen kullanıcı admin ise veya (düzenleyen kullanıcı tipi 2, 3, 4, 5, 6 ise ve düzenlenen kullanıcı tipi 2, 3, 4, 5, 6 ise)
+    if ($editorUserType == 1 || ($editorUserType >= 2 && $editorUserType <= 6 && $userTypeResult['user_type'] >= 2 && $userTypeResult['user_type'] <= 6)) {
+        // Diğer kodlar devam eder...
+        $getUserQuery = "SELECT * FROM users LEFT JOIN user_types ON users.user_type = user_types.type_name WHERE users.id = ?";
+        $stmt = $db->prepare($getUserQuery);
+        $stmt->execute([$userId]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // Kullanıcı tiplerini almak için bir SELECT sorgusu
+        $getUserTypesQuery = "SELECT id, type_name FROM user_types";
+        $stmtUserTypes = $db->query($getUserTypesQuery);
+        $userTypes = $stmtUserTypes->fetchAll(PDO::FETCH_ASSOC);
+    } else {
+        echo "<p>Bu kullanıcıyı düzenleme izniniz yok.</p>";
+        exit();
+    }
+} else {
+    echo "<p>Geçersiz kullanıcı ID'si.</p>";
+    exit();
+
+
+
     $getUserQuery = "SELECT * FROM users LEFT JOIN user_types ON users.user_type = user_types.type_name WHERE users.id = ?";
     $stmt = $db->prepare($getUserQuery);
     $stmt->execute([$userId]);
