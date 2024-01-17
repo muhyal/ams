@@ -473,8 +473,11 @@ require_once "admin_panel_header.php";
 
 
                               <td>
-                                  <a href="edit_course_plan.php?id=<?= $coursePlan['id']; ?>" class="btn btn-primary btn-sm">
+                                  <a href="edit_course_plan.php?id=<?= $coursePlan['id']; ?>" class="btn btn-warning btn-sm">
                                       <i class="fas fa-edit"></i>
+                                  </a>
+                                  <a href="course_plans.php?id=<?= $coursePlan['id']; ?>" class="btn btn-primary btn-sm">
+                                      <i class="fas fa-user-graduate"></i>
                                   </a>
                               </td>
                           </tr>
@@ -567,7 +570,6 @@ require_once "admin_panel_header.php";
 
                                   echo "</td>";
                                   echo "<td><a href='edit_rescheduled_course_plan.php?id={$rescheduled_course['id']}' class='btn btn-primary btn-sm'><i class='fas fa-edit'></i></a></td>";
-
                                   echo "</tr>";
 
                               }

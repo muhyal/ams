@@ -206,7 +206,7 @@ require_once "admin_panel_header.php";
                             echo "<i class='fas fa-calendar-check text-primary'></i>"; // Henüz katılmadı ve planlandı durumu için takvim simgesi
                             break;
                         case 1:
-                            echo "<i class='fas fa-check text-success'></i>"; // Katılım varsa yeşil tik
+                            echo "<i class='fas fa-calendar-check text-success'></i>";
                             break;
                         case 2:
                             echo "<i class='fas fa-times text-danger'></i>"; // Katılmadı durumu için kırmızı çarpı

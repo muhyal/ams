@@ -47,13 +47,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $course_id = $_POST["course_id"];
     $course_date_1 = $_POST["course_date"];
     $course_attendance_1 = isset($_POST["course_attendance"]) ? 1 : 0;
+    $created_by_user_id = $_SESSION["admin_id"]; // Şu anki oturumu açık olan admin kullanıcısının ID'sini alıyoruz.
+    $created_at = date('Y-m-d H:i:s'); // Şu anki tarih ve saat bilgisini alıyoruz.
 
     $query = "INSERT INTO introductory_course_plans (teacher_id, academy_id, class_id, student_id, course_id, 
-          course_date,
-          course_attendance)
-          VALUES (:teacher_id, :academy_id, :class_id, :student_id, :course_id, 
-                  :course_date,
-                  :course_attendance)";
+      course_date, course_attendance, created_by_user_id, created_at)
+      VALUES (:teacher_id, :academy_id, :class_id, :student_id, :course_id, 
+              :course_date, :course_attendance, :created_by_user_id, :created_at)";
+
 
 
     $stmt = $db->prepare($query);
@@ -65,6 +66,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->bindParam(":course_id", $course_id, PDO::PARAM_INT);
     $stmt->bindParam(":course_date", $course_date_1, PDO::PARAM_STR);
     $stmt->bindParam(":course_attendance", $course_attendance_1, PDO::PARAM_INT);
+    $stmt->bindParam(":created_by_user_id", $created_by_user_id, PDO::PARAM_INT);
+    $stmt->bindParam(":created_at", $created_at, PDO::PARAM_STR);
+
 
     // Sorguyu çalıştırın
     if ($stmt->execute()) {

@@ -90,27 +90,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $verificationTimeSms = date("Y-m-d H:i:s", time());
 
         $insertQuery = "INSERT INTO users (
-    username, 
-    tc_identity, 
-    first_name, 
-    last_name, 
-    email, 
-    phone, 
-    password, 
-    verification_code_email, 
-    verification_code_sms, 
-    verification_time_email_sent, 
-    verification_time_sms_sent, 
-    user_type, 
-    birth_date,
-    city,
-    district,
-    blood_type,
-    health_issue,
-    emergency_contact,
-    emergency_phone,
-    created_at
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+     username, 
+        tc_identity, 
+        first_name, 
+        last_name, 
+        email, 
+        phone, 
+        password, 
+        verification_code_email, 
+        verification_code_sms, 
+        verification_time_email_sent, 
+        verification_time_sms_sent, 
+        user_type, 
+        birth_date,
+        city,
+        district,
+        blood_type,
+        health_issue,
+        emergency_contact,
+        emergency_phone,
+        created_at,
+        created_by_user_id,
+        updated_at,
+        updated_by_user_id 
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try {
             $stmt = $db->prepare($insertQuery);
@@ -134,7 +137,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $health_issue,
                 $emergency_contact,
                 $emergency_phone,
-                date("Y-m-d H:i:s")
+                date("Y-m-d H:i:s"),
+                $_SESSION["admin_id"],  // Varsayılan olarak admin kullanıcısının ID'sini ekledim, sizin kullanıcı kimliğinize göre düzenlemeniz gerekebilir
+                date("Y-m-d H:i:s"),
+                $_SESSION["admin_id"]   // Varsayılan olarak admin kullanıcısının ID'sini ekledim, sizin kullanıcı kimliğinize göre düzenlemeniz gerekebilir
             ]);
 
             // E-posta ve SMS gönderme işlemleri

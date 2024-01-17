@@ -75,6 +75,10 @@ require_once "admin_panel_header.php";
                     <th>Ders</th>
                     <th>Ders Tarihi</th>
                     <th>Katılım</th>
+                    <th>Oluşturan</th>
+                    <th>Oluşturma</th>
+                    <th>Güncelleyen</th>
+                    <th>Güncelleme</th>
                     <th>İşlemler</th>
                 </tr>
                 </thead>
@@ -82,25 +86,35 @@ require_once "admin_panel_header.php";
                 <?php
                 // Veritabanı sorgularını burada gerçekleştirin ve sonuçları tabloya ekleyin
                 $query = "
-    SELECT
-        sc.id,
-        CONCAT(u_teacher.first_name, ' ', u_teacher.last_name) AS teacher_name,
-        u_teacher.id AS teacher_id,
-        a.name AS academy_name,
-        ac.class_name AS class_name,
-        CONCAT(u_student.first_name, ' ', u_student.last_name) AS student_name,
-        u_student.id AS student_id,
-        c.course_name AS lesson_name,
-        sc.course_date,
-        sc.course_attendance
-    FROM
-        introductory_course_plans sc
-        INNER JOIN users u_teacher ON sc.teacher_id = u_teacher.id AND u_teacher.user_type = 4
-        INNER JOIN academies a ON sc.academy_id = a.id AND a.id IN (" . implode(",", $allowedAcademies) . ")
-        INNER JOIN academy_classes ac ON sc.class_id = ac.id
-        INNER JOIN users u_student ON sc.student_id = u_student.id AND u_student.user_type = 6
-        INNER JOIN courses c ON sc.course_id = c.id
+ SELECT
+    sc.id,
+    CONCAT(u_teacher.first_name, ' ', u_teacher.last_name) AS teacher_name,
+    u_teacher.id AS teacher_id,
+    a.name AS academy_name,
+    ac.class_name AS class_name,
+    CONCAT(u_student.first_name, ' ', u_student.last_name) AS student_name,
+    u_student.id AS student_id,
+    c.course_name AS lesson_name,
+    sc.course_date,
+    sc.course_attendance,
+    created_by_user.first_name AS created_by_first_name,
+    created_by_user.last_name AS created_by_last_name,
+    sc.created_at AS created_at,
+    updated_by_user.first_name AS updated_by_first_name,
+    updated_by_user.last_name AS updated_by_last_name,
+    sc.updated_at AS updated_at
+FROM
+    introductory_course_plans sc
+    INNER JOIN users u_teacher ON sc.teacher_id = u_teacher.id AND u_teacher.user_type = 4
+    INNER JOIN academies a ON sc.academy_id = a.id AND a.id IN (" . implode(",", $allowedAcademies) . ")
+    INNER JOIN academy_classes ac ON sc.class_id = ac.id
+    INNER JOIN users u_student ON sc.student_id = u_student.id AND u_student.user_type = 6
+    INNER JOIN courses c ON sc.course_id = c.id
+    LEFT JOIN users created_by_user ON sc.created_by_user_id = created_by_user.id
+    LEFT JOIN users updated_by_user ON sc.updated_by_user_id = updated_by_user.id
+
 ";
+
                 $stmt = $db->query($query);
                 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -137,9 +151,22 @@ require_once "admin_panel_header.php";
                     }
 
                     echo "</td>";
-                    echo "<td><a href='edit_introductory_course_plan.php?id={$result['id']}' class='btn btn-primary btn-sm'>Düzenle</a></td>";
 
+                    // Oluşturan ve Oluşturma bilgilerini ekleyin
+                    $createdByName = ucfirst(substr($result['created_by_first_name'], 0, 1)) . '. ' . $result['created_by_last_name'];
+                    $createdAt = date('d.m.Y H:i', strtotime($result['created_at']));
+                    echo "<td class='text small'>{$createdByName}</td>";
+                    echo "<td class='text small'>{$createdAt}</td>";
+
+// Güncelleyen ve Güncelleme bilgilerini ekleyin
+                    $updatedByName = ucfirst(substr($result['updated_by_first_name'], 0, 1)) . '. ' . $result['updated_by_last_name'];
+                    $updatedAt = date('d.m.Y H:i', strtotime($result['updated_at']));
+                    echo "<td class='text small'>{$updatedByName}</td>";
+                    echo "<td class='text small'>{$updatedAt}</td>";
+
+                    echo "<td><a href='edit_introductory_course_plan.php?id={$result['id']}' class='btn btn-primary btn-sm'>Düzenle</a></td>";
                     echo "</tr>";
+
 
                 }
                 ?>
