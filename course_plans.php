@@ -124,9 +124,10 @@ require_once "admin_panel_header.php";
                     case 3:
                         return 'Mazeretli';
                     default:
-                        return 'Bilinmeyen Durum';
+                        return ($status === null) ? 'Belirsiz' : 'Bilinmeyen Durum';
                 }
             }
+
 
 
             ?>
@@ -138,36 +139,37 @@ require_once "admin_panel_header.php";
             <?php
             if ($selectedPlan) {
                 echo "
-        <div class='card border-success mb-3'>
-            <div class='card-header bg-success text-white'>
-                <h5 class='card-title'>Seçilen Ders Planı Detayları</h5>
-            </div>
-            <div class='card-body'>
-                <p class='card-text'><strong>Öğretmen:</strong> {$selectedPlan['teacher_name']}</p>
-                <p class='card-text'><strong>Akademi:</strong> {$selectedPlan['academy_name']}</p>
-                <p class='card-text'><strong>Sınıf:</strong> {$selectedPlan['class_name']}</p>
-                <p class='card-text'><strong>Öğrenci:</strong> {$selectedPlan['student_name']}</p>
-                <p class='card-text'><strong>Ders:</strong> {$selectedPlan['lesson_name']}
-<p class='card-text'><strong>1. Ders:</strong> {$selectedPlan['course_date_1']}</p>
-<p class='card-text'><strong>2. Ders:</strong> {$selectedPlan['course_date_2']}</p>
-<p class='card-text'><strong>3. Ders:</strong> {$selectedPlan['course_date_3']}</p>
-<p class='card-text'><strong>4. Ders:</strong> {$selectedPlan['course_date_4']}</p>
+<div class='card border-success mb-3'>
+    <div class='card-header bg-success text-white'>
+        <h5 class='card-title'>Seçilen Ders Planı Detayları</h5>
+    </div>
+    <div class='card-body'>
+        <p class='card-text'><strong>Öğretmen:</strong> " . $selectedPlan['teacher_name'] . "</p>
+        <p class='card-text'><strong>Akademi:</strong> " . $selectedPlan['academy_name'] . "</p>
+        <p class='card-text'><strong>Sınıf:</strong> " . $selectedPlan['class_name'] . "</p>
+        <p class='card-text'><strong>Öğrenci:</strong> " . $selectedPlan['student_name'] . "</p>
+        <p class='card-text'><strong>Ders:</strong> " . $selectedPlan['lesson_name'] . "</p>
+        
+ <p class='card-text'><strong>1. Ders:</strong> " . date('d.m.Y H:i', strtotime($selectedPlan['course_date_1'])) . "</p>
+            <p class='card-text'><strong>2. Ders:</strong> " . date('d.m.Y H:i', strtotime($selectedPlan['course_date_2'])) . "</p>
+            <p class='card-text'><strong>3. Ders:</strong> " . date('d.m.Y H:i', strtotime($selectedPlan['course_date_3'])) . "</p>
+            <p class='card-text'><strong>4. Ders:</strong> " . date('d.m.Y H:i', strtotime($selectedPlan['course_date_4'])) . "</p>
 
 
-<p class='card-text'><strong>1. Katılım:</strong> {$selectedPlan['course_attendance_1']}</p>
-<p class='card-text'><strong>2. Katılım:</strong> {$selectedPlan['course_attendance_2']}</p>
-<p class='card-text'><strong>3. Katılım:</strong> {$selectedPlan['course_attendance_3']}</p>
-<p class='card-text'><strong>4. Katılım:</strong> {$selectedPlan['course_attendance_4']}</p>
+        <p class='card-text'><strong>1. Katılım:</strong> " . getAttendanceStatus($selectedPlan['course_attendance_1']) . "</p>
+        <p class='card-text'><strong>2. Katılım:</strong> " . getAttendanceStatus($selectedPlan['course_attendance_2']) . "</p>
+        <p class='card-text'><strong>3. Katılım:</strong> " . getAttendanceStatus($selectedPlan['course_attendance_3']) . "</p>
+        <p class='card-text'><strong>4. Katılım:</strong> " . getAttendanceStatus($selectedPlan['course_attendance_4']) . "</p>
 
-<p class='card-text'><strong>Oluşturan:</strong> {$selectedPlan['created_by_first_name']} {$selectedPlan['created_by_last_name']}</p>
-<p class='card-text'><strong>Oluşturulma:</strong> {$selectedPlan['created_at']}</p>
-<p class='card-text'><strong>Güncelleyen:</strong> {$selectedPlan['updated_by_first_name']} {$selectedPlan['updated_by_last_name']}</p>
-<p class='card-text'><strong>Güncelleme:</strong> {$selectedPlan['updated_at']}</p>
-    
-            </div>
-        </div>";
+        <p class='card-text small'><strong>Oluşturan:</strong> " . $selectedPlan['created_by_first_name'] . ' ' . $selectedPlan['created_by_last_name'] . "</p>
+            <p class='card-text small'><strong>Oluşturuldu:</strong> " . date('d.m.Y H:i', strtotime($selectedPlan['created_at'])) . "</p>
+        <p class='card-text small'><strong>Güncelleyen:</strong> " . $selectedPlan['updated_by_first_name'] . ' ' . $selectedPlan['updated_by_last_name'] . "</p>
+            <p class='card-text small'><strong>Güncellendi:</strong> " . date('d.m.Y H:i', strtotime($selectedPlan['updated_at'])) . "</p>
+    </div>
+</div>";
             }
             ?>
+
 
 
             <table class="table table-striped table-sm" style="border: 1px solid #ddd;">

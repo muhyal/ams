@@ -614,6 +614,9 @@ require_once "admin_panel_header.php";
                   <a href="user_profile.php?id=<?php echo $relation['user_id']; ?>" class="btn btn-primary btn-sm">
                       <i class="fas fa-user"></i>
                   </a>
+                  <a href="edit_user.php?id=<?php echo $relation['user_id']; ?>" class="btn btn-warning btn-sm">
+                      <i class="fas fa-edit"></i>
+                  </a>
               </td>
           </tr>
       <?php endforeach; ?>
@@ -666,6 +669,9 @@ require_once "admin_panel_header.php";
                                 <a href="user_profile.php?id=<?= $teacher['user_id'] ?>" class="btn btn-primary btn-sm">
                                     <i class="fas fa-user"></i>
                                 </a>
+                                <a href="edit_user.php?id=<?php echo $teacher['user_id']; ?>" class="btn btn-warning btn-sm">
+                                    <i class="fas fa-edit"></i>
+                                </a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -705,6 +711,9 @@ require_once "admin_panel_header.php";
                               <td>
                                   <a href="user_profile.php?id=<?= $user['user_id'] ?>" class="btn btn-primary btn-sm">
                                       <i class="fas fa-user"></i>
+                                  </a>
+                                  <a href="edit_user.php?id=<?php echo $user['user_id']; ?>" class="btn btn-warning btn-sm">
+                                      <i class="fas fa-edit"></i>
                                   </a>
                               </td>
                           </tr>
