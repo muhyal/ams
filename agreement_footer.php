@@ -24,6 +24,6 @@
     <p>© <?php echo (new DateTime())->format('Y') ?>, <?php echo $siteName ?>.</p>
 </footer>
 </div>
-<script src="./assets/dist/js/bootstrap.bundle.min.js"></script>
+<script src="./assets/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

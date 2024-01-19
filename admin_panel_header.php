@@ -41,7 +41,7 @@ $adminLastName = $_SESSION['admin_last_name'];
     <meta name="author" content="Muhammed Yalçınkaya">
     <meta name="generator" content="<?php echo $siteShortName ?> - <?php echo $oimVersion ?>">
     <script src="./assets/js/color-modes.js"></script>
-    <link href="./assets/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
 

@@ -35,7 +35,7 @@ $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_er
 <meta name="robots" content="noindex, nofollow" />
 <meta name="author" content="Muhammed Yalçınkaya">
 <meta name="generator" content="<?php echo $siteShortName ?> - <?php echo $oimVersion ?>">
-    <link href="./assets/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .bd-placeholder-img {
             font-size: 1.125rem;
