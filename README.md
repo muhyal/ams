@@ -12,7 +12,7 @@ Kurum içi gereksinim nedeniyle oluşturulmuş basit bir öğrenci işleri merke
 * Tanışma dersi planlayabilme (Öğretmen - Öğrenci - Ders - Akademi - Sınıf)
 * Telafi dersi planlayabilme (Öğretmen - Öğrenci - Ders - Akademi - Sınıf)
 * Öğrencilerin kendi panellerinden ders planları ve ödemelerinin takibi
-* Öğretmenlerin kendi panellerinden ders planları ve ödemelerinin takibi
+* Öğretmenlerin kendi panellerinden ders planları ve tahmini alacaklarının takibi
 * Kullanıcılara özel oturum aç, şifremi unuttum özelliği
 * Kullanıcıların kendi bilgilerini güncelleyebildikleri kontrol paneli
 * Kullanıcı ile birimlerin ilişkilendirilmesi
@@ -25,7 +25,7 @@ Kurum içi gereksinim nedeniyle oluşturulmuş basit bir öğrenci işleri merke
 * Yönetim panelinden sınıf ekleyip, düzenleyip, silebilme
 * Yönetim panelinden yönetici ekleyip, düzenleyip, silebilme
 * Öğrenci, Öğretmen, Kullanıcı, Ders, Sınıf arayabilme
-* Basit yetki sistemi
+* Akademiz bazında yetki sistemi (Yönetici, Koordinatör, Eğitim Danışmanı, Öğretmen, Veli, Öğrenci)
 * Karanlık / Aydınlık mod desteği
 * Infobip ile SMS gönderimi
 * SMTP ile e-posta gönderimi 
@@ -38,4 +38,8 @@ Kurum içi gereksinim nedeniyle oluşturulmuş basit bir öğrenci işleri merke
 * Çoklu lokasyon ve birime özel öğrenci, öğretmen, ders, muhasebe kayıtları (Geliştiriliyor)
 * Basit muhasebe kayıtlarının tutulması (Geliştiriliyor)
 * Muhasebe kayıtlarını Excel formatında rapor alabilme
+* Akademi bazında günlük ciro raporu alabilme
+* Akademi - Gün bazında ders planı raporu alabilme
+* Ders bazında fatura istemi alabilme
+* Kullanıcı oluşturulduğunda SMS ve e-posta ile kullanıcı adı, şifre bilgisi iletilmesi
 * ... geliştirilmeye devam ediliyor ...
