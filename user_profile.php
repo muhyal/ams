@@ -34,6 +34,8 @@ $admin_id = $_SESSION["admin_id"];
 $student_id = isset($_GET['student_id']) ? $_GET['student_id'] : null;
 $admin_username = $_SESSION["admin_username"];
 
+// Kullanıcı değişkenini tanımla
+$user = null;
 
 // URL parametrelerinden kullanıcı ID'sini al
 if (isset($_GET["id"])) {
@@ -44,17 +46,16 @@ if (isset($_GET["id"])) {
             CONCAT(u_created_by.first_name, ' ', u_created_by.last_name) AS created_by_name,
             CONCAT(u_updated_by.first_name, ' ', u_updated_by.last_name) AS updated_by_name,
             CONCAT(u_deleted_by.first_name, ' ', u_deleted_by.last_name) AS deleted_by_name
-          FROM users
-          LEFT JOIN users u_created_by ON users.created_by_user_id = u_created_by.id
-          LEFT JOIN users u_updated_by ON users.updated_by_user_id = u_updated_by.id
-          LEFT JOIN users u_deleted_by ON users.deleted_by_user_id = u_deleted_by.id
-          WHERE users.id = :user_id";
+         FROM users
+         LEFT JOIN users u_created_by ON users.created_by_user_id = u_created_by.id
+         LEFT JOIN users u_updated_by ON users.updated_by_user_id = u_updated_by.id
+         LEFT JOIN users u_deleted_by ON users.deleted_by_user_id = u_deleted_by.id
+         WHERE users.id = :user_id";
 
     $stmt = $db->prepare($query);
     $stmt->bindParam(":user_id", $user_id, PDO::PARAM_INT);
     $stmt->execute();
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
 
     if (!$user) {
         // Belirtilen ID'ye sahip kullanıcı yoksa, kullanıcı listesine yönlendir
@@ -219,7 +220,6 @@ require_once "admin_panel_sidebar.php";
             </ul>
         </div>
 
-
         <?php
         // Kullanıcı türüne göre içeriği belirle
         if ($user['user_type'] == 4 || $user['user_type'] == 6) {
@@ -241,22 +241,21 @@ require_once "admin_panel_sidebar.php";
             sc.course_fee,
             sc.debt_amount,
             sc.id AS course_plan_id,
-            sc.created_at, -- Eklenen kısım: created_at sütunu
-            sc.updated_at, -- Eklenen kısım: updated_at sütunu
-            CONCAT(u_created_by.first_name, ' ', u_created_by.last_name) AS created_by_name, -- Eklenen kısım: created_by_user_id'yi isimle gösterme
-            CONCAT(u_updated_by.first_name, ' ', u_updated_by.last_name) AS updated_by_name -- Eklenen kısım: updated_by_user_id'yi isimle gösterme
+            sc.created_at,
+            sc.updated_at,
+            CONCAT(u_created_by.first_name, ' ', u_created_by.last_name) AS created_by_name,
+            CONCAT(u_updated_by.first_name, ' ', u_updated_by.last_name) AS updated_by_name
         FROM
             course_plans sc
             INNER JOIN users u_teacher ON sc.teacher_id = u_teacher.id
-                INNER JOIN academies a ON sc.academy_id = a.id AND a.id IN (" . implode(",", $allowedAcademies) . ")
+            INNER JOIN academies a ON sc.academy_id = a.id AND a.id IN (" . implode(",", $allowedAcademies) . ")
             INNER JOIN academy_classes ac ON sc.class_id = ac.id
             INNER JOIN users u_student ON sc.student_id = u_student.id
             INNER JOIN courses c ON sc.course_id = c.id
-            LEFT JOIN users u_created_by ON sc.created_by_user_id = u_created_by.id -- Eklenen kısım: created_by_user_id'yi isimle eşleştirme
-            LEFT JOIN users u_updated_by ON sc.updated_by_user_id = u_updated_by.id -- Eklenen kısım: updated_by_user_id'yi isimle eşleştirme
+            LEFT JOIN users u_created_by ON sc.created_by_user_id = u_created_by.id
+            LEFT JOIN users u_updated_by ON sc.updated_by_user_id = u_updated_by.id
         WHERE
             u_student.id = :user_id OR u_teacher.id = :user_id";
-
 
                 $stmt = $db->prepare($query);
                 $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
@@ -264,27 +263,53 @@ require_once "admin_panel_sidebar.php";
 
                 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-                // Display cards in a row with four cards per row
+                // Display active and completed cards in separate rows
                 echo '<div class="row">';
-
+                echo '<div class="col-md-6"><h3>Aktif Dersler</h3>';
                 foreach ($results as $result) {
-                    // Kartın border rengini belirle
-                    if ($result['debt_amount'] == 0 && $result['course_attendance_1'] && $result['course_attendance_2'] && $result['course_attendance_3'] && $result['course_attendance_4']) {
-                        // 4 derse katıldı ve borcu yoksa: Yeşil
-                        $cardBorderStyle = 'border-success';
-                    } elseif ($result['debt_amount'] > 0) {
-                        // Borcu varsa: Kırmızı
-                        $cardBorderStyle = 'border-danger';
-                    } elseif (!$result['course_attendance_1'] || !$result['course_attendance_2'] || !$result['course_attendance_3'] || !$result['course_attendance_4']) {
-                        // 4 derse katılmamış veya borcu yoksa: Mavi
-                        $cardBorderStyle = 'border-primary';
-                    } else {
-                        // Diğer durumlar için: Gri
-                        $cardBorderStyle = 'border-gray';
+                    // Check if the last class date is more than 1 day ago
+                    if (strtotime($result['course_date_4']) < strtotime('-1 day')) {
+                        continue; // Skip to next iteration if the course is completed
                     }
 
-                    echo '
-    <div class="col-md-3 mb-5 mt-5">
+                    displayCourseCard($result);
+                }
+                echo '</div>';
+
+                echo '<div class="col-md-6"><h3>Arşivlenen Dersler</h3>';
+                foreach ($results as $result) {
+                    // Check if the last class date is not more than 1 day ago
+                    if (strtotime($result['course_date_4']) >= strtotime('-1 day')) {
+                        continue; // Skip to next iteration if the course is not completed
+                    }
+
+                    displayCourseCard($result);
+                }
+                echo '</div>';
+                echo '</div>';
+            }
+        }
+
+        function displayCourseCard($result)
+        {
+            // Kartın border rengini belirle
+            global $user;
+            if ($result['debt_amount'] == 0 && $result['course_attendance_1'] && $result['course_attendance_2'] && $result['course_attendance_3'] && $result['course_attendance_4']) {
+                // 4 derse katıldı ve borcu yoksa: Yeşil
+                $cardBorderStyle = 'border-success';
+            } elseif ($result['debt_amount'] > 0) {
+                // Borcu varsa: Kırmızı
+                $cardBorderStyle = 'border-danger';
+            } elseif (!$result['course_attendance_1'] || !$result['course_attendance_2'] || !$result['course_attendance_3'] || !$result['course_attendance_4']) {
+                // 4 derse katılmamış veya borcu yoksa: Mavi
+                $cardBorderStyle = 'border-primary';
+            } else {
+                // Diğer durumlar için: Gri
+                $cardBorderStyle = 'border-gray';
+            }
+
+            echo '
+    <div class="col-md-6 mb-5 mt-5">
         <div class="card ' . $cardBorderStyle . '">
             <div class="card-header">
                 <h6 class="card-title"><strong>' . ($user['user_type'] == 4 ? $result['student_name'] : $result['teacher_name']) . ' ile ' . $result['lesson_name'] . '</strong></h6>
@@ -297,50 +322,42 @@ require_once "admin_panel_sidebar.php";
                 <p class="card-text">3. Ders: ' . date("d.m.Y H:i", strtotime($result['course_date_3'])) . '</p>
                 <p class="card-text">4. Ders: ' . date("d.m.Y H:i", strtotime($result['course_date_4'])) . '</p>';
 
-                    for ($i = 1; $i <= 4; $i++) {
-                        echo "<p class='card-text'>{$i}. Katılım: ";
+            for ($i = 1; $i <= 4; $i++) {
+                echo "<p class='card-text'>{$i}. Katılım: ";
 
-                        if ($result["course_attendance_$i"] == 0) {
-                            echo "<i class='fas fa-calendar-check text-primary'></i>";
-                        } elseif ($result["course_attendance_$i"] == 1) {
-                            echo "<i class='fas fa-calendar-check text-success'></i>";
-                        } elseif ($result["course_attendance_$i"] == 2) {
-                            echo "<i class='fas fa-calendar-check text-danger'></i>";
-                        } elseif ($result["course_attendance_$i"] == 3) {
-                            if (isset($rescheduledId) && $rescheduledId) {
-                                // Change the icon or style for Yeniden Planla if there is a corresponding entry
-                                echo "<i class='fas fa-calendar-check text-success'></i>";
-                            } else {
-                                // Show the Yeniden Planla icon without a corresponding entry
-                                echo "<i class='fas fa-calendar-alt text-warning'></i></a>";
-                            }
-                        } else {
-                            echo "<i class='fas fa-question text-secondary'></i>";
-                        }
+                if ($result["course_attendance_$i"] == 0) {
+                    echo "<i class='fas fa-calendar-check text-primary'></i>";
+                } elseif ($result["course_attendance_$i"] == 1) {
+                    echo "<i class='fas fa-calendar-check text-success'></i>";
+                } elseif ($result["course_attendance_$i"] == 2) {
+                    echo "<i class='fas fa-calendar-check text-danger'></i>";
+                } elseif ($result["course_attendance_$i"] == 3) {
+                    // Change the icon or style for Yeniden Planla if there is a corresponding entry
+                    echo "<i class='fas fa-calendar-check text-success'></i>";
+                } else {
+                    echo "<i class='fas fa-question text-secondary'></i>";
+                }
 
-                        echo "</p>";
-                    }
+                echo "</p>";
+            }
 
-                    echo '
+            echo '
                 <p class="card-text">Ders Ücreti: ' . $result['course_fee'] . ' TL</p>
                 <p class="card-text">Borç: ' . $result['debt_amount'] . ' TL</p>
                 <p class="card-text small">Oluşturan: ' . $result['created_by_name'] . '</p>
                 <p class="card-text small">Oluşturulma: ' . date("d.m.Y H:i", strtotime($result['created_at'])) . '</p>
                 <p class="card-text small">Güncelleyen: ' . $result['updated_by_name'] . '</p>
                 <p class="card-text small">Güncellenme: ' . date("d.m.Y H:i", strtotime($result['updated_at'])) . '</p>
-<a href="edit_course_plan.php?id=' . $result['course_plan_id'] . '" class="btn btn-danger btn-sm"><i class="fas fa-pencil-alt"></i></a>
+                <a href="edit_course_plan.php?id=' . $result['course_plan_id'] . '" class="btn btn-danger btn-sm"><i class="fas fa-pencil-alt"></i></a>
                 <a href="add_payment.php?id=' . $result['course_plan_id'] . '" class="btn btn-success btn-sm"><i class="fas fa-cash-register"></i> ₺</a>
                 <a href="generate_invoice_request.php?course_plan_id=' . $result['course_plan_id'] . '" class="btn btn-success btn-sm"><i class="fas fa-file-invoice"></i></a>
                 <a href="student_certificate.php?student_id=' . $result['course_plan_id'] . '" class="btn btn-success btn-sm"><i class="fas fa-graduation-cap"></i></a>
             </div>
         </div>
     </div>';
-                }
-
-                echo '</div>';
-            }
         }
         ?>
+
 
 
 
