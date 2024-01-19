@@ -170,7 +170,7 @@ require_once "admin_panel_sidebar.php";
             </div>
         </div>
 
-        <form method="POST" action="add_rescheduled_course_plan.php?course_plan_id=<?= $selectedCoursePlanId ?>">
+        <form method="POST" action="add_rescheduled_course_plan.php">
             <input type="hidden" name="course_plan_id" value="<?= $selectedCoursePlan['id'] ?? '' ?>">
 
             <?php
@@ -237,7 +237,7 @@ require_once "admin_panel_sidebar.php";
             <div class="form-group">
                 <div class="form-group">
                     <label for="rowId">Ders Planı Seç:</label>
-                    <select class="form-control" name="rowId" required>
+                    <select class="form-control" name="course_plan_id_from_form" required>
                         <?php
                         // Ders planlarını ve öğrenci bilgilerini, öğretmen bilgilerini ve ders adlarını çek
                         $selectPlansQuery = "SELECT cp.id, cp.course_fee, cp.debt_amount, cp.course_date_1, cp.course_date_2, cp.course_date_3, cp.course_date_4,
