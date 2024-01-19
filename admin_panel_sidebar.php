@@ -198,25 +198,25 @@
                     </h6>
                     <ul class="nav flex-column mb-auto">
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center gap-2" href="general_course_plans_report_for_the_current_month.php?generate_report">
+                            <a class="nav-link d-flex align-items-center gap-2" href="reports/general_course_plans_report_for_the_current_month.php?generate_report">
                                 <svg class="bi"><use xlink:href="#file-earmark-text"/></svg>
                                 Bu Ayın Ders Planları
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center gap-2" href="general_course_plans_report_for_last_month.php?generate_report">
+                            <a class="nav-link d-flex align-items-center gap-2" href="reports/general_course_plans_report_for_last_month.php?generate_report">
                                 <svg class="bi"><use xlink:href="#file-earmark-text"/></svg>
                                 Geçen Ayın Ders Planları
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center gap-2" href="general_accounting_report_for_the_current_month.php?generate_report">
+                            <a class="nav-link d-flex align-items-center gap-2" href="reports/general_accounting_report_for_the_current_month.php?generate_report">
                                 <svg class="bi"><use xlink:href="#file-earmark-text"/></svg>
                                 Bu Ayın Genel Raporu
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center gap-2" href="general_accounting_report_for_last_month.php?generate_report">
+                            <a class="nav-link d-flex align-items-center gap-2" href="reports/general_accounting_report_for_last_month.php?generate_report">
                                 <svg class="bi"><use xlink:href="#file-earmark-text"/></svg>
                                 Geçen Ayın Genel Raporu
                             </a>

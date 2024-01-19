@@ -1,6 +1,6 @@
 <?php
 global $showErrors, $db;
-require 'vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -13,21 +13,19 @@ if (!isset($_SESSION["admin_id"])) {
     exit();
 }
 
-require_once "db_connection.php";
-require_once "config.php";
+require __DIR__ . '/../db_connection.php';
+require __DIR__ . '/../config.php';
 
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
 
-// Bugünün tarihini al
-$currentDate = date('d-m-Y');
+// Bir önceki ayın ilk ve son gününü al
+$firstDayOfLastMonth = date('Y-m-01', strtotime('-1 month'));
+$lastDayOfLastMonth = date('Y-m-t', strtotime('-1 month'));
 
 // Rapor alma işlemi
 if (isset($_GET["generate_report"])) {
-    $start_date = date('Y-m-01');
-    $end_date = date('Y-m-d');
-
     // Akademileri getir
     $academiesSql = "SELECT * FROM academies";
     $stmtAcademies = $db->prepare($academiesSql);
@@ -51,22 +49,21 @@ if (isset($_GET["generate_report"])) {
 
         // Bu tarih aralığındaki alınan ödemeleri getir
         $sql = "
-    SELECT
-        academies.name AS academy_name,
-        SUM(accounting.amount) AS total_amount
-    FROM accounting
-    INNER JOIN course_plans ON accounting.course_plan_id = course_plans.id
-    INNER JOIN academies ON course_plans.academy_id = academies.id
-    WHERE academies.id = :academy_id
-    AND accounting.payment_date BETWEEN :start_date AND :end_date
-    GROUP BY academies.id
-";
-
+            SELECT
+                academies.name AS academy_name,
+                SUM(accounting.amount) AS total_amount
+            FROM accounting
+            INNER JOIN course_plans ON accounting.course_plan_id = course_plans.id
+            INNER JOIN academies ON course_plans.academy_id = academies.id
+            WHERE academies.id = :academy_id
+            AND accounting.payment_date BETWEEN :start_date AND :end_date
+            GROUP BY academies.id
+        ";
 
         $stmt = $db->prepare($sql);
         $stmt->bindParam(":academy_id", $academy['id'], PDO::PARAM_INT);
-        $stmt->bindParam(":start_date", $start_date, PDO::PARAM_STR);
-        $stmt->bindParam(":end_date", $end_date, PDO::PARAM_STR);
+        $stmt->bindParam(":start_date", $firstDayOfLastMonth, PDO::PARAM_STR);
+        $stmt->bindParam(":end_date", $lastDayOfLastMonth, PDO::PARAM_STR);
         $stmt->execute();
         $reportData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -84,30 +81,28 @@ if (isset($_GET["generate_report"])) {
         $sheet->setCellValue('G1', 'Ödeme Tutarı');
         $sheet->setCellValue('H1', 'Ödeme Yöntemi');
 
-// Öğrenci Detayları için sorgu
+        // Öğrenci Detayları için sorgu
         $studentDetailSql = "
-    SELECT
-        CONCAT(users.first_name, ' ', users.last_name) AS student_name,
-        courses.course_name,
-        accounting.payment_date AS payment_date,
-        accounting.amount AS payment_amount,
-        accounting.payment_method
-    FROM accounting
-    INNER JOIN course_plans ON accounting.course_plan_id = course_plans.id
-    INNER JOIN academies ON course_plans.academy_id = academies.id
-    INNER JOIN users ON course_plans.student_id = users.id
-    INNER JOIN courses ON course_plans.course_id = courses.id
-    WHERE academies.id = :academy_id
-    AND accounting.payment_date BETWEEN :start_date AND :end_date
-    AND users.user_type = 6
-";
-
-
+            SELECT
+                CONCAT(users.first_name, ' ', users.last_name) AS student_name,
+                courses.course_name,
+                accounting.payment_date AS payment_date,
+                accounting.amount AS payment_amount,
+                accounting.payment_method
+            FROM accounting
+            INNER JOIN course_plans ON accounting.course_plan_id = course_plans.id
+            INNER JOIN academies ON course_plans.academy_id = academies.id
+            INNER JOIN users ON course_plans.student_id = users.id
+            INNER JOIN courses ON course_plans.course_id = courses.id
+            WHERE academies.id = :academy_id
+            AND accounting.payment_date BETWEEN :start_date AND :end_date
+            AND users.user_type = 6
+        ";
 
         $stmtStudentDetail = $db->prepare($studentDetailSql);
         $stmtStudentDetail->bindParam(":academy_id", $academy['id'], PDO::PARAM_INT);
-        $stmtStudentDetail->bindParam(":start_date", $start_date, PDO::PARAM_STR);
-        $stmtStudentDetail->bindParam(":end_date", $end_date, PDO::PARAM_STR);
+        $stmtStudentDetail->bindParam(":start_date", $firstDayOfLastMonth, PDO::PARAM_STR);
+        $stmtStudentDetail->bindParam(":end_date", $lastDayOfLastMonth, PDO::PARAM_STR);
         $stmtStudentDetail->execute();
         $studentDetailData = $stmtStudentDetail->fetchAll(PDO::FETCH_ASSOC);
 
@@ -146,7 +141,7 @@ if (isset($_GET["generate_report"])) {
 
     // Excel dosyasını indir
     header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    header('Content-Disposition: attachment;filename="bu_ayin_genel_akademiler_raporu.xlsx"');
+    header('Content-Disposition: attachment;filename="gecen_ayin_genel_akademiler_raporu.xlsx"');
     header('Cache-Control: max-age=0');
 
     $writer = new Xlsx($spreadsheet);
@@ -172,8 +167,8 @@ require_once "admin_panel_header.php";
             <?php endif; ?>
 
             <!-- Rapor Alma Formu -->
-            <h5>Bu Ayın Genel Raporunu Al</h5>
-            <a href="general_accounting_report_for_the_current_month.php?generate_report" class="btn btn-primary" target="_blank">Raporu İndir</a>
+            <h5>Geçen Ayın Genel Raporunu Al</h5>
+            <a href="general_accounting_report_for_last_month.php?generate_report" class="btn btn-primary" target="_blank">Raporu İndir</a>
 
             <?php require_once "footer.php"; ?>
         </main>

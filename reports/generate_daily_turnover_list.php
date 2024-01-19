@@ -23,21 +23,19 @@ global $db, $showErrors, $siteName, $siteShortName, $siteUrl;
 session_start();
 session_regenerate_id(true);
 
-// Oturum kontrolü
+require __DIR__ . '/../vendor/autoload.php';
+
 if (!isset($_SESSION["admin_id"])) {
     header("Location: admin_login.php"); // Giriş sayfasına yönlendir
     exit();
 }
 
-require_once "db_connection.php";
-require_once "config.php";
+require __DIR__ . '/../db_connection.php';
+require __DIR__ . '/../config.php';
 
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
-
-require 'vendor/autoload.php';
-require_once('db_connection.php');
 
 use Dompdf\Dompdf;
 use Dompdf\Options;

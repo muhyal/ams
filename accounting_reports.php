@@ -228,7 +228,7 @@ require_once "admin_panel_header.php";
                     <h5>Bu Ayın Genel Raporunu Al</h5>
                 </div>
                 <div class="card-body">
-                    <a href="general_accounting_report_for_the_current_month.php?generate_report" class="btn btn-primary" target="_blank">Raporu İndir</a>
+                    <a href="reports/general_accounting_report_for_the_current_month.php?generate_report" class="btn btn-primary" target="_blank">Raporu İndir</a>
                 </div>
             </div>
 
@@ -237,7 +237,7 @@ require_once "admin_panel_header.php";
                     <h5>Geçen Ayın Genel Raporunu Al</h5>
                 </div>
                 <div class="card-body">
-                    <a href="general_accounting_report_for_last_month.php?generate_report" class="btn btn-primary" target="_blank">Raporu İndir</a>
+                    <a href="reports/general_accounting_report_for_last_month.php?generate_report" class="btn btn-primary" target="_blank">Raporu İndir</a>
                 </div>
             </div>
 

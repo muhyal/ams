@@ -319,7 +319,7 @@ require_once "admin_panel_header.php";
                              generatedPasswordInput.value = xhr.responseText;
                          }
                      };
-                     xhr.open("GET", "generate_password.php", true);
+                     xhr.open("GET", "src/generate_password.php", true);
                      xhr.send();
                  }
              </script>
