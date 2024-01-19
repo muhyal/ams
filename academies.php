@@ -139,6 +139,9 @@ if (isset($_GET["edit"])) {
     $editAcademy = $editStmt->fetch(PDO::FETCH_ASSOC);
 }
 ?>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/pikaday/css/pikaday.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pikaday/pikaday.js"></script>
 <?php
 require_once "admin_panel_header.php";
 ?>
@@ -167,8 +170,14 @@ require_once "admin_panel_header.php";
                                         <p class="card-text">
                                             <?php echo $academy["city"] . ', ' . $academy["district"]; ?>
                                         </p>
-                                        <a href="?edit=<?php echo $academy["id"]; ?>" class="btn btn-warning btn-sm">Düzenle</a>
-                                        <button class="btn btn-danger btn-sm" onclick="confirmDelete(<?php echo $academy['id']; ?>)">Sil</button>
+                                        <a href="?edit=<?php echo $academy["id"]; ?>" class="btn btn-warning btn-sm">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+
+                                        <button class="btn btn-danger btn-sm" onclick="confirmDelete(<?php echo $academy['id']; ?>)">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                        <a href="#" id="datepicker-<?php echo $academy["id"]; ?>" class="btn btn-primary btn-sm"><i class="fa fa-calendar-day"></i> Ciro Raporu</a>
 
                                         <!-- Öğretmenler -->
                                         <?php
@@ -367,6 +376,31 @@ if (isset($_GET["edit"])) {
                     document.getElementById('teachersHeader').style.display = 'block';
                     document.getElementById('teachersList').style.display = 'block';
                 }
+            </script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    <?php foreach ($academies as $academy): ?>
+                    // Initialize Pikaday date picker for each academy
+                    var picker_<?php echo $academy["id"]; ?> = new Pikaday({
+                        field: document.getElementById('datepicker-<?php echo $academy["id"]; ?>'),
+                        format: 'YYYY-MM-DD',
+                        onSelect: function (date) {
+                            // Format the selected date
+                            var formattedDate = moment(date).format('YYYY-MM-DD');
+
+                            // Get the academy_id from the existing URL
+                            var academyId = <?php echo $academy["id"]; ?>;
+
+                            // Build the new URL with the selected date
+                            var newUrl = 'generate_daily_turnover_list.php?academy_id=' + academyId + '&date=' + formattedDate;
+
+                            // Redirect to the new URL
+                            window.location.href = newUrl;
+                        }
+                    });
+                    <?php endforeach; ?>
+                });
+
             </script>
 
         </main>
