@@ -40,10 +40,15 @@ $adminLastName = $_SESSION['admin_last_name'];
     <meta name="robots" content="noindex, nofollow" />
     <meta name="author" content="Muhammed Yalçınkaya">
     <meta name="generator" content="<?php echo $siteShortName ?> - <?php echo $oimVersion ?>">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="./assets/js/color-modes.js"></script>
-    <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="./assets/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+
 
     <link href="./assets/css/dashboard.css" rel="stylesheet">
     <style>
