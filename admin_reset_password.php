@@ -17,43 +17,59 @@
  *
  * You should have received a copy of the GNU Affero General Public License, version 3,
  * along with this program. If not, see <http://www.gnu.org/licenses/>
- *
  */
-global $resetPasswordDescription, $db, $showErrors, $siteName, $siteShortName, $siteUrl, $config;
-require_once "db_connection.php";
-require_once "config.php";
-// Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
-$showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
-$showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 
+global $resetPasswordDescription, $db, $showErrors, $siteName, $siteShortName, $siteUrl, $config;
+
+require_once "db_connection.php";
+require_once "config.php";
 require 'vendor/autoload.php';
+
+// Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
+$showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
+$showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
 
 if (isset($_POST["reset_request"])) {
     // Şifre sıfırlama talebi gönderildiğinde
-    $email = $_POST["email"];
+    $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
+
+    if ($email === false) {
+        die("Geçersiz e-posta adresi.");
+    }
 
     // Veritabanında admini e-posta adresine göre ara
-    $query = "SELECT * FROM admins WHERE email = ?";
+    $query = "SELECT * FROM users WHERE email = ?";
     $stmt = $db->prepare($query);
     $stmt->execute([$email]);
     $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($admin) {
-
         // Şifre sıfırlama için token oluştur
         $token = bin2hex(random_bytes(32));
         $tokenExpiry = date("Y-m-d H:i:s", strtotime("+1 hour"));
 
         // Token'ı ve süresini veritabanına kaydet
-        $updateQuery = "UPDATE admins SET reset_token = ?, reset_token_expiry = ? WHERE id = ?";
+        $updateQuery = "UPDATE users SET reset_token = ?, reset_token_expiry = ? WHERE id = ?";
         $updateStmt = $db->prepare($updateQuery);
         $updateStmt->execute([$token, $tokenExpiry, $admin["id"]]);
 
         // Token ile şifre sıfırlama bağlantısı oluştur
         $resetLink = "admin_reset_password.php?token=" . $token;
+
+        // reCAPTCHA token'ını alma
+        $recaptchaToken = $_POST['recaptcha_response'] ?? '';
+
+        // reCAPTCHA doğrulama
+        $recaptchaVerify = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=" . RECAPTCHA_SECRET_KEY . "&response={$recaptchaToken}");
+        $recaptchaResponse = json_decode($recaptchaVerify);
+
+        // reCAPTCHA doğrulaması başarısızsa işlemi reddet
+        if (!$recaptchaResponse->success) {
+            die("reCAPTCHA doğrulaması başarısız. İşlem reddedildi.");
+        }
 
         // E-posta gönderme işlemi
         $mail = new PHPMailer(true);
@@ -75,7 +91,7 @@ if (isset($_POST["reset_request"])) {
 
             $mail->isHTML(true);
             $mail->Subject = '=?UTF-8?B?' . base64_encode('Yönetici Şifre Sıfırlama Talebi') . '?='; // Encode subject in UTF-8
-            $mail->Body    = "Merhaba, eğer bu şifre sıfırlama isteğini siz talep ettiyseniz, <a href='$siteUrl/$resetLink'>şifrenizi sıfırlamak için tıklayın</a>. Siz talep etmediyseniz farklı bir işlem yapmanız gerekmeyecektir.";
+            $mail->Body = "Merhaba, eğer bu şifre sıfırlama isteğini siz talep ettiyseniz, <a href='$siteUrl/$resetLink'>şifrenizi sıfırlamak için tıklayın</a>. Siz talep etmediyseniz farklı bir işlem yapmanız gerekmeyecektir.";
 
             $mail->send();
 
@@ -86,13 +102,16 @@ if (isset($_POST["reset_request"])) {
     } else {
         echo "Bu e-posta adresine sahip bir yönetici bulunamadı.";
     }
-
 } elseif (isset($_GET["token"])) {
     // Token ile gelen şifre sıfırlama isteği
-    $token = $_GET["token"];
+    $token = filter_input(INPUT_GET, 'token', FILTER_SANITIZE_STRING);
+
+    if ($token === false) {
+        die("Geçersiz token.");
+    }
 
     // Token'ın geçerliliğini kontrol et
-    $query = "SELECT * FROM admins WHERE reset_token = ? AND reset_token_expiry >= NOW()";
+    $query = "SELECT * FROM users WHERE reset_token = ? AND reset_token_expiry >= NOW()";
     $stmt = $db->prepare($query);
     $stmt->execute([$token]);
     $admin = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -100,11 +119,16 @@ if (isset($_POST["reset_request"])) {
     if ($admin) {
         // Form gönderildiğinde yeni şifreyi güncelle
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            $newPassword = $_POST["new_password"];
+            $newPassword = filter_input(INPUT_POST, 'new_password', FILTER_SANITIZE_STRING);
+
+            if ($newPassword === false) {
+                die("Geçersiz şifre.");
+            }
+
             $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
 
             // Şifreyi güncelle
-            $updateQuery = "UPDATE admins SET password = ?, reset_token = NULL, reset_token_expiry = NULL WHERE id = ?";
+            $updateQuery = "UPDATE users SET password = ?, reset_token = NULL, reset_token_expiry = NULL WHERE id = ?";
             $updateStmt = $db->prepare($updateQuery);
             $updateStmt->execute([$hashedPassword, $admin["id"]]);
 
@@ -128,6 +152,10 @@ if (isset($_POST["reset_request"])) {
                     <div class="mb-3">
                         <label for="email" class="form-label">E-posta:</label>
                         <input type="email" id="email" name="email" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <!-- reCAPTCHA v3 için gizli alan -->
+                        <input type="hidden" name="recaptcha_response" id="recaptcha_response">
                     </div>
                     <div class="form-group mt-3">
                         <button class="btn btn-primary w-100 py-2" name="reset_request" type="submit">

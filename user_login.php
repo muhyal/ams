@@ -18,18 +18,17 @@
  * You should have received a copy of the GNU Affero General Public License, version 3,
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
-global $db, $showErrors;
+global $showErrors, $db;
+require_once "db_connection.php";
+require_once "config.php";
+
 // Oturum kontrolü
 session_start();
 session_regenerate_id(true);
 
-require_once "db_connection.php";
-
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
-require_once "config.php";
-
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // reCAPTCHA token'ını alma
@@ -39,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $recaptchaVerify = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=" . RECAPTCHA_SECRET_KEY . "&response={$recaptchaToken}");
     $recaptchaResponse = json_decode($recaptchaVerify);
 
-    // reCAPTCHA doğrulaması başarılı değilse işlemi reddet
+    // reCAPTCHA doğrulaması başarısızsa işlemi reddet
     if (!$recaptchaResponse->success) {
         die("reCAPTCHA doğrulaması başarısız. İşlem reddedildi.");
     }
@@ -58,11 +57,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Check if the identifier is a valid email format
-    if (filter_var($identifier, FILTER_VALIDATE_EMAIL)) {
-        $query = "SELECT * FROM users WHERE email = ?";
-    } else {
-        $query = "SELECT * FROM users WHERE username = ?";
-    }
+    $column = filter_var($identifier, FILTER_VALIDATE_EMAIL) ? "email" : "username";
+    $query = "SELECT * FROM users WHERE $column = ?";
 
     try {
         $stmt = $db->prepare($query);
@@ -133,7 +129,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </a>
         </div>
     </form>
-
 </main>
 
 <?php require_once "footer.php"; ?>
