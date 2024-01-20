@@ -44,12 +44,13 @@ $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 
 // Form işleme
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $new_username = $_POST["new_username"];
-    $new_first_name = $_POST["new_first_name"];
-    $new_last_name = $_POST["new_last_name"];
-    $new_phone = $_POST["new_phone"];
-    $new_email = $_POST["new_email"];
-    $new_password = $_POST["new_password"];
+    $new_username = htmlspecialchars($_POST["new_username"], ENT_QUOTES, 'UTF-8');
+    $new_first_name = htmlspecialchars($_POST["new_first_name"], ENT_QUOTES, 'UTF-8');
+    $new_last_name = htmlspecialchars($_POST["new_last_name"], ENT_QUOTES, 'UTF-8');
+    $new_phone = htmlspecialchars($_POST["new_phone"], ENT_QUOTES, 'UTF-8');
+    $new_email = htmlspecialchars($_POST["new_email"], ENT_QUOTES, 'UTF-8');
+    $new_password = htmlspecialchars($_POST["new_password"], ENT_QUOTES, 'UTF-8');
+
 
     // Şifre güncelleme kontrolü
     if (!empty($new_password)) {

@@ -33,12 +33,13 @@ if (!isset($_SESSION["user_id"])) {
 
 // Formdan gelen veriler alınır ve güncelleme işlemi yapılır
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $user_id = $_SESSION["user_id"];
-    $first_name = $_POST["first_name"];
-    $last_name = $_POST["last_name"];
-    $email = $_POST["email"];
-    $tc_identity = $_POST["tc_identity"];
-    $phone = $_POST["phone"];
+    $user_id = htmlspecialchars($_SESSION["user_id"], ENT_QUOTES, 'UTF-8');
+    $first_name = htmlspecialchars($_POST["first_name"], ENT_QUOTES, 'UTF-8');
+    $last_name = htmlspecialchars($_POST["last_name"], ENT_QUOTES, 'UTF-8');
+    $email = htmlspecialchars($_POST["email"], ENT_QUOTES, 'UTF-8');
+    $tc_identity = htmlspecialchars($_POST["tc_identity"], ENT_QUOTES, 'UTF-8');
+    $phone = htmlspecialchars($_POST["phone"], ENT_QUOTES, 'UTF-8');
+
 
     // Güncelleme sorgusu hazırlanır
     $query = "UPDATE users SET first_name = ?, last_name = ?, email = ?, tc_identity = ?, phone = ? WHERE id = ?";

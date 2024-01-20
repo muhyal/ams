@@ -48,9 +48,10 @@ $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_er
 // Ders ekleme işlemi
 if (isset($_POST["add_course"])) {
     checkPermission(); // Yetki kontrolü
-    $courseName = $_POST["course_name"];
-    $courseCode = $_POST["course_code"];
-    $courseDescription = $_POST["description"];
+    $courseName = htmlspecialchars($_POST["course_name"], ENT_QUOTES, 'UTF-8');
+    $courseCode = htmlspecialchars($_POST["course_code"], ENT_QUOTES, 'UTF-8');
+    $courseDescription = htmlspecialchars($_POST["description"], ENT_QUOTES, 'UTF-8');
+
 
     $query = "INSERT INTO courses (course_name, course_code, description) VALUES (?, ?, ?)";
     $stmt = $db->prepare($query);
@@ -60,10 +61,11 @@ if (isset($_POST["add_course"])) {
 // Ders düzenleme işlemi
 if (isset($_POST["edit_course"])) {
     checkPermission(); // Yetki kontrolü
-    $id = $_POST["id"];
-    $courseName = $_POST["course_name"];
-    $courseCode = $_POST["course_code"];
-    $courseDescription = $_POST["description"];
+    $id = htmlspecialchars($_POST["id"], ENT_QUOTES, 'UTF-8');
+    $courseName = htmlspecialchars($_POST["course_name"], ENT_QUOTES, 'UTF-8');
+    $courseCode = htmlspecialchars($_POST["course_code"], ENT_QUOTES, 'UTF-8');
+    $courseDescription = htmlspecialchars($_POST["description"], ENT_QUOTES, 'UTF-8');
+
 
     $query = "UPDATE courses SET course_name = ?, course_code = ?, description = ? WHERE id = ?";
     $stmt = $db->prepare($query);

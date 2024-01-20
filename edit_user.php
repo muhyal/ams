@@ -99,30 +99,32 @@ if (isset($_GET["id"])) {
 
 // Form gönderildiğinde güncelleme işlemini gerçekleştirin
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Formdan gelen verileri alın
-    $username = $_POST["username"];
-    $tc_identity = $_POST["tc_identity"];
-    $first_name = isset($_POST["first_name"]) ? $_POST["first_name"] : "";
-    $last_name = isset($_POST["last_name"]) ? $_POST["last_name"] : "";
-    $email = $_POST["email"];
-    $phone = $_POST["phone"];
-    $birth_date = $_POST["birth_date"];
-    $city = $_POST["city"];
-    $district = $_POST["district"];
-    $blood_type = $_POST["blood_type"];
-    $health_issue = $_POST["health_issue"];
-    $emergency_contact = $_POST["emergency_contact"];
-    $emergency_phone = $_POST["emergency_phone"];
-    $new_password = $_POST["new_password"];
-    $user_type = $_POST["user_type"];
-    $notes = $_POST["notes"];
-    $is_active = $_POST["is_active"];
-    // Kurumsal bilgileri alın
-    $invoice_type = isset($_POST["invoice_type"]) ? $_POST["invoice_type"] : "";
-    $tax_company_name = isset($_POST["tax_company_name"]) ? $_POST["tax_company_name"] : "";
-    $tax_office = isset($_POST["tax_office"]) ? $_POST["tax_office"] : "";
-    $tax_number = isset($_POST["tax_number"]) ? $_POST["tax_number"] : "";
-    $country = isset($_POST["country"]) ? $_POST["country"] : "";
+    // Formdan gelen verileri güvenli bir şekilde alın
+    $username = htmlspecialchars($_POST["username"], ENT_QUOTES, 'UTF-8');
+    $tc_identity = htmlspecialchars($_POST["tc_identity"], ENT_QUOTES, 'UTF-8');
+    $first_name = isset($_POST["first_name"]) ? htmlspecialchars($_POST["first_name"], ENT_QUOTES, 'UTF-8') : "";
+    $last_name = isset($_POST["last_name"]) ? htmlspecialchars($_POST["last_name"], ENT_QUOTES, 'UTF-8') : "";
+    $email = htmlspecialchars($_POST["email"], ENT_QUOTES, 'UTF-8');
+    $phone = htmlspecialchars($_POST["phone"], ENT_QUOTES, 'UTF-8');
+    $birth_date = htmlspecialchars($_POST["birth_date"], ENT_QUOTES, 'UTF-8');
+    $city = htmlspecialchars($_POST["city"], ENT_QUOTES, 'UTF-8');
+    $district = htmlspecialchars($_POST["district"], ENT_QUOTES, 'UTF-8');
+    $blood_type = htmlspecialchars($_POST["blood_type"], ENT_QUOTES, 'UTF-8');
+    $health_issue = htmlspecialchars($_POST["health_issue"], ENT_QUOTES, 'UTF-8');
+    $emergency_contact = htmlspecialchars($_POST["emergency_contact"], ENT_QUOTES, 'UTF-8');
+    $emergency_phone = htmlspecialchars($_POST["emergency_phone"], ENT_QUOTES, 'UTF-8');
+    $new_password = htmlspecialchars($_POST["new_password"], ENT_QUOTES, 'UTF-8');
+    $user_type = htmlspecialchars($_POST["user_type"], ENT_QUOTES, 'UTF-8');
+    $notes = htmlspecialchars($_POST["notes"], ENT_QUOTES, 'UTF-8');
+    $is_active = htmlspecialchars($_POST["is_active"], ENT_QUOTES, 'UTF-8');
+
+// Kurumsal bilgileri güvenli bir şekilde alın
+    $invoice_type = isset($_POST["invoice_type"]) ? htmlspecialchars($_POST["invoice_type"], ENT_QUOTES, 'UTF-8') : "";
+    $tax_company_name = isset($_POST["tax_company_name"]) ? htmlspecialchars($_POST["tax_company_name"], ENT_QUOTES, 'UTF-8') : "";
+    $tax_office = isset($_POST["tax_office"]) ? htmlspecialchars($_POST["tax_office"], ENT_QUOTES, 'UTF-8') : "";
+    $tax_number = isset($_POST["tax_number"]) ? htmlspecialchars($_POST["tax_number"], ENT_QUOTES, 'UTF-8') : "";
+    $country = isset($_POST["country"]) ? htmlspecialchars($_POST["country"], ENT_QUOTES, 'UTF-8') : "";
+
 
     // Güncelleme sorgusunu oluşturun
     $updateQuery = "UPDATE users SET 

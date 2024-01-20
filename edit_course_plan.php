@@ -42,19 +42,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $rowId = $_POST["rowId"]; // Eğer rowId POST ile gönderiliyorsa
 
     try {
-        $academyId = $_POST["academyId"];
-        $courseId = $_POST["courseId"];
-        $classId = $_POST["classId"];
-        $teacherId = $_POST["teacherId"];
-        $studentId = $_POST["studentId"];
-        $courseDate1 = $_POST["courseDate1"];
-        $courseDate2 = $_POST["courseDate2"];
-        $courseDate3 = $_POST["courseDate3"];
-        $courseDate4 = $_POST["courseDate4"];
-        $attendance1 = $_POST["attendance1"];
-        $attendance2 = $_POST["attendance2"];
-        $attendance3 = $_POST["attendance3"];
-        $attendance4 = $_POST["attendance4"];
+        $academyId = htmlspecialchars($_POST["academyId"], ENT_QUOTES, 'UTF-8');
+        $courseId = htmlspecialchars($_POST["courseId"], ENT_QUOTES, 'UTF-8');
+        $classId = htmlspecialchars($_POST["classId"], ENT_QUOTES, 'UTF-8');
+        $teacherId = htmlspecialchars($_POST["teacherId"], ENT_QUOTES, 'UTF-8');
+        $studentId = htmlspecialchars($_POST["studentId"], ENT_QUOTES, 'UTF-8');
+        $courseDate1 = htmlspecialchars($_POST["courseDate1"], ENT_QUOTES, 'UTF-8');
+        $courseDate2 = htmlspecialchars($_POST["courseDate2"], ENT_QUOTES, 'UTF-8');
+        $courseDate3 = htmlspecialchars($_POST["courseDate3"], ENT_QUOTES, 'UTF-8');
+        $courseDate4 = htmlspecialchars($_POST["courseDate4"], ENT_QUOTES, 'UTF-8');
+        $attendance1 = htmlspecialchars($_POST["attendance1"], ENT_QUOTES, 'UTF-8');
+        $attendance2 = htmlspecialchars($_POST["attendance2"], ENT_QUOTES, 'UTF-8');
+        $attendance3 = htmlspecialchars($_POST["attendance3"], ENT_QUOTES, 'UTF-8');
+        $attendance4 = htmlspecialchars($_POST["attendance4"], ENT_QUOTES, 'UTF-8');
+
 
         // Kullanıcı bilgilerini al
         $loggedInUserId = $_SESSION["admin_id"];

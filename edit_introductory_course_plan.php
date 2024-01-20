@@ -42,15 +42,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $rowId = $_POST["rowId"]; // Eğer rowId POST ile gönderiliyorsa
 
     try {
-        $academyId = $_POST["academyId"];
-        $courseId = $_POST["courseId"];
-        $classId = $_POST["classId"];
-        $teacherId = $_POST["teacherId"];
-        $studentId = $_POST["studentId"];
-        $courseDate1 = $_POST["courseDate"];
-        $attendance1 = $_POST["attendance"];
-        $updatedByUserId = $_SESSION["admin_id"];
-        $updatedAt = date("Y-m-d H:i:s");
+        $academyId = htmlspecialchars($_POST["academyId"], ENT_QUOTES, 'UTF-8');
+        $courseId = htmlspecialchars($_POST["courseId"], ENT_QUOTES, 'UTF-8');
+        $classId = htmlspecialchars($_POST["classId"], ENT_QUOTES, 'UTF-8');
+        $teacherId = htmlspecialchars($_POST["teacherId"], ENT_QUOTES, 'UTF-8');
+        $studentId = htmlspecialchars($_POST["studentId"], ENT_QUOTES, 'UTF-8');
+        $courseDate1 = htmlspecialchars($_POST["courseDate"], ENT_QUOTES, 'UTF-8');
+        $attendance1 = htmlspecialchars($_POST["attendance"], ENT_QUOTES, 'UTF-8');
+        $updatedByUserId = htmlspecialchars($_SESSION["admin_id"], ENT_QUOTES, 'UTF-8');
+        $updatedAt = htmlspecialchars(date("Y-m-d H:i:s"), ENT_QUOTES, 'UTF-8');
 
         // Veritabanında güncelleme sorgusunu hazırlayın
         $updateQuery = "UPDATE introductory_course_plans SET 

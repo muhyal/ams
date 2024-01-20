@@ -67,14 +67,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (isset($_POST["add_academy"])) {
         // Akademi ekleme işlemi
-        $name = $_POST["name"];
-        $phone_number = $_POST["phone_number"];
-        $mobile_number = $_POST["mobile_number"];
-        $city = $_POST["city"];
-        $district = $_POST["district"];
-        $address = $_POST["address"];
-        $email = $_POST["email"];
-        $working_hours = $_POST["working_hours"];
+        $name = htmlspecialchars($_POST["name"], ENT_QUOTES, 'UTF-8');
+        $phone_number = htmlspecialchars($_POST["phone_number"], ENT_QUOTES, 'UTF-8');
+        $mobile_number = htmlspecialchars($_POST["mobile_number"], ENT_QUOTES, 'UTF-8');
+        $city = htmlspecialchars($_POST["city"], ENT_QUOTES, 'UTF-8');
+        $district = htmlspecialchars($_POST["district"], ENT_QUOTES, 'UTF-8');
+        $address = htmlspecialchars($_POST["address"], ENT_QUOTES, 'UTF-8');
+        $email = htmlspecialchars($_POST["email"], ENT_QUOTES, 'UTF-8');
+        $working_hours = htmlspecialchars($_POST["working_hours"], ENT_QUOTES, 'UTF-8');
+
 
         $query = "INSERT INTO academies (name, phone_number, mobile_number, city, district, address, email, working_hours)
                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -83,14 +84,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } elseif (isset($_POST["edit_academy"])) {
         // Akademi düzenleme işlemi
         $academyId = $_POST["academy_id"];
-        $name = $_POST["name"];
-        $phone_number = $_POST["phone_number"];
-        $mobile_number = $_POST["mobile_number"];
-        $city = $_POST["city"];
-        $district = $_POST["district"];
-        $address = $_POST["address"];
-        $email = $_POST["email"];
-        $working_hours = $_POST["working_hours"];
+        $name = htmlspecialchars($_POST["name"], ENT_QUOTES, 'UTF-8');
+        $phone_number = htmlspecialchars($_POST["phone_number"], ENT_QUOTES, 'UTF-8');
+        $mobile_number = htmlspecialchars($_POST["mobile_number"], ENT_QUOTES, 'UTF-8');
+        $city = htmlspecialchars($_POST["city"], ENT_QUOTES, 'UTF-8');
+        $district = htmlspecialchars($_POST["district"], ENT_QUOTES, 'UTF-8');
+        $address = htmlspecialchars($_POST["address"], ENT_QUOTES, 'UTF-8');
+        $email = htmlspecialchars($_POST["email"], ENT_QUOTES, 'UTF-8');
+        $working_hours = htmlspecialchars($_POST["working_hours"], ENT_QUOTES, 'UTF-8');
         $query = "UPDATE academies 
                   SET name = ?, phone_number = ?, mobile_number = ?, city = ?, district = ?, address = ?, email = ?, working_hours = ?
                   WHERE id = ?";

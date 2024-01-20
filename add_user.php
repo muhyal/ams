@@ -59,30 +59,30 @@ function generateVerificationCode() {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = isset($_POST["username"]) ? $_POST["username"] : "";
-    $tc_identity = isset($_POST["tc_identity"]) ? $_POST["tc_identity"] : "";
-    $first_name = isset($_POST["first_name"]) ? $_POST["first_name"] : "";
-    $last_name = isset($_POST["last_name"]) ? $_POST["last_name"] : "";
-    $email = isset($_POST["email"]) ? $_POST["email"] : "";
-    $phone = isset($_POST["phone"]) ? $_POST["phone"] : "";
-    $birth_date = isset($_POST["birth_date"]) ? $_POST["birth_date"] : "";
-    $city = isset($_POST["city"]) ? $_POST["city"] : "";
-    $district = isset($_POST["district"]) ? $_POST["district"] : "";
-    $blood_type = isset($_POST["blood_type"]) ? $_POST["blood_type"] : "";
-    $health_issue = isset($_POST["health_issue"]) ? $_POST["health_issue"] : "";
-    $emergency_contact = isset($_POST["emergency_contact"]) ? $_POST["emergency_contact"] : "";
-    $emergency_phone = isset($_POST["emergency_phone"]) ? $_POST["emergency_phone"] : "";
-    $countryCode = isset($_POST["country"]) ? $_POST["country"] : "";
-    $phoneNumber = isset($_POST["phone"]) ? $_POST["phone"] : "";
+    $username = isset($_POST["username"]) ? htmlspecialchars($_POST["username"]) : "";
+    $tc_identity = isset($_POST["tc_identity"]) ? htmlspecialchars($_POST["tc_identity"]) : "";
+    $first_name = isset($_POST["first_name"]) ? htmlspecialchars($_POST["first_name"]) : "";
+    $last_name = isset($_POST["last_name"]) ? htmlspecialchars($_POST["last_name"]) : "";
+    $email = isset($_POST["email"]) ? htmlspecialchars($_POST["email"]) : "";
+    $phone = isset($_POST["phone"]) ? htmlspecialchars($_POST["phone"]) : "";
+    $birth_date = isset($_POST["birth_date"]) ? htmlspecialchars($_POST["birth_date"]) : "";
+    $city = isset($_POST["city"]) ? htmlspecialchars($_POST["city"]) : "";
+    $district = isset($_POST["district"]) ? htmlspecialchars($_POST["district"]) : "";
+    $blood_type = isset($_POST["blood_type"]) ? htmlspecialchars($_POST["blood_type"]) : "";
+    $health_issue = isset($_POST["health_issue"]) ? htmlspecialchars($_POST["health_issue"]) : "";
+    $emergency_contact = isset($_POST["emergency_contact"]) ? htmlspecialchars($_POST["emergency_contact"]) : "";
+    $emergency_phone = isset($_POST["emergency_phone"]) ? htmlspecialchars($_POST["emergency_phone"]) : "";
+    $countryCode = isset($_POST["country"]) ? htmlspecialchars($_POST["country"]) : "";
+    $phoneNumber = isset($_POST["phone"]) ? htmlspecialchars($_POST["phone"]) : "";
     $country = $_POST["country"];
-    // Ülke kodunu ve telefon numarasını birleştir
+// Ülke kodunu ve telefon numarasını birleştir
     $fullPhoneNumber = "+" . $phoneNumberUtil->getCountryCodeForRegion($countryCode) . $phoneNumber;
-    // $phone değişkenini güncelle
+// $phone değişkenini güncelle
     $phone = $fullPhoneNumber;
-    // Hash'lenmemiş şifreyi al
-    $plainPassword = $_POST["password"];
+// Hash'lenmemiş şifreyi al
+    $plainPassword = isset($_POST["password"]) ? htmlspecialchars($_POST["password"]) : "";
 
-    // Şifreyi hash'leyerek bir değişkene atayalım
+// Şifreyi hash'leyerek bir değişkene atayalım
     $hashedPassword = password_hash($plainPassword, PASSWORD_DEFAULT);
 
     // Kullanıcı tipi bilgisini al

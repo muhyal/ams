@@ -61,20 +61,17 @@ $errorMessage = "";
 
 // Eğer form gönderilmişse
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Diğer form alanlarından gelen verileri alın
-    $rowId = isset($_POST["rowId"]) ? $_POST["rowId"] : null;
-    $paymentAmount = isset($_POST["paymentAmount"]) ? $_POST["paymentAmount"] : null;
-    $paymentMethod = isset($_POST["paymentMethod"]) ? $_POST["paymentMethod"] : null;
-    $paymentNotes = isset($_POST["paymentNotes"]) ? $_POST["paymentNotes"] : null;
-
-    // Ek bilgileri alın
-    $firstName = isset($_POST["firstname"]) ? $_POST["firstname"] : null;
-    $lastName = isset($_POST["lastname"]) ? $_POST["lastname"] : null;
-    $courseName = isset($_POST["coursename"]) ? $_POST["coursename"] : null;
-    $academyName = isset($_POST["academyname"]) ? $_POST["academyname"] : null;
-    $courseFee = isset($_POST["coursefee"]) ? $_POST["coursefee"] : null;
-    $debtAmount = isset($_POST["debtamount"]) ? $_POST["debtamount"] : null;
-    $courseDates = isset($_POST["coursedates"]) ? $_POST["coursedates"] : null;
+    $rowId = isset($_POST["rowId"]) ? htmlspecialchars($_POST["rowId"], ENT_QUOTES, 'UTF-8') : null;
+    $paymentAmount = isset($_POST["paymentAmount"]) ? htmlspecialchars($_POST["paymentAmount"], ENT_QUOTES, 'UTF-8') : null;
+    $paymentMethod = isset($_POST["paymentMethod"]) ? htmlspecialchars($_POST["paymentMethod"], ENT_QUOTES, 'UTF-8') : null;
+    $paymentNotes = isset($_POST["paymentNotes"]) ? htmlspecialchars($_POST["paymentNotes"], ENT_QUOTES, 'UTF-8') : null;
+    $firstName = isset($_POST["firstname"]) ? htmlspecialchars($_POST["firstname"], ENT_QUOTES, 'UTF-8') : null;
+    $lastName = isset($_POST["lastname"]) ? htmlspecialchars($_POST["lastname"], ENT_QUOTES, 'UTF-8') : null;
+    $courseName = isset($_POST["coursename"]) ? htmlspecialchars($_POST["coursename"], ENT_QUOTES, 'UTF-8') : null;
+    $academyName = isset($_POST["academyname"]) ? htmlspecialchars($_POST["academyname"], ENT_QUOTES, 'UTF-8') : null;
+    $courseFee = isset($_POST["coursefee"]) ? htmlspecialchars($_POST["coursefee"], ENT_QUOTES, 'UTF-8') : null;
+    $debtAmount = isset($_POST["debtamount"]) ? htmlspecialchars($_POST["debtamount"], ENT_QUOTES, 'UTF-8') : null;
+    $courseDates = isset($_POST["coursedates"]) ? htmlspecialchars($_POST["coursedates"], ENT_QUOTES, 'UTF-8') : null;
 
     try {
         // Ödeme yapılan ders planını alın

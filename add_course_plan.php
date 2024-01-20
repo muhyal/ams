@@ -41,16 +41,16 @@ $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_er
 // Post işlemi kontrolü
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Formdan gelen verileri alın
-    $teacher_id = $_POST["teacher_id"];
-    $academy_id = $_POST["academy_id"];
-    $class_id = $_POST["class_id"];
-    $student_id = $_POST["student_id"];
-    $course_id = $_POST["course_id"];
-    $course_date_1 = $_POST["course_date_1"];
-    $course_date_2 = $_POST["course_date_2"];
-    $course_date_3 = $_POST["course_date_3"];
-    $course_date_4 = $_POST["course_date_4"];
-    $course_fee = $_POST["course_fee"]; // Ders ücreti
+    $teacher_id = htmlspecialchars($_POST["teacher_id"], ENT_QUOTES, 'UTF-8');
+    $academy_id = htmlspecialchars($_POST["academy_id"], ENT_QUOTES, 'UTF-8');
+    $class_id = htmlspecialchars($_POST["class_id"], ENT_QUOTES, 'UTF-8');
+    $student_id = htmlspecialchars($_POST["student_id"], ENT_QUOTES, 'UTF-8');
+    $course_id = htmlspecialchars($_POST["course_id"], ENT_QUOTES, 'UTF-8');
+    $course_date_1 = htmlspecialchars($_POST["course_date_1"], ENT_QUOTES, 'UTF-8');
+    $course_date_2 = htmlspecialchars($_POST["course_date_2"], ENT_QUOTES, 'UTF-8');
+    $course_date_3 = htmlspecialchars($_POST["course_date_3"], ENT_QUOTES, 'UTF-8');
+    $course_date_4 = htmlspecialchars($_POST["course_date_4"], ENT_QUOTES, 'UTF-8');
+    $course_fee = htmlspecialchars($_POST["course_fee"], ENT_QUOTES, 'UTF-8');
 
     // Debt amount'u course_fee ile aynı olarak ayarla
     $debt_amount = $course_fee;

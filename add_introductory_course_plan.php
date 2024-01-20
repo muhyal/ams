@@ -40,15 +40,16 @@ $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_er
 // Post işlemi kontrolü
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Formdan gelen verileri alın
-    $teacher_id = $_POST["teacher_id"];
-    $academy_id = $_POST["academy_id"];
-    $class_id = $_POST["class_id"];
-    $student_id = $_POST["student_id"];
-    $course_id = $_POST["course_id"];
-    $course_date_1 = $_POST["course_date"];
+    $teacher_id = htmlspecialchars($_POST["teacher_id"], ENT_QUOTES, 'UTF-8');
+    $academy_id = htmlspecialchars($_POST["academy_id"], ENT_QUOTES, 'UTF-8');
+    $class_id = htmlspecialchars($_POST["class_id"], ENT_QUOTES, 'UTF-8');
+    $student_id = htmlspecialchars($_POST["student_id"], ENT_QUOTES, 'UTF-8');
+    $course_id = htmlspecialchars($_POST["course_id"], ENT_QUOTES, 'UTF-8');
+    $course_date_1 = htmlspecialchars($_POST["course_date"], ENT_QUOTES, 'UTF-8');
     $course_attendance_1 = isset($_POST["course_attendance"]) ? 1 : 0;
     $created_by_user_id = $_SESSION["admin_id"]; // Şu anki oturumu açık olan admin kullanıcısının ID'sini alıyoruz.
     $created_at = date('Y-m-d H:i:s'); // Şu anki tarih ve saat bilgisini alıyoruz.
+
 
     $query = "INSERT INTO introductory_course_plans (teacher_id, academy_id, class_id, student_id, course_id, 
       course_date, course_attendance, created_by_user_id, created_at)

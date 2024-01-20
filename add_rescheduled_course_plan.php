@@ -86,14 +86,15 @@ if ($selectedCoursePlanId) {
 // Post işlemi kontrolü
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Formdan gelen verileri alın
-    $course_plan_id = isset($_POST["course_plan_id"]) ? $_POST["course_plan_id"] : $selectedCoursePlanId;
-    $teacher_id = $_POST["teacher_id"];
-    $academy_id = $_POST["academy_id"];
-    $class_id = $_POST["class_id"];
-    $student_id = $_POST["student_id"];
-    $course_id = $_POST["course_id"];
-    $course_date = $_POST["course_date"]; // Use $_POST to get the value
+    $course_plan_id = isset($_POST["course_plan_id"]) ? htmlspecialchars($_POST["course_plan_id"], ENT_QUOTES, 'UTF-8') : $selectedCoursePlanId;
+    $teacher_id = htmlspecialchars($_POST["teacher_id"], ENT_QUOTES, 'UTF-8');
+    $academy_id = htmlspecialchars($_POST["academy_id"], ENT_QUOTES, 'UTF-8');
+    $class_id = htmlspecialchars($_POST["class_id"], ENT_QUOTES, 'UTF-8');
+    $student_id = htmlspecialchars($_POST["student_id"], ENT_QUOTES, 'UTF-8');
+    $course_id = htmlspecialchars($_POST["course_id"], ENT_QUOTES, 'UTF-8');
+    $course_date = htmlspecialchars($_POST["course_date"], ENT_QUOTES, 'UTF-8');
     $course_attendance = isset($_POST["course_attendance"]) ? 1 : 0;
+
 
 
 

@@ -48,9 +48,9 @@ $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_er
 
 // Sınıf ekleme işlemi
 if (isset($_POST["add_class"])) {
-    $className = $_POST["class_name"];
-    $classCode = $_POST["class_code"];
-    $classDescription = $_POST["description"];
+    $className = htmlspecialchars($_POST["class_name"], ENT_QUOTES, 'UTF-8');
+    $classCode = htmlspecialchars($_POST["class_code"], ENT_QUOTES, 'UTF-8');
+    $classDescription = htmlspecialchars($_POST["description"], ENT_QUOTES, 'UTF-8');
 
     $query = "INSERT INTO academy_classes (class_name, class_code, class_description) VALUES (?, ?, ?)";
     $stmt = $db->prepare($query);
@@ -61,9 +61,9 @@ if (isset($_POST["add_class"])) {
 if (isset($_POST["edit_class"])) {
     checkPermission(); // Yetki kontrolü
     $id = $_POST["id"];
-    $className = $_POST["class_name"];
-    $classCode = $_POST["class_code"];
-    $classDescription = $_POST["description"];
+    $className = htmlspecialchars($_POST["class_name"], ENT_QUOTES, 'UTF-8');
+    $classCode = htmlspecialchars($_POST["class_code"], ENT_QUOTES, 'UTF-8');
+    $classDescription = htmlspecialchars($_POST["description"], ENT_QUOTES, 'UTF-8');
 
     $query = "UPDATE academy_classes SET class_name = ?, class_code = ?, class_description = ? WHERE id = ?";
     $stmt = $db->prepare($query);
