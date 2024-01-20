@@ -27,6 +27,9 @@ $password = "oim"; // Veritabanı şifresi
 try {
     $db = new PDO("mysql:host=$host;dbname=$db_name", $username, $password);
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    // Zaman dilimini ayarla (UTC olarak ayarlandı)
+    $db->exec("SET time_zone = '+00:00'");
 } catch (PDOException $e) {
     die("Veritabanı bağlantı hatası: " . $e->getMessage());
 }
