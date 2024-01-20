@@ -75,14 +75,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $countryCode = isset($_POST["country"]) ? $_POST["country"] : "";
     $phoneNumber = isset($_POST["phone"]) ? $_POST["phone"] : "";
     $country = $_POST["country"];
-
-
     // Ülke kodunu ve telefon numarasını birleştir
     $fullPhoneNumber = "+" . $phoneNumberUtil->getCountryCodeForRegion($countryCode) . $phoneNumber;
-
     // $phone değişkenini güncelle
     $phone = $fullPhoneNumber;
-
     // Hash'lenmemiş şifreyi al
     $plainPassword = $_POST["password"];
 

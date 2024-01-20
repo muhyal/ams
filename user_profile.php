@@ -29,6 +29,17 @@ if (!isset($_SESSION["admin_id"])) {
 }
 
 require_once "db_connection.php"; // Veritabanı bağlantısı
+
+require 'vendor/autoload.php';
+
+use libphonenumber\PhoneNumberUtil;
+use libphonenumber\PhoneNumberFormat;
+use League\ISO3166\ISO3166;
+
+// Ülkeleri al
+$phoneNumberUtil = PhoneNumberUtil::getInstance();
+$iso3166 = new ISO3166();
+
 // Kullanıcı bilgilerini kullanabilirsiniz
 $admin_id = $_SESSION["admin_id"];
 $student_id = isset($_GET['student_id']) ? $_GET['student_id'] : null;
@@ -159,7 +170,15 @@ require_once "admin_panel_sidebar.php";
                 <li><strong>Telefon:</strong> <?= $user['phone'] ?></li>
                 <li><strong>İl:</strong> <?= $user['city'] ? $user['city'] : 'Henüz belli değil'; ?></li>
                 <li><strong>İlçe:</strong> <?= $user['district'] ? $user['district'] : 'Henüz belli değil'; ?></li>
-                <li><strong>Doğum Tarihi:</strong> <?php echo $user['birth_date'] ? date(DATE_FORMAT, strtotime($user['birth_date'])) : 'Belli değil'; ?></li>
+                <?php
+                function getCountryName($countryCode) {
+                    global $iso3166;
+
+                    // Türkiye'nin alpha2 kodu TR ise "Türkiye" döndür, aksi takdirde ISO3166 kütüphanesinden al
+                    return ($countryCode === 'TR') ? 'Türkiye' : $iso3166->alpha2($countryCode)['name'] ?? $countryCode;
+                }
+                ?>
+                <li><strong>Ülke:</strong> <?= ($user['country']) ? getCountryName($user['country']) : 'Henüz belli değil'; ?></li>                <li><strong>Doğum Tarihi:</strong> <?php echo $user['birth_date'] ? date(DATE_FORMAT, strtotime($user['birth_date'])) : 'Belli değil'; ?></li>
                 <?php
                 // Kullanıcının doğum tarihi
                 $birthDate = $user['birth_date'];

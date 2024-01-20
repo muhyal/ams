@@ -35,6 +35,15 @@ if (!isset($_SESSION["admin_id"])) {
 }
 
 require_once "db_connection.php"; // Veritabanı bağlantısı
+require 'vendor/autoload.php';
+
+use libphonenumber\PhoneNumberUtil;
+use libphonenumber\PhoneNumberFormat;
+use League\ISO3166\ISO3166;
+
+// Ülkeleri al
+$phoneNumberUtil = PhoneNumberUtil::getInstance();
+$iso3166 = new ISO3166();
 
 // Kullanıcı bilgilerini kullanabilirsiniz
 $admin_id = $_SESSION["admin_id"];
@@ -108,12 +117,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $user_type = $_POST["user_type"];
     $notes = $_POST["notes"];
     $is_active = $_POST["is_active"];
-
     // Kurumsal bilgileri alın
     $invoice_type = isset($_POST["invoice_type"]) ? $_POST["invoice_type"] : "";
     $tax_company_name = isset($_POST["tax_company_name"]) ? $_POST["tax_company_name"] : "";
     $tax_office = isset($_POST["tax_office"]) ? $_POST["tax_office"] : "";
     $tax_number = isset($_POST["tax_number"]) ? $_POST["tax_number"] : "";
+    $country = isset($_POST["country"]) ? $_POST["country"] : "";
 
     // Güncelleme sorgusunu oluşturun
     $updateQuery = "UPDATE users SET 
@@ -133,6 +142,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         birth_date = ?, 
         city = ?, 
         district = ?, 
+        country = ?, 
         blood_type = ?, 
         health_issue = ?, 
         emergency_contact = ?, 
@@ -146,7 +156,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $username, $tc_identity, $first_name, $last_name, $email, $phone,
         $user_type, $notes, $is_active,
         $invoice_type, $tax_company_name, $tax_office, $tax_number,
-        $birth_date, $city, $district, $blood_type, $health_issue, $emergency_contact,
+        $birth_date, $city, $district, $country,
+        $blood_type, $health_issue, $emergency_contact,
         $emergency_phone, date("Y-m-d H:i:s"),
         $admin_id // Assuming $admin_id is the ID of the admin user making the update
     ];
@@ -229,12 +240,36 @@ require_once "admin_panel_header.php";
                                 <input class="form-control" type="email" name="email" aria-describedby="emailHelp" value="<?php echo $user["email"]; ?>" required>
                                 <div id="emailHelp" class="form-text">Geçerli bir e-posta adresi olmalıdır.</div>
 
+
+                                <div class="mt-3">
+                                    <label for="country" class="form-label">Ülke:</label>
+                                    <div class="input-group">
+                                        <select class="form-select" name="country" id="country" required>
+                                            <?php
+                                            foreach ($iso3166->all() as $country) {
+                                                $countryCode = $phoneNumberUtil->getCountryCodeForRegion($country['alpha2']);
+                                                $countryName = ($country['alpha2'] == 'TR') ? 'Türkiye' : $country['name'];
+
+                                                // Kullanıcının veritabanında kayıtlı ülkesi ile mevcut ülke eşleşiyorsa, seçili hale getir
+                                                $selected = ($user["country"] == $country['alpha2']) ? 'selected' : '';
+
+                                                echo "<option value=\"" . $country['alpha2'] . "\" data-country-code=\"+$countryCode\" $selected>{$countryName}</option>";
+                                            }
+                                            ?>
+                                        </select>
+                                    </div>
+                                </div>
+
+
+
                                 <label class="form-label mt-3" for="phone">Telefon:</label>
                                 <input class="form-control" type="text" name="phone" value="<?php echo $user["phone"]; ?>" required>
+
 
                                 <!-- Doğum Tarihi -->
                                 <label class="form-label mt-3" for="birth_date">Doğum Tarihi:</label>
                                 <input class="form-control" type="date" name="birth_date" value="<?php echo $user["birth_date"]; ?>" required>
+
 
                                 <!-- Şehir -->
                                 <label class="form-label mt-3" for="city">Şehir:</label>
