@@ -59,8 +59,8 @@ if (!$user) {
 // Öğrenciye ait ödemeleri çekmek için sorgu
 $query_payments = "SELECT
     a.*,
-  cp.id AS course_plan_id,
-  cp.course_date_1,
+    cp.id AS course_plan_id,
+    cp.course_date_1,
     cp.course_date_2,
     cp.course_date_3,
     cp.course_date_4,
@@ -86,7 +86,9 @@ LEFT JOIN
 LEFT JOIN
     users AS teachers ON cp.teacher_id = teachers.id AND teachers.user_type = 4
 WHERE
-    cp.student_id = ?;";
+    cp.student_id = ?
+ORDER BY
+    a.payment_date ASC";
 $stmt_payments = $db->prepare($query_payments);
 $stmt_payments->execute([$user['id']]);
 $student_payments = $stmt_payments->fetchAll(PDO::FETCH_ASSOC);
@@ -119,7 +121,12 @@ LEFT JOIN courses ON course_plans.course_id = courses.id
 LEFT JOIN academy_classes ON course_plans.class_id = academy_classes.id
 LEFT JOIN users AS teachers ON course_plans.teacher_id = teachers.id AND teachers.user_type = 4
 WHERE 
-    course_plans.student_id = ?";
+    course_plans.student_id = ?
+ORDER BY 
+    course_plans.course_date_1 ASC, 
+    course_plans.course_date_2 ASC, 
+    course_plans.course_date_3 ASC, 
+    course_plans.course_date_4 ASC";
 
     $stmt_student_courses = $db->prepare($select_student_courses_query);
     $stmt_student_courses->execute([$student_id]);
@@ -143,11 +150,14 @@ LEFT JOIN courses ON introductory_course_plans.course_id = courses.id
 LEFT JOIN academy_classes ON introductory_course_plans.class_id = academy_classes.id
 LEFT JOIN users AS teachers ON introductory_course_plans.teacher_id = teachers.id AND teachers.user_type = 4
 WHERE 
-    introductory_course_plans.student_id = ?";
+    introductory_course_plans.student_id = ?
+ORDER BY 
+    introductory_course_plans.course_date ASC";
 
     $stmt_student_introductory_courses = $db->prepare($select_student_introductory_courses_query);
     $stmt_student_introductory_courses->execute([$student_id]);
     $student_introductory_courses = $stmt_student_introductory_courses->fetchAll(PDO::FETCH_ASSOC);
+
 
     $select_student_rescheduled_courses_query = "
 SELECT 
@@ -166,7 +176,9 @@ LEFT JOIN courses ON rescheduled_courses.course_id = courses.id
 LEFT JOIN academy_classes ON rescheduled_courses.class_id = academy_classes.id
 LEFT JOIN users AS teachers ON rescheduled_courses.teacher_id = teachers.id AND teachers.user_type = 4
 WHERE 
-    rescheduled_courses.student_id = ?";
+    rescheduled_courses.student_id = ?
+ORDER BY 
+    rescheduled_courses.course_date ASC";
 
     $stmt_student_rescheduled_courses = $db->prepare($select_student_rescheduled_courses_query);
     $stmt_student_rescheduled_courses->execute([$student_id]);
@@ -175,7 +187,6 @@ WHERE
 
     $teacher_id = $user['id'];
     $select_teacher_rescheduled_courses_query = "
-
 SELECT 
     rescheduled_courses.*, 
     academies.name AS academy_name, 
@@ -195,7 +206,9 @@ LEFT JOIN academy_classes ON rescheduled_courses.class_id = academy_classes.id
 LEFT JOIN users AS teachers ON rescheduled_courses.teacher_id = teachers.id AND teachers.user_type = 4
 LEFT JOIN users AS students ON rescheduled_courses.student_id = students.id
 WHERE 
-    rescheduled_courses.teacher_id = ?";
+    rescheduled_courses.teacher_id = ?
+ORDER BY 
+    rescheduled_courses.course_date ASC";
 
     $stmt_teacher_rescheduled_courses = $db->prepare($select_teacher_rescheduled_courses_query);
     $stmt_teacher_rescheduled_courses->execute([$teacher_id]);
@@ -228,7 +241,14 @@ LEFT JOIN courses ON course_plans.course_id = courses.id
 LEFT JOIN academy_classes ON course_plans.class_id = academy_classes.id
 LEFT JOIN users ON course_plans.student_id = users.id AND users.user_type = 6
 WHERE 
-    course_plans.teacher_id = ?";
+    course_plans.teacher_id = ?
+ORDER BY 
+    CASE
+        WHEN course_plans.course_date_1 IS NOT NULL THEN course_plans.course_date_1
+        WHEN course_plans.course_date_2 IS NOT NULL THEN course_plans.course_date_2
+        WHEN course_plans.course_date_3 IS NOT NULL THEN course_plans.course_date_3
+        WHEN course_plans.course_date_4 IS NOT NULL THEN course_plans.course_date_4
+    END ASC";
 
     $stmt_teacher_courses = $db->prepare($select_teacher_courses_query);
     $stmt_teacher_courses->execute([$teacher_id]);
@@ -252,9 +272,11 @@ LEFT JOIN courses ON introductory_course_plans.course_id = courses.id
 LEFT JOIN academy_classes ON introductory_course_plans.class_id = academy_classes.id
 LEFT JOIN users AS students ON introductory_course_plans.student_id = students.id AND students.user_type = 6
 WHERE 
-    introductory_course_plans.teacher_id = ?";
+    introductory_course_plans.teacher_id = ?
+ORDER BY 
+    introductory_course_plans.course_date ASC";
 
-    // Öğretmen tanışma derslerini çekmek için kod
+// Öğretmen tanışma derslerini çekmek için kod
     $teacher_id = $user['id'];
 
     $stmt_teacher_introductory_courses = $db->prepare($select_teacher_introductory_courses_query);
@@ -262,11 +284,129 @@ WHERE
     $teacher_introductory_courses = $stmt_teacher_introductory_courses->fetchAll(PDO::FETCH_ASSOC);
 
 
+
     // Ödeme yöntemlerini çekmek için sorgu
     $query_payment_methods = "SELECT * FROM payment_methods";
     $stmt_payment_methods = $db->prepare($query_payment_methods);
     $stmt_payment_methods->execute();
     $payment_methods = $stmt_payment_methods->fetchAll(PDO::FETCH_ASSOC);
+
+
+    $today = date("Y-m-d");
+
+    $select_teacher_todays_courses_query = "
+SELECT 
+    icp.id,
+    icp.academy_id,
+    icp.course_id,
+    icp.class_id,
+    icp.teacher_id,
+    icp.student_id,
+    icp.course_date,
+    icp.course_attendance,
+    'Tanışma Dersi' as course_type,
+    c.course_name,
+    a.name as academy_name,
+    u.username as teacher_username,
+    u2.username as student_username,
+    u2.first_name as student_first_name,
+    u2.last_name as student_last_name,
+    cl.class_name
+FROM 
+    introductory_course_plans icp
+JOIN
+    users u ON icp.teacher_id = u.id
+JOIN
+    users u2 ON icp.student_id = u2.id
+JOIN
+    courses c ON icp.course_id = c.id
+JOIN
+    academies a ON icp.academy_id = a.id
+JOIN
+    academy_classes cl ON icp.class_id = cl.id
+WHERE 
+    u.user_type = 4 AND
+    DATE(icp.course_date) = ?  
+UNION ALL
+
+SELECT 
+    cp.id,
+    cp.academy_id,
+    cp.course_id,
+    cp.class_id,
+    cp.teacher_id,
+    cp.student_id,
+    cp.course_date_1 as course_date,
+    cp.course_attendance_1 as course_attendance,
+    'Ders' as course_type,
+    c.course_name,
+    a.name as academy_name,
+    u.username as teacher_username,
+    u2.username as student_username,
+    u2.first_name as student_first_name,
+    u2.last_name as student_last_name,
+    cl.class_name
+FROM 
+    course_plans cp
+JOIN
+    users u ON cp.teacher_id = u.id
+JOIN
+    users u2 ON cp.student_id = u2.id
+JOIN
+    courses c ON cp.course_id = c.id
+JOIN
+    academies a ON cp.academy_id = a.id
+JOIN
+    academy_classes cl ON cp.class_id = cl.id
+WHERE 
+    u.user_type = 4 AND
+    DATE(cp.course_date_1) = ? AND cp.course_date_1 >= CURDATE()  
+UNION ALL
+
+SELECT 
+    rc.id,
+    rc.academy_id,
+    rc.course_id,
+    rc.class_id,
+    rc.teacher_id,
+    rc.student_id,
+    rc.course_date,
+    rc.course_attendance,
+    'Telafi Dersi' as course_type,
+    c.course_name,
+    a.name as academy_name,
+    u.username as teacher_username,
+    u2.username as student_username,
+    u2.first_name as student_first_name,
+    u2.last_name as student_last_name,
+    cl.class_name
+FROM 
+    rescheduled_courses rc
+JOIN
+    users u ON rc.teacher_id = u.id
+JOIN
+    users u2 ON rc.student_id = u2.id
+JOIN
+    courses c ON rc.course_id = c.id
+JOIN
+    academies a ON rc.academy_id = a.id
+JOIN
+    academy_classes cl ON rc.class_id = cl.id
+WHERE 
+    u.user_type = 4 AND
+    DATE(rc.course_date) = ? AND rc.course_date >= CURDATE()  
+ORDER BY course_date DESC
+";
+
+    $stmt_teacher_todays_courses = $db->prepare($select_teacher_todays_courses_query);
+    $stmt_teacher_todays_courses->execute([
+        $today,
+        $today,
+        $today
+    ]);
+    $teacher_todays_courses = $stmt_teacher_todays_courses->fetchAll(PDO::FETCH_ASSOC);
+
+
 
     require_once "header.php";
     ?>
@@ -351,7 +491,66 @@ WHERE
                         <ul class="list-group list-group-flush">
                             <?php if ($user['user_type'] == '4'): ?>
                                 <!-- Öğretmenin Diğer Bilgileri -->
+
                                 <div class="card mt-4">
+                                    <div class="card-header">
+                                        <h5 class="card-title">Bugünkü planım</h5>
+                                    </div>
+                            <div class="card-body">
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th>Ders Türü</th>
+                                        <th>Öğrenci</th>
+                                        <th>Ders</th>
+                                        <th>Sınıf</th>
+                                        <th>Akademi</th>
+                                        <th>Ders Tarihi</th>
+                                        <th>Katılım</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <?php foreach ($teacher_todays_courses as $course): ?>
+                                        <tr>
+                                            <td><?php echo isset($course['course_type']) ? $course['course_type'] : ''; ?></td>
+                                            <td style="font-size: small;"><?php echo isset($course['student_username']) ? $course['student_username'] : ''; ?></td>
+                                            <td><?php echo isset($course['course_name']) ? $course['course_name'] : ''; ?></td>
+                                            <td><?php echo isset($course['class_name']) ? $course['class_name'] : ''; ?></td>
+                                            <td><?php echo isset($course['academy_name']) ? $course['academy_name'] : ''; ?></td>
+                                            <td><?php echo isset($course['course_date']) ? date("d.m.Y H:i", strtotime($course['course_date'])) : ''; ?></td>
+                                            <td>
+                                                <?php
+                                                $attendanceStatus = isset($course["course_attendance"]) ? $course["course_attendance"] : '';
+
+                                                switch ($attendanceStatus) {
+                                                    case 0:
+                                                        echo "<i class='fas fa-calendar-day text-primary'></i> Planlandı";
+                                                        break;
+                                                    case 1:
+                                                        echo "<i class='fas fa-calendar-check text-success'></i> Katıldı";
+                                                        break;
+                                                    case 2:
+                                                        echo "<i class='fas fa-calendar-times text-danger'></i> Katılmadı";
+                                                        break;
+                                                    case 3:
+                                                        echo "<i class='fas fa-calendar-times text-warning'></i> Mazeretli";
+                                                        break;
+                                                    default:
+                                                        echo "<i class='fas fa-question text-secondary'></i> Belirsiz";
+                                                        break;
+                                                }
+                                                ?>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                                </div>
+
+
+
+                            <div class="card mt-4">
                                     <div class="card-header">
                                         <h5 class="card-title">Eğitim Planlarım</h5>
                                     </div>
@@ -377,7 +576,7 @@ WHERE
 
                                             <?php foreach ($teacher_courses as $course): ?>
                                                 <tr>
-                                                    <td><?php echo isset($course['student_first_name']) ? $course['student_first_name'] . ' ' . $course['student_last_name'] : ''; ?></td>
+                                                    <td style="font-size: small;"><?php echo isset($course['student_first_name']) ? $course['student_first_name'] . ' ' . $course['student_last_name'] : ''; ?></td>
                                                     <td><?php echo isset($course['course_name']) ? $course['course_name'] : ''; ?></td>
                                                     <td><?php echo isset($course['class_name']) ? $course['class_name'] : ''; ?></td>
                                                     <td><?php echo isset($course['academy_name']) ? $course['academy_name'] : ''; ?></td>
@@ -439,7 +638,7 @@ WHERE
                                             <tbody>
                                             <?php foreach ($teacher_introductory_courses as $introductory_course): ?>
                                                 <tr>
-                                                    <td><?php echo isset($introductory_course['student_first_name']) ? $introductory_course['student_first_name'] . ' ' . $introductory_course['student_last_name'] : ''; ?></td>
+                                                    <td style="font-size: small;"><?php echo isset($introductory_course['student_first_name']) ? $introductory_course['student_first_name'] . ' ' . $introductory_course['student_last_name'] : ''; ?></td>
                                                     <td><?php echo isset($introductory_course['course_name']) ? $introductory_course['course_name'] : ''; ?></td>
                                                     <td><?php echo isset($introductory_course['class_name']) ? $introductory_course['class_name'] : ''; ?></td>
                                                     <td><?php echo isset($introductory_course['academy_name']) ? $introductory_course['academy_name'] : ''; ?></td>
@@ -492,9 +691,10 @@ WHERE
                                             </tr>
                                             </thead>
                                             <tbody>
+
                                             <?php foreach ($teacher_rescheduled_courses as $teacher_rescheduled_course): ?>
                                                 <tr>
-                                                    <td><?php echo isset($teacher_rescheduled_course['student_first_name']) ? $teacher_rescheduled_course['student_first_name'] . ' ' . $teacher_rescheduled_course['student_last_name'] : ''; ?></td>
+                                                    <td style="font-size: small;"><?php echo isset($teacher_rescheduled_course['student_first_name']) ? $teacher_rescheduled_course['student_first_name'] . ' ' . $teacher_rescheduled_course['student_last_name'] : ''; ?></td>
                                                     <td><?php echo isset($teacher_rescheduled_course['course_name']) ? $teacher_rescheduled_course['course_name'] : ''; ?></td>
                                                     <td><?php echo isset($teacher_rescheduled_course['class_name']) ? $teacher_rescheduled_course['class_name'] : ''; ?></td>
                                                     <td><?php echo isset($teacher_rescheduled_course['academy_name']) ? $teacher_rescheduled_course['academy_name'] : ''; ?></td>
@@ -564,10 +764,10 @@ WHERE
                                             <tbody>
                                             <?php foreach ($student_courses as $course): ?>
                                                 <tr>
-                                                    <td><?php echo isset($course['teacher_first_name']) ? $course['teacher_first_name'] . ' ' . $course['teacher_last_name'] : ''; ?></td>
-                                                    <td><?php echo isset($course['course_name']) ? $course['course_name'] : ''; ?></td>
-                                                    <td><?php echo isset($course['class_name']) ? $course['class_name'] : ''; ?></td>
-                                                    <td><?php echo isset($course['academy_name']) ? $course['academy_name'] : ''; ?></td>
+                                                    <td style="font-size: small;"><?php echo isset($course['teacher_first_name']) ? $course['teacher_first_name'] . ' ' . $course['teacher_last_name'] : ''; ?></td>
+                                                    <td style="font-size: small;"><?php echo isset($course['course_name']) ? $course['course_name'] : ''; ?></td>
+                                                    <td style="font-size: small;"><?php echo isset($course['class_name']) ? $course['class_name'] : ''; ?></td>
+                                                    <td style="font-size: small;"><?php echo isset($course['academy_name']) ? $course['academy_name'] : ''; ?></td>
                                                     <td style="font-size: small;"><?php echo isset($course['course_date_1']) ? date("d.m.Y H:i", strtotime($course['course_date_1'])) : ''; ?></td>
                                                     <td style="font-size: small;"><?php echo isset($course['course_date_2']) ? date("d.m.Y H:i", strtotime($course['course_date_2'])) : ''; ?></td>
                                                     <td style="font-size: small;"><?php echo isset($course['course_date_3']) ? date("d.m.Y H:i", strtotime($course['course_date_3'])) : ''; ?></td>
@@ -596,9 +796,10 @@ WHERE
                                                             }
                                                             ?>
                                                         </td>
-                                                    <?php endfor; ?><td><?php echo isset($course['course_fee']) ? $course['course_fee'] : ''; ?> TL</td>
+                                                    <?php endfor; ?>
+                                                    <td style="font-size: small;"><?php echo isset($course['course_fee']) ? $course['course_fee'] : ''; ?> TL</td>
 
-                                                    <td>
+                                                    <td style="font-size: small;">
                                                         <?php
                                                         $remaining_payment = isset($course['debt_amount']) ? $course['debt_amount'] : 0;
 
@@ -640,11 +841,11 @@ WHERE
                                             <tbody>
                                             <?php foreach ($student_introductory_courses as $introductory_course): ?>
                                                 <tr>
-                                                    <td><?php echo isset($introductory_course['teacher_first_name']) ? $introductory_course['teacher_first_name'] . ' ' . $introductory_course['teacher_last_name'] : ''; ?></td>
-                                                    <td><?php echo isset($introductory_course['course_name']) ? $introductory_course['course_name'] : ''; ?></td>
-                                                    <td><?php echo isset($introductory_course['class_name']) ? $introductory_course['class_name'] : ''; ?></td>
-                                                    <td><?php echo isset($introductory_course['academy_name']) ? $introductory_course['academy_name'] : ''; ?></td>
-                                                    <td><?php echo isset($introductory_course['course_date']) ? date("d.m.Y H:i", strtotime($introductory_course['course_date'])) : ''; ?></td>
+                                                    <td style="font-size: small;"><?php echo isset($introductory_course['teacher_first_name']) ? $introductory_course['teacher_first_name'] . ' ' . $introductory_course['teacher_last_name'] : ''; ?></td>
+                                                    <td style="font-size: small;"><?php echo isset($introductory_course['course_name']) ? $introductory_course['course_name'] : ''; ?></td>
+                                                    <td style="font-size: small;"><?php echo isset($introductory_course['class_name']) ? $introductory_course['class_name'] : ''; ?></td>
+                                                    <td style="font-size: small;"><?php echo isset($introductory_course['academy_name']) ? $introductory_course['academy_name'] : ''; ?></td>
+                                                    <td style="font-size: small;"><?php echo isset($introductory_course['course_date']) ? date("d.m.Y H:i", strtotime($introductory_course['course_date'])) : ''; ?></td>
                                                     <td>
                                                         <?php
                                                         $attendanceStatus = $introductory_course["course_attendance"];
@@ -697,11 +898,11 @@ WHERE
                                             <tbody>
                                             <?php foreach ($student_rescheduled_courses as $student_rescheduled_course): ?>
                                                 <tr>
-                                                    <td><?php echo isset($student_rescheduled_course['teacher_first_name']) ? $student_rescheduled_course['teacher_first_name'] . ' ' . $student_rescheduled_course['teacher_last_name'] : ''; ?></td>
-                                                    <td><?php echo isset($student_rescheduled_course['course_name']) ? $student_rescheduled_course['course_name'] : ''; ?></td>
-                                                    <td><?php echo isset($student_rescheduled_course['class_name']) ? $student_rescheduled_course['class_name'] : ''; ?></td>
-                                                    <td><?php echo isset($student_rescheduled_course['academy_name']) ? $student_rescheduled_course['academy_name'] : ''; ?></td>
-                                                    <td><?php echo isset($student_rescheduled_course['course_date']) ? date("d.m.Y H:i", strtotime($student_rescheduled_course['course_date'])) : ''; ?></td>
+                                                    <td style="font-size: small;"><?php echo isset($student_rescheduled_course['teacher_first_name']) ? $student_rescheduled_course['teacher_first_name'] . ' ' . $student_rescheduled_course['teacher_last_name'] : ''; ?></td>
+                                                    <td style="font-size: small;"><?php echo isset($student_rescheduled_course['course_name']) ? $student_rescheduled_course['course_name'] : ''; ?></td>
+                                                    <td style="font-size: small;"><?php echo isset($student_rescheduled_course['class_name']) ? $student_rescheduled_course['class_name'] : ''; ?></td>
+                                                    <td style="font-size: small;"><?php echo isset($student_rescheduled_course['academy_name']) ? $student_rescheduled_course['academy_name'] : ''; ?></td>
+                                                    <td style="font-size: small;"><?php echo isset($student_rescheduled_course['course_date']) ? date("d.m.Y H:i", strtotime($student_rescheduled_course['course_date'])) : ''; ?></td>
                                                     <td>
                                                         <?php
                                                         $attendanceStatus = $student_rescheduled_course["course_attendance"];
