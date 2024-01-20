@@ -34,7 +34,7 @@ require_once "config.php";
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
 
-require_once "inc/functions.php";
+require_once "src/functions.php";
 
 // Kullanıcı ve akademi ilişkisini çekmek için bir SQL sorgusu
 $getUserAcademyQuery = "SELECT academy_id FROM user_academy_assignment WHERE user_id = :user_id";
