@@ -270,8 +270,86 @@ $stmtCoursePlans = $db->prepare($coursePlansQuery);
 $stmtCoursePlans->execute();
 $coursePlans = $stmtCoursePlans->fetchAll(PDO::FETCH_ASSOC);
 $stmtCoursePlans->closeCursor();
+
+$last7DaysSalesQuery = "
+    SELECT
+        a.name AS academy_name,
+        DATE(sc.created_at) AS sale_date,
+        COUNT(*) AS total_courses
+    FROM
+        course_plans sc
+        RIGHT JOIN academies a ON sc.academy_id = a.id
+    WHERE
+        sc.created_at >= DATE(NOW()) - INTERVAL 7 DAY OR sc.created_at IS NULL
+    GROUP BY
+        a.id, sale_date
+    ORDER BY
+        academy_name, sale_date;
+";
+
+$stmtLast7DaysSales = $db->prepare($last7DaysSalesQuery);
+$stmtLast7DaysSales->execute();
+$last7DaysSales = $stmtLast7DaysSales->fetchAll(PDO::FETCH_ASSOC);
+$stmtLast7DaysSales->closeCursor();
+
+// Akademelerin isimlerini çekme
+$academyNamesQuery = "SELECT id, name FROM academies";
+$stmtAcademyNames = $db->query($academyNamesQuery);
+$academyNamesData = $stmtAcademyNames->fetchAll(PDO::FETCH_KEY_PAIR);
+
+// Toplam ders sayılarını çekme
+$sqlTotalCourses = "SELECT academy_id, COUNT(student_id) AS total_courses FROM course_plans GROUP BY academy_id";
+$stmtTotalCourses = $db->prepare($sqlTotalCourses);
+$stmtTotalCourses->execute();
+$resultTotalCourses = $stmtTotalCourses->fetchAll(PDO::FETCH_ASSOC);
+
+// Verileri diziye alma
+$academy_names_courses = [];
+$total_courses_counts = [];
+
+foreach ($resultTotalCourses as $row) {
+    $academy_names_courses[] = $academyNamesData[$row["academy_id"]];
+    $total_courses_counts[] = $row["total_courses"];
+}
+
+// Toplam öğrenci sayılarını çekme
+$sqlTotalStudents = "SELECT academy_id, COUNT(DISTINCT student_id) AS total_students FROM course_plans GROUP BY academy_id";
+$stmtTotalStudents = $db->prepare($sqlTotalStudents);
+$stmtTotalStudents->execute();
+$resultTotalStudents = $stmtTotalStudents->fetchAll(PDO::FETCH_ASSOC);
+
+// Ders adlarını çekme
+$sqlCourses = "SELECT id, course_name FROM courses";
+$stmtCourses = $db->query($sqlCourses);
+$coursesData = $stmtCourses->fetchAll(PDO::FETCH_KEY_PAIR);
+
+// Toplam ders planı sayılarını çekme
+$sqlTotalCoursePlans = "SELECT course_id, COUNT(student_id) AS total_course_plans FROM course_plans GROUP BY course_id";
+$stmtTotalCoursePlans = $db->prepare($sqlTotalCoursePlans);
+$stmtTotalCoursePlans->execute();
+$resultTotalCoursePlans = $stmtTotalCoursePlans->fetchAll(PDO::FETCH_ASSOC);
+
+
+// Verileri diziye alma
+$course_names_plans = [];
+$total_course_plans_counts = [];
+
+foreach ($resultTotalCoursePlans as $row) {
+    $course_names_plans[] = $coursesData[$row["course_id"]];
+    $total_course_plans_counts[] = $row["total_course_plans"];
+}
+
+
+// Verileri diziye alma
+$academy_names_students = [];
+$total_students_counts = [];
+
+
+foreach ($resultTotalStudents as $row) {
+    $academy_names_students[] = $academyNamesData[$row["academy_id"]];
+    $total_students_counts[] = $row["total_students"];
+}
 ?>
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
     // Function to update date and time using AJAX
     function updateDateTime() {
@@ -328,6 +406,7 @@ require_once "admin_panel_header.php";
               <div id="searchResults"></div>
 
 
+
               <div class="row">
                   <div class="col-md-3">
                       <div class="alert alert-success" role="alert">
@@ -352,7 +431,290 @@ require_once "admin_panel_header.php";
               </div>
 
 
-              <h4 style="display: inline-block; margin-right: 10px;">Tanışma Dersleri</h4>
+              <style>
+                  .chart-container {
+                      display: flex;
+                      justify-content: space-between;
+                      flex-wrap: wrap; /* Eğer tüm grafikler yan yana sığmazsa alt satıra geçmesini sağlamak için ekledik */
+                  }
+
+                  .chart {
+                      width: 40%; /* %100 genişlik */
+                      height: 250px;
+                  }
+
+                  .chart:nth-child(n+2) {
+                      width: 20%; /* %100 genişlik */
+                  }
+
+
+              </style>
+              <div class="chart-container mt-3">
+                  <div class="chart">
+                      <canvas id="last7DaysSalesChart"></canvas>
+                  </div>
+
+                  <div class="chart">
+                      <canvas id="academyCourseChart"></canvas>
+                  </div>
+
+                  <div class="chart">
+                      <canvas id="academyStudentChart"></canvas>
+                  </div>
+
+                  <div class="chart">
+                      <canvas id="totalCoursePlansChart"></canvas>
+                  </div>
+              </div>
+
+             <script>
+                  // PHP'den gelen kurs satışları verileri (JSON formatında)
+                  var last7DaysSalesData = <?php echo json_encode($last7DaysSales); ?>;
+
+                  // Tüm günlerin tarihleri (son 7 gün) - doğru sıralama
+                  var allDays = Array.from({ length: 7 }, (_, i) => {
+                      var date = new Date();
+                      date.setDate(date.getDate() - i);
+                      return date.toISOString().split('T')[0];
+                  }).reverse(); // Tarihleri ters çevir
+
+                  // Unikal akademilerin listesi
+                  var academies = [...new Set(last7DaysSalesData.map(sale => sale.academy_name))];
+
+                  // Renk paleti
+                  var backgroundColors = [
+                      'rgba(255, 99, 132, 0.2)',
+                      'rgba(255, 159, 64, 0.2)',
+                      'rgba(255, 205, 86, 0.2)',
+                      'rgba(75, 192, 192, 0.2)',
+                      'rgba(54, 162, 235, 0.2)',
+                      'rgba(153, 102, 255, 0.2)',
+                      'rgba(201, 203, 207, 0.2)'
+                  ];
+
+                  var borderColors = [
+                      'rgb(255, 99, 132)',
+                      'rgb(255, 159, 64)',
+                      'rgb(255, 205, 86)',
+                      'rgb(75, 192, 192)',
+                      'rgb(54, 162, 235)',
+                      'rgb(153, 102, 255)',
+                      'rgb(201, 203, 207)'
+                  ];
+
+                  // Renk atama için bir nesne
+                  var academyColors = {};
+
+                  // Akademilere sırayla renk atama
+                  academies.forEach((academy, index) => {
+                      academyColors[academy] = {
+                          backgroundColor: backgroundColors[index % backgroundColors.length],
+                          borderColor: borderColors[index % borderColors.length],
+                          borderWidth: 1
+                      };
+                  });
+
+                  // Chart.js ile çubuk grafiği yapma
+                  var ctx = document.getElementById('last7DaysSalesChart').getContext('2d');
+
+                  var datasets = academies.map(academy => {
+                      return {
+                          label: academy,
+                          data: allDays.map(day => {
+                              var sale = last7DaysSalesData.find(s => s.sale_date === day && s.academy_name === academy);
+                              return sale ? sale.total_courses : 0;
+                          }),
+                          ...academyColors[academy]
+                      };
+                  });
+
+                  var myChart = new Chart(ctx, {
+                      type: 'line',
+                      data: {
+                          labels: allDays,
+                          datasets: datasets
+                      },
+                      options: {
+                          plugins: {
+                              datalabels: {
+                                  // Ayarlar buraya eklenmeli
+                                  backgroundColor: function(context) {
+                                      return context.dataset.backgroundColor;
+                                  },
+                              }
+                          },
+                          legend: {
+                              display: true,
+                              position: 'top',
+                              labels: {
+                                  font: {
+                                      size: 7
+                                  }
+                              }
+                          },
+                          title: {
+                              display: true,
+                              text: 'Son 7 Günün Satışları',
+                              font: {
+                                  size: 10
+                              }
+                          },
+
+                          elements: {
+                              line: {
+                                  fill: false,
+                                  tension: 0.4,
+                                  borderWidth: 3 // Çizgi kalınlığını istediğiniz değere ayarlayın
+                              }
+                          },
+                          scales: {
+                              y: {
+                                  stacked: false
+                              }
+                          }
+                      }
+                  });
+
+             </script>
+
+
+              <script>
+                  var academyNamesCourses = <?php echo json_encode(array_values($academy_names_courses)); ?>;
+                  var totalCoursesCounts = <?php echo json_encode(array_values($total_courses_counts)); ?>;
+
+                  var ctxCourses = document.getElementById('academyCourseChart').getContext('2d');
+                  var academyCourseChart = new Chart(ctxCourses, {
+                      type: 'pie',
+                      data: {
+                          labels: academyNamesCourses,
+                          datasets: [{
+                              data: totalCoursesCounts,
+                              backgroundColor: backgroundColors.slice(0, totalCoursesCounts.length),
+                              borderColor: borderColors.slice(0, totalCoursesCounts.length),
+                              borderWidth: 1
+                          }]
+                      },
+                      options: {
+                          plugins: {
+                              legend: {
+                                  display: false,
+                                  position: 'left', // 'bottom', 'top', 'left', 'right' gibi değerler kullanılabilir
+                                  labels: {
+                                      font: {
+                                          size: 10 // veya başka bir değer
+                                      }
+                                  }
+                              },
+                              title: {
+                                  display: true,
+                                  text: 'Akademi x Toplam Ders', // Burada başlığı istediğiniz gibi değiştirebilirsiniz
+                                  font: {
+                                      size: 10 // veya başka bir değer
+                                  }
+                              }
+                          },
+                          scale: {
+                              ticks: {
+                                  beginAtZero: true
+                              }
+                          }
+                      }
+                  });
+              </script>
+
+
+              <script>
+                  var academyNamesStudents = <?php echo json_encode(array_values($academy_names_students)); ?>;
+                  var totalStudentsCounts = <?php echo json_encode(array_values($total_students_counts)); ?>;
+
+                  var ctxStudents = document.getElementById('academyStudentChart').getContext('2d');
+                  var academyStudentChart = new Chart(ctxStudents, {
+                      type: 'pie',
+                      data: {
+                          labels: academyNamesStudents,
+                          datasets: [{
+                              data: totalStudentsCounts,
+                              backgroundColor: backgroundColors.slice(0, totalStudentsCounts.length),
+                              borderColor: borderColors.slice(0, totalStudentsCounts.length),
+                              borderWidth: 1
+                          }]
+                      },
+                      options: {
+                          plugins: {
+                              legend: {
+                                  display: false,
+                                  position: 'left', // 'bottom', 'top', 'left', 'right' gibi değerler kullanılabilir
+                                  labels: {
+                                      font: {
+                                          size: 10 // veya başka bir değer
+                                      }
+                                  }
+                              },
+                              title: {
+                                  display: true,
+                                  text: 'Akademi x Toplam Öğrenci', // Burada başlığı istediğiniz gibi değiştirebilirsiniz
+                                  font: {
+                                      size: 10 // veya başka bir değer
+                                  }
+                              }
+                          },
+                          scale: {
+                              ticks: {
+                                  beginAtZero: true
+                              }
+                          }
+                      }
+                  });
+              </script>
+
+              <script>
+                  var courseNamesPlans = <?php echo json_encode(array_values($course_names_plans)); ?>;
+                  var totalCoursePlansCounts = <?php echo json_encode(array_values($total_course_plans_counts)); ?>;
+
+                  var ctxTotalCoursePlans = document.getElementById('totalCoursePlansChart').getContext('2d');
+                  var totalCoursePlansChart = new Chart(ctxTotalCoursePlans, {
+                      type: 'pie',
+                      data: {
+                          labels: courseNamesPlans,
+                          datasets: [{
+                              data: totalCoursePlansCounts,
+                              backgroundColor: backgroundColors.slice(0, totalCoursePlansCounts.length),
+                              borderColor: borderColors.slice(0, totalCoursePlansCounts.length),
+                              borderWidth: 1
+                          }]
+                      },
+                      options: {
+                          plugins: {
+                              legend: {
+                                  display: false,
+                                  position: 'left', // 'bottom', 'top', 'left', 'right' gibi değerler kullanılabilir
+                                  labels: {
+                                      font: {
+                                          size: 10 // veya başka bir değer
+                                      }
+                                  }
+                              },
+                              title: {
+                                  display: true,
+                                  text: 'Derslere Göre Toplam Planlar', // Burada başlığı istediğiniz gibi değiştirebilirsiniz
+                                  font: {
+                                      size: 10 // veya başka bir değer
+                                  }
+                              }
+                          },
+                          scale: {
+                              ticks: {
+                                  beginAtZero: true
+                              }
+                          }
+                      }
+                  });
+              </script>
+
+
+
+
+              <h4 class="mt-5" style="display: inline-block; margin-right: 10px;">Tanışma Dersleri</h4>
               <small><a href="introductory_courses.php">Tüm Tanışma Dersleri</a></small>
               <div class="table-responsive small">
                   <table class="table table-striped table-sm" style="border: 1px solid #ddd;">
