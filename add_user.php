@@ -35,23 +35,30 @@ if (!isset($_SESSION["admin_id"])) {
 }
 
 require_once "db_connection.php";
-
-//Import PHPMailer classes into the global namespace
-//These must be at the top of your script, not inside a function
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-
-//Load Composer's autoloader
 require 'vendor/autoload.php';
 
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 use Infobip\Api\SmsApi;
 use Infobip\Configuration;
 use Infobip\Model\SmsAdvancedTextualRequest;
 use Infobip\Model\SmsDestination;
 use Infobip\Model\SmsTextualMessage;
+use libphonenumber\PhoneNumberUtil;
+use libphonenumber\PhoneNumberFormat;
+use League\ISO3166\ISO3166;
+
+// Ülkeleri al
+$phoneNumberUtil = PhoneNumberUtil::getInstance();
+$iso3166 = new ISO3166();
+
+// Rastgele doğrulama kodu oluşturma fonksiyonu
+function generateVerificationCode() {
+    return mt_rand(100000, 999999); // Örnek: 6 haneli rastgele kod
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Diğer form alanlarını al
     $username = isset($_POST["username"]) ? $_POST["username"] : "";
     $tc_identity = isset($_POST["tc_identity"]) ? $_POST["tc_identity"] : "";
     $first_name = isset($_POST["first_name"]) ? $_POST["first_name"] : "";
@@ -65,7 +72,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $health_issue = isset($_POST["health_issue"]) ? $_POST["health_issue"] : "";
     $emergency_contact = isset($_POST["emergency_contact"]) ? $_POST["emergency_contact"] : "";
     $emergency_phone = isset($_POST["emergency_phone"]) ? $_POST["emergency_phone"] : "";
+    $countryCode = isset($_POST["country"]) ? $_POST["country"] : "";
+    $phoneNumber = isset($_POST["phone"]) ? $_POST["phone"] : "";
+    $country = $_POST["country"];
 
+
+    // Ülke kodunu ve telefon numarasını birleştir
+    $fullPhoneNumber = "+" . $phoneNumberUtil->getCountryCodeForRegion($countryCode) . $phoneNumber;
+
+    // $phone değişkenini güncelle
+    $phone = $fullPhoneNumber;
 
     // Hash'lenmemiş şifreyi al
     $plainPassword = $_POST["password"];
@@ -111,11 +127,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         health_issue,
         emergency_contact,
         emergency_phone,
+        country,
         created_at,
         created_by_user_id,
         updated_at,
         updated_by_user_id 
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try {
             $stmt = $db->prepare($insertQuery);
@@ -139,6 +156,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $health_issue,
                 $emergency_contact,
                 $emergency_phone,
+                $country,
                 date("Y-m-d H:i:s"),
                 $_SESSION["admin_id"],  // Varsayılan olarak admin kullanıcısının ID'sini ekledim, sizin kullanıcı kimliğinize göre düzenlemeniz gerekebilir
                 date("Y-m-d H:i:s"),
@@ -155,18 +173,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Hata durumunda hata mesajını $message değişkenine atıyoruz
             $message = "Hata: " . $e->getMessage();
         }
-
     }
-}
 
-// Rastgele doğrulama kodu oluşturma fonksiyonu
-function generateVerificationCode() {
-    return mt_rand(100000, 999999); // Örnek: 6 haneli rastgele kod
 }
 
 // E-posta gönderme fonksiyonu
 function sendVerificationEmail($to, $verificationCode, $first_name, $last_name, $plainPassword, $username, $email) {
-    global $config, $siteName, $agreementLink, $siteUrl, $first_name, $last_name, $plainPassword, $username, $email;
+    global $config, $siteName, $agreementLink, $siteUrl;
 
     $mail = new PHPMailer(true);
 
@@ -446,8 +459,8 @@ require_once "admin_panel_header.php";
 
                         <div class="mb-3">
                             <label class="form-label" for="tc_identity">TC Kimlik No:</label>
-                            <input class="form-control" type="text" name="tc_identity" required>
-                            <div class="invalid-feedback">Bu alan gereklidir.</div>
+                            <input class="form-control" type="text" name="tc_identity" id="tc_identity" required>
+                            <div class="invalid-feedback">Bu alan gereklidir ve maksimum 11 haneli sayı olmalıdır.</div>
                         </div>
 
                         <div class="mb-3">
@@ -470,6 +483,22 @@ require_once "admin_panel_header.php";
                         </div>
 
                         <div class="mb-3">
+                            <label for="country" class="form-label">Ülke:</label>
+                            <div class="input-group">
+                                <select class="form-select" name="country" id="country" required>
+                                    <?php
+                                    foreach ($iso3166->all() as $country) {
+                                        $selected = ($country['alpha2'] == 'TR') ? 'selected' : '';
+                                        $countryCode = $phoneNumberUtil->getCountryCodeForRegion($country['alpha2']);
+                                        $countryName = ($country['alpha2'] == 'TR') ? 'Türkiye' : $country['name'];
+                                        echo "<option value=\"" . $country['alpha2'] . "\" data-country-code=\"+$countryCode\" $selected>{$countryName}</option>";
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
                             <label for="phone" class="form-label">Telefon:</label>
                             <div class="input-group">
                                 <span class="input-group-text" id="phone-addon">+90</span>
@@ -483,6 +512,25 @@ require_once "admin_panel_header.php";
                             <input type="date" name="birth_date" class="form-control" required>
                             <div class="invalid-feedback">Bu alan gereklidir.</div>
                         </div>
+
+                        <script>
+                            // JavaScript ile ülke seçimi değiştiğinde telefon kodunu güncelle
+                            var countrySelect = document.getElementById("country");
+                            var phoneAddon = document.getElementById("phone-addon");
+
+                            countrySelect.addEventListener("change", function () {
+                                var selectedOption = this.options[this.selectedIndex];
+                                var countryCode = (selectedOption && selectedOption.getAttribute("data-country-code")) || "+90";
+
+                                phoneAddon.innerText = countryCode;
+                            });
+
+                            // Sayfa yüklendiğinde de ilk değeri al
+                            var defaultCountryOption = countrySelect.options[countrySelect.selectedIndex];
+                            var defaultCountryCode = (defaultCountryOption && defaultCountryOption.getAttribute("data-country-code")) || "+90";
+                            phoneAddon.innerText = defaultCountryCode;
+                        </script>
+
 
                     </div>
 
