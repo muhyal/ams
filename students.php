@@ -94,7 +94,16 @@ require_once "admin_panel_header.php";
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
                 <h2>Öğrenci Listesi</h2>
             </div>
-
+            <script>
+                $(document).ready( function () {
+                    // Tabloyu Datatables ile başlatma ve Türkçe dilini kullanma
+                    $('#studentsTable').DataTable({
+                        "language": {
+                            "url": "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Turkish.json"
+                        }
+                    });
+                });
+            </script>
             <style>
                 table {
                     width: 100%;
@@ -144,7 +153,7 @@ require_once "admin_panel_header.php";
                     background-color: #0056b3; /* Hover efekti arka plan rengi */
                 }
             </style>
-            <table>
+            <table id="studentsTable">
     <thead>
     <tr><th>Akademi</th>
         <th>Adı</th>

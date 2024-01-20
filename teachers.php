@@ -85,9 +85,18 @@ require_once "admin_panel_header.php";
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
                     <h2>Öğretmen Listesi</h2>
                 </div>
-
+                <script>
+                    $(document).ready( function () {
+                        // Tabloyu Datatables ile başlatma ve Türkçe dilini kullanma
+                        $('#teachersTable').DataTable({
+                            "language": {
+                                "url": "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Turkish.json"
+                            }
+                        });
+                    });
+                </script>
                 <div class="table-responsive">
-                    <table class="table table-bordered">
+                    <table id="teachersTable" class="table table-bordered">
                         <thead>
                         <tr>
                             <th>No</th>

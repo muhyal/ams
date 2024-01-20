@@ -32,7 +32,7 @@ if (!isset($_SESSION["admin_id"])) {
 
 require_once "db_connection.php";
 require_once "config.php";
-require_once "inc/functions.php";
+require_once "src/functions.php";
 
 // Kullanıcı ve akademi ilişkisini çekmek için bir SQL sorgusu
 $getUserAcademyQuery = "SELECT academy_id FROM user_academy_assignment WHERE user_id = :user_id";
@@ -64,7 +64,16 @@ require_once "admin_panel_header.php";
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
                 <h2>Telafi Dersleri</h2>
             </div>
-
+            <script>
+                $(document).ready( function () {
+                    // Tabloyu Datatables ile başlatma ve Türkçe dilini kullanma
+                    $('#rescheduledCoursesTable').DataTable({
+                        "language": {
+                            "url": "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Turkish.json"
+                        }
+                    });
+                });
+            </script>
             <?php
             // Check if the 'id' parameter is set in the URL
             $selectedRescheduledId = isset($_GET['id']) ? $_GET['id'] : null;
@@ -144,7 +153,7 @@ require_once "admin_panel_header.php";
             ?>
 
 
-            <table class="table table-striped">
+            <table id="rescheduledCoursesTable" class="table table-striped">
                 <thead>
                 <tr>
                     <th>Hangi Planın Telafisi</th>

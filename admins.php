@@ -54,10 +54,20 @@ require_once "admin_panel_header.php";
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
                 <h2>Yönetici Listesi</h2>
             </div>
+            <script>
+                $(document).ready( function () {
+                    // Tabloyu Datatables ile başlatma ve Türkçe dilini kullanma
+                    $('#adminsTable').DataTable({
+                        "language": {
+                            "url": "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Turkish.json"
+                        }
+                    });
+                });
+            </script>
             <!-- Yönetici Listesi Tablosu -->
             <div class="table-responsive">
                 <div class="table-responsive">
-                    <table class="table table-striped table-sm">
+                    <table id="adminsTable" class="table table-striped table-sm">
                         <thead class="thead-light">
                     <tr>
                         <th scope="col" class="text-sm">No</th>

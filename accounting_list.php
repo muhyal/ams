@@ -30,7 +30,7 @@ if (!isset($_SESSION["admin_id"])) {
 }
 require_once "db_connection.php";
 require_once "config.php";
-require_once "inc/functions.php";
+require_once "src/functions.php";
 
 // Kullanıcı ve akademi ilişkisini çekmek için bir SQL sorgusu
 $getUserAcademyQuery = "SELECT academy_id FROM user_academy_assignment WHERE user_id = :user_id";
@@ -244,6 +244,16 @@ function getBankName($bankId)
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
                 <h2>Muhasebe Kayıtları</h2>
+                <script>
+                    $(document).ready( function () {
+                        // Tabloyu Datatables ile başlatma ve Türkçe dilini kullanma
+                        $('#accountingListTable').DataTable({
+                            "language": {
+                                "url": "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Turkish.json"
+                            }
+                        });
+                    });
+                </script>
                 <div class="btn-toolbar mb-2 mb-md-0">
                     <div class="btn-group mr-2">
                         <a href="add_payment.php" class="btn btn-sm btn-outline-secondary">Muhasebe Kaydı Ekle</a>
@@ -252,7 +262,7 @@ function getBankName($bankId)
                 </div>
             </div>
     <div class="table-responsive">
-        <table class="table table-bordered table-striped">
+        <table id="accountingListTable" class="table table-bordered table-striped">
             <thead class="thead-dark">
             <tr>
                 <th>Plan</th>

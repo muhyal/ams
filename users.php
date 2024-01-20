@@ -74,27 +74,37 @@ require_once "admin_panel_header.php";
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
                 <h2>Kullanıcılar</h2>
             </div>
+            <script>
+                $(document).ready( function () {
+                    // Tabloyu Datatables ile başlatma ve Türkçe dilini kullanma
+                    $('#usersTable').DataTable({
+                        "language": {
+                            "url": "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Turkish.json"
+                        }
+                    });
+                });
+            </script>
 
             <div class="table-responsive">
                 <!-- Kullanıcı listesini gösterme -->
-                <table class="table table-striped table-sm">
+                <table id="usersTable" class="table table-striped table-sm">
                     <thead class="thead-light">
                     <tr>
                         <th scope="col" class="text-sm">#</th>
-                        <th scope="col" class="text-sm">Ad</th>
-                        <th scope="col" class="text-sm">Soyad</th>
+                        <th scope="col" class="text-sm">Tam Ad</th>
                         <th scope="col" class="text-sm">E-posta</th>
                         <!--<th scope="col" class="text-sm">T.C. Kimlik No</th>-->
                         <th scope="col" class="text-sm">Telefon</th>
                         <!--<th scope="col" class="text-sm">SMS Doğrulaması Gönderildi</th>-->
                         <!--<th scope="col" class="text-sm">SMS Doğrulaması Onaylandı</th>-->
-                        <th scope="col" class="text-sm">SMS</th>
+                        <th scope="col" class="text-sm">Rolü</th>
                         <!--<th scope="col" class="text-sm">SMS Doğrulama IP</th>
                         <!--<th scope="col" class="text-sm">E-Posta Doğrulaması Gönderildi</th>-->
                         <!--<th scope="col" class="text-sm">E-Posta Doğrulaması Onaylandı</th>-->
-                        <th scope="col" class="text-sm">E-posta</th>
+                        <th scope="col" class="text-sm"><i class="fas fa-mobile-alt text-dark"></i></th>
+                        <th scope="col" class="text-sm"><i class="fas fa-envelope text-dark"></i></th>
+                        <th scope="col" class="text-sm"><i class="fas fa-user-lock text-dark"></th>
                         <!--<th scope="col" class="text-sm">E-posta Doğrulama IP</th>-->
-                        <th scope="col" class="text-sm">Rolü</th>
                         <th scope="col" class="text-sm">İşlemler</th>
                     </tr>
                     </thead>
@@ -102,26 +112,37 @@ require_once "admin_panel_header.php";
                     <?php foreach ($users as $user): ?>
                         <tr <?php echo $user['deleted_at'] ? 'class="deleted-user"' : ''; ?>>
                             <th scope="row"><?= $user['id'] ?></th>
-                            <td><?= $user['first_name'] ?></td>
-                            <td><?= $user['last_name'] ?></td>
+                            <td><?= $user['first_name'] ?> <?= $user['last_name'] ?></td>
                             <td><?= $user['email'] ?></td>
                             <!--<td><?= $user['tc_identity'] ?></td>-->
                             <td><?= $user['phone'] ?></td>
                             <!--<td><?= $user['verification_time_sms_sent'] ?></td>-->
                             <!--<td><?= $user['verification_time_sms_confirmed'] ?></td>-->
-                            <td><?= $user['verification_time_sms_confirmed'] ? '<i class="fas fa-check text-success"></i> Doğrulandı' : '<i class="fas fa-times text-danger"></i> Doğrulanmadı' ?></td>
+                            <td><?= $user['type_name'] ?></td>
+                            <td><?= $user['verification_time_sms_confirmed'] ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-times text-danger"></i>' ?></td>
                             <!--<td><?= $user['verification_ip_sms'] ?></td>-->
                             <!--<td><?= $user['verification_time_email_sent'] ?></td>-->
                             <!--<td><?= $user['verification_time_email_confirmed'] ?></td>-->
-                            <td><?= $user['verification_time_email_confirmed'] ? '<i class="fas fa-check text-success"></i> Doğrulandı' : '<i class="fas fa-times text-danger"></i> Doğrulanmadı' ?></td>
+                            <td><?= $user['verification_time_email_confirmed'] ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-times text-danger"></i>' ?></td>
                             <!--<td><?= $user['verification_ip_email'] ?></td>-->
-                            <td><?= $user['type_name'] ?></td>
+                            <td>
+                                <?php
+                                if ($user['deleted_at']) {
+                                    echo '<i class="fas fa-trash-alt text-danger"></i>';
+                                } elseif ($user['is_active']) {
+                                    echo '<i class="far fa-check-circle text-success"></i>';
+                                } else {
+                                    echo '<i class="far fa-times-circle text-warning"></i>';
+                                }
+                                ?>
+                            </td>
                             <td>
                                 <?php if ($user['deleted_at']): ?>
                                     <a class="btn btn-primary btn-sm" href="restore_user.php?id=<?php echo $user["id"]; ?>" onclick="return confirm('Bu kullanıcıyı silmeyi geri almak istediğinizden emin misiniz?')">
                                         <i class="fa-solid fa-clock-rotate-left"></i>
                                     </a>
                                     <a class="btn btn-primary btn-sm" href="user_profile.php?id=<?php echo $user['id']; ?>"><i class="fas fa-user fa-sm"></i></a>
+                                    <a class="btn btn-warning btn-sm" href="edit_user.php?id=<?php echo $user['id']; ?>"><i class="fas fa-edit fa-sm"></i></a>
 
                                 <?php else: ?>
                                 <!-- Silinmeyen kullanıcılar için düzenleme ve silme bağlantıları -->

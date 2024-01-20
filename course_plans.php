@@ -135,7 +135,16 @@ require_once "admin_panel_header.php";
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
                 <h2>Ders Planları</h2>
             </div>
-
+            <script>
+                $(document).ready( function () {
+                    // Tabloyu Datatables ile başlatma ve Türkçe dilini kullanma
+                    $('#coursePlansTable').DataTable({
+                        "language": {
+                            "url": "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Turkish.json"
+                        }
+                    });
+                });
+            </script>
             <?php
             if ($selectedPlan) {
                 echo "
@@ -172,7 +181,7 @@ require_once "admin_panel_header.php";
 
 
 
-            <table class="table table-striped table-sm" style="border: 1px solid #ddd;">
+            <table id="coursePlansTable" class="table table-striped table-sm" style="border: 1px solid #ddd;">
                 <thead>
                 <tr>
                     <th>Öğretmen</th>
