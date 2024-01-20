@@ -118,10 +118,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Sorguyu çalıştırın
     if ($stmt->execute()) {
         // Başarılı bir şekilde eklendiğinde yapılacak işlemler
-        echo "Ders başarıyla planlandı.";
+        $alertMessage = "Telafi dersi başarıyla planlandı.";
+        $alertType = "success";
     } else {
         // Hata durumunda yapılacak işlemler
-        echo "Ders planlanırken bir hata oluştu.";
+        $alertMessage = "Telafi dersi planlanırken bir hata oluştu.";
+        $alertType = "danger";
     }
 }
 
@@ -169,6 +171,24 @@ require_once "admin_panel_sidebar.php";
                 </a>
             </div>
         </div>
+
+        <?php if (!empty($alertMessage)): ?>
+            <div id="alert-container" class="alert alert-<?php echo $alertType; ?> alert-dismissible fade show" role="alert">
+                <?php echo $alertMessage; ?>
+            </div>
+
+            <script>
+                // Sayfa yüklendikten sonra uyarıyı otomatik kapat
+                $(document).ready(function(){
+                    // Belirli bir uyarı türüne göre kontrol et ve kapat
+                    if ($("#alert-container").length > 0) {
+                        setTimeout(function(){
+                            $("#alert-container").fadeOut("slow");
+                        }, 5000);
+                    }
+                });
+            </script>
+        <?php endif; ?>
 
         <form method="POST" action="add_rescheduled_course_plan.php">
             <input type="hidden" name="course_plan_id" value="<?= $selectedCoursePlan['id'] ?? '' ?>">

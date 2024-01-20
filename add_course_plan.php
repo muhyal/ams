@@ -37,6 +37,7 @@ require_once "config.php";
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
 
+
 // Post işlemi kontrolü
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Formdan gelen verileri alın
@@ -87,13 +88,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->bindParam(":updated_by_user_id", $createdByUserId, PDO::PARAM_INT);
 
 
-    // Sorguyu çalıştırın
+    $alertMessage = ""; // Uyarı mesajlarını saklamak için boş bir string
+    $alertType = ""; // Uyarı tipini saklamak için boş bir string
+
+// Sorguyu çalıştırın
     if ($stmt->execute()) {
         // Başarılı bir şekilde eklendiğinde yapılacak işlemler
-        echo "Ders başarıyla planlandı.";
+        $alertMessage = "Ders başarıyla planlandı.";
+        $alertType = "success";
     } else {
         // Hata durumunda yapılacak işlemler
-        echo "Ders planlanırken bir hata oluştu.";
+        $alertMessage = "Ders planlanırken bir hata oluştu.";
+        $alertType = "danger";
     }
 }
 
@@ -140,6 +146,24 @@ require_once "admin_panel_sidebar.php";
                 </a>
             </div>
         </div>
+
+        <?php if (!empty($alertMessage)): ?>
+            <div id="alert-container" class="alert alert-<?php echo $alertType; ?> alert-dismissible fade show" role="alert">
+                <?php echo $alertMessage; ?>
+            </div>
+
+            <script>
+                // Sayfa yüklendikten sonra uyarıyı otomatik kapat
+                $(document).ready(function(){
+                    // Belirli bir uyarı türüne göre kontrol et ve kapat
+                    if ($("#alert-container").length > 0) {
+                        setTimeout(function(){
+                            $("#alert-container").fadeOut("slow");
+                        }, 5000);
+                    }
+                });
+            </script>
+        <?php endif; ?>
 
         <form method="POST" action="add_course_plan.php">
             <!-- Öğretmen Dropdown -->
