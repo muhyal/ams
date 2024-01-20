@@ -107,6 +107,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $new_password = $_POST["new_password"];
     $user_type = $_POST["user_type"];
     $notes = $_POST["notes"];
+    $is_active = $_POST["is_active"];
 
     // Kurumsal bilgileri alın
     $invoice_type = isset($_POST["invoice_type"]) ? $_POST["invoice_type"] : "";
@@ -124,6 +125,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         phone = ?, 
         user_type = ?, 
         notes = ?, 
+        is_active = ?, 
         invoice_type = ?, 
         tax_company_name = ?, 
         tax_office = ?, 
@@ -142,7 +144,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Şifre değişikliği yapılacak mı kontrolü
     $params = [
         $username, $tc_identity, $first_name, $last_name, $email, $phone,
-        $user_type, $notes, $invoice_type, $tax_company_name, $tax_office, $tax_number,
+        $user_type, $notes, $is_active,
+        $invoice_type, $tax_company_name, $tax_office, $tax_number,
         $birth_date, $city, $district, $blood_type, $health_issue, $emergency_contact,
         $emergency_phone, date("Y-m-d H:i:s"),
         $admin_id // Assuming $admin_id is the ID of the admin user making the update
@@ -196,6 +199,12 @@ require_once "admin_panel_header.php";
             </div>
                         <?php if (isset($user)): ?>
                             <form method="post" action="" class="mb-4">
+
+                                <label class="form-label mt-3" for="is_active">Durum:</label>
+                                <select class="form-select" name="is_active" required>
+                                    <option value="1" <?php echo $user["is_active"] == 1 ? 'selected' : ''; ?>>Aktif</option>
+                                    <option value="0" <?php echo $user["is_active"] == 0 ? 'selected' : ''; ?>>Pasif</option>
+                                </select>
 
                                 <label class="form-label mt-3" for="user_type">Kullanıcı Tipi:</label>
                                 <select class="form-select" name="user_type" required>

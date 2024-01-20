@@ -56,18 +56,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($user && password_verify($password, $user["password"])) {
-            // Kullanıcı girişi başarılı, oturum başlat
-            $_SESSION["user_id"] = $user["id"];
-            $_SESSION["user_type"] = $user["user_type"];
+            // Check if the user is active
+            if ($user["is_active"] == 0) {
+                echo '<div class="alert alert-danger" role="alert">
+            Bu hesap şu anda pasiftir. Giriş yapılamaz.
+        </div>';
+            } elseif ($user["deleted_at"] !== null) {
+                echo '<div class="alert alert-danger" role="alert">
+            Bu hesap silinmiştir. Giriş yapılamaz.
+        </div>';
+            } else {
+                // Kullanıcı girişi başarılı, oturum başlat
+                $_SESSION["user_id"] = $user["id"];
+                $_SESSION["user_type"] = $user["user_type"];
 
-            // Kullanıcı türüne göre yönlendirme yap
-            header("Location: user_panel.php");
-            exit();
+                // Kullanıcı türüne göre yönlendirme yap
+                header("Location: user_panel.php");
+                exit();
+            }
         } else {
             // Kullanıcı doğrulanamadı, hata mesajı gösterme
             echo '<div class="alert alert-danger" role="alert">
-                Hatalı e-posta adresi ya da şifre girdiniz.
-            </div>';
+        Hatalı e-posta adresi ya da şifre girdiniz.
+    </div>';
         }
     } catch (PDOException $e) {
         echo "Hata: " . $e->getMessage();

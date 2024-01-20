@@ -128,11 +128,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         emergency_contact,
         emergency_phone,
         country,
+        is_active,
         created_at,
         created_by_user_id,
         updated_at,
         updated_by_user_id 
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try {
             $stmt = $db->prepare($insertQuery);
@@ -157,6 +158,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $emergency_contact,
                 $emergency_phone,
                 $country,
+                1,  // Set the default value for 'is_active' to 1 (active)
                 date("Y-m-d H:i:s"),
                 $_SESSION["admin_id"],  // Varsayılan olarak admin kullanıcısının ID'sini ekledim, sizin kullanıcı kimliğinize göre düzenlemeniz gerekebilir
                 date("Y-m-d H:i:s"),
