@@ -19,6 +19,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  *
  */
+
 $host = "localhost"; // Veritabanı sunucusu
 $db_name = "oim"; // Veritabanı adı
 $username = "oim"; // Veritabanı kullanıcı adı

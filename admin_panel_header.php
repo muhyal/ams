@@ -1,4 +1,4 @@
-<?php global $siteHeroDescription, $oimVersion, $adminUsername;
+<?php
 /**
  * @copyright Copyright (c) 2024, KUTBU
  *
@@ -19,7 +19,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  *
  */
-global $db, $showErrors, $siteName, $siteShortName, $siteUrl;
+global $db, $showErrors, $siteName, $siteShortName, $siteUrl, $siteHeroDescription, $oimVersion, $adminUsername;
 require_once "db_connection.php";
 require_once "config.php";
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir

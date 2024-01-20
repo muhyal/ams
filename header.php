@@ -1,4 +1,4 @@
-<?php global $siteHeroDescription;
+<?php
 /**
  * @copyright Copyright (c) 2024, KUTBU
  *
@@ -19,7 +19,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  *
  */
-global $db, $showErrors, $siteName, $siteShortName, $siteUrl, $config, $oimVersion;
+global $db, $showErrors, $siteName, $siteShortName, $siteUrl, $config, $oimVersion, $siteHeroDescription;
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
