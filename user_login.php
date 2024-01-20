@@ -28,8 +28,22 @@ require_once "db_connection.php";
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
+require_once "config.php";
+
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // reCAPTCHA token'ını alma
+    $recaptchaToken = $_POST['recaptcha_response'] ?? '';
+
+    // reCAPTCHA doğrulama
+    $recaptchaVerify = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=" . RECAPTCHA_SECRET_KEY . "&response={$recaptchaToken}");
+    $recaptchaResponse = json_decode($recaptchaVerify);
+
+    // reCAPTCHA doğrulaması başarılı değilse işlemi reddet
+    if (!$recaptchaResponse->success) {
+        die("reCAPTCHA doğrulaması başarısız. İşlem reddedildi.");
+    }
+
     // CSRF token kontrolü
     if (!isset($_POST['csrf_request']) || $_POST['csrf_request'] !== '1') {
         die("CSRF hatası! İşlem reddedildi.");
@@ -92,6 +106,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <main class="form-signin w-100 m-auto">
     <form method="post" action="user_login.php">
+        <!-- reCAPTCHA v3 için gizli alan -->
+        <input type="hidden" name="recaptcha_response" id="recaptcha_response">
+
         <input type="hidden" name="csrf_request" value="1">
 
         <img class="mb-4" src="./assets/brand/default_logo.png" alt="<?php echo $siteName ?>" title="<?php echo $siteName ?>" width="100" height="100">
@@ -116,6 +133,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </a>
         </div>
     </form>
+
 </main>
 
 <?php require_once "footer.php"; ?>

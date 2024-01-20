@@ -35,7 +35,6 @@
         </div>
     </div>
 </footer>
-
 <script src="./assets/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 <script src="./assets/js/dashboard.js"></script></body>
    <script>
@@ -56,4 +55,15 @@
         }
     });
    </script>
+<!-- Recaptcha kütüphanesi -->
+<script src="https://www.google.com/recaptcha/api.js?render=<?php echo RECAPTCHA_SITE_KEY; ?>"></script>
+<script>
+    // Recaptcha token'ını alma
+    grecaptcha.ready(function () {
+        grecaptcha.execute('<?php echo RECAPTCHA_SITE_KEY; ?>', { action: 'login' }).then(function (token) {
+            document.getElementById('recaptcha_response').value = token;
+        });
+    });
+</script>
+
    </html>
