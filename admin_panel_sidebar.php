@@ -46,13 +46,13 @@
                         </li>
 
                         <!-- Muhasebe Menüsü -->
-                        <li class="nav-item <?php echo (basename($_SERVER['PHP_SELF']) == 'accounting.php' || basename($_SERVER['PHP_SELF']) == 'add_payment.php' || basename($_SERVER['PHP_SELF']) == 'accounting_list.php' || basename($_SERVER['PHP_SELF']) == 'accounting_reports.php') ? 'active show' : ''; ?>">
+                        <li class="nav-item <?php echo (basename($_SERVER['PHP_SELF']) == 'accounting.php' || basename($_SERVER['PHP_SELF']) == 'add_payment.php' || basename($_SERVER['PHP_SELF']) == 'accounting_list.php' || basename($_SERVER['PHP_SELF']) == 'reports.php') ? 'active show' : ''; ?>">
                             <a class="nav-link" data-bs-toggle="collapse" href="#accountingMenu">
                                 <i class="bi bi-list"></i>
                                 Muhasebe
                                 <i class="bi bi-caret-down-fill"></i>
                             </a>
-                            <div class="collapse <?php echo (basename($_SERVER['PHP_SELF']) == 'accounting.php' || basename($_SERVER['PHP_SELF']) == 'add_payment.php' || basename($_SERVER['PHP_SELF']) == 'accounting_list.php' || basename($_SERVER['PHP_SELF']) == 'accounting_reports.php') ? 'show' : ''; ?>" id="accountingMenu">
+                            <div class="collapse <?php echo (basename($_SERVER['PHP_SELF']) == 'accounting.php' || basename($_SERVER['PHP_SELF']) == 'add_payment.php' || basename($_SERVER['PHP_SELF']) == 'accounting_list.php' || basename($_SERVER['PHP_SELF']) == 'reports.php') ? 'show' : ''; ?>" id="accountingMenu">
                                 <ul class="nav flex-column">
                                     <li class="nav-item">
                                         <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'accounting.php') ? 'active' : ''; ?>" href="accounting.php">
@@ -62,11 +62,6 @@
                                     <li class="nav-item">
                                         <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'accounting_list.php') ? 'active' : ''; ?>" href="accounting_list.php">
                                             Muhasebe Listesi
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'accounting_reports.php') ? 'active' : ''; ?>" href="accounting_reports.php">
-                                            Muhasebe Raporları
                                         </a>
                                     </li>
                                 </ul>
@@ -188,6 +183,11 @@
                     Sözleşmeler
                 </a>
             </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'reports.php') ? 'active' : ''; ?>" href="reports.php">
+                                Raporlar
+                            </a>
+                        </li>
                     </ul>
 
                     <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-body-secondary text-uppercase">
