@@ -23,7 +23,7 @@ global $db, $showErrors, $siteName, $siteShortName, $siteUrl;
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
-require_once "config.php";
+require_once "config/config.php";
 
 session_start();
 session_regenerate_id(true);
@@ -34,7 +34,7 @@ if (!isset($_SESSION["admin_id"])) {
     exit();
 }
 
-require_once "db_connection.php";
+require_once "config/db_connection.php";
 require 'vendor/autoload.php';
 
 
@@ -415,7 +415,7 @@ require_once "admin_panel_header.php";
                         }
 
                         // Veritabanı bağlantısı
-                        require_once "db_connection.php";
+                        require_once "config/db_connection.php";
 
                         // Benzersiz bir kullanıcı adı oluşturana kadar dönen fonksiyon
                         function getUniqueRandomUsername($db) {

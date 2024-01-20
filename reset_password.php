@@ -25,7 +25,7 @@ global $resetPasswordDescription, $db, $showErrors, $siteName, $siteShortName, $
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
 
-require_once "config.php";
+require_once "config/config.php";
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
@@ -34,7 +34,7 @@ use PHPMailer\PHPMailer\SMTP;
 session_start();
 session_regenerate_id(true);
 
-require_once "db_connection.php"; // Veritabanı bağlantısı
+require_once "config/db_connection.php"; // Veritabanı bağlantısı
 require 'vendor/autoload.php';
 
 if (isset($_POST["reset_request"])) {

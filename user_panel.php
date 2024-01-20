@@ -22,12 +22,12 @@ global $db, $showErrors, $siteName, $siteShortName, $siteUrl, $config;
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
-require_once "config.php";
+require_once "config/config.php";
 
 session_start();
 session_regenerate_id(true);
 
-require_once "db_connection.php"; // Veritabanı bağlantısı
+require_once "config/db_connection.php"; // Veritabanı bağlantısı
 
 // Oturum kontrolü yaparak giriş yapılmış mı diye kontrol ediyoruz
 if (!isset($_SESSION["user_id"])) {

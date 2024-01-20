@@ -30,7 +30,7 @@ if (!isset($_SESSION["admin_id"])) {
     exit();
 }
 
-require_once "db_connection.php";
+require_once "config/db_connection.php";
 
 // Kullanıcı ve akademi ilişkisini çekmek için bir SQL sorgusu
 $getUserAcademyQuery = "SELECT academy_id FROM user_academy_assignment WHERE user_id = :user_id";
@@ -73,7 +73,7 @@ $query = "
 $stmt = $db->query($query);
 $teachers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-require_once "config.php";
+require_once "config/config.php";
 ?>
 <?php
 require_once "admin_panel_header.php";

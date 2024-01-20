@@ -27,8 +27,8 @@ if (!isset($_SESSION["admin_id"])) {
     exit();
 }
 
-require_once "db_connection.php";
-require_once "config.php";
+require_once "config/db_connection.php";
+require_once "config/config.php";
 
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);

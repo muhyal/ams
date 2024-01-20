@@ -23,8 +23,8 @@ global $db, $showErrors, $siteName, $siteShortName, $siteUrl;
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
-require_once "config.php";
-require_once "db_connection.php";
+require_once "config/config.php";
+require_once "config/db_connection.php";
 
 // Oturum kontrolü
 session_start();

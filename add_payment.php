@@ -30,8 +30,8 @@ if (!isset($_SESSION["admin_id"])) {
     exit();
 }
 
-require_once "db_connection.php";
-require_once "config.php";
+require_once "config/db_connection.php";
+require_once "config/config.php";
 
 // Kullanıcı ve akademi ilişkisini çekmek için bir SQL sorgusu
 $getUserAcademyQuery = "SELECT academy_id FROM user_academy_assignment WHERE user_id = :user_id";

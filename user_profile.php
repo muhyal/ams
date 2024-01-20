@@ -28,7 +28,7 @@ if (!isset($_SESSION["admin_id"])) {
     exit();
 }
 
-require_once "db_connection.php"; // Veritabanı bağlantısı
+require_once "config/db_connection.php"; // Veritabanı bağlantısı
 
 require 'vendor/autoload.php';
 

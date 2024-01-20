@@ -23,7 +23,7 @@ global $db;
 session_start();
 session_regenerate_id(true);
 
-require_once "db_connection.php";
+require_once "config/db_connection.php";
 
 // Kullanıcı oturum kontrolü yapılır
 if (!isset($_SESSION["user_id"])) {

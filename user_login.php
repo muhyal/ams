@@ -19,8 +19,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 global $showErrors, $db;
-require_once "db_connection.php";
-require_once "config.php";
+require_once "config/db_connection.php";
+require_once "config/config.php";
 
 // Oturum kontrolü
 session_start();

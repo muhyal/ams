@@ -23,7 +23,7 @@ global $db, $showErrors, $siteName, $siteShortName, $siteUrl;
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
-require_once "config.php";
+require_once "config/config.php";
 
 // Oturum kontrolü
 session_start();
@@ -34,7 +34,7 @@ if (!isset($_SESSION["admin_id"])) {
     exit();
 }
 
-require_once "db_connection.php"; // Veritabanı bağlantısı
+require_once "config/db_connection.php"; // Veritabanı bağlantısı
 require 'vendor/autoload.php';
 
 use libphonenumber\PhoneNumberUtil;

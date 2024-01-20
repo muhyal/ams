@@ -24,8 +24,8 @@ use PHPMailer\PHPMailer\SMTP;
 
 global $resetPasswordDescription, $db, $showErrors, $siteName, $siteShortName, $siteUrl, $config;
 
-require_once "db_connection.php";
-require_once "config.php";
+require_once "config/db_connection.php";
+require_once "config/config.php";
 require 'vendor/autoload.php';
 
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir

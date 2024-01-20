@@ -29,7 +29,7 @@ if (!isset($_SESSION["admin_id"])) {
     exit();
 }
 
-require_once "db_connection.php"; // Veritabanı bağlantısı
+require_once "config/db_connection.php"; // Veritabanı bağlantısı
 
 
 // Kullanıcı bilgilerini kullanabilirsiniz
@@ -39,7 +39,7 @@ $admin_username = $_SESSION["admin_username"];
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-require_once "config.php";
+require_once "config/config.php";
 
 // Kullanıcıları ve rolleri veritabanından çekme
 $query = "SELECT users.*, user_types.type_name 

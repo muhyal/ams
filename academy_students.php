@@ -28,8 +28,8 @@ if (!isset($_SESSION["admin_id"])) {
     header("Location: admin_login.php"); // Giriş sayfasına yönlendir
     exit();
 }
-require_once "db_connection.php";
-require_once "config.php";
+require_once "config/db_connection.php";
+require_once "config/config.php";
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);

@@ -1,5 +1,5 @@
 # Config files
-config.php
+config/config.php
 
 # Brand folder (Custom)
 /assets/brand/default_pp.png

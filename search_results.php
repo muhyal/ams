@@ -14,7 +14,7 @@ if (!isset($_SESSION["admin_id"])) {
     exit();
 }
 
-require_once "db_connection.php";
+require_once "config/db_connection.php";
 
 // formdan gelen search_type değerini alalım
 $searchType = $_GET['search_type'] ?? '';

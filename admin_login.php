@@ -23,7 +23,7 @@ global $showErrors, $siteName, $siteShortName, $siteUrl, $db;
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
-require_once "config.php";
+require_once "config/config.php";
 
 // Oturum kontrolü
 if (session_status() == PHP_SESSION_NONE) {
@@ -36,7 +36,7 @@ if (session_status() == PHP_SESSION_NONE) {
 
 $csrf_token = $_SESSION['csrf_token'];
 
-require_once "db_connection.php";
+require_once "config/db_connection.php";
 require 'vendor/autoload.php';
 
 use Infobip\Api\SmsApi;
