@@ -139,9 +139,6 @@ if (isset($_GET["edit"])) {
     $editAcademy = $editStmt->fetch(PDO::FETCH_ASSOC);
 }
 ?>
-<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/pikaday/css/pikaday.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/pikaday/pikaday.js"></script>
 <?php
 require_once "admin_panel_header.php";
 ?>
@@ -392,7 +389,7 @@ if (isset($_GET["edit"])) {
                             var academyId = <?php echo $academy["id"]; ?>;
 
                             // Build the new URL with the selected date
-                            var newUrl = 'generate_daily_turnover_list.php?academy_id=' + academyId + '&date=' + formattedDate;
+                            var newUrl = 'reports/generate_daily_turnover_list.php?academy_id=' + academyId + '&date=' + formattedDate;
 
                             // Redirect to the new URL
                             window.location.href = newUrl;

@@ -257,7 +257,7 @@ function getBankName($bankId)
                 <div class="btn-toolbar mb-2 mb-md-0">
                     <div class="btn-group mr-2">
                         <a href="add_payment.php" class="btn btn-sm btn-outline-secondary">Muhasebe Kaydı Ekle</a>
-                        <a href="accounting_reports.php" class="btn btn-sm btn-outline-secondary">Raporlar</a>
+                        <a href="reports.php" class="btn btn-sm btn-outline-secondary">Raporlar</a>
                     </div>
                 </div>
             </div>

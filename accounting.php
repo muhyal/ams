@@ -289,8 +289,8 @@ require_once "admin_panel_header.php";
                         </div>
                         <div class="card-body">
                             <p>Toplam Planlanan Ders Sayısı: ' . $total_course_plans . '</p>
-                            <p>Toplam Alınan Ödeme: ' . $total_payment . '</p>
-                            <p>Toplam Borç: ' . $total_debt . '</p>    
+                            <p>Toplam Alınan Ödeme: ' . $total_payment . ' TL</p>
+                            <p>Toplam Borç: ' . $total_debt . ' TL</p>    
                             <p>Mevcut Öğrenci Sayısı: ' . $student_count . '</p>
                             <p>Mevcut Öğretmen Sayısı: ' . $teacher_count . '</p>                      
                         </div>
