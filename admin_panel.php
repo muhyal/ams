@@ -528,38 +528,36 @@ require_once "admin_panel_header.php";
                       };
                   });
 
+                  var formattedDates = allDays.map(date => {
+                      const [year, month, day] = date.split('-');
+                      return `${day}.${month}`;
+                  });
+
                   var myChart = new Chart(ctx, {
                       type: 'line',
                       data: {
-                          labels: allDays,
+                          labels: formattedDates,
                           datasets: datasets
                       },
                       options: {
                           plugins: {
-                              datalabels: {
-                                  // Ayarlar buraya eklenmeli
-                                  backgroundColor: function(context) {
-                                      return context.dataset.backgroundColor;
-                                  },
-                              }
-                          },
-                          legend: {
-                              display: true,
-                              position: 'top',
-                              labels: {
+                              legend: {
+                                  display: false,
+                                  position: 'top', // 'bottom', 'top', 'left', 'right' gibi değerler kullanılabilir
+                                  labels: {
+                                      font: {
+                                          size: 10 // veya başka bir değer
+                                      }
+                                  }
+                              },
+                              title: {
+                                  display: true,
+                                  text: 'Son 7 Günün Satışları',
                                   font: {
-                                      size: 7
+                                      size: 10 // veya başka bir değer
                                   }
                               }
                           },
-                          title: {
-                              display: true,
-                              text: 'Son 7 Günün Satışları',
-                              font: {
-                                  size: 10
-                              }
-                          },
-
                           elements: {
                               line: {
                                   fill: false,
@@ -569,12 +567,11 @@ require_once "admin_panel_header.php";
                           },
                           scales: {
                               y: {
-                                  stacked: false
+                                  beginAtZero: true
                               }
                           }
                       }
                   });
-
              </script>
 
 
@@ -584,7 +581,7 @@ require_once "admin_panel_header.php";
 
                   var ctxCourses = document.getElementById('academyCourseChart').getContext('2d');
                   var academyCourseChart = new Chart(ctxCourses, {
-                      type: 'pie',
+                      type: 'radar',
                       data: {
                           labels: academyNamesCourses,
                           datasets: [{
@@ -598,7 +595,7 @@ require_once "admin_panel_header.php";
                           plugins: {
                               legend: {
                                   display: false,
-                                  position: 'left', // 'bottom', 'top', 'left', 'right' gibi değerler kullanılabilir
+                                  position: 'top', // 'bottom', 'top', 'left', 'right' gibi değerler kullanılabilir
                                   labels: {
                                       font: {
                                           size: 10 // veya başka bir değer
@@ -629,7 +626,7 @@ require_once "admin_panel_header.php";
 
                   var ctxStudents = document.getElementById('academyStudentChart').getContext('2d');
                   var academyStudentChart = new Chart(ctxStudents, {
-                      type: 'pie',
+                      type: 'polarArea',
                       data: {
                           labels: academyNamesStudents,
                           datasets: [{
@@ -673,7 +670,7 @@ require_once "admin_panel_header.php";
 
                   var ctxTotalCoursePlans = document.getElementById('totalCoursePlansChart').getContext('2d');
                   var totalCoursePlansChart = new Chart(ctxTotalCoursePlans, {
-                      type: 'pie',
+                      type: 'polarArea',
                       data: {
                           labels: courseNamesPlans,
                           datasets: [{
