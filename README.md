@@ -38,8 +38,9 @@ Kurum içi gereksinim nedeniyle oluşturulmuş basit bir öğrenci işleri merke
 * Çoklu lokasyon ve birime özel öğrenci, öğretmen, ders, muhasebe kayıtları (Geliştiriliyor)
 * Basit muhasebe kayıtlarının tutulması (Geliştiriliyor)
 * Muhasebe kayıtlarını Excel formatında rapor alabilme
-* Akademi bazında günlük ciro raporu alabilme
+* Akademi bazında günlük PDF ciro raporu alabilme
 * Akademi - Gün bazında ders planı raporu alabilme
-* Ders bazında fatura istemi alabilme
+* Ders bazında PDF fatura istemi alabilme
 * Kullanıcı oluşturulduğunda SMS ve e-posta ile kullanıcı adı, şifre bilgisi iletilmesi
-* ... geliştirilmeye devam ediliyor ...
+* reCaptcha v3 desteği
+* ...
