@@ -25,14 +25,14 @@ session_regenerate_id(true);
 
 // Oturum kontrolü
 if (!isset($_SESSION["admin_id"])) {
-    header("Location: admin_login.php"); // Giriş sayfasına yönlendir
+    header("Location: index.php"); // Giriş sayfasına yönlendir
     exit();
 }
 
 require __DIR__ . '/../vendor/autoload.php';
 
-require __DIR__ . '/../db_connection.php';
-require __DIR__ . '/../config.php';
+require_once(__DIR__ . '/../config/db_connection.php');
+require_once('../config/config.php');
 
 use Dompdf\Dompdf;
 use Dompdf\Options;

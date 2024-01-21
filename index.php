@@ -23,8 +23,8 @@ global $siteHeroDescription, $showErrors, $siteName, $siteShortName, $siteUrl, $
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
-require_once "config/config.php";
-require_once "header.php";
+require_once(__DIR__ . '/config/config.php');
+require_once(__DIR__ . '/user/partials/header.php');
 ?>
 <div class="px-4 py-5 my-5 text-center">
     <h1 class="display-5 fw-bold text-body-emphasis"><?php echo $siteName ?> - <?php echo $siteShortName ?></h1>
@@ -43,6 +43,4 @@ require_once "header.php";
           </div>
     </div>
   </div>
-<?php
-require_once "footer.php";
-?>
+<?php require_once(__DIR__ . '/user/partials/footer.php'); ?>

@@ -25,7 +25,7 @@ global $resetPasswordDescription, $db, $showErrors, $siteName, $siteShortName, $
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
 
-require_once "config/config.php";
+require_once(__DIR__ . '/config/config.php');
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
@@ -34,8 +34,8 @@ use PHPMailer\PHPMailer\SMTP;
 session_start();
 session_regenerate_id(true);
 
-require_once "config/db_connection.php"; // Veritabanı bağlantısı
-require 'vendor/autoload.php';
+require_once(__DIR__ . '/config/db_connection.php');
+require_once(__DIR__ . '/vendor/autoload.php');
 
 if (isset($_POST["reset_request"])) {
     // Şifre sıfırlama talebi gönderildiğinde
@@ -148,14 +148,14 @@ if (isset($_POST["reset_request"])) {
             $updateStmt->execute([$hashedPassword, $user["id"]]);
 
             echo "Şifreniz başarıyla güncellendi ve oturum açma ekranına yönlendiriliyorsunuz...";
-            header("refresh:3;url=user_login.php"); // 3 saniye sonra login.php'ye yönlendirme
+            header("refresh:3;url=login.php"); // 3 saniye sonra index.php'ye yönlendirme
         }
     } else {
         echo "Geçersiz ya da süresi dolmuş bir şifre sıfırlama bağlantısı.";
     }
 }
 
-require_once "header.php";
+require_once(__DIR__ . '/user/partials/header.php');
 ?>
 <main class="form-signin w-100 m-auto">
     <img class="mb-4" src="./assets/brand/default_logo.png" alt="<?php echo $siteName ?>" title="<?php echo $siteName ?>" width="100" height="100">
@@ -194,6 +194,5 @@ require_once "header.php";
     </div>
 </main>
 
-<?php
-require_once "footer.php";
-?>
+<?php require_once(__DIR__ . '/user/partials/footer.php'); ?>
+

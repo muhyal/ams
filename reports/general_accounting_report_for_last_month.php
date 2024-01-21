@@ -29,12 +29,12 @@ session_start();
 session_regenerate_id(true);
 
 if (!isset($_SESSION["admin_id"])) {
-    header("Location: admin_login.php"); // Giriş sayfasına yönlendir
+    header("Location: index.php"); // Giriş sayfasına yönlendir
     exit();
 }
 
-require __DIR__ . '/../db_connection.php';
-require __DIR__ . '/../config.php';
+require_once(__DIR__ . '/../config/db_connection.php');
+require_once('../config/config.php');
 
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
@@ -169,11 +169,13 @@ if (isset($_GET["generate_report"])) {
     exit;
 }
 
-require_once "admin_panel_header.php";
+require_once(__DIR__ . '/partials/header.php');
 ?>
 <div class="container-fluid">
     <div class="row">
-        <?php require_once "admin_panel_sidebar.php"; ?>
+       <?php
+        require_once(__DIR__ . '/partials/sidebar.php');
+?>
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
                 <h2>Muhasebe</h2>
@@ -190,7 +192,7 @@ require_once "admin_panel_header.php";
             <h5>Geçen Ayın Genel Raporunu Al</h5>
             <a href="general_accounting_report_for_last_month.php?generate_report" class="btn btn-primary" target="_blank">Raporu İndir</a>
 
-            <?php require_once "footer.php"; ?>
+            <?php require_once('../admin/partials/footer.php'); ?>
         </main>
     </div>
 </div>
