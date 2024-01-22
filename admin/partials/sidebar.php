@@ -38,12 +38,6 @@
                                 Genel bakış
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/search.php') ? 'active' : ''; ?>" href="/admin/search.php">
-                                <svg class="bi"><use xlink:href="#search"/></svg>
-                                Arama
-                            </a>
-                        </li>
 
                         <!-- Muhasebe Menüsü -->
                         <li class="nav-item">

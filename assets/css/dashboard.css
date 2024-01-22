@@ -4,6 +4,14 @@
   border-radius: 5px; /* Kenarları yumuşatmak için */
 }
 
+.nav-link {
+  color: #212528; /* Bootstrap'un primary rengi */
+}
+
+.nav-link:hover {
+  color: #000000; /* Bootstrap'un primary rengi */
+}
+
 .bi {
   display: inline-block;
   width: 1rem;
