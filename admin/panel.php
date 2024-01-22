@@ -708,11 +708,8 @@ require_once(__DIR__ . '/partials/header.php');
                   });
               </script>
 
-
-
-
-              <h4 class="mt-5" style="display: inline-block; margin-right: 10px;">Tanışma Dersleri</h4>
-              <small><a href="introductory_courses.php">Tüm Tanışma Dersleri</a></small>
+              <h4 style="display: inline-block; margin-right: 10px;">Tanışma Dersleri</h4>
+              <small><a class="text-decoration-none text-light-emphasis" href="introductory_courses.php">Tüm Tanışma Dersleri</a></small>
               <div class="table-responsive small">
                   <table class="table table-striped table-sm" style="border: 1px solid #ddd;">
                       <thead>
@@ -730,8 +727,8 @@ require_once(__DIR__ . '/partials/header.php');
                       <tbody>
                       <?php foreach ($introductoryCourses as $introductoryCourse): ?>
                           <tr>
-                              <td><a class="text-decoration-none text-black" href='user_profile.php?id=<?= $introductoryCourse['teacher_id'] ?>'><i class='fas fa-user text-secondary'></i> <?= $introductoryCourse['teacher_name'] ?></a></td>
-                              <td><a class="text-decoration-none text-black" href='user_profile.php?id=<?= $introductoryCourse['student_id'] ?>'><i class='fas fa-user text-secondary'></i> <?= $introductoryCourse['student_name'] ?></td>
+                              <td><a class="text-decoration-underline text-light-emphasis" href='user_profile.php?id=<?= $introductoryCourse['teacher_id'] ?>'><i class='fas fa-user text-secondary'></i> <?= $introductoryCourse['teacher_name'] ?></a></td>
+                              <td><a class="text-decoration-underline text-light-emphasis" href='user_profile.php?id=<?= $introductoryCourse['student_id'] ?>'><i class='fas fa-user text-secondary'></i> <?= $introductoryCourse['student_name'] ?></td>
                               <td><?= $introductoryCourse['academy_name'] ?></td>
                               <td><?= $introductoryCourse['class_name'] ?></td>
                               <td><?= $introductoryCourse['lesson_name'] ?></td>
@@ -770,7 +767,7 @@ require_once(__DIR__ . '/partials/header.php');
               </div>
 
               <h4 style="display: inline-block; margin-right: 10px;">Ders Planları</h4>
-              <small><a href="course_plans.php">Tüm Ders Planları</a></small>
+              <small><a class="text-decoration-none text-light-emphasis" href="course_plans.php">Tüm Ders Planları</a></small>
               <div class="table-responsive small">
                   <table class="table table-striped table-sm" style="border: 1px solid #ddd;">
                       <thead>
@@ -794,8 +791,8 @@ require_once(__DIR__ . '/partials/header.php');
                       <tbody>
                       <?php foreach ($coursePlans as $coursePlan): ?>
                           <tr>
-                              <td><a class="text-decoration-none text-black" href='user_profile.php?id=<?= $coursePlan['teacher_id'] ?>'><i class='fas fa-user text-secondary'></i> <?= $coursePlan['teacher_name'] ?></a></td>
-                              <td><a class="text-decoration-none text-black" href='user_profile.php?id=<?= $coursePlan['student_id'] ?>'><i class='fas fa-user text-secondary'></i> <?= $coursePlan['student_name'] ?></td>
+                              <td><a class="text-decoration-underline text-light-emphasis" href='user_profile.php?id=<?= $coursePlan['teacher_id'] ?>'><i class='fas fa-user text-secondary'></i> <?= $coursePlan['teacher_name'] ?></a></td>
+                              <td><a class="text-decoration-underline text-light-emphasis" href='user_profile.php?id=<?= $coursePlan['student_id'] ?>'><i class='fas fa-user text-secondary'></i> <?= $coursePlan['student_name'] ?></td>
                               <td><?= $coursePlan['academy_name'] ?></td>
                               <td><?= $coursePlan['class_name'] ?></td>
                               <td><?= $coursePlan['lesson_name'] ?></td>
@@ -847,7 +844,7 @@ require_once(__DIR__ . '/partials/header.php');
               </div>
 
               <h4 style="display: inline-block; margin-right: 10px;">Telafi Dersleri</h4>
-              <small><a href="rescheduled_courses.php">Tüm Telafi Dersleri</a></small>
+              <small><a class='text-decoration-none text-light-emphasis' href="rescheduled_courses.php">Tüm Telafi Dersleri</a></small>
               <div class="table-responsive small">
                   <table class="table table-striped table-sm" style="border: 1px solid #ddd;">
                       <thead>
@@ -897,11 +894,11 @@ require_once(__DIR__ . '/partials/header.php');
 
                               foreach ($rescheduled_courses as $rescheduled_course) {
                                   echo "<tr>";
-                                  echo "<td><a href='course_plans.php?id={$rescheduled_course['course_plan_id']}' class='btn btn-outline-success btn-sm'><i class='fas fa-external-link-alt'></i> İlgili Ders Planı</a></td>"; // View button added
-                                  echo "<td><a href='user_profile.php?id={$rescheduled_course['teacher_id']}'>{$rescheduled_course['teacher_name']}</a></td>";
+                                  echo "<td><a href='course_plans.php?id={$rescheduled_course['course_plan_id']}' class='btn btn-outline-success btn-sm'><i class='fas fa-external-link-alt'></i> Ders Planı</a></td>"; // View button added
+                                  echo "<td><a class='text-decoration-underline text-light-emphasis' href='user_profile.php?id={$rescheduled_course['teacher_id']}'>{$rescheduled_course['teacher_name']}</a></td>";
                                   echo "<td>{$rescheduled_course['academy_name']}</td>";
                                   echo "<td>{$rescheduled_course['class_name']}</td>";
-                                  echo "<td><a href='user_profile.php?id={$rescheduled_course['student_id']}'>{$rescheduled_course['student_name']}</a></td>";
+                                  echo "<td><a class='text-decoration-underline text-light-emphasis' href='user_profile.php?id={$rescheduled_course['student_id']}'>{$rescheduled_course['student_name']}</a></td>";
                                   echo "<td>{$rescheduled_course['lesson_name']}</td>";
                                   // Tarih ve saatleri Türkiye tarih ve saat dilimine göre biçimlendir
                                   echo "<td>" . date('d.m.Y H:i', strtotime($rescheduled_course['course_date'])) . "</td>";
@@ -940,7 +937,7 @@ require_once(__DIR__ . '/partials/header.php');
 
 
               <h4 style="display: inline-block; margin-right: 10px;">Öğrenciler</h4>
-    <small><a href="students.php">Tüm Öğrenciler</a></small>
+    <small><a class='text-decoration-none text-light-emphasis' href="students.php">Tüm Öğrenciler</a></small>
               <div class="table-responsive small">
                   <table class="table table-striped table-sm" style="border: 1px solid #ddd;">
         <thead>
@@ -984,7 +981,7 @@ require_once(__DIR__ . '/partials/header.php');
   </div>
             <!-- Öğretmenler Tablosu -->
             <h4 style="display: inline-block; margin-right: 10px;">Öğretmenler</h4>
-            <small><a href="teachers.php">Tüm Öğretmenler</a></small>
+            <small><a class='text-decoration-none text-light-emphasis' href="teachers.php">Tüm Öğretmenler</a></small>
               <div class="table-responsive small">
                   <table class="table table-striped table-sm" style="border: 1px solid #ddd;">
                     <thead>
@@ -1039,7 +1036,7 @@ require_once(__DIR__ . '/partials/header.php');
             </div>
 
               <h4 style="display: inline-block; margin-right: 10px;">Kullanıcılar</h4>
-              <small><a href="users.php">Tüm Kullanıcılar</a></small>
+              <small><a class='text-decoration-none text-light-emphasis' href="users.php">Tüm Kullanıcılar</a></small>
               <div class="table-responsive small">
                   <table class="table table-striped table-sm" style="border: 1px solid #ddd;">
                       <thead>

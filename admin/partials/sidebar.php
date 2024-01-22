@@ -33,146 +33,103 @@
                     <ul class="nav flex-column">
 
                         <li class="nav-item">
-                            <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == '/admin/panel.php') ? 'active' : ''; ?>" href="/admin/panel.php">
+                            <a class="nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/panel.php') ? 'active' : ''; ?>" href="/admin/panel.php">
                                 <svg class="bi"><use xlink:href="#house-fill"/></svg>
                                 Genel bakış
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == '/admin/search.php') ? 'active' : ''; ?>" href="/admin/search.php">
+                            <a class="nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/search.php') ? 'active' : ''; ?>" href="/admin/search.php">
                                 <svg class="bi"><use xlink:href="#search"/></svg>
                                 Arama
                             </a>
                         </li>
 
                         <!-- Muhasebe Menüsü -->
-                        <li class="nav-item <?php echo (basename($_SERVER['PHP_SELF']) == '/admin/accounting.php' || basename($_SERVER['PHP_SELF']) == '/admin/add_payment.php' || basename($_SERVER['PHP_SELF']) == '/admin/accounting_list.php' || basename($_SERVER['PHP_SELF']) == '/admin/reports.php') ? 'active show' : ''; ?>">
-                            <a class="nav-link" data-bs-toggle="collapse" href="#accountingMenu">
-                                <i class="bi bi-list"></i>
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/accounting.php') ? 'active' : ''; ?>" href="/admin/accounting.php">
                                 Muhasebe
-                                <i class="bi bi-caret-down-fill"></i>
                             </a>
-                            <div class="collapse <?php echo (basename($_SERVER['PHP_SELF']) == '/admin/accounting.php' || basename($_SERVER['PHP_SELF']) == '/admin/add_payment.php' || basename($_SERVER['PHP_SELF']) == '/admin/accounting_list.php' || basename($_SERVER['PHP_SELF']) == '/admin/reports.php') ? 'show' : ''; ?>" id="accountingMenu">
-                                <ul class="nav flex-column">
-                                    <li class="nav-item">
-                                        <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == '/admin/accounting.php') ? 'active' : ''; ?>" href="/admin/accounting.php">
-                                            Muhasebe
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == '/admin/accounting_list.php') ? 'active' : ''; ?>" href="/admin/accounting_list.php">
-                                            Muhasebe Listesi
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/accounting_list.php') ? 'active' : ''; ?>" href="/admin/accounting_list.php">
+                                Ödemeler
+                            </a>
                         </li>
 
+
                         <!-- Akademiler Menüsü -->
-                        <li class="nav-item <?php echo (basename($_SERVER['PHP_SELF']) == '/admin/academies.php' || basename($_SERVER['PHP_SELF']) == '/admin/academy_teachers.php' || basename($_SERVER['PHP_SELF']) == '/admin/academy_students.php') ? 'active show' : ''; ?>">
-                            <a class="nav-link" data-bs-toggle="collapse" href="#academiesMenu">
-                                <i class="bi bi-list"></i>
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/academies.php') ? 'active' : ''; ?>" href="/admin/academies.php">
                                 Akademiler
-                                <i class="bi bi-caret-down-fill"></i>
                             </a>
-                            <div class="collapse <?php echo (basename($_SERVER['PHP_SELF']) == '/admin/academies.php' || basename($_SERVER['PHP_SELF']) == '/admin/academy_teachers.php' || basename($_SERVER['PHP_SELF']) == '/admin/academy_students.php') ? 'show' : ''; ?>" id="academiesMenu">
-                                <ul class="nav flex-column">
-                                    <li class="nav-item">
-                                        <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == '/admin/academies.php') ? 'active' : ''; ?>" href="/admin/academies.php">
-                                            Akademiler
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == '/admin/course_plans.php') ? 'active' : ''; ?>" href="/admin/course_plans.php">
-                                            Ders Planları
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == '/admin/introductory_courses.php') ? 'active' : ''; ?>" href="/admin/introductory_courses.php">
-                                            Tanışma Dersleri
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == '/admin/rescheduled_courses.php') ? 'active' : ''; ?>" href="/admin/rescheduled_courses.php">
-                                            Telafi Dersleri
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/course_plans.php') ? 'active' : ''; ?>" href="/admin/course_plans.php">
+                                Ders Planları
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/introductory_courses.php') ? 'active' : ''; ?>" href="/admin/introductory_courses.php">
+                                Tanışma Dersleri
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/rescheduled_courses.php') ? 'active' : ''; ?>" href="/admin/rescheduled_courses.php">
+                                Telafi Dersleri
+                            </a>
                         </li>
 
 
 
                         <!-- Kullanıcılar Menüsü -->
-                        <li class="nav-item <?php echo (basename($_SERVER['PHP_SELF']) == '/admin/users.php' || basename($_SERVER['PHP_SELF']) == '/admin/add_user.php' || basename($_SERVER['PHP_SELF']) == '/admin/admins.php' || basename($_SERVER['PHP_SELF']) == '/admin/add_admin.php' || basename($_SERVER['PHP_SELF']) == '/admin/students.php' || basename($_SERVER['PHP_SELF']) == '/admin/add_student.php' || basename($_SERVER['PHP_SELF']) == '/admin/teachers.php') ? 'active show' : ''; ?>">
-                            <a class="nav-link" data-bs-toggle="collapse" href="#usersMenu">
-                                <i class="bi bi-people"></i>
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/users.php') ? 'active' : ''; ?>" href="/admin/users.php">
                                 Kullanıcılar
-                                <i class="bi bi-caret-down-fill"></i>
                             </a>
-
-                            <div class="collapse <?php echo (basename($_SERVER['PHP_SELF']) == '/admin/users.php' || basename($_SERVER['PHP_SELF']) == '/admin/add_user.php' || basename($_SERVER['PHP_SELF']) == '/admin/admins.php' || basename($_SERVER['PHP_SELF']) == '/admin/add_admin.php' || basename($_SERVER['PHP_SELF']) == '/admin/students.php' || basename($_SERVER['PHP_SELF']) == '/admin/add_student.php' || basename($_SERVER['PHP_SELF']) == '/admin/teachers.php') ? 'show' : ''; ?>" id="usersMenu">
-                                <ul class="nav flex-column">
-                                    <li class="nav-item">
-                                        <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == '/admin/users.php') ? 'active' : ''; ?>" href="/admin/users.php">
-                                            Kullanıcılar
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == '/admin/students.php') ? 'active' : ''; ?>" href="/admin/students.php">
-                                            Öğrenciler
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == '/admin/teachers.php') ? 'active' : ''; ?>" href="/admin/teachers.php">
-                                            Öğretmenler
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/students.php') ? 'active' : ''; ?>" href="/admin/students.php">
+                                Öğrenciler
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/teachers.php') ? 'active' : ''; ?>" href="/admin/teachers.php">
+                                Öğretmenler
+                            </a>
                         </li>
 
-<!-- Yönetim Menüsü -->
-                                    <li class="nav-item <?php echo (basename($_SERVER['PHP_SELF']) == '/admin/admins.php' || basename($_SERVER['PHP_SELF']) == '/admin/admins.php' || basename($_SERVER['PHP_SELF']) == '/admin/admins.php' || basename($_SERVER['PHP_SELF']) == '/admin/add_admin.php' || basename($_SERVER['PHP_SELF']) == '/admin/students.php' || basename($_SERVER['PHP_SELF']) == '/admin/add_student.php' || basename($_SERVER['PHP_SELF']) == '/admin/teachers.php') ? 'active show' : ''; ?>">
-                                        <a class="nav-link" data-bs-toggle="collapse" href="#adminMenu">
-                                            <i class="bi bi-people"></i>
-                                            Yönetim
-                                            <i class="bi bi-caret-down-fill"></i>
-                                        </a>
- <div class="collapse <?php echo (basename($_SERVER['PHP_SELF']) == '/admin/admins.php' || basename($_SERVER['PHP_SELF']) == '/admin/admins.php' || basename($_SERVER['PHP_SELF']) == '/admin/admins.php' || basename($_SERVER['PHP_SELF']) == '/admin/add_admin.php' || basename($_SERVER['PHP_SELF']) == '/admin/students.php' || basename($_SERVER['PHP_SELF']) == '/admin/add_student.php' || basename($_SERVER['PHP_SELF']) == '/admin/teachers.php') ? 'show' : ''; ?>" id="adminMenu">
-                                            <ul class="nav flex-column">
-                                    <li class="nav-item">
-                                        <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == '/admin/admins.php') ? 'active' : ''; ?>" href="/admin/admins.php">
-                                            Yöneticiler
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == '/admin/user_academy_assignments.php') ? 'active' : ''; ?>" href="/admin/user_academy_assignments.php">
-                                            Kullanıcı - Akademi İlişkileri
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
+                        <!-- Yönetim Menüsü -->
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/admins.php') ? 'active' : ''; ?>" href="/admin/admins.php">
+                                Yöneticiler
+                            </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/user_academy_assignments.php') ? 'active' : ''; ?>" href="/admin/user_academy_assignments.php">
+                                Kullanıcı - Akademi İlişkileri
+                            </a>
+                        </li>
+
 
 
                         <!-- Sınıflar Menüsü -->
                         <li class="nav-item">
-                            <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == '/admin/classes.php') ? 'active' : ''; ?>" href="/admin/classes.php">
+                            <a class="nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/classes.php') ? 'active' : ''; ?>" href="/admin/classes.php">
                                 <i class="bi bi-list"></i>
                                 Sınıflar
                             </a>
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == '/admin/courses.php') ? 'active' : ''; ?>" href="/admin/courses.php">
+                            <a class="nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/courses.php') ? 'active' : ''; ?>" href="/admin/courses.php">
                                 <i class="bi bi-list"></i>
                                 Dersler
                             </a>
                         </li>
 
             <li class="nav-item">
-                <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == '/admin/birthdays.php') ? 'active' : ''; ?>" href="/admin/birthdays.php">
+                <a class="nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/birthdays.php') ? 'active' : ''; ?>" href="/admin/birthdays.php">
                     <svg class="bi"><use xlink:href="#people"/></svg>
                     Doğum Günleri
                 </a>
@@ -184,7 +141,7 @@
                 </a>
             </li>
                         <li class="nav-item">
-                            <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == '/admin/reports.php') ? 'active' : ''; ?>" href="/admin/reports.php">
+                            <a class="nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/reports.php') ? 'active' : ''; ?>" href="/admin/reports.php">
                                 Raporlar
                             </a>
                         </li>

@@ -90,11 +90,14 @@
         function updateLogo(logoId, colorMode) {
             const logo = document.getElementById(logoId);
 
-            // Set the source of the logo based on the color mode
-            if (colorMode === 'dark') {
-                logo.src = "/assets/brand/default_logo_dark.png";
-            } else {
-                logo.src = "/assets/brand/default_logo_light.png";
+            // Check if the logo element exists
+            if (logo) {
+                // Set the source of the logo based on the color mode
+                if (colorMode === 'dark') {
+                    logo.src = "/assets/brand/default_logo_dark.png";
+                } else {
+                    logo.src = "/assets/brand/default_logo_light.png";
+                }
             }
         }
 

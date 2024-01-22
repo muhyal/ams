@@ -36,8 +36,20 @@ if (session_status() == PHP_SESSION_NONE) {
 
 $csrf_token = $_SESSION['csrf_token'];
 
-require_once('../config/db_connection.php');
+require_once(__DIR__ . '/../config/db_connection.php');
 require_once(__DIR__ . '/../vendor/autoload.php');
+
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+use Infobip\Api\SmsApi;
+use Infobip\Configuration;
+use Infobip\Model\SmsAdvancedTextualRequest;
+use Infobip\Model\SmsDestination;
+use Infobip\Model\SmsTextualMessage;
+use libphonenumber\PhoneNumberUtil;
+use libphonenumber\PhoneNumberFormat;
+use League\ISO3166\ISO3166;
 
 // Hataları tutacak dizi
 $errors = [];

@@ -164,19 +164,20 @@ FROM
                     echo "</td>";
 
                     // Oluşturan ve Oluşturma bilgilerini ekleyin
-                    $createdByName = ucfirst(substr($result['created_by_first_name'], 0, 1)) . 'oim ' . $result['created_by_last_name'];
+                    $createdByName = ucfirst(substr($result['created_by_first_name'] ?? '', 0, 1)) . 'oim ' . ($result['created_by_last_name'] ?? '');
                     $createdAt = date('d.m.Y H:i', strtotime($result['created_at']));
                     echo "<td class='text small'>{$createdByName}</td>";
                     echo "<td class='text small'>{$createdAt}</td>";
 
 // Güncelleyen ve Güncelleme bilgilerini ekleyin
-                    $updatedByName = ucfirst(substr($result['updated_by_first_name'], 0, 1)) . 'oim ' . $result['updated_by_last_name'];
-                    $updatedAt = date('d.m.Y H:i', strtotime($result['updated_at']));
+                    $updatedByName = ucfirst(substr($result['updated_by_first_name'] ?? '', 0, 1)) . 'oim ' . ($result['updated_by_last_name'] ?? '');
+                    $updatedAt = date('d.m.Y H:i', strtotime($result['updated_at'] ?? ''));
                     echo "<td class='text small'>{$updatedByName}</td>";
                     echo "<td class='text small'>{$updatedAt}</td>";
 
                     echo "<td><a href='edit_introductory_course_plan.php?id={$result['id']}' class='btn btn-primary btn-sm'>Düzenle</a></td>";
                     echo "</tr>";
+
 
 
                 }

@@ -247,7 +247,9 @@ $adminLastName = $_SESSION['admin_last_name'];
   </svg>
 
   <header class="navbar sticky-top bg-dark flex-md-nowrap p-0 shadow" data-bs-theme="dark">
-      <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6 text-white" href="<?php echo $siteUrl ?>/admin/index.php"><?php echo $siteName ?> - <?php echo $siteShortName ?></a>
+      <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6 text-white d-flex justify-content-center align-items-center" href="<?php echo $siteUrl ?>/admin/index.php">
+          <img id="logo" src="/assets/brand/default_logo_dark.png" alt="<?php echo $siteName ?> - <?php echo $siteShortName ?>" title="<?php echo $siteName ?> - <?php echo $siteShortName ?>" width="50%" height="auto">
+      </a>
 
       <ul class="navbar-nav flex-row d-md-none">
           <li class="nav-item text-nowrap">
