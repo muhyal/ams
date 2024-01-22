@@ -24,7 +24,7 @@ session_regenerate_id(true);
 
 // Kullanıcı girişi kontrolü
 if (!isset($_SESSION["admin_id"])) {
-    header("Location: admin_login.php");
+    header("Location: index.php");
     exit();
 }
 
@@ -371,8 +371,8 @@ require_once(__DIR__ . '/partials/sidebar.php');
                 <p class="card-text small">Güncellenme: ' . date("d.m.Y H:i", strtotime($result['updated_at'])) . '</p>
                 <a href="edit_course_plan.php?id=' . $result['course_plan_id'] . '" class="btn btn-danger btn-sm"><i class="fas fa-pencil-alt"></i></a>
                 <a href="add_payment.php?id=' . $result['course_plan_id'] . '" class="btn btn-success btn-sm"><i class="fas fa-cash-register"></i> ₺</a>
-                <a href="generate_invoice_request.php?course_plan_id=' . $result['course_plan_id'] . '" class="btn btn-success btn-sm"><i class="fas fa-file-invoice"></i></a>
-                <a href="student_certificate.php?student_id=' . $result['course_plan_id'] . '" class="btn btn-success btn-sm"><i class="fas fa-graduation-cap"></i></a>
+                <a href="../reports/generate_invoice_request.php?course_plan_id=' . $result['course_plan_id'] . '" class="btn btn-success btn-sm"><i class="fas fa-file-invoice"></i></a>
+                <a href="../reports/student_certificate.php?student_id=' . $result['course_plan_id'] . '" class="btn btn-success btn-sm"><i class="fas fa-graduation-cap"></i></a>
             </div>
         </div>
     </div>';
