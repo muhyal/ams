@@ -1,0 +1,16 @@
+# config.php ve db_connection.php dosyalarının erişimini kısıtlama
+<Files "config.php">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+<Files "db_connection.php">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+# Dosya Türlerini Sınırlama
+<FilesMatch "\.(php|htaccess|htpasswd|ini|log|sh|inc|bak)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>

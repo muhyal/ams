@@ -66,9 +66,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         die("CSRF hatası! İşlem reddedildi.");
     }
 
-    // Kullanıcı girişi alınan değerler
-    $identifier = $_POST["identifier"];
-    $password = $_POST["password"];
+    $identifier = htmlspecialchars($_POST["identifier"]); // Kullanıcı adı veya E-posta
+    $password = htmlspecialchars($_POST["password"]);
 
 // Kullanıcının giriş yaptığı sütunu belirleme
     $column = filter_var($identifier, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';

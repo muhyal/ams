@@ -48,8 +48,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         die("CSRF hatası! İşlem reddedildi.");
     }
 
-    $identifier = $_POST["identifier"]; // Kullanıcı adı veya E-posta
-    $password = $_POST["password"];
+    $identifier = htmlspecialchars($_POST["identifier"]); // Kullanıcı adı veya E-posta
+    $password = htmlspecialchars($_POST["password"]);
 
     // Form alanlarının doğrulaması
     if (empty($identifier) || empty($password)) {
