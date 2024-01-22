@@ -67,4 +67,45 @@
     });
 </script>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Function to detect the current color mode
+        function detectColorMode() {
+            const theme = document.documentElement.getAttribute('data-bs-theme');
+            return theme === 'dark' ? 'dark' : 'light';
+        }
+
+        // Function to update the logos based on the color mode
+        function updateLogos() {
+            const colorMode = detectColorMode();
+
+            // Update the first logo
+            updateLogo('logo-header', colorMode);
+
+            // Update the second logo
+            updateLogo('logo-body', colorMode);
+        }
+
+        // Function to update a specific logo based on the color mode
+        function updateLogo(logoId, colorMode) {
+            const logo = document.getElementById(logoId);
+
+            // Set the source of the logo based on the color mode
+            if (colorMode === 'dark') {
+                logo.src = "/assets/brand/default_logo_dark.png";
+            } else {
+                logo.src = "/assets/brand/default_logo_light.png";
+            }
+        }
+
+        // Initial logos update
+        updateLogos();
+
+        // Watch for changes to the data-bs-theme attribute
+        const observer = new MutationObserver(updateLogos);
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-bs-theme'] });
+    });
+</script>
+
+
    </html>

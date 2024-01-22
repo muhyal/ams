@@ -160,7 +160,7 @@ require_once('../user/partials/header.php');
         <input type="hidden" name="recaptcha_response" id="recaptcha_response">
 
         <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-        <img class="mb-4" src="../assets/brand/default_logo.png" alt="<?php echo $siteName ?>" title="<?php echo $siteName ?>" width="100" height="100">
+        <img id="logo-body" class="mb-5 mt-5" src="/assets/brand/default_logo_dark.png" alt="<?php echo $siteName ?>" title="<?php echo $siteName ?>" width="80%" height="%80">
         <h1 class="h3 mb-3 fw-normal">Yönetici Paneli</h1>
         <div class="form-floating">
             <input type="text" class="form-control" id="identifier" name="identifier" placeholder="@doremuzikakademi.com" autofocus="" required>

@@ -171,7 +171,8 @@ if (isset($_POST["reset_request"])) {
             }
             ?>
 
-            <div class="col-md-6">
+            <main class="form-signin w-100 m-auto">
+                <img id="logo-body" class="mb-5 mt-5" src="/assets/brand/default_logo_dark.png" alt="<?php echo $siteName ?>" title="<?php echo $siteName ?>" width="80%" height="%80">
                 <form method="post" action="">
                     <div class="mb-3">
                         <label for="email" class="form-label">E-posta:</label>

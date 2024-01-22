@@ -149,8 +149,8 @@ $loggedIn = isset($_SESSION["user_id"]);
 <header class="p-3 mb-3 border-bottom">
     <div class="container">
         <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-            <a href="<?php echo $siteUrl ?>" class="d-flex align-items-center mb-2 mb-lg-0 link-body-emphasis text-decoration-none">
-                <?php echo $siteName ?> - <?php echo $siteShortName ?>
+            <a href="<?php echo $siteUrl ?>" class="d-flex align-items-center mb-1 mt-1 mb-lg-0 link-body-emphasis text-decoration-none">
+                <img id="logo-header" src="/assets/brand/default_logo_dark.png" alt="<?php echo $siteName ?> - <?php echo $siteShortName ?>" title="<?php echo $siteName ?> - <?php echo $siteShortName ?>" width="15%" height="15%">
             </a>
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
                 <li><a href="<?php echo $siteUrl ?>" class="nav-link px-2 link-secondary"></a></li>

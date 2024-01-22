@@ -4,7 +4,8 @@ config/db_connection.php
 
 # Brand folder (Custom)
 /assets/brand/default_pp.png
-/assets/brand/default_logo.png
+/assets/brand/default_logo_dark.png
+/assets/brand/default_logo_light.png
 
 # PDFs folder
 /assets/pdfs/*
