@@ -21,9 +21,9 @@
  */
 
 $host = "localhost"; // Veritabanı sunucusu
-$db_name = "oim"; // Veritabanı adı
-$username = "oim"; // Veritabanı kullanıcı adı
-$password = "oim"; // Veritabanı şifresi
+$db_name = ""; // Veritabanı adı
+$username = ""; // Veritabanı kullanıcı adı
+$password = ""; // Veritabanı şifresi
 
 try {
     $db = new PDO("mysql:host=$host;dbname=$db_name", $username, $password);
