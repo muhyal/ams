@@ -31,11 +31,6 @@ if (!isset($_SESSION["admin_id"])) {
 
 require_once(__DIR__ . '/../config/db_connection.php');
 
-if (!isset($_SESSION["admin_id"])) {
-    header("Location: index.php"); // Giriş sayfasına yönlendir
-    exit();
-}
-
 if (isset($_GET["id"]) && is_numeric($_GET["id"])) {
     $user_id = $_GET["id"];
 

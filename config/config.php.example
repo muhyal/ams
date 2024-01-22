@@ -30,7 +30,9 @@ $config = array(
         'username' => '', // SMTP hesabı e-posta adresi
         'password' => '', // SMTP hesabı şifresi
         'encryption' => PHPMailer::ENCRYPTION_SMTPS, // Güvenli bağlantı türü
-        'port' => 465 // SMTP port numarası
+        'port' => 465, // SMTP port numarası
+        'mailCharset' => 'UTF-8', // E-posta karakter seti
+        'mailContentType' => 'text/html' // E-posta içeriği türü
     ),
 
     'infobip' => array(
