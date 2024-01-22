@@ -23,7 +23,7 @@ session_regenerate_id(true);
 
 // Oturum kontrolü
 if (!isset($_SESSION["admin_id"])) {
-    header("Location: index.php"); // Giriş sayfasına yönlendir
+    header("Location: index.php");
     exit();
 }
 
@@ -34,7 +34,6 @@ require_once('../config/config.php');
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
 
-require_once "../src/functions.php";
 
 // Kullanıcı ve akademi ilişkisini çekmek için bir SQL sorgusu
 $getUserAcademyQuery = "SELECT academy_id FROM user_academy_assignment WHERE user_id = :user_id";
@@ -67,15 +66,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (isset($_POST["add_academy"])) {
         // Akademi ekleme işlemi
-        $name = htmlspecialchars($_POST["name"], ENT_QUOTES, 'UTF-8');
-        $phone_number = htmlspecialchars($_POST["phone_number"], ENT_QUOTES, 'UTF-8');
-        $mobile_number = htmlspecialchars($_POST["mobile_number"], ENT_QUOTES, 'UTF-8');
-        $city = htmlspecialchars($_POST["city"], ENT_QUOTES, 'UTF-8');
-        $district = htmlspecialchars($_POST["district"], ENT_QUOTES, 'UTF-8');
-        $address = htmlspecialchars($_POST["address"], ENT_QUOTES, 'UTF-8');
-        $email = htmlspecialchars($_POST["email"], ENT_QUOTES, 'UTF-8');
-        $working_hours = htmlspecialchars($_POST["working_hours"], ENT_QUOTES, 'UTF-8');
-
+        $name = $_POST["name"];
+        $phone_number = $_POST["phone_number"];
+        $mobile_number = $_POST["mobile_number"];
+        $city = $_POST["city"];
+        $district = $_POST["district"];
+        $address = $_POST["address"];
+        $email = $_POST["email"];
+        $working_hours = $_POST["working_hours"];
 
         $query = "INSERT INTO academies (name, phone_number, mobile_number, city, district, address, email, working_hours)
                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -84,14 +82,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } elseif (isset($_POST["edit_academy"])) {
         // Akademi düzenleme işlemi
         $academyId = $_POST["academy_id"];
-        $name = htmlspecialchars($_POST["name"], ENT_QUOTES, 'UTF-8');
-        $phone_number = htmlspecialchars($_POST["phone_number"], ENT_QUOTES, 'UTF-8');
-        $mobile_number = htmlspecialchars($_POST["mobile_number"], ENT_QUOTES, 'UTF-8');
-        $city = htmlspecialchars($_POST["city"], ENT_QUOTES, 'UTF-8');
-        $district = htmlspecialchars($_POST["district"], ENT_QUOTES, 'UTF-8');
-        $address = htmlspecialchars($_POST["address"], ENT_QUOTES, 'UTF-8');
-        $email = htmlspecialchars($_POST["email"], ENT_QUOTES, 'UTF-8');
-        $working_hours = htmlspecialchars($_POST["working_hours"], ENT_QUOTES, 'UTF-8');
+        $name = $_POST["name"];
+        $phone_number = $_POST["phone_number"];
+        $mobile_number = $_POST["mobile_number"];
+        $city = $_POST["city"];
+        $district = $_POST["district"];
+        $address = $_POST["address"];
+        $email = $_POST["email"];
+        $working_hours = $_POST["working_hours"];
         $query = "UPDATE academies 
                   SET name = ?, phone_number = ?, mobile_number = ?, city = ?, district = ?, address = ?, email = ?, working_hours = ?
                   WHERE id = ?";
@@ -140,15 +138,17 @@ if (isset($_GET["edit"])) {
     $editAcademy = $editStmt->fetch(PDO::FETCH_ASSOC);
 }
 ?>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/pikaday/css/pikaday.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pikaday/pikaday.js"></script>
 <?php
 require_once(__DIR__ . '/partials/header.php');
 ?>
 <div class="container-fluid">
     <div class="row">
-       <?php
+        <?php
         require_once(__DIR__ . '/partials/sidebar.php');
-?>
-        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+        ?>        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
                 <h2>Akademi İşlemleri</h2>
                 <!-- Akademi Ekle Butonu -->
@@ -286,70 +286,67 @@ require_once(__DIR__ . '/partials/header.php');
                     <input type="text" name="working_hours" class="form-control" required>
                 </div>
                 <div class="mb-3">
-                <button type="submit" name="add_academy" class="btn btn-primary">Akademi Ekle</button>
+                    <button type="submit" name="add_academy" class="btn btn-primary">Akademi Ekle</button>
                 </div>
             </form>
 
             <hr>
 
 
-<?php
-if (isset($_GET["edit"])) {
-    $editAcademyId = $_GET["edit"];
-    $editQuery = "SELECT * FROM academies WHERE id = ?";
-    $editStmt = $db->prepare($editQuery);
-    $editStmt->execute([$editAcademyId]);
-    $editAcademy = $editStmt->fetch(PDO::FETCH_ASSOC);
-    ?>
-    <!-- Akademi Düzenleme Formu -->
-    <form method="post" id="editForm" <?php if (isset($_GET["edit"])) echo 'style="display: block;"'; else echo 'style="display: none;"'; ?>>
-        <h3>Akademi Düzenle</h3>
+            <?php
+            if (isset($_GET["edit"])) {
+                $editAcademyId = $_GET["edit"];
+                $editQuery = "SELECT * FROM academies WHERE id = ?";
+                $editStmt = $db->prepare($editQuery);
+                $editStmt->execute([$editAcademyId]);
+                $editAcademy = $editStmt->fetch(PDO::FETCH_ASSOC);
+                ?>
+                <!-- Akademi Düzenleme Formu -->
+                <form method="post" id="editForm" <?php if (isset($_GET["edit"])) echo 'style="display: block;"'; else echo 'style="display: none;"'; ?>>
+                    <h3>Akademi Düzenle</h3>
 
-        <input type="hidden" name="academy_id" value="<?php echo $editAcademy["id"]; ?>">
-        <div class="mb-3">
-            <label for="name" class="form-label">Adı:</label>
-            <input type="text" name="name" class="form-control" value="<?php echo $editAcademy["name"]; ?>" required>
-        </div>
-        <div class="mb-3">
-            <label for="phone_number" class="form-label">Sabit Telefon No:</label>
-            <input type="text" name="phone_number" class="form-control" value="<?php echo $editAcademy["phone_number"]; ?>" required>
-        </div>
-        <div class="mb-3">
-            <label for="mobile_number" class="form-label">Cep Telefon No:</label>
-            <input type="text" name="mobile_number" class="form-control" value="<?php echo $editAcademy["mobile_number"]; ?>" required>
-        </div>
-        <div class="mb-3">
-            <label for="city" class="form-label">İl:</label>
-            <input type="text" name="city" class="form-control" value="<?php echo $editAcademy["city"]; ?>" required>
-        </div>
-        <div class="mb-3">
-            <label for="district" class="form-label">İlçe:</label>
-            <input type="text" name="district" class="form-control" value="<?php echo $editAcademy["district"]; ?>" required>
-        </div>
-        <div class="mb-3">
-            <label for="address" class="form-label">Adres:</label>
-            <textarea name="address" class="form-control" required><?php echo $editAcademy["address"]; ?></textarea>
-        </div>
-        <div class="mb-3">
-            <label for="email" class="form-label">E-posta:</label>
-            <input type="email" name="email" class="form-control" value="<?php echo $editAcademy["email"]; ?>" required>
-        </div>
-        <div class="mb-3">
-            <label for="working_hours" class="form-label">Çalışma Saatleri:</label>
-            <input type="text" name="working_hours" class="form-control" value="<?php echo $editAcademy["working_hours"]; ?>" required>
-        </div>
-        <div class="mb-3">
-        <button type="submit" name="edit_academy" class="btn btn-primary">Akademi Düzenle</button>
-        </div>
-    </form>
+                    <input type="hidden" name="academy_id" value="<?php echo $editAcademy["id"]; ?>">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Adı:</label>
+                        <input type="text" name="name" class="form-control" value="<?php echo $editAcademy["name"]; ?>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone_number" class="form-label">Sabit Telefon No:</label>
+                        <input type="text" name="phone_number" class="form-control" value="<?php echo $editAcademy["phone_number"]; ?>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="mobile_number" class="form-label">Cep Telefon No:</label>
+                        <input type="text" name="mobile_number" class="form-control" value="<?php echo $editAcademy["mobile_number"]; ?>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="city" class="form-label">İl:</label>
+                        <input type="text" name="city" class="form-control" value="<?php echo $editAcademy["city"]; ?>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="district" class="form-label">İlçe:</label>
+                        <input type="text" name="district" class="form-control" value="<?php echo $editAcademy["district"]; ?>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Adres:</label>
+                        <textarea name="address" class="form-control" required><?php echo $editAcademy["address"]; ?></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">E-posta:</label>
+                        <input type="email" name="email" class="form-control" value="<?php echo $editAcademy["email"]; ?>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="working_hours" class="form-label">Çalışma Saatleri:</label>
+                        <input type="text" name="working_hours" class="form-control" value="<?php echo $editAcademy["working_hours"]; ?>" required>
+                    </div>
+                    <div class="mb-3">
+                        <button type="submit" name="edit_academy" class="btn btn-primary">Akademi Düzenle</button>
+                    </div>
+                </form>
 
-    <?php
-}
-?>
-        <?php
-        require_once"../admin/partials/footer.php'";
-
-        ?>
+                <?php
+            }
+            ?>
+            <?php require_once('../admin/partials/footer.php'); ?>
             <script>
                 function confirmDelete(academyId) {
                     // Additional permission check for delete operation
@@ -393,7 +390,7 @@ if (isset($_GET["edit"])) {
                             var academyId = <?php echo $academy["id"]; ?>;
 
                             // Build the new URL with the selected date
-                            var newUrl = 'reports/generate_daily_turnover_list.php?academy_id=' + academyId + '&date=' + formattedDate;
+                            var newUrl = '../reports/generate_daily_turnover_list.php?academy_id=' + academyId + '&date=' + formattedDate;
 
                             // Redirect to the new URL
                             window.location.href = newUrl;
@@ -406,4 +403,4 @@ if (isset($_GET["edit"])) {
 
         </main>
     </div>
-    </div>
+</div>
