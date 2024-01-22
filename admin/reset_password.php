@@ -19,6 +19,16 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
+// Oturum kontrolü
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+    // CSRF token oluşturma veya varsa alınması
+    if (!isset($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+}
+
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 
@@ -27,6 +37,10 @@ global $resetPasswordDescription, $db, $showErrors, $siteName, $siteShortName, $
 require_once(__DIR__ . '/../config/db_connection.php');
 require_once('../config/config.php');
 require_once(__DIR__ . '/../vendor/autoload.php');
+
+$errors = [];
+$infoMessages = [];
+
 
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
@@ -37,7 +51,7 @@ if (isset($_POST["reset_request"])) {
     $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
 
     if ($email === false) {
-        die("Geçersiz e-posta adresi.");
+        $errors[] = "Geçersiz e-posta adresi.";
     }
 
     // Veritabanında admini e-posta adresine göre ara
@@ -68,7 +82,7 @@ if (isset($_POST["reset_request"])) {
 
         // reCAPTCHA doğrulaması başarısızsa işlemi reddet
         if (!$recaptchaResponse->success) {
-            die("reCAPTCHA doğrulaması başarısız. İşlem reddedildi.");
+            $errors[] = "reCAPTCHA doğrulaması başarısız. İşlem reddedildi.";
         }
 
         // E-posta gönderme işlemi
@@ -95,19 +109,19 @@ if (isset($_POST["reset_request"])) {
 
             $mail->send();
 
-            echo "Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.";
+            $infoMessages[] = "Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.";
         } catch (Exception $e) {
-            echo "E-posta gönderilirken bir hata oluştu: {$mail->ErrorInfo}";
+            $errors[] = "E-posta gönderilirken bir hata oluştu: {$mail->ErrorInfo}";
         }
     } else {
-        echo "Bu e-posta adresine sahip bir yönetici bulunamadı.";
+        $errors[] = "Bu e-posta adresine sahip bir yönetici bulunamadı.";
     }
 } elseif (isset($_GET["token"])) {
     // Token ile gelen şifre sıfırlama isteği
     $token = filter_input(INPUT_GET, 'token', FILTER_SANITIZE_STRING);
 
     if ($token === false) {
-        die("Geçersiz token.");
+        $errors[] = "Geçersiz token.";
     }
 
     // Token'ın geçerliliğini kontrol et
@@ -122,7 +136,7 @@ if (isset($_POST["reset_request"])) {
             $newPassword = filter_input(INPUT_POST, 'new_password', FILTER_SANITIZE_STRING);
 
             if ($newPassword === false) {
-                die("Geçersiz şifre.");
+                $errors[] = "Geçersiz şifre.";
             }
 
             $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
@@ -132,21 +146,31 @@ if (isset($_POST["reset_request"])) {
             $updateStmt = $db->prepare($updateQuery);
             $updateStmt->execute([$hashedPassword, $admin["id"]]);
 
-            echo "Şifreniz başarıyla güncellendi ve giriş ekranına yönlendiriliyorsunuz...";
+            $infoMessages[] = "Şifreniz başarıyla güncellendi ve giriş ekranına yönlendiriliyorsunuz...";
             header("refresh:3;url=index.php"); // 3 saniye sonra index.php'ye yönlendirme
         }
     } else {
-        echo "Geçersiz veya süresi dolmuş bir şifre sıfırlama bağlantısı.";
+        $errors[] = "Geçersiz veya süresi dolmuş bir şifre sıfırlama bağlantısı.";
     }
 }
 ?>
 
-<?php require_once('../admin/partials/header.php'); ?>
+<?php require_once('../user/partials/header.php'); ?>
 
 <div class="container mt-5">
     <?php if (!isset($_GET["token"])): ?>
         <!-- Şifre sıfırlama talebi gönderme formu -->
         <div class="row justify-content-center">
+            <?php
+            foreach ($errors as $error) {
+                echo "<div id='error-alert' class='alert alert-danger' role='alert'>$error</div><br>";
+            }
+
+            foreach ($infoMessages as $info) {
+                echo "<div id='success-alert' class='alert alert-info' role='alert'>$info</div><br>";
+            }
+            ?>
+
             <div class="col-md-6">
                 <form method="post" action="">
                     <div class="mb-3">

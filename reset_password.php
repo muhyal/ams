@@ -37,12 +37,14 @@ session_regenerate_id(true);
 require_once(__DIR__ . '/config/db_connection.php');
 require_once(__DIR__ . '/vendor/autoload.php');
 
+$errors = array(); // Hata mesajlarını tutacak dizi
+
 if (isset($_POST["reset_request"])) {
     // Şifre sıfırlama talebi gönderildiğinde
     $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
 
     if ($email === false) {
-        die("Geçersiz e-posta adresi.");
+        $errors[] = "Geçersiz e-posta adresi.";
     }
 
     // reCAPTCHA token'ını alma
@@ -54,7 +56,7 @@ if (isset($_POST["reset_request"])) {
 
     // reCAPTCHA doğrulaması başarısızsa işlemi reddet
     if (!$recaptchaResponse->success) {
-        die("reCAPTCHA doğrulaması başarısız. İşlem reddedildi.");
+        $errors[] = "reCAPTCHA doğrulaması başarısız. İşlem reddedildi.";
     }
 
     // Veritabanında kullanıcıyı e-posta adresine göre ara
@@ -100,7 +102,7 @@ if (isset($_POST["reset_request"])) {
     <html>
     <body>
         <p>👋 Selam,</p>
-        <p>🧐 Eğer bu şifre sıfırlama isteğini sen talep ettiysen, <a href='$siteUrl/$resetLink'>şifreni sıfırlamak için tıkla</a>.</p>
+        <p>🧐 Eğer bu şifre sıfırlama isteğini sen talep ettiysen, <a href='{$siteUrl}/{$resetLink}'>şifreni sıfırlamak için tıkla</a>.</p>
         <p>Sen talep etmediysen farklı bir işlem yapmana gerek yok.</p>
         <p>Müzik dolu günler dileriz 🎸🎹</p>    
     </body>
@@ -109,12 +111,12 @@ if (isset($_POST["reset_request"])) {
 
             $mail->send();
 
-            echo "Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.";
+            $successMessage = "Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.";
         } catch (Exception $e) {
-            echo "E-posta gönderilirken bir hata oluştu: {$mail->ErrorInfo}";
+            $errors[] = "E-posta gönderilirken bir hata oluştu: {$mail->ErrorInfo}";
         }
     } else {
-        echo "Bu e-posta adresine sahip bir kullanıcı bulunamadı.";
+        $errors[] = "Bu e-posta adresine sahip bir kullanıcı bulunamadı.";
     }
 
 } elseif (isset($_GET["token"])) {
@@ -122,7 +124,7 @@ if (isset($_POST["reset_request"])) {
     $token = filter_input(INPUT_GET, 'token', FILTER_SANITIZE_STRING);
 
     if ($token === false) {
-        die("Geçersiz token.");
+        $errors[] = "Geçersiz token.";
     }
 
     // Token'ın geçerliliğini kontrol et
@@ -137,7 +139,7 @@ if (isset($_POST["reset_request"])) {
             $newPassword = filter_input(INPUT_POST, 'new_password', FILTER_SANITIZE_STRING);
 
             if ($newPassword === false) {
-                die("Geçersiz şifre.");
+                $errors[] = "Geçersiz şifre.";
             }
 
             $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
@@ -147,52 +149,60 @@ if (isset($_POST["reset_request"])) {
             $updateStmt = $db->prepare($updateQuery);
             $updateStmt->execute([$hashedPassword, $user["id"]]);
 
-            echo "Şifreniz başarıyla güncellendi ve oturum açma ekranına yönlendiriliyorsunuz...";
+            $successMessage = "Şifreniz başarıyla güncellendi ve oturum açma ekranına yönlendiriliyorsunuz...";
             header("refresh:3;url=login.php"); // 3 saniye sonra index.php'ye yönlendirme
         }
     } else {
-        echo "Geçersiz ya da süresi dolmuş bir şifre sıfırlama bağlantısı.";
+        $errors[] = "Geçersiz ya da süresi dolmuş bir şifre sıfırlama bağlantısı.";
     }
 }
 
 require_once(__DIR__ . '/user/partials/header.php');
 ?>
-<main class="form-signin w-100 m-auto">
-    <img class="mb-4" src="./assets/brand/default_logo.png" alt="<?php echo $siteName ?>" title="<?php echo $siteName ?>" width="100" height="100">
-    <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-        <?php if (!isset($_GET["token"])): ?>
-            <!-- Şifre sıfırlama talebi gönderme formu -->
-            <form method="post" action="">
-                <label class="form-label" for="email">E-posta:</label><br>
-                <input class="form-control" type="email" id="email" name="email" required><br>
+    <main class="form-signin w-100 m-auto">
+        <?php
+        foreach ($errors as $error) {
+            echo "<div id='error-alert' class='alert alert-danger' role='alert'>$error</div>";
+        }
 
-                <p class="mb-4"><small><?php echo $resetPasswordDescription ?></small></p>
+        if (isset($successMessage)) {
+            echo "<div id='success-alert' class='alert alert-success' role='alert'>$successMessage</div>";
+        }
+        ?>
+        <img class="mb-4" src="./assets/brand/default_logo.png" alt="<?php echo htmlspecialchars($siteName, ENT_QUOTES, 'UTF-8') ?>" title="<?php echo htmlspecialchars($siteName, ENT_QUOTES, 'UTF-8') ?>" width="100" height="100">
+        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
 
-                <!-- reCAPTCHA v3 için gizli alan -->
-                <input type="hidden" name="recaptcha_response" id="recaptcha_response">
+            <?php if (!isset($_GET["token"])): ?>
+                <!-- Şifre sıfırlama talebi gönderme formu -->
+                <form method="post" action="">
+                    <label class="form-label" for="email">E-posta:</label><br>
+                    <input class="form-control" type="email" id="email" name="email" required><br>
 
-                <div class="form-group mt-3">
-                    <button class="btn btn-primary w-100 py-2" name="reset_request" type="submit">
-                        <i class="fas fa-sign-in-alt"></i> Şifre Sıfırlama Talebi Gönder
-                    </button>
-                </div>
-                <div class="form-group mt-2">
-                    <a href="<?php echo $siteUrl ?>" class="btn btn-secondary w-100 py-2">
-                        <i class="fas fa-home"></i> <?php echo $siteName ?> - <?php echo $siteShortName ?>
-                    </a>
-                </div>
-            </form>
-        <?php else: ?>
-            <!-- Yeni şifre belirleme formu -->
-            <form method="post" action="">
-                <label class="form-label" for="new_password">Yeni Şifre:</label><br>
-                <input class="form-control" type="password" id="new_password" name="new_password" required><br>
-                <input type="submit" class="btn btn-primary" value="Şifreyi Güncelle">
-            </form>
-        <?php endif; ?>
-    </div>
-    </div>
-</main>
+                    <p class="mb-4"><small><?php echo htmlspecialchars($resetPasswordDescription, ENT_QUOTES, 'UTF-8') ?></small></p>
+
+                    <!-- reCAPTCHA v3 için gizli alan -->
+                    <input type="hidden" name="recaptcha_response" id="recaptcha_response">
+
+                    <div class="form-group mt-3">
+                        <button class="btn btn-primary w-100 py-2" name="reset_request" type="submit">
+                            <i class="fas fa-sign-in-alt"></i> Şifre Sıfırlama Talebi Gönder
+                        </button>
+                    </div>
+                    <div class="form-group mt-2">
+                        <a href="<?php echo htmlspecialchars($siteUrl, ENT_QUOTES, 'UTF-8') ?>" class="btn btn-secondary w-100 py-2">
+                            <i class="fas fa-home"></i> <?php echo htmlspecialchars($siteName, ENT_QUOTES, 'UTF-8') ?> - <?php echo htmlspecialchars($siteShortName, ENT_QUOTES, 'UTF-8') ?>
+                        </a>
+                    </div>
+                </form>
+            <?php else: ?>
+                <!-- Yeni şifre belirleme formu -->
+                <form method="post" action="">
+                    <label class="form-label" for="new_password">Yeni Şifre:</label><br>
+                    <input class="form-control" type="password" id="new_password" name="new_password" required><br>
+                    <input type="submit" class="btn btn-primary" value="Şifreyi Güncelle">
+                </form>
+            <?php endif; ?>
+        </div>
+    </main>
 
 <?php require_once(__DIR__ . '/user/partials/footer.php'); ?>
-

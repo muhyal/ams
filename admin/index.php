@@ -39,14 +39,10 @@ $csrf_token = $_SESSION['csrf_token'];
 require_once('../config/db_connection.php');
 require_once(__DIR__ . '/../vendor/autoload.php');
 
-use Infobip\Api\SmsApi;
-use Infobip\Configuration;
-use Infobip\Model\SmsAdvancedTextualRequest;
-use Infobip\Model\SmsDestination;
-use Infobip\Model\SmsTextualMessage;
+// Hataları tutacak dizi
+$errors = [];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
     // reCAPTCHA token'ını alma
     $recaptchaToken = $_POST['recaptcha_response'] ?? '';
 
@@ -54,25 +50,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $recaptchaVerify = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=" . RECAPTCHA_SECRET_KEY . "&response={$recaptchaToken}");
     $recaptchaResponse = json_decode($recaptchaVerify);
 
-    // reCAPTCHA doğrulaması başarılı değilse işlemi reddet
+    // reCAPTCHA doğrulaması başarısızsa işlemi reddet
     if (!$recaptchaResponse->success) {
-        die("reCAPTCHA doğrulaması başarısız. İşlem reddedildi.");
+        $errors[] = "reCAPTCHA doğrulaması başarısız. İşlem reddedildi.";
     }
-
 
     // CSRF token kontrolü
     $submittedToken = $_POST['csrf_token'] ?? '';
     if (!hash_equals($_SESSION['csrf_token'], $submittedToken)) {
-        die("CSRF hatası! İşlem reddedildi.");
+        $errors[] = "CSRF hatası! İşlem reddedildi.";
     }
 
     $identifier = htmlspecialchars($_POST["identifier"]); // Kullanıcı adı veya E-posta
     $password = htmlspecialchars($_POST["password"]);
 
-// Kullanıcının giriş yaptığı sütunu belirleme
+    // Kullanıcının giriş yaptığı sütunu belirleme
     $column = filter_var($identifier, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
 
-// SQL sorgusu için parametreli sorgu kullanımı
+    // SQL sorgusu için parametreli sorgu kullanımı
     $query = "SELECT * FROM users WHERE $column = :identifier";
 
     try {
@@ -85,11 +80,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($admin) {
             // Hesap aktif ve silinmemiş mi kontrolü
             if (!$admin["is_active"]) {
-                die("Hesap pasif durumda. Giriş yapılamaz.");
+                $errors[] = "Hesap pasif durumda. Giriş yapılamaz.";
             }
 
             if ($admin["deleted_at"]) {
-                die("Hesap silinmiş durumda. Giriş yapılamaz.");
+                $errors[] = "Hesap silinmiş durumda. Giriş yapılamaz.";
             }
 
             if (password_verify($password, $admin["password"])) {
@@ -122,12 +117,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             $smsResponse = $sendSmsApi->sendSmsMessage($request);
 
                             if ($smsResponse->getMessages()[0]->getStatus()->getGroupName() === 'PENDING') {
-                                echo 'SMS gönderim bekliyor.';
+                                $errors[] = 'SMS gönderim bekliyor.';
                             } else {
-                                echo 'SMS başarıyla gönderildi.';
+                                $errors[] = 'SMS başarıyla gönderildi.';
                             }
                         } catch (\Throwable $exception) {
-                            echo 'SMS gönderimi başarısız. Hata: ' . $exception->getMessage();
+                            $errors[] = 'SMS gönderimi başarısız. Hata: ' . $exception->getMessage();
                         }
                     }
 
@@ -140,16 +135,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     header("Location: panel.php");
                     exit();
                 } else {
-                    echo "Bu alana giriş yapma yetkiniz yok!";
+                    $errors[] = "Bu alana giriş yapma yetkiniz yok!";
                 }
             } else {
-                echo "Hatalı giriş bilgileri.";
+                $errors[] = "Hatalı giriş bilgileri.";
             }
         } else {
-            echo "Hatalı giriş bilgileri.";
+            $errors[] = "Hatalı giriş bilgileri.";
         }
     } catch (PDOException $e) {
-        echo "Hata: " . $e->getMessage();
+        $errors[] = "Hata: " . $e->getMessage();
     } finally {
         // Veritabanı bağlantısını kapat
         $db = null;
@@ -187,6 +182,11 @@ require_once('../user/partials/header.php');
             </a>
         </div>
     </form>
+    <?php
+    foreach ($errors as $error) {
+        echo "<div id='error-alert' class='alert alert-danger mt-3 mb-3' role='alert'>$error</div>";
+    }
+    ?>
 </main>
 <?php
 require_once('../admin/partials/footer.php');

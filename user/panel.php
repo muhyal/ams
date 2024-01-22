@@ -35,6 +35,15 @@ if (!isset($_SESSION["user_id"])) {
     exit();
 }
 
+
+// Hata ve başarı mesajlarını kontrol et
+$errors = isset($_SESSION["error_message"]) ? [$_SESSION["error_message"]] : [];
+$successMessage = isset($_SESSION["success_message"]) ? $_SESSION["success_message"] : null;
+
+// Hata ve başarı mesajlarını temizle
+unset($_SESSION["error_message"]);
+unset($_SESSION["success_message"]);
+
 $query = "SELECT * FROM users WHERE id = ?";
 $stmt = $db->prepare($query);
 if (!$stmt) {
@@ -414,6 +423,15 @@ ORDER BY course_date DESC
         <div class="row">
                         <div class="container">
                             <div class="row">
+                                <?php
+                                foreach ($errors as $error) {
+                                    echo "<div id='error-alert' class='alert alert-danger' role='alert'>$error</div>";
+                                }
+
+                                if ($successMessage) {
+                                    echo "<div id='success-alert' class='alert alert-success' role='alert'>$successMessage</div>";
+                                }
+                                ?>
                                 <div class="col-lg-4">
                                     <div class="card">
                                         <div class="card-body">
