@@ -199,107 +199,138 @@ $students = $studentStatement->fetchAll(PDO::FETCH_ASSOC);
     <form action='edit_course_plan.php' method='post'>
         <input type='hidden' name='rowId' value='<?php echo htmlspecialchars($rowId); ?>'>
 
-        <div class="form-group">
-            <label for='academyId'>Akademi:</label>
-            <select class="form-control" id='academyId' name='academyId' required>
-                <?php foreach ($academies as $academy) : ?>
-                    <option value='<?php echo $academy["id"]; ?>' <?php echo ($academy["id"] == $result["academy_id"]) ? "selected" : ""; ?>>
-                        <?php echo htmlspecialchars($academy["name"]); ?>
-                    </option>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group mb-3 mt-3">
+                        <label for='academyId'>Akademi:</label>
+                        <select class="form-control" id='academyId' name='academyId' required>
+                            <?php foreach ($academies as $academy) : ?>
+                                <option value='<?php echo $academy["id"]; ?>' <?php echo ($academy["id"] == $result["academy_id"]) ? "selected" : ""; ?>>
+                                    <?php echo htmlspecialchars($academy["name"]); ?>
+                                </option>
 
-                <?php endforeach; ?>
-            </select>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="form-group mb-3 mt-3">
+                        <label for='courseId'>Ders:</label>
+                        <select class="form-control" id='courseId' name='courseId' required>
+                            <?php foreach ($courses as $course) : ?>
+                                <option value='<?php echo $course["id"]; ?>' <?php echo ($course["id"] == $result["course_id"]) ? "selected" : ""; ?>>
+                                    <?php echo htmlspecialchars($course["course_name"]); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                <div class="form-group mb-3 mt-3">
+                        <label for='classId'>Sınıf:</label>
+                        <select class="form-control" id='classId' name='classId' required>
+                            <?php foreach ($classes as $class) : ?>
+                                <option value='<?php echo $class["id"]; ?>' <?php echo ($class["id"] == $result["class_id"]) ? "selected" : ""; ?>>
+                                    <?php echo htmlspecialchars($class["class_name"]); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                <div class="form-group mb-3 mt-3">
+                        <label for='teacherId'>Öğretmen:</label>
+                        <select class="form-control" id='teacherId' name='teacherId' required>
+                            <?php foreach ($teachers as $teacher) : ?>
+                                <option value='<?php echo $teacher["id"]; ?>' <?php echo ($teacher["id"] == $result["teacher_id"]) ? "selected" : ""; ?>>
+                                    <?php echo htmlspecialchars($teacher["first_name"] . " " . $teacher["last_name"]); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                <div class="form-group mb-3 mt-3">
+                        <label for='studentId'>Öğrenci:</label>
+                        <select class="form-control" id='studentId' name='studentId' required>
+                            <?php foreach ($students as $student) : ?>
+                                <option value='<?php echo $student["id"]; ?>' <?php echo ($student["id"] == $result["student_id"]) ? "selected" : ""; ?>>
+                                    <?php echo htmlspecialchars($student["first_name"] . " " . $student["last_name"]); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+            </div>
+
+            <div class="col-md-4">
+               <div class="form-group mt-3 mb-3">
+                   <label for='courseDate1'>1. Ders Tarihi:</label>
+                   <input type='datetime-local' class="form-control" id='courseDate1' name='courseDate1' value="<?php echo date('Y-m-d\TH:i', strtotime($result['course_date_1'])); ?>" required>
+               </div>
+
+                <div class="form-group mt-3 mb-3">
+                    <label for='courseDate2'>2. Ders Tarihi:</label>
+                    <input type='datetime-local' class="form-control" id='courseDate2' name='courseDate2' value="<?php echo date('Y-m-d\TH:i', strtotime($result['course_date_2'])); ?>" required>
+                </div>
+
+                <div class="form-group mt-3 mb-3">
+                    <label for='courseDate3'>3. Ders Tarihi:</label>
+                    <input type='datetime-local' class="form-control" id='courseDate3' name='courseDate3' value="<?php echo date('Y-m-d\TH:i', strtotime($result['course_date_3'])); ?>" required>
+               </div>
+
+               <div class="form-group mt-3 mb-3">
+                    <label for='courseDate4'>4. Ders Tarihi:</label>
+                    <input type='datetime-local' class="form-control" id='courseDate4' name='courseDate4' value="<?php echo date('Y-m-d\TH:i', strtotime($result['course_date_4'])); ?>" required>
+                </div>
+
+            </div>
+
+            <div class="col-md-4">
+
+                <div class="form-group mt-3 mb-3">
+                <label for='attendance1'>1. Katılım:</label>
+                    <select class="form-control" id='attendance1' name='attendance1' required>
+                        <option value='0' <?php echo ($result["course_attendance_1"] == 0) ? "selected" : ""; ?>>Henüz katılmadı</option>
+                        <option value='1' <?php echo ($result["course_attendance_1"] == 1) ? "selected" : ""; ?>>Katıldı</option>
+                        <option value='2' <?php echo ($result["course_attendance_1"] == 2) ? "selected" : ""; ?>>Katılmadı</option>
+                        <option value='3' <?php echo ($result["course_attendance_1"] == 3) ? "selected" : ""; ?>>Mazeretli</option>
+                    </select>
+                </div>
+
+                <div class="form-group mt-3 mb-3">
+                    <label for='attendance2'>2. Katılım:</label>
+                    <select class="form-control" id='attendance2' name='attendance2' required>
+                        <option value='0' <?php echo ($result["course_attendance_2"] == 0) ? "selected" : ""; ?>>Henüz katılmadı</option>
+                        <option value='1' <?php echo ($result["course_attendance_2"] == 1) ? "selected" : ""; ?>>Katıldı</option>
+                        <option value='2' <?php echo ($result["course_attendance_2"] == 2) ? "selected" : ""; ?>>Katılmadı</option>
+                        <option value='3' <?php echo ($result["course_attendance_2"] == 3) ? "selected" : ""; ?>>Mazeretli</option>
+                    </select>
+                </div>
+
+                <div class="form-group mt-3 mb-3">
+                        <label for='attendance3'>3. Katılım:</label>
+                    <select class="form-control" id='attendance3' name='attendance3' required>
+                        <option value='0' <?php echo ($result["course_attendance_3"] == 0) ? "selected" : ""; ?>>Henüz katılmadı</option>
+                        <option value='1' <?php echo ($result["course_attendance_3"] == 1) ? "selected" : ""; ?>>Katıldı</option>
+                        <option value='2' <?php echo ($result["course_attendance_3"] == 2) ? "selected" : ""; ?>>Katılmadı</option>
+                        <option value='3' <?php echo ($result["course_attendance_3"] == 3) ? "selected" : ""; ?>>Mazeretli</option>
+                    </select>
+                </div>
+
+                  <div class="form-group mt-3 mb-3">
+                    <label for='attendance4'>4. Katılım:</label>
+                    <select class="form-control" id='attendance4' name='attendance4' required>
+                        <option value='0' <?php echo ($result["course_attendance_4"] == 0) ? "selected" : ""; ?>>Henüz katılmadı</option>
+                        <option value='1' <?php echo ($result["course_attendance_4"] == 1) ? "selected" : ""; ?>>Katıldı</option>
+                        <option value='2' <?php echo ($result["course_attendance_4"] == 2) ? "selected" : ""; ?>>Katılmadı</option>
+                        <option value='3' <?php echo ($result["course_attendance_4"] == 3) ? "selected" : ""; ?>>Mazeretli</option>
+                    </select>
+                  </div>
+
+                </div>
+            </div>
         </div>
 
-        <div class="form-group">
-            <label for='courseId'>Ders:</label>
-            <select class="form-control" id='courseId' name='courseId' required>
-                <?php foreach ($courses as $course) : ?>
-                    <option value='<?php echo $course["id"]; ?>' <?php echo ($course["id"] == $result["course_id"]) ? "selected" : ""; ?>>
-                        <?php echo htmlspecialchars($course["course_name"]); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
 
-        <div class="form-group">
-            <label for='classId'>Sınıf:</label>
-            <select class="form-control" id='classId' name='classId' required>
-                <?php foreach ($classes as $class) : ?>
-                    <option value='<?php echo $class["id"]; ?>' <?php echo ($class["id"] == $result["class_id"]) ? "selected" : ""; ?>>
-                        <?php echo htmlspecialchars($class["class_name"]); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
 
-        <div class="form-group">
-            <label for='teacherId'>Öğretmen:</label>
-            <select class="form-control" id='teacherId' name='teacherId' required>
-                <?php foreach ($teachers as $teacher) : ?>
-                    <option value='<?php echo $teacher["id"]; ?>' <?php echo ($teacher["id"] == $result["teacher_id"]) ? "selected" : ""; ?>>
-                        <?php echo htmlspecialchars($teacher["first_name"] . " " . $teacher["last_name"]); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
 
-        <div class="form-group">
-            <label for='studentId'>Öğrenci:</label>
-            <select class="form-control" id='studentId' name='studentId' required>
-                <?php foreach ($students as $student) : ?>
-                    <option value='<?php echo $student["id"]; ?>' <?php echo ($student["id"] == $result["student_id"]) ? "selected" : ""; ?>>
-                        <?php echo htmlspecialchars($student["first_name"] . " " . $student["last_name"]); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
 
-        <div class="form-group">
-            <label for='courseDate1'>1. Ders Tarihi:</label>
-            <input type='datetime-local' class="form-control" id='courseDate1' name='courseDate1' value="<?php echo date('Y-m-d\TH:i', strtotime($result['course_date_1'])); ?>" required>
-        </div>
-
-        <label for='courseDate2'>2. Ders Tarihi:</label>
-        <input type='datetime-local' class="form-control" id='courseDate2' name='courseDate2' value="<?php echo date('Y-m-d\TH:i', strtotime($result['course_date_2'])); ?>" required>
-
-        <label for='courseDate3'>3. Ders Tarihi:</label>
-        <input type='datetime-local' class="form-control" id='courseDate3' name='courseDate3' value="<?php echo date('Y-m-d\TH:i', strtotime($result['course_date_3'])); ?>" required>
-
-        <label for='courseDate4'>4. Ders Tarihi:</label>
-        <input type='datetime-local' class="form-control" id='courseDate4' name='courseDate4' value="<?php echo date('Y-m-d\TH:i', strtotime($result['course_date_4'])); ?>" required>
-
-        <label for='attendance1'>1. Katılım:</label>
-        <select class="form-control" id='attendance1' name='attendance1' required>
-            <option value='0' <?php echo ($result["course_attendance_1"] == 0) ? "selected" : ""; ?>>Henüz katılmadı</option>
-            <option value='1' <?php echo ($result["course_attendance_1"] == 1) ? "selected" : ""; ?>>Katıldı</option>
-            <option value='2' <?php echo ($result["course_attendance_1"] == 2) ? "selected" : ""; ?>>Katılmadı</option>
-            <option value='3' <?php echo ($result["course_attendance_1"] == 3) ? "selected" : ""; ?>>Mazeretli</option>
-        </select>
-
-        <label for='attendance2'>2. Katılım:</label>
-        <select class="form-control" id='attendance2' name='attendance2' required>
-            <option value='0' <?php echo ($result["course_attendance_2"] == 0) ? "selected" : ""; ?>>Henüz katılmadı</option>
-            <option value='1' <?php echo ($result["course_attendance_2"] == 1) ? "selected" : ""; ?>>Katıldı</option>
-            <option value='2' <?php echo ($result["course_attendance_2"] == 2) ? "selected" : ""; ?>>Katılmadı</option>
-            <option value='3' <?php echo ($result["course_attendance_2"] == 3) ? "selected" : ""; ?>>Mazeretli</option>
-        </select>
-
-        <label for='attendance3'>3. Katılım:</label>
-        <select class="form-control" id='attendance3' name='attendance3' required>
-            <option value='0' <?php echo ($result["course_attendance_3"] == 0) ? "selected" : ""; ?>>Henüz katılmadı</option>
-            <option value='1' <?php echo ($result["course_attendance_3"] == 1) ? "selected" : ""; ?>>Katıldı</option>
-            <option value='2' <?php echo ($result["course_attendance_3"] == 2) ? "selected" : ""; ?>>Katılmadı</option>
-            <option value='3' <?php echo ($result["course_attendance_3"] == 3) ? "selected" : ""; ?>>Mazeretli</option>
-        </select>
-
-        <label for='attendance4'>4. Katılım:</label>
-        <select class="form-control" id='attendance4' name='attendance4' required>
-            <option value='0' <?php echo ($result["course_attendance_4"] == 0) ? "selected" : ""; ?>>Henüz katılmadı</option>
-            <option value='1' <?php echo ($result["course_attendance_4"] == 1) ? "selected" : ""; ?>>Katıldı</option>
-            <option value='2' <?php echo ($result["course_attendance_4"] == 2) ? "selected" : ""; ?>>Katılmadı</option>
-            <option value='3' <?php echo ($result["course_attendance_4"] == 3) ? "selected" : ""; ?>>Mazeretli</option>
-        </select>
 
         <button type='submit' class="btn btn-primary mt-3">Güncelle</button>
 

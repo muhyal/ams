@@ -72,10 +72,12 @@ require_once(__DIR__ . '/partials/header.php');
                     $('#introductoryCoursesTable').DataTable({
                         "language": {
                             "url": "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Turkish.json"
-                        }
+                        },
+                        "responsive": true
                     });
                 });
             </script>
+            <div class="table-responsive">
             <table id="introductoryCoursesTable" class="table table-striped">
                 <thead>
                 <tr>

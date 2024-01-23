@@ -379,13 +379,13 @@ require_once(__DIR__ . '/partials/header.php');
         require_once(__DIR__ . '/partials/sidebar.php');
         ?>
           <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-              <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+              <div class=" d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                   <h1 class="h4"><i class="fas fa-dashboard"></i> Genel Bakış</h1>
 
-                  <form id="searchForm" class="mb-3">
+                  <form id="searchForm" class="mb-3 d-md-flex">
                       <div class="row">
                           <div class="col-md-6">
-                              <input type="text" class="form-control" id="searchQuery" name="q" required placeholder="Arama yapılacak kelime">
+                              <input type="text" class="form-control" id="searchQuery" name="q" required placeholder="Ad, telefon, e-posta...">
                           </div>
                           <div class="col-md-4">
                               <select class="form-select" id="searchType" name="search_type">
@@ -403,11 +403,12 @@ require_once(__DIR__ . '/partials/header.php');
                   </form>
               </div>
 
+
               <div id="searchResults"></div>
 
 
 
-              <div class="row">
+              <div class="row mt-3 d-md-none">
                   <div class="col-md-3">
                       <div class="alert alert-success" role="alert">
                           <i class="fas fa-users"></i> Toplam Kullanıcı: <?php echo $userCount['user_count']; ?>
@@ -434,21 +435,32 @@ require_once(__DIR__ . '/partials/header.php');
               <style>
                   .chart-container {
                       display: flex;
-                      justify-content: space-between;
                       flex-wrap: wrap; /* Eğer tüm grafikler yan yana sığmazsa alt satıra geçmesini sağlamak için ekledik */
+                      justify-content: space-evenly; /* Tüm chartları ortalamak için ekledik */
                   }
 
                   .chart {
-                      width: 40%; /* %100 genişlik */
+                      width: 40%; /* Geniş ekranlarda %40 genişlik */
                       height: 250px;
+                      margin-bottom: 20px; /* İstediğiniz boşluğu ekleyebilirsiniz */
                   }
 
                   .chart:nth-child(n+2) {
-                      width: 20%; /* %100 genişlik */
+                      width: 20%; /* Geniş ekranlarda %20 genişlik */
                   }
 
+                  @media (max-width: 767px) {
+                      .chart {
+                          width: 100%; /* Mobilde tam genişlikte (her satırda bir) */
+                      }
 
+                      .chart:nth-child(n+2) {
+                          width: 100%; /* Mobilde diğer chart'ları da tam genişlikte (her satırda bir) */
+                      }
+                  }
               </style>
+
+
               <div class="chart-container mt-3">
                   <div class="chart">
                       <canvas id="last7DaysSalesChart"></canvas>

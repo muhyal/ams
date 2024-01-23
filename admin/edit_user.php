@@ -367,7 +367,7 @@ require_once(__DIR__ . '/partials/header.php');
                              generatedPasswordInput.value = xhr.responseText;
                          }
                      };
-                     xhr.open("GET", "src/generate_password.php", true);
+                     xhr.open("GET", "/src/generate_password.php", true);
                      xhr.send();
                  }
              </script>

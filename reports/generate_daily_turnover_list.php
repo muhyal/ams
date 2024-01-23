@@ -237,7 +237,7 @@ $html = "
     </style>
 </head>
 <body>
-    <h2>Günlük Ders Planları</h2>
+    <h2>Günlük Ciro Listesi</h2>
    <table>
         <tr>
             <th>T.C. Kimlik No</th>

@@ -187,27 +187,35 @@ require_once(__DIR__ . '/partials/sidebar.php');
                     $courseDates = implode(", ", array_filter([$plan["course_date_1"], $plan["course_date_2"], $plan["course_date_3"], $plan["course_date_4"]]));
                     $isSelected = ($plan["id"] == $selectedPlanId) ? 'selected' : '';
 
+                    // Ders adını ve akademi adını ayrı ayrı seçenek listesine ekle
+                    $courseName = "{$plan["course_name"]}";
+                    $academyName = "{$plan["academy_name"]}";
+
                     // Renk stilini doğrudan yazdırarak belirt
-                    echo "<option value='{$plan["id"]}' data-studentfirstname='{$plan["student_first_name"]}' data-studentlastname='{$plan["student_last_name"]}' 
+                    if ($plan["debt_amount"] > 0) {
+                        echo "<option value='{$plan["id"]}' data-studentfirstname='{$plan["student_first_name"]}' data-studentlastname='{$plan["student_last_name"]}' 
         data-teacherfirstname='{$plan["teacher_first_name"]}' data-teacherlastname='{$plan["teacher_last_name"]}' 
-        data-coursename='{$plan["course_name"]}' data-academyname='{$plan["academy_name"]}' 
+        data-coursename='{$courseName}' data-academyname='{$academyName}' 
         data-coursefee='{$plan["course_fee"]}' data-debtamount='{$plan["debt_amount"]}' data-coursedates='{$courseDates}' 
         {$isSelected}>
         {$plan["student_first_name"]} {$plan["student_last_name"]} - {$plan["teacher_first_name"]} {$plan["teacher_last_name"]} 
-        - {$plan["course_name"]} - Ders ücreti: {$plan["course_fee"]} TL - Kalan borç: {$plan["debt_amount"]} TL
-    </option>";
+        - {$courseName} - {$academyName} - Ders ücreti: {$plan["course_fee"]} TL - Kalan ödeme: {$plan["debt_amount"]} TL
+        </option>";
+                    }
                 }
                 ?>
             </select>
+            <div id="paymentSelectHelp" class="form-text">Kalan ödemesi 0 TL olan ders planları listede gözükmemektedir.</div>
+
 
         </div>
 
-        <div class="form-group">
+        <div class="form-group mt-3 mb-3">
             <label for="paymentAmount">Ödeme Miktarı:</label>
             <input type="text" class="form-control" name="paymentAmount" required>
         </div>
 
-        <div class="form-group">
+        <div class="form-group mt-3 mb-3">
             <label for="paymentMethod">Ödeme Yöntemi:</label>
             <select class="form-control" name="paymentMethod" id="paymentMethod" required>
                 <?php
@@ -228,6 +236,7 @@ require_once(__DIR__ . '/partials/sidebar.php');
                 }
                 ?>
             </select>
+            <div id="paymentTypeHelp" class="form-text">Banka seçenekleri Kredi Kartı & Havale / EFT seçeneklerinde gözükecektir.</div>
         </div>
 
         <!-- Banka seçimi sadece "Banka Transferi" seçildiğinde görüntülenecek -->
@@ -248,13 +257,12 @@ require_once(__DIR__ . '/partials/sidebar.php');
         </div>
 
 
-
         <div class="form-group">
-            <label for="paymentNotes">Ödeme Notları:</label>
+            <label for="paymentNotes">Ödeme Notları (Opsiyonel):</label>
             <textarea class="form-control" name="paymentNotes"></textarea>
         </div>
 
-        <button type="submit" class="btn btn-primary">Ödeme Yap</button>
+        <button type="submit" class="btn btn-primary mt-3 mb-3">Ödemeyi İşle</button>
     </form>
     <script>
         document.addEventListener("DOMContentLoaded", function () {

@@ -456,7 +456,7 @@ require_once(__DIR__ . '/partials/header.php');
 
 
                         <div class="mb-3">
-                            <label class="form-label" for="tc_identity">TC Kimlik No:</label>
+                            <label class="form-label" for="tc_identity">T.C. Kimlik No:</label>
                             <input class="form-control" type="text" name="tc_identity" id="tc_identity" required>
                             <div class="invalid-feedback">Bu alan gereklidir ve maksimum 11 haneli sayı olmalıdır.</div>
                         </div>
@@ -480,6 +480,31 @@ require_once(__DIR__ . '/partials/header.php');
                             <div class="invalid-feedback">Bu alan gereklidir.</div>
                         </div>
 
+                        <div class="mb-3">
+                            <label for="birth_date" class="form-label">Doğum Tarihi:</label>
+                            <input type="date" name="birth_date" class="form-control" required>
+                            <div class="invalid-feedback">Bu alan gereklidir.</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="password">Şifre:</label>
+                            <div class="input-group">
+                                <input class="form-control" type="password" name="password" id="password" required>
+                                <div class="input-group-append">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('password')">Göster</button>
+                                        <button type="button" class="btn btn-outline-secondary" onclick="copyPassword('password')">Kopyala</button>
+                                        <button type="button" class="btn btn-outline-secondary" onclick="generateAndSetPassword('password')">Üret</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <div class="col-md-6">
+                        <!-- Sağ sütun form alanları -->
                         <div class="mb-3">
                             <label for="country" class="form-label">Ülke:</label>
                             <div class="input-group">
@@ -505,12 +530,6 @@ require_once(__DIR__ . '/partials/header.php');
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="birth_date" class="form-label">Doğum Tarihi:</label>
-                            <input type="date" name="birth_date" class="form-control" required>
-                            <div class="invalid-feedback">Bu alan gereklidir.</div>
-                        </div>
-
                         <script>
                             // JavaScript ile ülke seçimi değiştiğinde telefon kodunu güncelle
                             var countrySelect = document.getElementById("country");
@@ -528,12 +547,6 @@ require_once(__DIR__ . '/partials/header.php');
                             var defaultCountryCode = (defaultCountryOption && defaultCountryOption.getAttribute("data-country-code")) || "+90";
                             phoneAddon.innerText = defaultCountryCode;
                         </script>
-
-
-                    </div>
-
-                    <div class="col-md-6">
-                        <!-- Sağ sütun form alanları -->
 
                         <div class="mb-3">
                             <label for="city" class="form-label">Şehir:</label>
@@ -568,23 +581,6 @@ require_once(__DIR__ . '/partials/header.php');
                             <label for="emergency_phone" class="form-label">Acil Durum Kişisi Telefon:</label>
                             <input type="tel" name="emergency_phone" class="form-control" required>
                             <div class="invalid-feedback">Geçerli bir telefon numarası girin.</div>
-                        </div>
-                    </div>
-                </div>
-
-
-                <div class="form-group">
-                    <label class="form-label" for="password">Şifre:</label>
-                    <div class="input-group">
-                        <input class="form-control" type="password" name="password" id="password" required>
-                        <div class="input-group-append">
-                            <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('password')">Şifreyi Göster</button>
-                        </div>
-                        <div class="input-group-append">
-                            <button type="button" class="btn btn-outline-secondary" onclick="copyPassword('password')">Kopyala</button>
-                        </div>
-                        <div class="input-group-append">
-                            <button type="button" class="btn btn-outline-secondary" onclick="generateAndSetPassword('password')">Şifre Üret</button>
                         </div>
                     </div>
                 </div>

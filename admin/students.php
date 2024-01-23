@@ -100,7 +100,8 @@ require_once(__DIR__ . '/partials/header.php');
                     $('#studentsTable').DataTable({
                         "language": {
                             "url": "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Turkish.json"
-                        }
+                        },
+                        "responsive": true
                     });
                 });
             </script>
@@ -153,6 +154,8 @@ require_once(__DIR__ . '/partials/header.php');
                     background-color: #0056b3; /* Hover efekti arka plan rengi */
                 }
             </style>
+            <div class="table-responsive">
+
             <table id="studentsTable">
     <thead>
     <tr><th>Akademi</th>
@@ -207,6 +210,7 @@ require_once(__DIR__ . '/partials/header.php');
     <?php endforeach; ?>
     </tbody>
 </table>
+            </div>
 
 <?php require_once('../admin/partials/footer.php'); ?>
 

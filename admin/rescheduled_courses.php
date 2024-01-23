@@ -72,7 +72,8 @@ require_once(__DIR__ . '/partials/header.php');
                     $('#rescheduledCoursesTable').DataTable({
                         "language": {
                             "url": "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Turkish.json"
-                        }
+                        },
+                        "responsive": true
                     });
                 });
             </script>
@@ -154,6 +155,7 @@ require_once(__DIR__ . '/partials/header.php');
             }
             ?>
 
+            <div class="table-responsive">
 
             <table id="rescheduledCoursesTable" class="table table-striped">
                 <thead>

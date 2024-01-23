@@ -138,12 +138,13 @@ require_once(__DIR__ . '/partials/header.php');
                 <h2>Ders Planları</h2>
             </div>
             <script>
-                $(document).ready( function () {
-                    // Tabloyu Datatables ile başlatma ve Türkçe dilini kullanma
+                $(document).ready(function () {
+                    // Tabloyu DataTables ile başlatma ve Türkçe dilini kullanma
                     $('#coursePlansTable').DataTable({
                         "language": {
                             "url": "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Turkish.json"
-                        }
+                        },
+                        "responsive": true
                     });
                 });
             </script>
@@ -161,11 +162,10 @@ require_once(__DIR__ . '/partials/header.php');
         <p class='card-text'><strong>Öğrenci:</strong> " . $selectedPlan['student_name'] . "</p>
         <p class='card-text'><strong>Ders:</strong> " . $selectedPlan['lesson_name'] . "</p>
         
- <p class='card-text'><strong>1. Ders:</strong> " . date('d.m.Y H:i', strtotime($selectedPlan['course_date_1'])) . "</p>
-            <p class='card-text'><strong>2. Ders:</strong> " . date('d.m.Y H:i', strtotime($selectedPlan['course_date_2'])) . "</p>
-            <p class='card-text'><strong>3. Ders:</strong> " . date('d.m.Y H:i', strtotime($selectedPlan['course_date_3'])) . "</p>
-            <p class='card-text'><strong>4. Ders:</strong> " . date('d.m.Y H:i', strtotime($selectedPlan['course_date_4'])) . "</p>
-
+        <p class='card-text'><strong>1. Ders:</strong> " . date('d.m.Y H:i', strtotime($selectedPlan['course_date_1'])) . "</p>
+        <p class='card-text'><strong>2. Ders:</strong> " . date('d.m.Y H:i', strtotime($selectedPlan['course_date_2'])) . "</p>
+        <p class='card-text'><strong>3. Ders:</strong> " . date('d.m.Y H:i', strtotime($selectedPlan['course_date_3'])) . "</p>
+        <p class='card-text'><strong>4. Ders:</strong> " . date('d.m.Y H:i', strtotime($selectedPlan['course_date_4'])) . "</p>
 
         <p class='card-text'><strong>1. Katılım:</strong> " . getAttendanceStatus($selectedPlan['course_attendance_1']) . "</p>
         <p class='card-text'><strong>2. Katılım:</strong> " . getAttendanceStatus($selectedPlan['course_attendance_2']) . "</p>
@@ -173,15 +173,16 @@ require_once(__DIR__ . '/partials/header.php');
         <p class='card-text'><strong>4. Katılım:</strong> " . getAttendanceStatus($selectedPlan['course_attendance_4']) . "</p>
 
         <p class='card-text small'><strong>Oluşturan:</strong> " . $selectedPlan['created_by_first_name'] . ' ' . $selectedPlan['created_by_last_name'] . "</p>
-            <p class='card-text small'><strong>Oluşturuldu:</strong> " . date('d.m.Y H:i', strtotime($selectedPlan['created_at'])) . "</p>
+        <p class='card-text small'><strong>Oluşturuldu:</strong> " . date('d.m.Y H:i', strtotime($selectedPlan['created_at'])) . "</p>
         <p class='card-text small'><strong>Güncelleyen:</strong> " . $selectedPlan['updated_by_first_name'] . ' ' . $selectedPlan['updated_by_last_name'] . "</p>
-            <p class='card-text small'><strong>Güncellendi:</strong> " . date('d.m.Y H:i', strtotime($selectedPlan['updated_at'])) . "</p>
+        <p class='card-text small'><strong>Güncellendi:</strong> " . date('d.m.Y H:i', strtotime($selectedPlan['updated_at'])) . "</p>
     </div>
 </div>";
             }
             ?>
 
 
+            <div class="table-responsive">
 
             <table id="coursePlansTable" class="table table-striped table-sm" style="border: 1px solid #ddd;">
                 <thead>
@@ -237,11 +238,11 @@ require_once(__DIR__ . '/partials/header.php');
 
                 foreach ($results as $result) {
                     echo "<tr>";
-                    echo "<td><a href='user_profile.php?id={$result['teacher_id']}'>{$result['teacher_name']}</a></td>";
-                    echo "<td>{$result['academy_name']}</td>";
-                    echo "<td>{$result['class_name']}</td>";
-                    echo "<td><a href='user_profile.php?id={$result['student_id']}'>{$result['student_name']}</a></td>";
-                    echo "<td>{$result['lesson_name']}</td>";
+                    echo "<td style='font-size: small;'><a href='user_profile.php?id={$result['teacher_id']}'>{$result['teacher_name']}</a></td>";
+                    echo "<td style='font-size: small;'>{$result['academy_name']}</td>";
+                    echo "<td style='font-size: small;'>{$result['class_name']}</td>";
+                    echo "<td style='font-size: small;'><a href='user_profile.php?id={$result['student_id']}'>{$result['student_name']}</a></td>";
+                    echo "<td style='font-size: small;'>{$result['lesson_name']}</td>";
 
                     // Tarih ve saatleri Türkiye tarih ve saat dilimine göre biçimlendir
                     echo "<td style='font-size: small;'>" . date('d.m.Y H:i', strtotime($result['course_date_1'])) . "</td>";

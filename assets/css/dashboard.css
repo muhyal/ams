@@ -1,6 +1,6 @@
 .nav-item a.active {
-  background-color: #212528; /* Bootstrap'un primary rengi */
-  color: #fff; /* Beyaz metin rengi */
+  background-color: #212529;
+  color: #fff !important; /* Beyaz metin rengi */
   border-radius: 5px; /* Kenarları yumuşatmak için */
 }
 

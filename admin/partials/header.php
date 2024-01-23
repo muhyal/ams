@@ -250,22 +250,17 @@ $adminLastName = $_SESSION['admin_last_name'];
           <img id="logo" src="/assets/brand/default_logo_dark.png" alt="<?php echo $siteName ?> - <?php echo $siteShortName ?>" title="<?php echo $siteName ?> - <?php echo $siteShortName ?>" width="50%" height="auto">
       </a>
 
-      <ul class="navbar-nav flex-row d-md-none">
-          <li class="nav-item text-nowrap">
-              <button class="nav-link px-3 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSearch" aria-controls="navbarSearch" aria-expanded="false" aria-label="Toggle search">
-                  <svg class="bi"><use xlink:href="#search"/></svg>
-              </button>
-          </li>
-          <li class="nav-item text-nowrap">
-              <button class="nav-link px-3 text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
-                  <svg class="bi"><use xlink:href="#list"/></svg>
-              </button>
-          </li>
-      </ul>
+
 
       <div id="navbarSearch" class="navbar-search w-100 collapse">
-          <input class="form-control w-100 rounded-0 border-0" type="text" placeholder="Aranacak içerik..." aria-label="Search">
+          <div class="input-group mb-3">
+              <input name="q" id="searchQuery" class="form-control rounded-0 border-0" type="text" placeholder="Aranacak içerik..." aria-label="Search">
+              <div class="input-group-append">
+                  <button type="button" class="btn btn-primary" onclick="performSearch()">Ara</button>
+              </div>
+          </div>
       </div>
+
       <div class="container text-light">
           <!-- Yeni butonu menüsü -->
           <div class="btn-group d-none d-md-block">
@@ -273,13 +268,20 @@ $adminLastName = $_SESSION['admin_last_name'];
                   <i class="fas fa-plus"></i> Yeni
               </button>
               <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="/admin/add_user.php"><i class="fas fa-user"></i> Kullanıcı Kaydet</a></li>
+                  <li><a class="dropdown-item" href="/admin/add_user.php"><i class="fas fa-user"></i> Kullanıcı</a></li>
                   <li><a class="dropdown-item" href="/admin/add_course_plan.php"><i class="fas fa-user"></i> Ders Planla</a></li>
                   <li><a class="dropdown-item" href="/admin/add_introductory_course_plan.php"><i class="fas fa-user"></i> Tanışma Dersi Planla</a></li>
                   <li><a class="dropdown-item" href="/admin/add_rescheduled_course_plan.php"><i class="fas fa-user"></i> Telafi Dersi Planla</a></li>
-                  <li><a class="dropdown-item" href="/admin/add_payment.php"><i class="fas fa-file-invoice-dollar"></i> Ödeme Al</a></li>
+                  <li><a class="dropdown-item" href="/admin/add_payment.php"><i class="fas fa-file-invoice-dollar"></i> Ödeme Ekle</a></li>
               </ul>
           </div>
+          <style>
+              @media (max-width: 767px) {
+                  #datetime-container {
+                      display: none;
+                  }
+              }
+          </style>
           <!-- Saat ve tarih -->
           <div id="datetime-container" class="text-light">
               <i class="fas fa-clock-four"></i>
@@ -293,17 +295,44 @@ $adminLastName = $_SESSION['admin_last_name'];
           <div class="row">
               <div class="col-md-12">
                   <div class="d-flex justify-content-end align-items-center">
-                      Selam 👋, <?php echo $adminFirstName . ' ' . $adminLastName; ?> 🍀
+                      <p id="greeting"></p>
+                      <script>
+                          document.addEventListener("DOMContentLoaded", function() {
+                              var adminFirstName = "<?php echo $adminFirstName; ?>";
+                              var adminLastName = "<?php echo $adminLastName; ?>";
+
+                              // Mobil kontrolü (örneğin, ekran genişliği 767px'den küçükse)
+                              if (window.innerWidth <= 767) {
+                                  var abbreviatedFirstName = adminFirstName.charAt(0); // İlk harfi al
+                                  document.getElementById("greeting").innerText = "Selam 👋, " + abbreviatedFirstName + ' ' + adminLastName + " 🍀";
+                              } else {
+                                  document.getElementById("greeting").innerText = "Selam 👋, " + adminFirstName + ' ' + adminLastName + " 🍀";
+                              }
+                          });
+                      </script>
                       <!-- Boşluk ekleyin -->
                       <div class="separator"></div>
-                      <a class="nav-link d-flex align-items-center" href="/admin/profile_edit.php">
+                      <a class="nav-link d-flex align-items-center text-light-emphasis" href="/admin/profile_edit.php">
                           <svg class="bi"><use xlink:href="#gear-wide-connected"/></svg>
                       </a>
                       <!-- Boşluk ekleyin -->
                       <div class="separator"></div>
-                      <a class="nav-link d-flex align-items-center" href="/admin/logout.php">
+                      <a class="nav-link d-flex align-items-center text-light-emphasis" href="/admin/logout.php">
                           <svg class="bi"><use xlink:href="#door-closed"/></svg>
                       </a>
+
+                      <ul class="navbar-nav flex-row d-md-none">
+                          <li class="nav-item text-nowrap">
+                              <button class="nav-link px-3 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSearch" aria-controls="navbarSearch" aria-expanded="false" aria-label="Toggle search">
+                                  <svg class="bi"><use xlink:href="#search"/></svg>
+                              </button>
+                          </li>
+                          <li class="nav-item text-nowrap">
+                              <button class="nav-link px-3 text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+                                  <svg class="bi"><use xlink:href="#list"/></svg>
+                              </button>
+                          </li>
+                      </ul>
                   </div>
               </div>
           </div>
