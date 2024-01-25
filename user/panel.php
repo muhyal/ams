@@ -475,8 +475,6 @@ ORDER BY course_date DESC
                                                 <li class="list-group-item">İlçe: <?= $user['district'] ?></li>
                                                 <li class="list-group-item">Kan Grubu: <?= $user['blood_type'] ?></li>
                                                 <li class="list-group-item">Bilinen Sağlık Sorunu: <?= $user['health_issue'] ?></li>
-                                                <li class="list-group-item">Acil Durum Kişisi: <?= $user['emergency_contact'] ?></li>
-                                                <li class="list-group-item">Acil Durum Kişisi Telefon: <?= $user['emergency_phone'] ?></li>
                                             </ul>
                                         </div>
                                     </div>
@@ -486,15 +484,15 @@ ORDER BY course_date DESC
                                     <div class="card">
                                         <div class="card-body">
                                             <ul class="list-group list-group-flush">
-                                                <li class="list-group-item">SMS Gönderildi: <?php echo $user['verification_time_sms_sent'] ? date(DATETIME_FORMAT, strtotime($user['verification_time_sms_sent'])) : 'Henüz belli değil'; ?></li>
-                                                <li class="list-group-item">SMS Onaylandı: <?php echo $user['verification_time_sms_confirmed'] ? date(DATETIME_FORMAT, strtotime($user['verification_time_sms_confirmed'])) : 'Henüz belli değil'; ?></li>
-                                                <li class="list-group-item">SMS Onay IP: <?= $user['verification_ip_sms'] ? $user['verification_ip_sms'] : 'Henüz belli değil'; ?></li>
-                                                <li class="list-group-item">E-posta Gönderildi: <?php echo $user['verification_time_email_sent'] ? date(DATETIME_FORMAT, strtotime($user['verification_time_email_sent'])) : 'Henüz belli değil'; ?></li>
-                                                <li class="list-group-item">E-posta Onaylandı: <?php echo $user['verification_time_email_confirmed'] ? date(DATETIME_FORMAT, strtotime($user['verification_time_email_confirmed'])) : 'Henüz belli değil'; ?></li>
-                                                <li class="list-group-item">E-posta Onay IP: <?= $user['verification_ip_email'] ? $user['verification_ip_email'] : 'Henüz belli değil'; ?></li>
-                                                <li class="list-group-item">Silinme Tarihi: <?= $user['deleted_at'] ? date(DATETIME_FORMAT, strtotime($user['deleted_at'])) : 'Henüz belli değil'; ?></li>
-                                                <li class="list-group-item">Oluşturulma Tarihi: <?= $user['created_at'] ? date(DATETIME_FORMAT, strtotime($user['created_at'])) : 'Henüz belli değil'; ?></li>
-                                                <li class="list-group-item">Son Güncelleme Tarihi: <?= $user['updated_at'] ? date(DATETIME_FORMAT, strtotime($user['updated_at'])) : 'Henüz belli değil'; ?></li>
+                                                <li class="list-group-item">SMS Gönderildi: <?php echo $user['verification_time_sms_sent'] ? date(DATETIME_FORMAT, strtotime($user['verification_time_sms_sent'])) : 'Veri yok'; ?></li>
+                                                <li class="list-group-item">SMS Onaylandı: <?php echo $user['verification_time_sms_confirmed'] ? date(DATETIME_FORMAT, strtotime($user['verification_time_sms_confirmed'])) : 'Veri yok'; ?></li>
+                                                <li class="list-group-item">SMS Onay IP: <?= $user['verification_ip_sms'] ? $user['verification_ip_sms'] : 'Veri yok'; ?></li>
+                                                <li class="list-group-item">E-posta Gönderildi: <?php echo $user['verification_time_email_sent'] ? date(DATETIME_FORMAT, strtotime($user['verification_time_email_sent'])) : 'Veri yok'; ?></li>
+                                                <li class="list-group-item">E-posta Onaylandı: <?php echo $user['verification_time_email_confirmed'] ? date(DATETIME_FORMAT, strtotime($user['verification_time_email_confirmed'])) : 'Veri yok'; ?></li>
+                                                <li class="list-group-item">E-posta Onay IP: <?= $user['verification_ip_email'] ? $user['verification_ip_email'] : 'Veri yok'; ?></li>
+                                                <li class="list-group-item">Silinme Tarihi: <?= $user['deleted_at'] ? date(DATETIME_FORMAT, strtotime($user['deleted_at'])) : 'Veri yok'; ?></li>
+                                                <li class="list-group-item">Oluşturulma Tarihi: <?= $user['created_at'] ? date(DATETIME_FORMAT, strtotime($user['created_at'])) : 'Veri yok'; ?></li>
+                                                <li class="list-group-item">Son Güncelleme Tarihi: <?= $user['updated_at'] ? date(DATETIME_FORMAT, strtotime($user['updated_at'])) : 'Veri yok'; ?></li>
                                             </ul>
                                         </div>
                                     </div>
