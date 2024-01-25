@@ -192,8 +192,6 @@ require_once(__DIR__ . '/partials/header.php');
             <!--<td><?php echo $student['parent_first_name'] . ' ' . $student['parent_last_name']; ?></td>
             <td><?php echo $student['parent_phone']; ?></td>
             <td><?php echo $student['parent_email']; ?></td>
-             <td><?php echo $student['emergency_contact']; ?></td>
-            <td><?php echo $student['emergency_phone']; ?></td>
             <td><?php echo $student['blood_type']; ?></td>
             <td><?php echo $student['health_issue']; ?></td>
             <td><?php echo $student['city']; ?></td>

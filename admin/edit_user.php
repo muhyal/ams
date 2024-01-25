@@ -111,8 +111,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $district = htmlspecialchars($_POST["district"], ENT_QUOTES, 'UTF-8');
     $blood_type = htmlspecialchars($_POST["blood_type"], ENT_QUOTES, 'UTF-8');
     $health_issue = htmlspecialchars($_POST["health_issue"], ENT_QUOTES, 'UTF-8');
-    $emergency_contact = htmlspecialchars($_POST["emergency_contact"], ENT_QUOTES, 'UTF-8');
-    $emergency_phone = htmlspecialchars($_POST["emergency_phone"], ENT_QUOTES, 'UTF-8');
     $new_password = htmlspecialchars($_POST["new_password"], ENT_QUOTES, 'UTF-8');
     $user_type = htmlspecialchars($_POST["user_type"], ENT_QUOTES, 'UTF-8');
     $notes = htmlspecialchars($_POST["notes"], ENT_QUOTES, 'UTF-8');
@@ -123,6 +121,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $tax_company_name = isset($_POST["tax_company_name"]) ? htmlspecialchars($_POST["tax_company_name"], ENT_QUOTES, 'UTF-8') : "";
     $tax_office = isset($_POST["tax_office"]) ? htmlspecialchars($_POST["tax_office"], ENT_QUOTES, 'UTF-8') : "";
     $tax_number = isset($_POST["tax_number"]) ? htmlspecialchars($_POST["tax_number"], ENT_QUOTES, 'UTF-8') : "";
+    $tc_identity_for_individual_invoice = isset($_POST["tc_identity_for_individual_invoice"]) ? htmlspecialchars($_POST["tc_identity_for_individual_invoice"], ENT_QUOTES, 'UTF-8') : "";
     $country = isset($_POST["country"]) ? htmlspecialchars($_POST["country"], ENT_QUOTES, 'UTF-8') : "";
 
 
@@ -141,14 +140,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         tax_company_name = ?, 
         tax_office = ?, 
         tax_number = ?, 
+        tc_identity_for_individual_invoice = ?,
         birth_date = ?, 
         city = ?, 
         district = ?, 
         country = ?, 
         blood_type = ?, 
         health_issue = ?, 
-        emergency_contact = ?, 
-        emergency_phone = ?, 
         updated_at = ?,
         updated_by_user_id = ?"; // Include the updated_by_user_id field
 
@@ -158,9 +156,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $username, $tc_identity, $first_name, $last_name, $email, $phone,
         $user_type, $notes, $is_active,
         $invoice_type, $tax_company_name, $tax_office, $tax_number,
-        $birth_date, $city, $district, $country,
-        $blood_type, $health_issue, $emergency_contact,
-        $emergency_phone, date("Y-m-d H:i:s"),
+        $tc_identity_for_individual_invoice, $birth_date, $city, $district, $country,
+        $blood_type, $health_issue,
+        date("Y-m-d H:i:s"),
         $admin_id // Assuming $admin_id is the ID of the admin user making the update
     ];
 
@@ -291,14 +289,6 @@ require_once(__DIR__ . '/partials/header.php');
                                 <label class="form-label mt-3" for="health_issue">Sağlık Sorunu:</label>
                                 <input class="form-control" type="text" name="health_issue" value="<?php echo $user["health_issue"]; ?>" required>
 
-                                <!-- Acil Durum Kişisi -->
-                                <label class="form-label mt-3" for="emergency_contact">Acil Durum Kişisi:</label>
-                                <input class="form-control" type="text" name="emergency_contact" value="<?php echo $user["emergency_contact"]; ?>" required>
-
-                                <!-- Acil Durum Telefonu -->
-                                <label class="form-label mt-3" for="emergency_phone">Acil Durum Telefonu:</label>
-                                <input class="form-control" type="text" name="emergency_phone" value="<?php echo $user["emergency_phone"]; ?>" required>
-
 
                                 <!-- Bireysel ve Kurumsal alanlarına ID eklendi -->
                                 <label class="form-label mt-3" for="invoice_type">Fatura Tipi Seçin:</label>
@@ -317,8 +307,43 @@ require_once(__DIR__ . '/partials/header.php');
 
                                     <label class="form-label mt-3" for="tax_number">Vergi Numarası:</label>
                                     <input class="form-control" type="text" name="tax_number" value="<?php echo $user["tax_number"]; ?>" required>
-
                                 </div>
+
+                                <!-- Bireysel Alanları -->
+                                <div id="individual_fields">
+                                    <label class="form-label mt-3" for="tc_identity_for_individual_invoice">Fatura T.C. Kimlik No:</label>
+                                    <input class="form-control" type="text" name="tc_identity_for_individual_invoice" value="<?php echo $user["tc_identity_for_individual_invoice"]; ?>" required>
+                                </div>
+
+                                <script>
+                                    // Fatura tipi seçildiğinde tetiklenecek fonksiyon
+                                    function toggleInvoiceFields() {
+                                        var invoiceType = document.getElementById('invoice_type').value;
+                                        var corporateFields = document.getElementById('corporate_fields');
+                                        var individualFields = document.getElementById('individual_fields');
+
+                                        // Kurumsal ve bireysel alanları göster veya gizle
+                                        corporateFields.style.display = (invoiceType === 'corporate') ? 'block' : 'none';
+                                        individualFields.style.display = (invoiceType === 'individual') ? 'block' : 'none';
+
+                                        // Gerekli alanları kontrol et ve ayarla
+                                        var taxCompanyInput = document.getElementsByName('tax_company_name')[0];
+                                        var taxOfficeInput = document.getElementsByName('tax_office')[0];
+                                        var taxNumberInput = document.getElementsByName('tax_number')[0];
+                                        var eInvoiceSelect = document.getElementsByName('e_invoice')[0];
+                                        var tcIdentityInput = document.getElementsByName('tc_identity_for_individual_invoice')[0];
+
+                                        taxCompanyInput.required = (invoiceType === 'corporate');
+                                        taxOfficeInput.required = (invoiceType === 'corporate');
+                                        taxNumberInput.required = (invoiceType === 'corporate');
+                                        eInvoiceSelect.required = (invoiceType === 'corporate');
+                                        tcIdentityInput.required = (invoiceType === 'individual');
+                                    }
+
+                                    // Sayfa yüklendiğinde varsayılan olarak çalıştır
+                                    window.onload = toggleInvoiceFields;
+                                </script>
+
 
 
                                 <div class="form-group mt-3">
@@ -371,30 +396,7 @@ require_once(__DIR__ . '/partials/header.php');
                      xhr.send();
                  }
              </script>
-                                <script>
-                                    // Fatura tipi seçildiğinde tetiklenecek fonksiyon
-                                    function toggleInvoiceFields() {
-                                        var invoiceType = document.getElementById('invoice_type').value;
-                                        var corporateFields = document.getElementById('corporate_fields');
 
-                                        // Kurumsal alanları göster veya gizle
-                                        corporateFields.style.display = (invoiceType === 'corporate') ? 'block' : 'none';
-
-                                        // Gerekli alanları kontrol et ve ayarla
-                                        var taxCompanyInput = document.getElementsByName('tax_company_name')[0];
-                                        var taxOfficeInput = document.getElementsByName('tax_office')[0];
-                                        var taxNumberInput = document.getElementsByName('tax_number')[0];
-                                        var eInvoiceSelect = document.getElementsByName('e_invoice')[0];
-
-                                        taxCompanyInput.required = (invoiceType === 'corporate');
-                                        taxOfficeInput.required = (invoiceType === 'corporate');
-                                        taxNumberInput.required = (invoiceType === 'corporate');
-                                        eInvoiceSelect.required = (invoiceType === 'corporate');
-                                    }
-
-                                    // Sayfa yüklendiğinde varsayılan olarak çalıştır
-                                    window.onload = toggleInvoiceFields;
-                                </script>
                                 <div class="form-group mt-3">
              <button type="submit" class="btn btn-primary">Güncelle</button>
          </div>

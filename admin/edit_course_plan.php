@@ -325,15 +325,8 @@ $students = $studentStatement->fetchAll(PDO::FETCH_ASSOC);
 
                 </div>
             </div>
-        </div>
-
-
-
-
-
-
         <button type='submit' class="btn btn-primary mt-3">Güncelle</button>
-
+    </div>
 </form>
 
 <?php require_once('../admin/partials/footer.php'); ?>

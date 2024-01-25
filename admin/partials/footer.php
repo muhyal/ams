@@ -20,9 +20,11 @@
  *
  */
 ?>
-   </main>
-   </div>
-   </div>
+</main>
+</div>
+</div>
+</body>
+</html>
 <!-- Boş alan -->
 <div style="height: 75px;"></div>
 <!-- Footer -->
@@ -38,7 +40,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 <script src="../../assets/js/dashboard.js"></script>
 </body>
-   <script>
+<script>
     // Sayfa yüklendikten sonra uyarıyı otomatik kapat
     $(document).ready(function(){
         // Başarı uyarısı
@@ -55,7 +57,7 @@
             }, 5000);
         }
     });
-   </script>
+</script>
 <!-- Recaptcha kütüphanesi -->
 <script src="https://www.google.com/recaptcha/api.js?render=<?php echo RECAPTCHA_SITE_KEY; ?>"></script>
 <script>
@@ -109,6 +111,5 @@
         observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-bs-theme'] });
     });
 </script>
-
-
-   </html>
+</body>
+</html>

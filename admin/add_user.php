@@ -70,17 +70,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $district = isset($_POST["district"]) ? htmlspecialchars($_POST["district"]) : "";
     $blood_type = isset($_POST["blood_type"]) ? htmlspecialchars($_POST["blood_type"]) : "";
     $health_issue = isset($_POST["health_issue"]) ? htmlspecialchars($_POST["health_issue"]) : "";
-    $emergency_contact = isset($_POST["emergency_contact"]) ? htmlspecialchars($_POST["emergency_contact"]) : "";
-    $emergency_phone = isset($_POST["emergency_phone"]) ? htmlspecialchars($_POST["emergency_phone"]) : "";
     $countryCode = isset($_POST["country"]) ? htmlspecialchars($_POST["country"]) : "";
     $phoneNumber = isset($_POST["phone"]) ? htmlspecialchars($_POST["phone"]) : "";
     $country = $_POST["country"];
+    $invoice_type = isset($_POST["invoice_type"]) ? htmlspecialchars($_POST["invoice_type"]) : "";
+    $tax_company_name = isset($_POST["tax_company_name"]) ? htmlspecialchars($_POST["tax_company_name"]) : "";
+    $tax_office = isset($_POST["tax_office"]) ? htmlspecialchars($_POST["tax_office"]) : "";
+    $tax_number = isset($_POST["tax_number"]) ? htmlspecialchars($_POST["tax_number"]) : "";
+    $tc_identity_for_individual_invoice = isset($_POST["tc_identity_for_individual_invoice"]) ? htmlspecialchars($_POST["tc_identity_for_individual_invoice"]) : "";
+
+
 // Ülke kodunu ve telefon numarasını birleştir
-    $fullPhoneNumber = "+" . $phoneNumberUtil->getCountryCodeForRegion($countryCode) . $phoneNumber;
+    $fullPhoneNumber = $phoneNumberUtil->getCountryCodeForRegion($countryCode) . $phoneNumber;
 // $phone değişkenini güncelle
     $phone = $fullPhoneNumber;
 // Hash'lenmemiş şifreyi al
-    $plainPassword = isset($_POST["password"]) ? htmlspecialchars($_POST["password"]) : "";
+    $plainPassword = isset($_POST["password"]) ? $_POST["password"] : "";
+
 
 // Şifreyi hash'leyerek bir değişkene atayalım
     $hashedPassword = password_hash($plainPassword, PASSWORD_DEFAULT);
@@ -104,35 +110,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $verificationTimeSms = date("Y-m-d H:i:s", time());
 
         $insertQuery = "INSERT INTO users (
-     username, 
-        tc_identity, 
-        first_name, 
-        last_name, 
-        email, 
-        phone, 
-        password, 
-        verification_code_email, 
-        verification_code_sms, 
-        verification_time_email_sent, 
-        verification_time_sms_sent, 
-        user_type, 
-        birth_date,
-        city,
-        district,
-        blood_type,
-        health_issue,
-        emergency_contact,
-        emergency_phone,
-        country,
-        is_active,
-        created_at,
-        created_by_user_id,
-        updated_at,
-        updated_by_user_id 
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    username, 
+    tc_identity, 
+    first_name, 
+    last_name, 
+    email, 
+    phone, 
+    password, 
+    user_type, 
+    birth_date,
+    city,
+    district,
+    blood_type,
+    health_issue,
+    country,
+    invoice_type,
+    tax_company_name,
+    tax_office,
+    tax_number,
+    tc_identity_for_individual_invoice,
+    is_active,
+    created_at,
+    created_by_user_id,
+    updated_at,
+    updated_by_user_id 
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
 
         try {
             $stmt = $db->prepare($insertQuery);
+
+            // Set the individual_invoice_tc_identity based on the invoice_type
+            $individual_invoice_tc_identity = ($invoice_type === 'individual') ? $tc_identity : null;
+
             $stmt->execute([
                 $username,
                 $tc_identity,
@@ -141,43 +151,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $email,
                 $phone,
                 $hashedPassword,
-                $verificationCodeEmail,
-                $verificationCodeSms,
-                $verificationTimeEmail,
-                $verificationTimeSms,
                 $userType,
                 $birth_date,
                 $city,
                 $district,
                 $blood_type,
                 $health_issue,
-                $emergency_contact,
-                $emergency_phone,
                 $country,
-                1,  // Set the default value for 'is_active' to 1 (active)
+                $invoice_type,
+                $tax_company_name,
+                $tax_office,
+                $tax_number,
+                $tc_identity_for_individual_invoice,
+                1,  // is_active
                 date("Y-m-d H:i:s"),
-                $_SESSION["admin_id"],  // Varsayılan olarak admin kullanıcısının ID'sini ekledim, sizin kullanıcı kimliğinize göre düzenlemeniz gerekebilir
+                $_SESSION["admin_id"],
                 date("Y-m-d H:i:s"),
-                $_SESSION["admin_id"]   // Varsayılan olarak admin kullanıcısının ID'sini ekledim, sizin kullanıcı kimliğinize göre düzenlemeniz gerekebilir
+                $_SESSION["admin_id"]
             ]);
 
             // E-posta ve SMS gönderme işlemleri
-            sendVerificationEmail($email, $verificationCodeEmail, $first_name, $last_name, $plainPassword, $username, $email);
-            sendVerificationSms($phone, $verificationCodeSms, $first_name, $last_name, $plainPassword, $username, $email);
+            sendVerificationEmail($email, $verificationCodeEmail, $first_name, $plainPassword, $username, $email);
+            sendVerificationSms($phone, $verificationCodeSms, $first_name, $plainPassword, $username, $email);
 
-            // Kullanıcı kaydedildiğini bildiren mesajı $message değişkenine atıyoruz
-            $message = "Kullanıcı kaydedildi, doğrulama e-postası ve SMS gönderildi.";
+            // The rest of your code
         } catch (PDOException $e) {
-            // Hata durumunda hata mesajını $message değişkenine atıyoruz
+            // Handle the exception
             $message = "Hata: " . $e->getMessage();
         }
+
+
     }
 
 }
 
 // E-posta gönderme fonksiyonu
-function sendVerificationEmail($to, $verificationCode, $first_name, $last_name, $plainPassword, $username, $email) {
-    global $config, $siteName, $agreementLink, $siteUrl;
+function sendVerificationEmail($to, $verificationCode, $first_name, $plainPassword, $username, $email) {
+    global $config, $siteName, $siteUrl;
 
     $mail = new PHPMailer(true);
 
@@ -211,9 +221,7 @@ function sendVerificationEmail($to, $verificationCode, $first_name, $last_name, 
     <html>
     <body>
         <p>👋 Selam $first_name,</p>
-        <p>$siteName 'e hoş geldin 🤗 Kaydının tamamlanabilmesi için sözleşmeleri okuyup onaylaman gerekiyor:</p>
-        <p>Sözleşmeleri okumak için 🤓 <a href='$agreementLink'>buraya tıklayabilirsin</a>.</p>
-        <p>Sözleşmeleri onaylamak için ✅ <a href='$verificationLink'>buraya tıklayabilirsin</a>.</p>
+        <p>$siteName 'e hoş geldin 🤗.</p>
         <p>🧐 $siteName paneline $siteUrl adresinden $username kullanıcı adın ya da $email e-postan ve şifren $plainPassword ile oturum açabilirsin.</p>
         <p>Müzik dolu günler dileriz 🎸🎹</p>
     </body>
@@ -229,8 +237,8 @@ function sendVerificationEmail($to, $verificationCode, $first_name, $last_name, 
 
 
 // SMS gönderme fonksiyonu
-function sendVerificationSms($to, $verificationCode, $first_name, $last_name, $plainPassword, $username, $email) {
-    global $siteName, $agreementLink, $siteUrl, $config, $first_name, $last_name, $plainPassword, $username, $email;
+function sendVerificationSms($to, $verificationCode, $first_name, $plainPassword, $username, $email) {
+    global $siteName, $siteUrl, $config, $first_name, $plainPassword, $username, $email;
 
     // Check if Infobip configuration is enabled and valid
     if (
@@ -260,7 +268,7 @@ function sendVerificationSms($to, $verificationCode, $first_name, $last_name, $p
         // Gizli bağlantı oluştur
         $verificationLink = getVerificationLink($encryptedPhone, $encryptedCode, "phone");
 
-        $message = new SmsTextualMessage(destinations: [$destination], from: $SENDER, text: "Selam $first_name, $siteName 'e hoş geldin 🤗 Kaydının tamamlanabilmesi için sözleşmeleri okuyup onaylaman gerekiyor: $agreementLink - Sözleşmeleri onaylamak için ise şu bağlantıya tıklayabilirsin (Bağlantı açıldığında sözleşmeler otomatik onaylanacaktır): $verificationLink.  $siteUrl üzerinden $email e-posta adresin ya da $username ve şifren $plainPassword ile $siteName panelinde oturum açabilirsin.");
+        $message = new SmsTextualMessage(destinations: [$destination], from: $SENDER, text: "Selam $first_name, $siteName 'e hoş geldin 🤗. $siteUrl üzerinden $email e-posta adresin ya da $username kullanıcı adın ve şifren $plainPassword ile $siteName panelinde oturum açabilirsin.");
 
         $request = new SmsAdvancedTextualRequest(messages: [$message]);
 
@@ -318,7 +326,7 @@ require_once(__DIR__ . '/partials/header.php');
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-              <h2>Kullanıcı Kaydı</h2>
+              <h2>Kullanıcı Oluştur</h2>
               <div class="btn-toolbar mb-2 mb-md-0">
                   <div class="btn-group mr-2">
                       <button onclick="history.back()" class="btn btn-sm btn-outline-secondary">
@@ -331,14 +339,42 @@ require_once(__DIR__ . '/partials/header.php');
               </div>
           </div>
 
-  <!-- Mesajı burada gösteriyoruz -->
-<?php if (isset($message) && $message !== ""): ?>
-    <div class="alert alert-primary" role="alert">
-      <?= $message ?>
-    </div>
-  <?php endif; ?>
+            <!-- Kullanıcı eklendi mesajını burada gösteriyoruz -->
+            <?php if (isset($message) && $message !== ""): ?>
+                <div class="alert alert-primary" id="primaryMessage" role="alert">
+                    <?= $message ?>
+                </div>
 
-  <!-- SMS gönderim başarılı mesajı -->
+                <script>
+                    var countdown = 5;
+                    var primaryMessage = document.getElementById("primaryMessage");
+                    primaryMessage.classList.add("alert-primary");
+
+                    function updateCountdown() {
+                        primaryMessage.innerHTML = "<?php echo $message; ?><br>(" + countdown + ") saniye içerisinde kullanıcılar listesine yönlendirileceksiniz...";
+                    }
+
+                    function redirect() {
+                        window.location.href = "users.php"; // Replace with the desired destination page
+                    }
+
+                    updateCountdown();
+
+                    var countdownInterval = setInterval(function() {
+                        countdown--;
+                        updateCountdown();
+
+                        if (countdown <= 0) {
+                            clearInterval(countdownInterval);
+                            redirect();
+                        }
+                    }, 1000);
+                </script>
+            <?php endif; ?>
+
+
+
+            <!-- SMS gönderim başarılı mesajı -->
     <?php if (isset($smsSuccessMessage) && $smsSuccessMessage !== ""): ?>
         <div class="alert alert-success" role="alert">
       <?= $smsSuccessMessage ?>
@@ -571,17 +607,31 @@ require_once(__DIR__ . '/partials/header.php');
                             <input type="text" name="health_issue" class="form-control">
                         </div>
 
-                        <div class="mb-3">
-                            <label for="emergency_contact" class="form-label">Acil Durum Kişisi:</label>
-                            <input type="text" name="emergency_contact" class="form-control" required>
-                            <div class="invalid-feedback">Bu alan gereklidir.</div>
+                        <!-- Bireysel ve Kurumsal alanlarına ID eklendi -->
+                        <label class="form-label mt-3" for="invoice_type">Fatura Tipi Seçin:</label>
+                        <select class="form-select" name="invoice_type" id="invoice_type" onchange="toggleInvoiceFields()" required>
+                            <option value="individual" selected>Bireysel</option>
+                            <option value="corporate">Kurumsal</option>
+                        </select>
+
+                        <!-- Kurumsal Alanları -->
+                        <div id="corporate_fields" style="display: none;">
+                            <label class="form-label mt-3" for="tax_company_name">Şirket Ünvanı:</label>
+                            <input class="form-control" type="text" name="tax_company_name" value="" required>
+
+                            <label class="form-label mt-3" for="tax_office">Vergi Dairesi:</label>
+                            <input class="form-control" type="text" name="tax_office" value="" required>
+
+                            <label class="form-label mt-3" for="tax_number">Vergi Numarası:</label>
+                            <input class="form-control" type="text" name="tax_number" value="" required>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="emergency_phone" class="form-label">Acil Durum Kişisi Telefon:</label>
-                            <input type="tel" name="emergency_phone" class="form-control" required>
-                            <div class="invalid-feedback">Geçerli bir telefon numarası girin.</div>
+                        <!-- Bireysel Alanları -->
+                        <div id="individual_fields">
+                            <label class="form-label mt-3" for="tc_identity_for_individual_invoice">TC Kimlik Numarası:</label>
+                            <input class="form-control" type="text" name="tc_identity_for_individual_invoice" value="" required>
                         </div>
+
                     </div>
                 </div>
 
@@ -619,6 +669,37 @@ require_once(__DIR__ . '/partials/header.php');
                         generateAndSetPassword('password');
                     };
                 </script>
+
+                <script defer>
+                    // Fatura tipi seçildiğinde tetiklenecek fonksiyon
+                    function toggleInvoiceFields() {
+                        var invoiceType = document.getElementById('invoice_type').value;
+                        var corporateFields = document.getElementById('corporate_fields');
+                        var individualFields = document.getElementById('individual_fields');
+
+                        // Kurumsal ve bireysel alanları göster veya gizle
+                        corporateFields.style.display = (invoiceType === 'corporate') ? 'block' : 'none';
+                        individualFields.style.display = (invoiceType === 'individual') ? 'block' : 'none';
+
+                        // Gerekli alanları kontrol et ve ayarla
+                        var taxCompanyInput = document.getElementsByName('tax_company_name')[0];
+                        var taxOfficeInput = document.getElementsByName('tax_office')[0];
+                        var taxNumberInput = document.getElementsByName('tax_number')[0];
+                        var eInvoiceSelect = document.getElementsByName('e_invoice')[0];
+                        var tcIdentityInput = document.getElementsByName('tc_identity_for_individual_invoice')[0];
+
+                        taxCompanyInput.required = (invoiceType === 'corporate');
+                        taxOfficeInput.required = (invoiceType === 'corporate');
+                        taxNumberInput.required = (invoiceType === 'corporate');
+                        eInvoiceSelect.required = (invoiceType === 'corporate');
+                        tcIdentityInput.required = (invoiceType === 'individual');
+                    }
+
+                    // Call the function to set the initial state
+                    toggleInvoiceFields();
+                </script>
+
+
 
                 <div class="form-group mt-3">
       <button type="submit" class="btn btn-primary">Kaydet</button>

@@ -55,18 +55,26 @@ $allowedAcademies = $associatedAcademies;
 
 // Kullanıcı bilgileri sorgusu
 $query = "
-    SELECT
-        users.id AS user_id,
-        users.first_name,
-        users.last_name,
-        users.email,
-        users.tc_identity,
-        users.phone,
-        user_types.type_name,
-        users.verification_time_email_confirmed,
-        users.verification_time_sms_confirmed
-    FROM users
-    INNER JOIN user_types ON users.user_type = user_types.id
+SELECT
+    users.id AS user_id,
+    users.first_name,
+    users.last_name,
+    users.email,
+    users.tc_identity,
+    users.phone,
+    user_types.type_name,
+    (
+        SELECT MAX(verification_time_email_confirmed)
+        FROM verifications
+        WHERE user_id = users.id
+    ) AS latest_verification_time_email_confirmed,
+    (
+        SELECT MAX(verification_time_sms_confirmed)
+        FROM verifications
+        WHERE user_id = users.id
+    ) AS latest_verification_time_sms_confirmed
+FROM users
+INNER JOIN user_types ON users.user_type = user_types.id
 LIMIT 5;
 ";
 
@@ -350,6 +358,9 @@ foreach ($resultTotalStudents as $row) {
     $total_students_counts[] = $row["total_students"];
 }
 ?>
+<?php
+require_once(__DIR__ . '/partials/header.php');
+?>
 <script>
     // Function to update date and time using AJAX
     function updateDateTime() {
@@ -372,9 +383,6 @@ foreach ($resultTotalStudents as $row) {
     updateDateTime();
     setInterval(updateDateTime, 5000);
 </script>
-<?php
-require_once(__DIR__ . '/partials/header.php');
-?>
         <?php
         require_once(__DIR__ . '/partials/sidebar.php');
         ?>
@@ -1073,8 +1081,8 @@ require_once(__DIR__ . '/partials/header.php');
                               <td onmouseover="this.innerHTML='<?= isset($user['email']) ? $user['email'] : '' ?>'" onmouseout="this.innerHTML='<?= isset($user['email']) ? '******************' . strstr($user['email'], '@') : '' ?>'"><?= isset($user['email']) ? '*******************' . strstr($user['email'], '@') : '' ?></td>
                               <td onmouseover="this.innerHTML='<?= isset($user['tc_identity']) ? $user['tc_identity'] : '' ?>'" onmouseout="this.innerHTML='<?= isset($user['tc_identity']) ? '*******' . substr($user['tc_identity'], -4) : '' ?>'"><?= isset($user['tc_identity']) ? '*******' . substr($user['tc_identity'], -4) : '' ?></td>
                               <td onmouseover="this.innerHTML='<?= isset($user['phone']) ? $user['phone'] : '' ?>'" onmouseout="this.innerHTML='<?= isset($user['phone']) ? '******' . substr($user['phone'], -4) : '' ?>'"><?= isset($user['phone']) ? '******' . substr($user['phone'], -4) : '' ?></td>
-                              <td><?= $user['verification_time_email_confirmed'] ? '<i class="fas fa-check text-success"></i> Doğrulandı' : '<i class="fas fa-times text-danger"></i> Doğrulanmadı' ?></td>
-                              <td><?= $user['verification_time_sms_confirmed'] ? '<i class="fas fa-check text-success"></i> Doğrulandı' : '<i class="fas fa-times text-danger"></i> Doğrulanmadı' ?></td>
+                              <td><?= $user['latest_verification_time_email_confirmed'] ? '<i class="fas fa-check text-success"></i> Doğrulandı' : '<i class="fas fa-times text-danger"></i> Doğrulanmadı' ?></td>
+                              <td><?= $user['latest_verification_time_sms_confirmed'] ? '<i class="fas fa-check text-success"></i> Doğrulandı' : '<i class="fas fa-times text-danger"></i> Doğrulanmadı' ?></td>
                               <td><?= $user['type_name'] ?></td>
                               <td>
                                   <a href="user_profile.php?id=<?= $user['user_id'] ?>" class="btn btn-primary btn-sm">

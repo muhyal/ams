@@ -53,21 +53,44 @@ $user = null;
 if (isset($_GET["id"])) {
     $user_id = $_GET["id"];
 
-    // Kullanıcı tipini al
-    $query = "SELECT users.*, 
-            CONCAT(u_created_by.first_name, ' ', u_created_by.last_name) AS created_by_name,
-            CONCAT(u_updated_by.first_name, ' ', u_updated_by.last_name) AS updated_by_name,
-            CONCAT(u_deleted_by.first_name, ' ', u_deleted_by.last_name) AS deleted_by_name
-         FROM users
-         LEFT JOIN users u_created_by ON users.created_by_user_id = u_created_by.id
-         LEFT JOIN users u_updated_by ON users.updated_by_user_id = u_updated_by.id
-         LEFT JOIN users u_deleted_by ON users.deleted_by_user_id = u_deleted_by.id
-         WHERE users.id = :user_id";
+    $query = "
+SELECT 
+    users.*,
+    verifications.id AS verification_id,
+    verifications.email AS verification_email,
+    verifications.phone AS verification_phone,
+    verifications.verification_code_email,
+    verifications.verification_code_sms,
+    verifications.verification_ip_email,
+    verifications.verification_ip_sms,
+    verifications.verification_time_email_sent,
+    verifications.verification_time_sms_sent,
+    verifications.verification_time_email_confirmed,
+    verifications.verification_time_sms_confirmed,
+    verifications.verification_signature_email,
+    verifications.verification_signature_sms,
+    CONCAT(u_created_by.first_name, ' ', u_created_by.last_name) AS created_by_name,
+    CONCAT(u_updated_by.first_name, ' ', u_updated_by.last_name) AS updated_by_name,
+    CONCAT(u_deleted_by.first_name, ' ', u_deleted_by.last_name) AS deleted_by_name
+FROM users
+LEFT JOIN users u_created_by ON users.created_by_user_id = u_created_by.id
+LEFT JOIN users u_updated_by ON users.updated_by_user_id = u_updated_by.id
+LEFT JOIN users u_deleted_by ON users.deleted_by_user_id = u_deleted_by.id
+LEFT JOIN verifications ON users.id = verifications.user_id
+WHERE users.id = :user_id
+";
 
     $stmt = $db->prepare($query);
     $stmt->bindParam(":user_id", $user_id, PDO::PARAM_INT);
     $stmt->execute();
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    $query = "SELECT * FROM verifications WHERE user_id = :user_id";
+    $stmt = $db->prepare($query);
+    $stmt->bindParam(":user_id", $user_id, PDO::PARAM_INT);
+    $stmt->execute();
+    $verifications = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 
     if (!$user) {
         // Belirtilen ID'ye sahip kullanıcı yoksa, kullanıcı listesine yönlendir
@@ -111,135 +134,350 @@ require_once(__DIR__ . '/partials/header.php');
 <?php
 require_once(__DIR__ . '/partials/sidebar.php');
 ?>
-    <style>
-        .notes-box {
-            border: 1px solid #ccc;
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 10px;
-        }
-
-        .notes-box label {
-            font-weight: bold;
-        }
-
-        .notes-box div {
-            margin-top: 5px;
-        }
-    </style>
 
 
     <!-- Ana içerik -->
-    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+<main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
             <h2>Kullanıcı Profili</h2>
         </div>
 
-
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="btn-toolbar mb-2 mb-md-0">
-                        <div class="btn-group mr-2">
-                            <button onclick="history.back()" class="btn btn-sm btn-outline-secondary">
-                                <i class="fas fa-arrow-left"></i> Geri dön
-                            </button>
-                            <a href="users.php" class="btn btn-sm btn-outline-secondary">
-                                <i class="fas fa-list"></i> Kullanıcı Listesi
-                            </a>
-                            <a href="edit_user.php?id=<?= $user['id'] ?>" class="btn btn-sm btn-outline-secondary">
-                                <i class="fas fa-edit"></i> Kullanıcı Düzenle
-                            </a>
-                            <a href="user_profile.php?id=<?= $user['id'] ?>" class="btn btn-sm btn-outline-secondary">
-                                <i class="fas fa-user-lock"></i> Şifre Gönder
-                            </a>
-                        </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group mr-2">
+                        <button onclick="history.back()" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Geri dön
+                        </button>
+                        <a href="users.php" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-list"></i> Kullanıcı Listesi
+                        </a>
+                        <a href="edit_user.php?id=<?= $user['id'] ?>" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-edit"></i> Kullanıcı Düzenle
+                        </a>
+                        <a href="user_profile.php?id=<?= $user['id'] ?>" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-user-lock"></i> Şifre Gönder
+                        </a>
+                        <a href="send_verifications.php?id=<?= $user['id'] ?>" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-user-check"></i> Doğrulamaları Gönder
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
-        <br>
+    </div>
+
         <div class="row">
-            <div class="col-md-6">
-                <h3>Kullanıcı Bilgileri</h3>
-                <ul>
-                    <li><strong>No:</strong> <?= $user['id'] ?></li>
-                    <li><strong>Kullanıcı adı:</strong> <?= $user['username'] ?></li>
-                    <li><strong>T.C. Kimlik No:</strong> <?= $user['tc_identity'] ?></li>
-                    <li><strong>Ad:</strong> <?= $user['first_name'] ?></li>
-                    <li><strong>Soyad:</strong> <?= $user['last_name'] ?></li>
-                    <li><strong>E-posta:</strong> <?= $user['email'] ?></li>
-                    <li><strong>Telefon:</strong> <?= $user['phone'] ?></li>
-                    <li><strong>İl:</strong> <?= $user['city'] ? $user['city'] : 'Henüz belli değil'; ?></li>
-                    <li><strong>İlçe:</strong> <?= $user['district'] ? $user['district'] : 'Henüz belli değil'; ?></li>
-                    <?php
-                    function getCountryName($countryCode) {
-                        global $iso3166;
+            <!-- İlk sütun -->
+            <div class="col-md-4">
+                <div class="card mt-3 mb-3">
+                    <div class="card-header">
+                        <h5 class="card-title">Kullanıcı Bilgileri</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><strong>Kayıt No:</strong> <?= $user['id'] ?></li>
+                            <li class="list-group-item"><strong>Kullanıcı adı:</strong> <?= $user['username'] ?></li>
+                            <li class="list-group-item"><strong>T.C. Kimlik No:</strong> <?= $user['tc_identity'] ?></li>
+                            <li class="list-group-item"><strong>Ad:</strong> <?= $user['first_name'] ?></li>
+                            <li class="list-group-item"><strong>Soyad:</strong> <?= $user['last_name'] ?></li>
+                            <li class="list-group-item"><strong>E-posta:</strong> <?= $user['email'] ?></li>
+                            <li class="list-group-item"><strong>Telefon:</strong> <?= $user['phone'] ?></li>
+                            <li class="list-group-item"><strong>İl:</strong> <?= $user['city'] ? $user['city'] : 'Veri yok'; ?></li>
+                            <li class="list-group-item"><strong>İlçe:</strong> <?= $user['district'] ? $user['district'] : 'Veri yok'; ?></li>
+                            <?php
+                            function getCountryName($countryCode) {
+                                global $iso3166;
 
-                        // Türkiye'nin alpha2 kodu TR ise "Türkiye" döndür, aksi takdirde ISO3166 kütüphanesinden al
-                        return ($countryCode === 'TR') ? 'Türkiye' : $iso3166->alpha2($countryCode)['name'] ?? $countryCode;
-                    }
-                    ?>
-                    <li><strong>Ülke:</strong> <?= ($user['country']) ? getCountryName($user['country']) : 'Henüz belli değil'; ?></li>                <li><strong>Doğum Tarihi:</strong> <?php echo $user['birth_date'] ? date(DATE_FORMAT, strtotime($user['birth_date'])) : 'Belli değil'; ?></li>
-                    <?php
-                    // Kullanıcının doğum tarihi
-                    $birthDate = $user['birth_date'];
+                                // Türkiye'nin alpha2 kodu TR ise "Türkiye" döndür, aksi takdirde ISO3166 kütüphanesinden al
+                                return ($countryCode === 'TR') ? 'Türkiye' : $iso3166->alpha2($countryCode)['name'] ?? $countryCode;
+                            }
+                            ?>
+                            <li class="list-group-item"><strong>Ülke:</strong> <?= ($user['country']) ? getCountryName($user['country']) : 'Veri yok'; ?></li>                <li class="list-group-item"><strong>Doğum Tarihi:</strong> <?php echo $user['birth_date'] ? date(DATE_FORMAT, strtotime($user['birth_date'])) : 'Belli değil'; ?></li>
+                            <?php
+                            // Kullanıcının doğum tarihi
+                            $birthDate = $user['birth_date'];
 
-                    if ($birthDate) {
-                        // Bugünün tarihini al
-                        $today = new DateTime();
+                            if ($birthDate) {
+                                // Bugünün tarihini al
+                                $today = new DateTime();
 
-                        // Doğum tarihini DateTime nesnesine dönüştür
-                        $birthDateTime = new DateTime($birthDate);
+                                // Doğum tarihini DateTime nesnesine dönüştür
+                                $birthDateTime = new DateTime($birthDate);
 
-                        // Yaşı hesapla
-                        $age = $today->diff($birthDateTime)->y;
+                                // Yaşı hesapla
+                                $age = $today->diff($birthDateTime)->y;
 
-                        echo '<li><strong>Yaş:</strong> ' . $age . '</li>';
-                    } else {
-                        echo '<li><strong>Yaş:</strong> Bilgi bulunmuyor</li>';
-                    }
-                    ?>
-                    <li><strong>Kan Grubu:</strong> <?= $user['blood_type'] ? $user['blood_type'] : 'Henüz belli değil'; ?></li>
-                    <li><strong>Bilinen Sağlık Sorunu:</strong> <?= $user['health_issue'] ? $user['health_issue'] : 'Henüz belli değil'; ?></li>
-                    <li><strong>Acil Durum Kişisi:</strong> <?= $user['emergency_phone'] ? $user['emergency_phone'] : 'Henüz belli değil'; ?></li>
-                    <li><strong>SMS Onay Durumu:</strong> <?= $user['verification_time_sms_confirmed'] ? '<i class="fas fa-check text-success"></i> Doğrulandı' : '<i class="fas fa-times text-danger"></i> Doğrulanmadı' ?></li>
-                    <li><strong>E-posta Onay Durumu:</strong> <?= $user['verification_time_email_confirmed'] ? '<i class="fas fa-check text-success"></i> Doğrulandı' : '<i class="fas fa-times text-danger"></i> Doğrulanmadı' ?></li>
-                    <li><strong>Fatura Türü:</strong> <?= $user['invoice_type'] == 'individual' ? 'Bireysel' : 'Kurumsal' ?></li>
-                    <?php if ($user['invoice_type'] == 'individual'): ?>
-                        <li><strong>T.C. Kimlik No:</strong> <?= $user['tc_identity'] ?></li>
-                    <?php elseif ($user['invoice_type'] == 'corporate'): ?>
-                        <li><strong>Şirket Ünvanı:</strong> <?= $user['tax_company_name'] ?></li>
-                        <li><strong>Vergi Dairesi:</strong> <?= $user['tax_office'] ?></li>
-                        <li><strong>Vergi Numarası:</strong> <?= $user['tax_number'] ?></li>
-                    <?php endif; ?>
-                </ul>
-            </div>
+                                echo '<li class="list-group-item"><strong>Yaş:</strong> ' . $age . '</li>';
+                            } else {
+                                echo '<li class="list-group-item"><strong>Yaş:</strong> Bilgi bulunmuyor</li>';
+                            }
+                            ?>
+                            <li class="list-group-item"><strong>Kan Grubu:</strong> <?= $user['blood_type'] ? $user['blood_type'] : 'Veri yok'; ?></li>
+                            <li class="list-group-item"><strong>Bilinen Sağlık Sorunu:</strong> <?= $user['health_issue'] ? $user['health_issue'] : 'Veri yok'; ?></li>
+                              <li class="list-group-item"><strong>Fatura Türü:</strong> <?= $user['invoice_type'] == 'individual' ? 'Bireysel' : 'Kurumsal' ?></li>
+                            <?php if ($user['invoice_type'] == 'individual'): ?>
+                                <li class="list-group-item"><strong>Fatura T.C. Kimlik No:</strong> <?= $user['tc_identity_for_individual_invoice'] ?></li>
+                            <?php elseif ($user['invoice_type'] == 'corporate'): ?>
+                                <li class="list-group-item"><strong>Şirket Ünvanı:</strong> <?= $user['tax_company_name'] ?></li>
+                                <li class="list-group-item"><strong>Vergi Dairesi:</strong> <?= $user['tax_office'] ?></li>
+                                <li class="list-group-item"><strong>Vergi Numarası:</strong> <?= $user['tax_number'] ?></li>
+                            <?php endif; ?>
+                        </ul>
+                    </div>
+                </div>       </div>
 
-            <div class="col-md-6">
-                <h3>Diğer Bilgiler</h3>
-                <ul>
-                    <li><strong>Kullanıcı Türü:</strong> <?= $userType ?></li>
-                    <li><strong>Oluşturan:</strong> <?= $user['created_by_name'] ?></li>
-                    <li><strong>Oluşturulma:</strong> <?= $user['created_at'] ? date(DATETIME_FORMAT, strtotime($user['created_at'])) : 'Henüz belli değil'; ?></li>
-                    <li><strong>Güncelleyen:</strong> <?= $user['updated_by_name'] ?></li>
-                    <li><strong>Güncellenme:</strong> <?= $user['updated_at'] ? date(DATETIME_FORMAT, strtotime($user['updated_at'])) : 'Henüz belli değil'; ?></li>
-                    <li><strong>Silen:</strong> <?= $user['deleted_by_name'] ?></li>
-                    <li><strong>Silinme:</strong> <?= $user['deleted_at'] ? date(DATETIME_FORMAT, strtotime($user['deleted_at'])) : 'Henüz belli değil'; ?></li>
-                    <li><strong>Oluşturulma Tarihi:</strong> <?= $user['created_at'] ? date(DATETIME_FORMAT, strtotime($user['created_at'])) : 'Henüz belli değil'; ?></li>
-                    <li><strong>SMS Gönderilme Zamanı:</strong> <?php echo $user['verification_time_sms_sent'] ? date(DATETIME_FORMAT, strtotime($user['verification_time_sms_sent'])) : 'Henüz belli değil'; ?></li>
-                    <li><strong>SMS Onay Zamanı:</strong> <?php echo $user['verification_time_sms_confirmed'] ? date(DATETIME_FORMAT, strtotime($user['verification_time_sms_confirmed'])) : 'Henüz belli değil'; ?></li>
-                    <li><strong>SMS Onay IP:</strong> <?= $user['verification_ip_sms'] ? $user['verification_ip_sms'] : 'Henüz belli değil'; ?></li>
-                    <li><strong>E-posta Gönderilme Zamanı:</strong> <?php echo $user['verification_time_email_sent'] ? date(DATETIME_FORMAT, strtotime($user['verification_time_email_sent'])) : 'Henüz belli değil'; ?></li>
-                    <li><strong>E-posta Onay Zamanı:</strong> <?php echo $user['verification_time_email_confirmed'] ? date(DATETIME_FORMAT, strtotime($user['verification_time_email_confirmed'])) : 'Henüz belli değil'; ?></li>
-                    <li><strong>E-posta Onay IP:</strong> <?= $user['verification_ip_email'] ? $user['verification_ip_email'] : 'Henüz belli değil'; ?></li>
-                </ul>
-                <div class="notes-box">
-                    <label for="notes">Notlar:</label>
-                    <div><?php echo $user['notes']; ?></div>
+            <!-- İkinci sütun -->
+            <div class="col-md-4">
+
+                <div class="card mt-3 mb-3">
+                    <div class="card-header">
+                        <h5 class="card-title">Diğer Bilgiler</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><strong>SMS Onay Durumu:</strong> <?= $user['verification_time_sms_confirmed'] ? '<i class="fas fa-check text-success"></i> Doğrulandı' : '<i class="fas fa-times text-danger"></i> Doğrulanmadı' ?></li>
+                            <li class="list-group-item"><strong>E-posta Onay Durumu:</strong> <?= $user['verification_time_email_confirmed'] ? '<i class="fas fa-check text-success"></i> Doğrulandı' : '<i class="fas fa-times text-danger"></i> Doğrulanmadı' ?></li>
+                            <li class="list-group-item"><strong>Kullanıcı Türü:</strong> <?= $userType ?></li>
+                            <li class="list-group-item"><strong>Oluşturan:</strong> <?= !empty($user['created_by_name']) ? $user['created_by_name'] : 'Veri yok'; ?></li>
+                            <li class="list-group-item"><strong>Oluşturulma:</strong> <?= $user['created_at'] ? date(DATETIME_FORMAT, strtotime($user['created_at'])) : 'Veri yok'; ?></li>
+                            <li class="list-group-item"><strong>Güncelleyen:</strong> <?= !empty($user['updated_by_name']) ? $user['updated_by_name'] : 'Veri yok'; ?></li>
+                            <li class="list-group-item"><strong>Güncellenme:</strong> <?= $user['updated_at'] ? date(DATETIME_FORMAT, strtotime($user['updated_at'])) : 'Veri yok'; ?></li>
+                            <li class="list-group-item"><strong>Silen:</strong> <?= !empty($user['deleted_by_name']) ? $user['deleted_by_name'] : 'Veri yok'; ?></li>
+                            <li class="list-group-item"><strong>Silinme:</strong> <?= $user['deleted_at'] ? date(DATETIME_FORMAT, strtotime($user['deleted_at'])) : 'Veri yok'; ?></li>
+                            <li class="list-group-item"><strong>SMS Gönderilme:</strong> <?php echo $user['verification_time_sms_sent'] ? date(DATETIME_FORMAT, strtotime($user['verification_time_sms_sent'])) : 'Veri yok'; ?></li>
+                            <li class="list-group-item"><strong>SMS Onaylandı:</strong> <?php echo $user['verification_time_sms_confirmed'] ? date(DATETIME_FORMAT, strtotime($user['verification_time_sms_confirmed'])) : 'Veri yok'; ?></li>
+                            <li class="list-group-item"><strong>SMS Onay IP:</strong> <?= $user['verification_ip_sms'] ? $user['verification_ip_sms'] : 'Veri yok'; ?></li>
+                            <li class="list-group-item"><strong>E-posta Gönderilme:</strong> <?php echo $user['verification_time_email_sent'] ? date(DATETIME_FORMAT, strtotime($user['verification_time_email_sent'])) : 'Veri yok'; ?></li>
+                            <li class="list-group-item"><strong>E-posta Onaylandı:</strong> <?php echo $user['verification_time_email_confirmed'] ? date(DATETIME_FORMAT, strtotime($user['verification_time_email_confirmed'])) : 'Veri yok'; ?></li>
+                            <li class="list-group-item"><strong>E-posta Onay IP:</strong> <?= $user['verification_ip_email'] ? $user['verification_ip_email'] : 'Veri yok'; ?></li>
+                        </ul>
+                    </div>
                 </div>
-                </ul>
+
+
+
             </div>
+
+            <!-- Üçüncü sütun -->
+            <div class="col-md-4">
+
+                <div class="card mt-3 mb-3">
+                    <div class="card-header">
+                        <h5 class="card-title">Doğrulama Bilgileri</h5>
+                    </div>
+                    <div class="card-body">
+
+                        <div class="row mt-3 mb-3">
+                            <!-- SMS İmza Gösterim Alanı -->
+                            <div class="col-md-6">
+                                <p style="font-weight: bold;">SMS İmza</p>
+                                <?php
+                                if ($user['verification_signature_sms']) {
+                                    $signatureDataSMS = $user['verification_signature_sms']; // SMS İmza verisini al
+
+                                    // İmzayı panelden göster
+                                    echo '<img src="' . $signatureDataSMS . '" alt="User SMS Signature" style="border: 1px solid #ccc; max-width: 75%; max-height: 200px;">';
+                                } else {
+                                    echo "SMS imzası yok.";
+                                }
+                                ?>
+                            </div>
+
+                            <!-- E-posta İmza Gösterim Alanı -->
+                            <div class="col-md-6">
+                                <p style="font-weight: bold;">E-posta İmza</p>
+                                <?php
+                                if ($user['verification_signature_email']) {
+                                    $signatureDataEmail = $user['verification_signature_email']; // E-posta İmza verisini al
+
+                                    // İmzayı panelden göster
+                                    echo '<img src="' . $signatureDataEmail . '" alt="User Email Signature" style="border: 1px solid #ccc; max-width: 75%; max-height: 200px;">';
+                                } else {
+                                    echo "E-posta imzası yok.";
+                                }
+                                ?>
+                            </div>
+                        </div>
+
+                        <!-- Button trigger modal -->
+                        <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#verificationsModal">
+                            <i class="bi bi-clock"></i> Doğrulama Geçmişi
+                        </button>
+                    </div>
+                </div>
+                <!-- Verifications Modal -->
+                <div class="modal fade" id="verificationsModal" tabindex="-1" aria-labelledby="verificationsModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" style="max-width: 90%;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="verificationsModalLabel">Doğrulama Bilgileri</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>E-posta</th>
+                                        <th>Telefon</th>
+                                        <th>E-posta Kod</th>
+                                        <th>SMS Kod</th>
+                                        <th>E-posta IP</th>
+                                        <th>SMS IP</th>
+                                        <th>E-posta Gönderim</th>
+                                        <th>SMS Gönderim</th>
+                                        <th>E-posta Onay</th>
+                                        <th>SMS Onay</th>
+                                        <th>E-posta İmza</th>
+                                        <th>SMS İmza</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <?php foreach ($verifications as $verification): ?>
+                                        <tr>
+                                            <td><?= !empty($verification['email']) ? $verification['email'] : 'Veri yok' ?></td>
+                                            <td><?= !empty($verification['phone']) ? $verification['phone'] : 'Veri yok' ?></td>
+                                            <td><?= !empty($verification['verification_code_email']) ? $verification['verification_code_email'] : 'Veri yok' ?></td>
+                                            <td><?= !empty($verification['verification_code_sms']) ? $verification['verification_code_sms'] : 'Veri yok' ?></td>
+                                            <td><?= !empty($verification['verification_ip_email']) ? $verification['verification_ip_email'] : 'Veri yok' ?></td>
+                                            <td><?= !empty($verification['verification_ip_sms']) ? $verification['verification_ip_sms'] : 'Veri yok' ?></td>
+                                            <td><?= isset($verification['verification_time_email_sent']) ? date(DATETIME_FORMAT, strtotime($verification['verification_time_email_sent'])) : 'Veri yok' ?></td>
+                                            <td><?= isset($verification['verification_time_sms_sent']) ? date(DATETIME_FORMAT, strtotime($verification['verification_time_sms_sent'])) : 'Veri yok' ?></td>
+                                            <td><?= isset($verification['verification_time_email_confirmed']) ? date(DATETIME_FORMAT, strtotime($verification['verification_time_email_confirmed'])) : 'Veri yok' ?></td>
+                                            <td><?= isset($verification['verification_time_sms_confirmed']) ? date(DATETIME_FORMAT, strtotime($verification['verification_time_sms_confirmed'])) : 'Veri yok' ?></td>
+                                            <td><?= $verification['verification_signature_email'] ? '<img src="' . $verification['verification_signature_email'] . '" alt="Verification Signature Email" style="max-width: 75px; max-height: 75px;">' : 'Veri yok' ?></td>
+                                            <td><?= $verification['verification_signature_sms'] ? '<img src="' . $verification['verification_signature_sms'] . '" alt="Verification Signature SMS" style="max-width: 75px; max-height: 75px;">' : 'Veri yok' ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <?php
+                // Kullanıcının rolünü kontrol et
+                if (isset($user['user_type'])) {
+                    if ($user['user_type'] == 6) {
+                        // Öğrencinin ID'sini alın
+                        $studentId = $user['id'];
+
+                        // Öğrenciye ait velileri çekmek için sorgu
+                        $getParentsQuery = "SELECT p.id, p.first_name, p.last_name, p.tc_identity
+               FROM student_parents sp
+               JOIN users p ON sp.parent_id = p.id
+               WHERE sp.student_id = ?";
+
+                        $stmtParents = $db->prepare($getParentsQuery);
+                        $stmtParents->execute([$studentId]);
+                        $parents = $stmtParents->fetchAll(PDO::FETCH_ASSOC);
+
+                        // Velileri listeleme
+                        if ($parents) {
+                            echo '<div class="card mt-3 mb-3">';
+                            echo '<div class="card-header">';
+                            echo '<h5 class="card-title">İlişkili Olduğu Veliler</h5>';
+                            echo '</div>';
+                            echo '<div class="card-body">';
+                            echo '<table class="table">';
+                            echo '<thead>';
+                            echo '<tr>';
+                            echo '<th>Tam Ad</th>';
+                            echo '<th>T.C. Kimlik No</th>';
+                            echo '<th>Veli Profili</th>';
+                            echo '</tr>';
+                            echo '</thead>';
+                            echo '<tbody>';
+
+                            foreach ($parents as $parent) {
+                                echo '<tr>';
+                                echo '<td>' . $parent['first_name'] . ' ' . $parent['last_name'] . '</td>';
+                                echo '<td>' . $parent['tc_identity'] . '</td>';
+                                echo '<td><a href="user_profile.php?id=' . $parent['id'] . '" class="btn btn-secondary"><i class="fas fa-user"></i></a></td>';
+                                echo '</tr>';
+                            }
+
+                            echo '</tbody>';
+                            echo '</table>';
+                            echo '</div>';
+                            echo '</div>';
+                        } else {
+                            echo "Bu öğrenciye ait veli bulunmamaktadır.";
+                        }
+                    } elseif ($user['user_type'] == 5) {
+                        // Kullanıcı veli ise buraya gerekli kodları ekleyebilirsiniz.
+                        // Örneğin, velinin bağlı olduğu öğrencileri çekip listeleyebilirsiniz.
+                        $parentUserId = $user['id'];
+
+                        // Velinin bağlı olduğu öğrencileri çekmek için sorgu
+                        $getStudentsQuery = "SELECT s.id, s.first_name, s.last_name, s.tc_identity
+               FROM student_parents sp
+               JOIN users s ON sp.student_id = s.id
+               WHERE sp.parent_id = ?";
+
+                        $stmtStudents = $db->prepare($getStudentsQuery);
+                        $stmtStudents->execute([$parentUserId]);
+                        $students = $stmtStudents->fetchAll(PDO::FETCH_ASSOC);
+
+                        // Öğrencileri listeleme
+                        if ($students) {
+                            echo '<div class="card mt-3 mb-3">';
+                            echo '<div class="card-header">';
+                            echo '<h5 class="card-title">İlişkili Olduğu Öğrenciler</h5>';
+                            echo '</div>';
+                            echo '<div class="card-body">';
+                            echo '<table class="table">';
+                            echo '<thead>';
+                            echo '<tr>';
+                            echo '<th>Tam Ad</th>';
+                            echo '<th>T.C. Kimlik No</th>';
+                            echo '<th>Öğrenci Profili</th>';
+                            echo '</tr>';
+                            echo '</thead>';
+                            echo '<tbody>';
+
+                            foreach ($students as $student) {
+                                echo '<tr>';
+                                echo '<td>' . $student['first_name'] . ' ' . $student['last_name'] . '</td>';
+                                echo '<td>' . $student['tc_identity'] . '</td>';
+                                echo '<td><a href="user_profile.php?id=' . $student['id'] . '" class="btn btn-secondary"><i class="fas fa-user"></i></a></td>';
+                                echo '</tr>';
+                            }
+
+                            echo '</tbody>';
+                            echo '</table>';
+                            echo '</div>';
+                            echo '</div>';
+                        } else {
+                            echo "Bu veliye bağlı öğrenci bulunmamaktadır.";
+                        }
+                    } else {
+                        echo "Bu kullanıcı türü desteklenmemektedir.";
+                    }
+                } else {
+                    echo "Kullanıcı türü belirtilmemiş.";
+                }
+                ?>
+
+
+                <div class="card mt-3 mb-3">
+                    <div class="card-header">
+                        <h5 class="card-title">Notlar</h5>
+                    </div>
+                    <div class="card-body">
+                        <?php echo !empty($user['notes']) ? $user['notes'] : 'Henüz not yazılmamış'; ?>
+
+                    </div>
+                </div>
+           </div>
+        </div>
+
+
 
             <?php
             // Kullanıcı türüne göre içeriği belirle
@@ -286,7 +524,7 @@ require_once(__DIR__ . '/partials/sidebar.php');
 
                     // Display active and completed cards in separate rows
                     echo '<div class="row">';
-                    echo '<div class="col-md-6"><h3>Aktif Dersler</h3>';
+                    echo '<div class="col-md-6 mt-5 mb-3"><h3>Aktif Dersler</h3>';
                     foreach ($results as $result) {
                         // Check if the last class date is more than 1 day ago
                         if (strtotime($result['course_date_4']) < strtotime('-1 day')) {
@@ -297,7 +535,7 @@ require_once(__DIR__ . '/partials/sidebar.php');
                     }
                     echo '</div>';
 
-                    echo '<div class="col-md-6"><h3>Arşivlenen Dersler</h3>';
+                    echo '<div class="col-md-6 mt-5 mb-3"><h3>Arşivlenen Dersler</h3>';
                     foreach ($results as $result) {
                         // Check if the last class date is not more than 1 day ago
                         if (strtotime($result['course_date_4']) >= strtotime('-1 day')) {
@@ -381,9 +619,6 @@ require_once(__DIR__ . '/partials/sidebar.php');
 
 
 
-
-
-        </div>
     </main>
 
 <?php require_once('../admin/partials/footer.php'); ?>

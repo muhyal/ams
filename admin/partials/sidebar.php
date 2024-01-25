@@ -34,7 +34,7 @@
 
                         <li class="nav-item">
                             <a class="text-light-emphasis nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/panel.php') ? 'active' : ''; ?>" href="/admin/panel.php">
-                                <svg class="bi"><use xlink:href="#house-fill"/></svg>
+                                <i class="fas fa-house"></i>
                                 Genel bakış
                             </a>
                         </li>
@@ -46,7 +46,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="text-light-emphasis nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/accounting_list.php') ? 'active' : ''; ?>" href="/admin/accounting_list.php">
+                            <a class="text-light-emphasis nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/payments.php') ? 'active' : ''; ?>" href="/admin/payments.php">
                                 Ödemeler
                             </a>
                         </li>
@@ -73,8 +73,6 @@
                                 Telafi Dersleri
                             </a>
                         </li>
-
-
 
                         <!-- Kullanıcılar Menüsü -->
                         <li class="nav-item">
@@ -104,34 +102,29 @@
                                 Kullanıcı - Akademi İlişkileri
                             </a>
                         </li>
-
-
+                        <li class="nav-item">
+                            <a class="text-light-emphasis nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/student_parent_assignments.php') ? 'active' : ''; ?>" href="/admin/student_parent_assignments.php">
+                                Öğrenci - Veli İlişkileri
+                            </a>
+                        </li>
 
                         <!-- Sınıflar Menüsü -->
                         <li class="nav-item">
                             <a class="text-light-emphasis nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/classes.php') ? 'active' : ''; ?>" href="/admin/classes.php">
-                                <i class="bi bi-list"></i>
                                 Sınıflar
                             </a>
                         </li>
 
                         <li class="nav-item">
                             <a class="text-light-emphasis nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/courses.php') ? 'active' : ''; ?>" href="/admin/courses.php">
-                                <i class="bi bi-list"></i>
                                 Dersler
                             </a>
                         </li>
 
             <li class="nav-item">
                 <a class="text-light-emphasis nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/birthdays.php') ? 'active' : ''; ?>" href="/admin/birthdays.php">
-                    <svg class="bi"><use xlink:href="#people"/></svg>
+                    <i class="fas fa-birthday-cake"></i>
                     Doğum Günleri
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="text-light-emphasis nav-link" href="/agreement.php">
-                    <svg class="bi"><use xlink:href="#plus-circle"/></svg>
-                    Sözleşmeler
                 </a>
             </li>
                         <li class="nav-item">
@@ -150,43 +143,43 @@
                     <ul class="nav flex-column mb-auto">
                         <li class="nav-item">
                             <a class="text-light-emphasis nav-link d-flex align-items-center gap-2" href="./../../reports/general_course_plans_report_for_the_current_month.php?generate_report">
-                                <svg class="bi"><use xlink:href="#file-earmark-text"/></svg>
+                                <i class="fas fa-file-excel"></i>
                                 Bu Ayın Ders Planları
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="text-light-emphasis nav-link d-flex align-items-center gap-2" href="./../../reports/general_course_plans_report_for_last_month.php?generate_report">
-                                <svg class="bi"><use xlink:href="#file-earmark-text"/></svg>
+                                <i class="fas fa-file-excel"></i>
                                 Geçen Ayın Ders Planları
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="text-light-emphasis nav-link d-flex align-items-center gap-2" href="./../../reports/general_accounting_report_for_the_current_month.php?generate_report">
-                                <svg class="bi"><use xlink:href="#file-earmark-text"/></svg>
+                                <i class="fas fa-file-excel"></i>
                                 Bu Ayın Genel Raporu
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="text-light-emphasis nav-link d-flex align-items-center gap-2" href="./../../reports/general_accounting_report_for_last_month.php?generate_report">
-                                <svg class="bi"><use xlink:href="#file-earmark-text"/></svg>
+                                <i class="fas fa-file-excel"></i>
                                 Geçen Ayın Genel Raporu
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="text-light-emphasis nav-link <?php echo (basename($_SERVER['PHP_SELF']) == '/admin/academy_teachers.php') ? 'active' : ''; ?>" href="/admin/academy_teachers.php">
-                                <i class="bi bi-people"></i>
+                            <a class="text-light-emphasis nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/academy_teachers.php') ? 'active' : ''; ?>" href="/admin/academy_teachers.php">
+                                <i class="fas fa-home-user"></i>
                                 Akademi Öğretmen/Ders
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="text-light-emphasis nav-link <?php echo (basename($_SERVER['PHP_SELF']) == '/admin/academy_students.php') ? 'active' : ''; ?>" href="/admin/academy_students.php">
-                                <i class="bi bi-people"></i>
+                            <a class="text-light-emphasis nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/academy_students.php') ? 'active' : ''; ?>" href="/admin/academy_students.php">
+                                <i class="fas fa-home-user"></i>
                                 Akademi Öğrenci/Ders
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="text-light-emphasis nav-link <?php echo (basename($_SERVER['PHP_SELF']) == '/admin/academy_date_course_plans.php') ? 'active' : ''; ?>" href="/admin/academy_date_course_plans.php">
-                                <i class="bi bi-people"></i>
+                            <a class="text-light-emphasis nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/academy_date_course_plans.php') ? 'active' : ''; ?>" href="/admin/academy_date_course_plans.php">
+                                <i class="fas fa-calendar-day"></i>
                                 Akademi/Tarih Ders Planları
                             </a>
                         </li>
@@ -195,14 +188,14 @@
 
                     <ul class="nav flex-column mb-auto">
                         <li class="nav-item">
-                            <a class="text-light-emphasis nav-link d-flex align-items-center gap-2" href="/admin/profile_edit.php">
-                                <svg class="bi"><use xlink:href="#gear-wide-connected"/></svg>
+                            <a class="text-light-emphasis nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/profile_edit.php') ? 'active' : ''; ?>" href="/admin/profile_edit.php">
+                                <i class="fas fa-user-gear"></i>
                                 Ayarlar
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="text-light-emphasis nav-link d-flex align-items-center gap-2" href="/admin/logout.php">
-                                <svg class="bi"><use xlink:href="#door-closed"/></svg>
+                                <i class="fas fa-door-closed"></i>
                                 Oturumu kapat
                             </a>
                         </li>
