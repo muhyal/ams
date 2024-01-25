@@ -42,13 +42,32 @@ error_reporting(E_ALL);
 require_once('../config/config.php');
 
 // Kullanıcıları ve rolleri veritabanından çekme
-$query = "SELECT users.*, user_types.type_name 
-          FROM users 
-          LEFT JOIN user_types ON users.user_type = user_types.id";
+$query = "
+    SELECT
+        users.*,
+        user_types.type_name,
+        (
+            SELECT MAX(verification_time_email_sent)
+            FROM verifications
+            WHERE user_id = users.id
+            ORDER BY verification_time_email_sent DESC
+            LIMIT 1
+        ) AS latest_verification_time_email_confirmed,
+        (
+            SELECT MAX(verification_time_sms_sent)
+            FROM verifications
+            WHERE user_id = users.id
+            ORDER BY verification_time_sms_sent DESC
+            LIMIT 1
+        ) AS latest_verification_time_sms_confirmed
+    FROM users
+    LEFT JOIN user_types ON users.user_type = user_types.id
+";
 
 $stmt = $db->prepare($query);
 $stmt->execute();
 $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
 <?php
 require_once(__DIR__ . '/partials/header.php');
@@ -119,11 +138,11 @@ require_once(__DIR__ . '/partials/header.php');
                             <!--<td><?= $user['verification_time_sms_sent'] ?></td>-->
                             <!--<td><?= $user['verification_time_sms_confirmed'] ?></td>-->
                             <td><?= $user['type_name'] ?></td>
-                            <td><?= $user['verification_time_sms_confirmed'] ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-times text-danger"></i>' ?></td>
+                            <td><?= $user['latest_verification_time_sms_confirmed'] ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-times text-danger"></i>' ?></td>
                             <!--<td><?= $user['verification_ip_sms'] ?></td>-->
                             <!--<td><?= $user['verification_time_email_sent'] ?></td>-->
                             <!--<td><?= $user['verification_time_email_confirmed'] ?></td>-->
-                            <td><?= $user['verification_time_email_confirmed'] ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-times text-danger"></i>' ?></td>
+                            <td><?= $user['latest_verification_time_email_confirmed'] ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-times text-danger"></i>' ?></td>
                             <!--<td><?= $user['verification_ip_email'] ?></td>-->
                             <td>
                                 <?php
@@ -138,17 +157,18 @@ require_once(__DIR__ . '/partials/header.php');
                             </td>
                             <td>
                                 <?php if ($user['deleted_at']): ?>
+                                    <a class="btn btn-primary btn-sm" href="user_profile.php?id=<?php echo $user['id']; ?>"><i class="fas fa-eye fa-sm"></i></a>
+                                    <a class="btn btn-secondary btn-sm" href="send_verifications.php?id=<?php echo $user['id']; ?>"><i class="fas fa-user-check fa-sm"></i></a>
+                                    <a class="btn btn-warning btn-sm" href="reset_password_and_send.php?id=<?php echo $user['id']; ?>"><i class="fas fa-lock-open fa-sm"></i></a>
+                                    <a class="btn btn-warning btn-sm" href="edit_user.php?id=<?php echo $user['id']; ?>"><i class="fas fa-edit fa-sm"></i></a>
                                     <a class="btn btn-primary btn-sm" href="restore_user.php?id=<?php echo $user['id']; ?>" onclick="return confirm('Bu kullanıcıyı silmeyi geri almak istediğinizden emin misiniz?')">
                                         <i class="fa-solid fa-clock-rotate-left"></i>
                                     </a>
-
-                                    <a class="btn btn-primary btn-sm" href="user_profile.php?id=<?php echo $user['id']; ?>"><i class="fas fa-user fa-sm"></i></a>
-                                    <a class="btn btn-warning btn-sm" href="edit_user.php?id=<?php echo $user['id']; ?>"><i class="fas fa-edit fa-sm"></i></a>
-
                                 <?php else: ?>
                                 <!-- Silinmeyen kullanıcılar için düzenleme ve silme bağlantıları -->
-                                    <a class="btn btn-primary btn-sm" href="resend_verifications.php?id=<?php echo $user['id']; ?>"><i class="fas fa-repeat fa-sm"></i></a>
-                                    <a class="btn btn-primary btn-sm" href="user_profile.php?id=<?php echo $user['id']; ?>"><i class="fas fa-user fa-sm"></i></a>
+                                    <a class="btn btn-primary btn-sm" href="user_profile.php?id=<?php echo $user['id']; ?>"><i class="fas fa-eye fa-sm"></i></a>
+                                    <a class="btn btn-secondary btn-sm" href="send_verifications.php?id=<?php echo $user['id']; ?>"><i class="fas fa-user-check fa-sm"></i></a>
+                                    <a class="btn btn-warning btn-sm" href="reset_password_and_send.php?id=<?php echo $user['id']; ?>"><i class="fas fa-lock-open fa-sm"></i></a>
                                     <a class="btn btn-warning btn-sm" href="edit_user.php?id=<?php echo $user['id']; ?>"><i class="fas fa-edit fa-sm"></i></a>
                                     <a class="btn btn-danger btn-sm" href="delete_user.php?id=<?php echo $user['id']; ?>"><i class="fas fa-trash-alt fa-sm"></i></a>
                                 <?php endif; ?>
