@@ -138,6 +138,7 @@ if (isset($_GET["generate_report"])) {
                 2 => 'Kredi Kartı',
                 3 => 'Havale / EFT',
                 4 => 'Hediye Çeki',
+                5 => 'Mail Order',
             ];
 
             if (array_key_exists('payment_method', $studentDetail)) {
