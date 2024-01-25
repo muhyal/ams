@@ -110,7 +110,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $insertPaymentStatement->bindParam(':paymentNotes', $paymentNotes, PDO::PARAM_STR);
 
         // Eğer ödeme yöntemi "Banka Transferi" ise banka ID'sini kaydet
-        if ($paymentMethod == "bank_transfer" || $paymentMethod == "2" || $paymentMethod == "3") {
+        if ($paymentMethod == "bank_transfer" || $paymentMethod == "2" || $paymentMethod == "3" || $paymentMethod == "5") {
             $bankId = isset($_POST["bankId"]) ? $_POST["bankId"] : null;
             $insertPaymentStatement->bindParam(':bankId', $bankId, PDO::PARAM_INT);
         } else {
@@ -145,19 +145,50 @@ require_once(__DIR__ . '/partials/sidebar.php');
             <button onclick="history.back()" class="btn btn-sm btn-outline-secondary">
                 <i class="fas fa-arrow-left"></i> Geri dön
             </button>
-            <a href="accounting_list.php" class="btn btn-sm btn-outline-secondary">
+            <a href="payments.php" class="btn btn-sm btn-outline-secondary">
                 <i class="fas fa-list"></i> Ödeme listesi
             </a>
         </div>
     </div>
 
     <?php if ($successMessage) : ?>
-        <div class="alert alert-success"><?php echo $successMessage; ?></div>
+        <div class="alert alert-success" id="successMessage"><?php echo $successMessage; ?></div>
+
+        <script>
+            var countdown = 5;
+            var successMessage = document.getElementById("successMessage");
+            successMessage.classList.remove("alert-info");  // Remove this line
+            successMessage.classList.add("alert-success");
+
+            function updateCountdown() {
+                successMessage.innerHTML = "<?php echo $successMessage; ?><br>(" + countdown + ") saniye içerisinde ödemeler listesine yönlendirileceksiniz...";
+            }
+
+            function redirect() {
+                window.location.href = "payments.php";
+            }
+
+            updateCountdown();
+
+            var countdownInterval = setInterval(function() {
+                countdown--;
+                updateCountdown();
+
+                if (countdown <= 0) {
+                    clearInterval(countdownInterval);
+                    redirect();
+                }
+            }, 1000);
+        </script>
     <?php endif; ?>
+
+
+
 
     <?php if ($errorMessage) : ?>
         <div class="alert alert-danger"><?php echo $errorMessage; ?></div>
     <?php endif; ?>
+
 
     <form action="" method="post">
         <div class="form-group">
@@ -228,7 +259,7 @@ require_once(__DIR__ . '/partials/sidebar.php');
                 // Display payment methods in the dropdown
                 foreach ($paymentMethods as $method) {
                     // ID'si 2 veya 3 ise banka seçeneklerini göster
-                    if ($method["id"] === "2" || $method["id"] === "3") {
+                    if ($method["id"] === "2" || $method["id"] === "3" || $method["id"] === "5") {
                         echo "<option value='{$method["id"]}'>{$method["name"]}</option>";
                     } else {
                         echo "<option value='{$method["id"]}'>{$method["name"]}</option>";
@@ -270,7 +301,7 @@ require_once(__DIR__ . '/partials/sidebar.php');
             var bankSelection = document.getElementById("bankSelection");
 
             // Sayfa yüklendiğinde kontrol et
-            if (paymentMethodSelect.value === "bank_transfer" || paymentMethodSelect.value === "2" || paymentMethodSelect.value === "3") {
+            if (paymentMethodSelect.value === "bank_transfer" || paymentMethodSelect.value === "2" || paymentMethodSelect.value === "3" || paymentMethodSelect.value === "5") {
                 bankSelection.style.display = "block";
             } else {
                 bankSelection.style.display = "none";
@@ -281,7 +312,7 @@ require_once(__DIR__ . '/partials/sidebar.php');
                 var selectedPaymentMethod = this.value;
 
                 // Ödeme yöntemi "bank_transfer" ise veya seçilen ödeme yöntemi bir banka ID'si ise banka seçimini göster
-                if (selectedPaymentMethod === "bank_transfer" || selectedPaymentMethod === "2" || selectedPaymentMethod === "3") {
+                if (selectedPaymentMethod === "bank_transfer" || selectedPaymentMethod === "2" || selectedPaymentMethod === "3" || selectedPaymentMethod === "5") {
                     bankSelection.style.display = "block";
                 } else {
                     bankSelection.style.display = "none";

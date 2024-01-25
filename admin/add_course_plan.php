@@ -44,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $teacher_id = htmlspecialchars($_POST["teacher_id"], ENT_QUOTES, 'UTF-8');
     $academy_id = htmlspecialchars($_POST["academy_id"], ENT_QUOTES, 'UTF-8');
     $class_id = htmlspecialchars($_POST["class_id"], ENT_QUOTES, 'UTF-8');
-    $student_id = htmlspecialchars($_POST["student_id"], ENT_QUOTES, 'UTF-8');
+    $student_id = $_POST["student_id"];
     $course_id = htmlspecialchars($_POST["course_id"], ENT_QUOTES, 'UTF-8');
     $course_date_1 = htmlspecialchars($_POST["course_date_1"], ENT_QUOTES, 'UTF-8');
     $course_date_2 = htmlspecialchars($_POST["course_date_2"], ENT_QUOTES, 'UTF-8');
@@ -136,7 +136,7 @@ require_once(__DIR__ . '/partials/sidebar.php');
     <!-- Ana içerik -->
     <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
-            <h2>Ders Planı Ekle</h2>
+            <h2>Ders Planla</h2>
             <div class="btn-group mr-2">
                 <button onclick="history.back()" class="btn btn-sm btn-outline-secondary">
                     <i class="fas fa-arrow-left"></i> Geri dön
@@ -147,21 +147,36 @@ require_once(__DIR__ . '/partials/sidebar.php');
             </div>
         </div>
 
-        <?php if (!empty($alertMessage)): ?>
-            <div id="alert-container" class="alert alert-<?php echo $alertType; ?> alert-dismissible fade show" role="alert">
-                <?php echo $alertMessage; ?>
+        <!-- Kullanıcı eklendi mesajını burada gösteriyoruz -->
+        <?php if (isset($alertMessage) && $alertMessage !== ""): ?>
+            <div class="alert alert-<?php echo $alertType; ?>" id="primaryMessage" role="alert">
+                <?= $alertMessage ?>
             </div>
 
             <script>
-                // Sayfa yüklendikten sonra uyarıyı otomatik kapat
-                $(document).ready(function(){
-                    // Belirli bir uyarı türüne göre kontrol et ve kapat
-                    if ($("#alert-container").length > 0) {
-                        setTimeout(function(){
-                            $("#alert-container").fadeOut("slow");
-                        }, 5000);
+                var countdown = 3;
+                var primaryMessage = document.getElementById("primaryMessage");
+                primaryMessage.classList.add("alert-<?php echo $alertType; ?>");
+
+                function updateCountdown() {
+                    primaryMessage.innerHTML = "<?php echo $alertMessage; ?><br>(" + countdown + ") saniye içerisinde kullanıcılar listesine yönlendirileceksiniz...";
+                }
+
+                function redirect() {
+                    window.location.href = "course_plans.php"; // Replace with the desired destination page
+                }
+
+                updateCountdown();
+
+                var countdownInterval = setInterval(function() {
+                    countdown--;
+                    updateCountdown();
+
+                    if (countdown <= 0) {
+                        clearInterval(countdownInterval);
+                        redirect();
                     }
-                });
+                }, 1000);
             </script>
         <?php endif; ?>
 
