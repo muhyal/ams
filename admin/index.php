@@ -178,13 +178,45 @@ require_once('../user/partials/header.php');
             <input type="text" class="form-control" id="identifier" name="identifier" placeholder="@doremuzikakademi.com" autofocus="" required>
             <label for="floatingInput">E-posta / Kullanıcı adı</label>
         </div>
-        <div class="form-floating">
-            <input type="password" class="form-control" name="password" id="password" placeholder="Şifre" required>
-            <label for="floatingPassword">Şifre</label>
-            <div class="form-group mt-3">
-                <a class="text-light-emphasis text-decoration-none" href="reset_password.php">Şifremi unuttum</a>
-            </div>
+        <div class="password-container">
+            <input type="password" class="form-control form-control-lg" name="password" id="password" placeholder="Şifre" required>
+            <span class="eye-icon" onclick="togglePasswordVisibility()">
+        <i class="bi bi-eye"></i>
+    </span>
         </div>
+
+        <div class="form-group mt-3">
+            <a class="text-light-emphasis text-decoration-none" href="reset_password.php">Şifremi unuttum</a>
+        </div>
+
+        <style>
+            .password-container {
+                position: relative;
+            }
+
+            .eye-icon {
+                position: absolute;
+                right: 10px;
+                top: 50%;
+                transform: translateY(-50%);
+                cursor: pointer;
+            }
+        </style>
+
+        <script>
+            // Toggle password visibility
+            function togglePasswordVisibility() {
+                const passwordInput = document.getElementById('password');
+                const eyeIcon = document.querySelector('.eye-icon');
+
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+
+                // Change eye icon based on password visibility
+                eyeIcon.innerHTML = type === 'password' ? '<i class="bi bi-eye"></i>' : '<i class="bi bi-eye-slash"></i>';
+            }
+        </script>
+
         <div class="form-group mt-3">
             <button class="btn btn-primary w-100 py-2" type="submit">
                 <i class="fas fa-sign-in-alt"></i> Oturum aç
