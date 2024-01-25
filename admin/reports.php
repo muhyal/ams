@@ -145,6 +145,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     2 => 'Kredi Kartı',
                     3 => 'Havale / EFT',
                     4 => 'Hediye Çeki',
+                    5 => 'Mail Order',
                     // Add more mappings as needed
                 ];
 
