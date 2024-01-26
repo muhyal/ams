@@ -239,23 +239,43 @@ require_once(__DIR__ . '/partials/header.php');
                                             6 => ["Öğrenci"],
                                         ];
 
-                                        // Kullanıcı tipine bağlı olarak seçenekleri göster
-                                        foreach ($options as $type => $labels) {
-                                            if ($currentUserType == 1) {
-                                                // Yönetici, tüm seçenekleri görebilir
-                                                echo "<option value=\"$type\">" . $labels[0] . "</option>";
-                                            } elseif ($currentUserType == 2) {
-                                                // Koordinatör, sadece belirli seçenekleri görebilir
-                                                if ($type >= 3 && $type <= 6) {
+                                        // Düzenlenen kullanıcının user_type'ını al
+                                        $queryUserType = "SELECT user_type FROM users WHERE id = :user_id";
+                                        $stmtUserType = $db->prepare($queryUserType);
+                                        $stmtUserType->bindParam(":user_id", $userId, PDO::PARAM_INT);
+                                        $stmtUserType->execute();
+                                        $userTypeResult = $stmtUserType->fetch(PDO::FETCH_ASSOC);
+
+                                        // Düzenleyen kullanıcı admin ise veya (düzenleyen kullanıcı tipi 2, 3, 4, 5, 6 ise ve düzenlenen kullanıcı tipi 2, 3, 4, 5, 6 ise)
+                                        if ($editorUserType == 1 || ($editorUserType >= 2 && $editorUserType <= 6 && $userTypeResult['user_type'] >= 2 && $userTypeResult['user_type'] <= 6)) {
+                                            // Kullanıcı tipine bağlı olarak seçenekleri göster
+                                            foreach ($options as $type => $labels) {
+                                                if ($currentUserType == 1) {
+                                                    // Yönetici, tüm seçenekleri görebilir
                                                     echo "<option value=\"$type\">" . $labels[0] . "</option>";
+                                                } elseif ($currentUserType == 2) {
+                                                    // Koordinatör, sadece belirli seçenekleri görebilir
+                                                    if ($type >= 3 && $type <= 6) {
+                                                        echo "<option value=\"$type\">" . $labels[0] . "</option>";
+                                                    }
+                                                } elseif ($currentUserType == 3) {
+                                                    // Eğitim Danışmanı sadece Öğrenci ve Veli'yi görebilir
+                                                    if ($type == 6 || $type == 5) {
+                                                        echo "<option value=\"$type\">" . $labels[0] . "</option>";
+                                                    }
                                                 }
-                                            } elseif ($currentUserType == 3) {
-                                                // Eğitim Danışmanı sadece Öğrenci ve Veli'yi görebilir
-                                                if ($type == 6 || $type == 5) {
-                                                    echo "<option value=\"$type\">" . $labels[0] . "</option>";
-                                                }
+                                            }                                            foreach ($options as $type => $labels) {
+                                                // Düzenlenen kullanıcının tipi seçili ise
+                                                $selected = ($type == $userTypeResult['user_type']) ? 'selected' : '';
+                                                echo "<option value=\"$type\" $selected>" . $labels[0] . "</option>";
                                             }
+                                        } else {
+                                            echo "<p>Bu kullanıcıyı düzenleme izniniz yok.</p>";
+                                            exit();
                                         }
+
+
+
                                         ?>
                                     </select>
                                     <div class="invalid-feedback">Kullanıcı tipini seçin.</div>
