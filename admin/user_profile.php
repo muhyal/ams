@@ -127,6 +127,94 @@ $stmtUserType = $db->prepare($queryUserType);
 $stmtUserType->bindParam(":user_type_id", $user['user_type'], PDO::PARAM_INT);
 $stmtUserType->execute();
 $userType = $stmtUserType->fetchColumn();
+
+// Profil fotoğrafını işle
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Profil fotoğrafını yükleme işlemi
+    if (isset($_FILES["profile_photo"]) && $_FILES["profile_photo"]["error"] == 0) {
+        $allowedExtensions = ["jpg", "jpeg", "png"];
+        $maxFileSize = 5 * 1024 * 1024; // 5 MB
+
+        $extension = strtolower(pathinfo($_FILES["profile_photo"]["name"], PATHINFO_EXTENSION));
+        if (!in_array($extension, $allowedExtensions)) {
+            echo json_encode(['success' => false, 'message' => 'Sadece JPG, JPEG ve PNG uzantılı dosyaları yükleyebilirsiniz.']);
+            exit;
+        }
+
+        if ($_FILES["profile_photo"]["size"] > $maxFileSize) {
+            echo json_encode(['success' => false, 'message' => 'Dosya boyutu 5 MB\'dan büyük olamaz.']);
+            exit;
+        }
+
+        // Mevcut fotoğraf varsa sil
+        if (!empty($user['profile_photo'])) {
+            deleteProfilePhoto($user['id']);
+        }
+
+        // Yeni fotoğrafı yükle
+        $photo_path = uploadProfilePhoto($user['id'], $extension);
+        updateProfilePhotoPath($user['id'], $photo_path);
+
+        // Güncellenen HTML içeriğini üret
+        $profilePhotoPath = getProfilePhotoPath($user['id']);
+        $htmlContent = '<img id="profilePhoto" src="' . $profilePhotoPath . '" alt="Profil Fotoğrafı" class="rounded-circle" style="width: 150px; height: 150px;">';
+        echo json_encode(['success' => true, 'message' => 'Profil fotoğrafı güncellendi.', 'html' => $htmlContent]);
+        exit;
+    }
+
+    // Profil fotoğrafını silme işlemi
+    if (isset($_POST["delete_photo"])) {
+        deleteProfilePhoto($user['id']);
+
+        // Güncellenen HTML içeriğini üret
+        $htmlContent = '<img id="profilePhoto" src="/assets/brand/default_pp.png" alt="Profil Fotoğrafı" class="rounded-circle" style="width: 150px; height: 150px;">';
+        echo json_encode(['success' => true, 'message' => 'Profil fotoğrafı silindi.', 'html' => $htmlContent]);
+        exit;
+    }
+}
+
+// Profil fotoğrafını getirme fonksiyonu
+function getProfilePhotoPath($user_id) {
+    $hashed_filename = md5($user_id);
+
+    $profile_photo_files = glob("uploads/profile_photos/{$hashed_filename}.*");
+
+    if (count($profile_photo_files) > 0) {
+        $extension = pathinfo($profile_photo_files[0], PATHINFO_EXTENSION);
+        return "uploads/profile_photos/{$hashed_filename}.{$extension}";
+    } else {
+        return null;
+    }
+}
+
+// Profil fotoğrafını yükleme fonksiyonu
+function uploadProfilePhoto($user_id, $extension) {
+    $hashed_filename = md5($user_id) . "." . $extension;
+    $photo_path = "uploads/profile_photos/{$hashed_filename}";
+    move_uploaded_file($_FILES["profile_photo"]["tmp_name"], $photo_path);
+    return $photo_path;
+}
+
+// Profil fotoğrafını silme fonksiyonu
+function deleteProfilePhoto($user_id) {
+    $photo_path = getProfilePhotoPath($user_id);
+
+    if (file_exists($photo_path)) {
+        unlink($photo_path);
+        updateProfilePhotoPath($user_id, null);
+    }
+}
+
+// Profil fotoğrafı yolunu güncelleme fonksiyonu
+function updateProfilePhotoPath($user_id, $photo_path) {
+    global $db;
+    $updatePhotoQuery = "UPDATE users SET profile_photo = :photo_path WHERE id = :user_id";
+    $stmtUpdatePhoto = $db->prepare($updatePhotoQuery);
+    $stmtUpdatePhoto->bindParam(':photo_path', $photo_path, PDO::PARAM_STR);
+    $stmtUpdatePhoto->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+    $stmtUpdatePhoto->execute();
+}
+
 ?>
 <?php
 require_once(__DIR__ . '/partials/header.php');
@@ -170,6 +258,7 @@ require_once(__DIR__ . '/partials/sidebar.php');
 
         <div class="row">
             <!-- İlk sütun -->
+
             <div class="col-md-4">
                 <div class="card mt-3 mb-3">
                     <div class="card-header">
@@ -262,6 +351,89 @@ require_once(__DIR__ . '/partials/sidebar.php');
 
             <!-- Üçüncü sütun -->
             <div class="col-md-4">
+
+                <div class="card mt-3 mb-3">
+                    <div class="card-header">
+                        <h5 class="card-title">Profil Fotoğrafı</h5>
+                    </div>
+                    <div class="card-body">
+
+
+                        <!-- Profil fotoğrafı gösterme alanı -->
+                        <div id="profilePhotoContainer" class="mt-3 mb-3">
+                            <?php
+                            $profilePhotoPath = !empty($user['profile_photo']) ? getProfilePhotoPath($user['id']) : "/assets/brand/default_pp.png";
+                            ?>
+                            <img id="profilePhoto" src="<?= $profilePhotoPath ?>" alt="Profil Fotoğrafı" class="rounded-circle" style="width: 150px; height: 150px;">
+                        </div>
+
+
+                        <!-- Profil fotoğrafı yükleme ve silme formu -->
+                        <form id="photoForm" action="" method="post" enctype="multipart/form-data">
+                            <div class="mt-3 mb-3">
+                                <label for="profile_photo" class="form-label">Profil Fotoğrafı Yükle</label>
+                                <div class="input-group">
+                                    <input type="file" name="profile_photo" id="profile_photo" class="form-control" accept="image/*">
+                                    <button type="submit" class="btn btn-primary">Yükle</button>
+
+                                    <?php if (!empty($user['profile_photo'])): ?>
+                                        <input type="hidden" name="delete_photo" value="1">
+                                        <button type="button" id="deleteBtn" class="btn btn-danger">
+                                            Sil <i class="bi bi-trash"></i>
+                                        </button>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </form>
+
+                        <script>
+                            // Profil fotoğrafını güncelleme işlemi
+                            $(document).ready(function () {
+                                $('#photoForm').submit(function (e) {
+                                    e.preventDefault();
+
+                                    var formData = new FormData(this);
+
+                                    $.ajax({
+                                        url: '', // Sayfanın URL'sini buraya ekleyin
+                                        method: 'POST',
+                                        data: formData,
+                                        contentType: false,
+                                        processData: false,
+                                        success: function (data) {
+                                            var response = JSON.parse(data);
+                                            alert(response.message);
+
+                                            if (response.success) {
+                                                $('#profilePhotoContainer').html(response.html);
+                                            }
+                                        }
+                                    });
+                                });
+
+                                // Profil fotoğrafını silme işlemi
+                                $('#deleteBtn').click(function () {
+                                    $.ajax({
+                                        url: '', // Sayfanın URL'sini buraya ekleyin
+                                        method: 'POST',
+                                        data: 'delete_photo=1',
+                                        success: function (data) {
+                                            var response = JSON.parse(data);
+                                            alert(response.message);
+
+                                            if (response.success) {
+                                                $('#profilePhotoContainer').html(response.html);
+                                            }
+                                        }
+                                    });
+                                });
+                            });
+                        </script>
+
+
+
+                    </div>
+                </div>
 
                 <div class="card mt-3 mb-3">
                     <div class="card-header">
