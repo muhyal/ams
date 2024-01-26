@@ -200,6 +200,8 @@ SELECT
     academy_classes.class_name, 
     teachers.first_name AS teacher_first_name, 
     teachers.last_name AS teacher_last_name,
+    students.first_name AS student_first_name,
+    students.last_name AS student_last_name,
     rescheduled_courses.course_date,
     rescheduled_courses.course_attendance
 FROM 
@@ -208,10 +210,12 @@ LEFT JOIN academies ON rescheduled_courses.academy_id = academies.id
 LEFT JOIN courses ON rescheduled_courses.course_id = courses.id
 LEFT JOIN academy_classes ON rescheduled_courses.class_id = academy_classes.id
 LEFT JOIN users AS teachers ON rescheduled_courses.teacher_id = teachers.id AND teachers.user_type = 4
+LEFT JOIN users AS students ON rescheduled_courses.student_id = students.id
 WHERE 
     rescheduled_courses.student_id = ?
 ORDER BY 
     rescheduled_courses.course_date ASC";
+
 
     $stmt_student_rescheduled_courses = $db->prepare($select_student_rescheduled_courses_query);
     $stmt_student_rescheduled_courses->execute([$student_id]);
@@ -440,9 +444,44 @@ ORDER BY course_date DESC
     $teacher_todays_courses = $stmt_teacher_todays_courses->fetchAll(PDO::FETCH_ASSOC);
 
 
+    // Hesabı dondurma işlemi kontrol edilir
+    if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["confirm_freeze"])) {
+        // Hesabı dondurma işlemi yapılacak
+        $user_id = htmlspecialchars($_SESSION["user_id"], ENT_QUOTES, 'UTF-8');
+
+        // Hesabı devre dışı bırakma (soft delete) işlemi
+        $query = "UPDATE users SET 
+    is_active = 0
+    WHERE id = ?";
+        $stmt = $db->prepare($query);
+
+        $result = $stmt->execute([$user_id]);
+
+        if ($result) {
+            // Hesabı dondurma başarılı
+
+            // Başarılı dondurma durumunda kullanıcıyı bilgilendir
+            $success_message = "Hesabınız devre dışı bırakıldı.";
+
+            // Profil sayfasına yönlendirme yapılır
+            header("Location: /login.php?success_message=" . urlencode($success_message));
+            exit();
+        } else {
+            // Hata durumunda kullanıcıyı bilgilendir
+            $error_message = "Hesabınız devre dışı bırakılırken bir hata oluştu.";
+
+            // Profil sayfasına yönlendirme yapılır
+            header("Location: /login.php?error_message=" . urlencode($error_message));
+            exit();
+        }
+    }
+
+
 
     require_once(__DIR__ . '/partials/header.php');
     ?>
+
+
     <div class="container mt-5">
         <div class="row">
                         <div class="container">
@@ -462,12 +501,44 @@ ORDER BY course_date DESC
                                             <h4 class="card-title text-center mb-4">Selam 👋 <?php echo $user["first_name"] . " " . $user["last_name"]; ?>!</h4>
                                             <div class="text-center mt-4 mb-4">
                                                 <a href="profile_edit.php" class="btn btn-sm btn-primary mr-2">
-                                                    <i class="fas fa-user-edit"></i> Bilgileri güncelle
+                                                    <i class="fas fa-user-edit"></i> Bilgilerim
                                                 </a>
                                                 <a href="../logout.php" class="btn btn-sm btn-danger">
                                                     <i class="fas fa-sign-out-alt"></i> Oturumu kapat
                                                 </a>
+                                                <button type="button" class="btn btn-sm btn-secondary" onclick="showFreezeConfirmationModal()">
+                                                    <i class="fas fa-snowflake"></i>
+                                                </button>
+                                                <div class="modal" tabindex="-1" role="dialog" id="freezeConfirmationModal">
+                                                    <div class="modal-dialog" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">Hesap Dondurulması Onayı</h5>
+                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                Hesabınızı dondurmak istediğinize emin misiniz?
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <form action="" method="post">
+                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Hayır</button>
+                                                                    <button type="submit" class="btn btn-danger" name="confirm_freeze">Evet, Hesabımı Dondur</button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
+
+                                            <script>
+                                                function showFreezeConfirmationModal() {
+                                                    $('#freezeConfirmationModal').modal('show');
+                                                }
+                                            </script>
+
                                             <ul class="list-group list-group-flush">
                                                 <li class="list-group-item">Ad: <?= $user['first_name'] ?>
                                                 <li class="list-group-item">Soyad: <?= $user['last_name'] ?></li>
