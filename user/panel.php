@@ -46,6 +46,7 @@ unset($_SESSION["success_message"]);
 
 $query = "SELECT * FROM users WHERE id = ?";
 $stmt = $db->prepare($query);
+
 if (!$stmt) {
     die('Query preparation failed.');
 }
@@ -62,6 +63,29 @@ if (!$user) {
     var_dump($stmt->errorInfo());
     exit();
 }
+
+$query_verifications = "
+SELECT
+    id,
+    user_id,
+    verification_time_sms_sent,
+    verification_time_sms_confirmed,
+    verification_ip_sms,
+    verification_time_email_sent,
+    verification_time_email_confirmed,
+    verification_ip_email
+FROM
+    verifications
+WHERE
+    user_id = ?";
+
+$stmt_verifications = $db->prepare($query_verifications);
+
+if (!$stmt_verifications->execute([$_SESSION["user_id"]])) {
+    die('Verification query execution failed.');
+}
+
+$verification = $stmt_verifications->fetch(PDO::FETCH_ASSOC);
 
 
 
@@ -450,8 +474,11 @@ ORDER BY course_date DESC
                                                 <li class="list-group-item">E-posta: <?= $user['email'] ?></li>
                                                 <li class="list-group-item">T.C. Kimlik No: <?= $user['tc_identity'] ?></li>
                                                 <li class="list-group-item">Telefon: <?= $user['phone'] ?></li>
-                                                <li class="list-group-item">SMS Onay Durumu: <?= $user['verification_time_sms_confirmed'] ? '<i class="fas fa-check text-success"></i> Doğrulandı' : '<i class="fas fa-times text-danger"></i> Doğrulanmadı' ?></li>
-                                                <li class="list-group-item">E-posta Onay Durumu: <?= $user['verification_time_email_confirmed'] ? '<i class="fas fa-check text-success"></i> Doğrulandı' : '<i class="fas fa-times text-danger"></i> Doğrulanmadı' ?></li>
+                                                <!-- SMS Onay Durumu -->
+                                                <li class="list-group-item">SMS Onay Durumu: <?= isset($verification['verification_time_sms_confirmed']) ? ($verification['verification_time_sms_confirmed'] !== null ? '<i class="fas fa-check text-success"></i> Doğrulandı' : '<i class="fas fa-times text-danger"></i> Doğrulanmadı') : '<i class="fas fa-times text-danger"></i> Doğrulanmadı'; ?></li>
+
+                                                <!-- E-posta Onay Durumu -->
+                                                <li class="list-group-item">E-posta Onay Durumu: <?= isset($verification['verification_time_email_confirmed']) ? ($verification['verification_time_email_confirmed'] !== null ? '<i class="fas fa-check text-success"></i> Doğrulandı' : '<i class="fas fa-times text-danger"></i> Doğrulanmadı') : '<i class="fas fa-times text-danger"></i> Doğrulanmadı'; ?></li>
 
                                             </ul>
                                         </div>
@@ -468,8 +495,11 @@ ORDER BY course_date DESC
                                                         <li class="list-group-item">Şirket Ünvanı: <?= $user['tax_company_name'] ?></li>
                                                         <li class="list-group-item">Vergi Dairesi: <?= $user['tax_office'] ?></li>
                                                         <li class="list-group-item">Vergi Numarası: <?= $user['tax_number'] ?></li>
+                                                    <?php elseif ($user['invoice_type'] == 'individual'): ?>
+                                                        <li class="list-group-item">Fatura T.C. Kimlik No: <?= $user['tc_identity_for_individual_invoice'] ?></li>
                                                     <?php endif; ?>
                                                 <?php endif; ?>
+
                                                 <li class="list-group-item">Doğum Tarihi: <?php echo isset($user['birth_date']) ? date("d.m.Y", strtotime($user['birth_date'])) : ''; ?></li>
                                                 <li class="list-group-item">Şehir: <?= $user['city'] ?></li>
                                                 <li class="list-group-item">İlçe: <?= $user['district'] ?></li>
@@ -484,13 +514,24 @@ ORDER BY course_date DESC
                                     <div class="card">
                                         <div class="card-body">
                                             <ul class="list-group list-group-flush">
-                                                <li class="list-group-item">SMS Gönderildi: <?php echo $user['verification_time_sms_sent'] ? date(DATETIME_FORMAT, strtotime($user['verification_time_sms_sent'])) : 'Veri yok'; ?></li>
-                                                <li class="list-group-item">SMS Onaylandı: <?php echo $user['verification_time_sms_confirmed'] ? date(DATETIME_FORMAT, strtotime($user['verification_time_sms_confirmed'])) : 'Veri yok'; ?></li>
-                                                <li class="list-group-item">SMS Onay IP: <?= $user['verification_ip_sms'] ? $user['verification_ip_sms'] : 'Veri yok'; ?></li>
-                                                <li class="list-group-item">E-posta Gönderildi: <?php echo $user['verification_time_email_sent'] ? date(DATETIME_FORMAT, strtotime($user['verification_time_email_sent'])) : 'Veri yok'; ?></li>
-                                                <li class="list-group-item">E-posta Onaylandı: <?php echo $user['verification_time_email_confirmed'] ? date(DATETIME_FORMAT, strtotime($user['verification_time_email_confirmed'])) : 'Veri yok'; ?></li>
-                                                <li class="list-group-item">E-posta Onay IP: <?= $user['verification_ip_email'] ? $user['verification_ip_email'] : 'Veri yok'; ?></li>
-                                                <li class="list-group-item">Silinme Tarihi: <?= $user['deleted_at'] ? date(DATETIME_FORMAT, strtotime($user['deleted_at'])) : 'Veri yok'; ?></li>
+                                                <!-- SMS Gönderildi -->
+                                                <li class="list-group-item">SMS Gönderildi: <?= isset($verification['verification_time_sms_sent']) ? date(DATETIME_FORMAT, strtotime($verification['verification_time_sms_sent'])) : 'Veri yok'; ?></li>
+
+                                                <!-- SMS Onaylandı -->
+                                                <li class="list-group-item">SMS Onaylandı: <?= isset($verification['verification_time_sms_confirmed']) ? date(DATETIME_FORMAT, strtotime($verification['verification_time_sms_confirmed'])) : 'Veri yok'; ?></li>
+
+                                                <!-- SMS Onay IP -->
+                                                <li class="list-group-item">SMS Onay IP: <?= isset($verification['verification_ip_sms']) ? $verification['verification_ip_sms'] : 'Veri yok'; ?></li>
+
+                                                <!-- E-posta Gönderildi -->
+                                                <li class="list-group-item">E-posta Gönderildi: <?= isset($verification['verification_time_email_sent']) ? date(DATETIME_FORMAT, strtotime($verification['verification_time_email_sent'])) : 'Veri yok'; ?></li>
+
+                                                <!-- E-posta Onaylandı -->
+                                                <li class="list-group-item">E-posta Onaylandı: <?= isset($verification['verification_time_email_confirmed']) ? date(DATETIME_FORMAT, strtotime($verification['verification_time_email_confirmed'])) : 'Veri yok'; ?></li>
+
+                                                <!-- E-posta Onay IP -->
+                                                <li class="list-group-item">E-posta Onay IP: <?= isset($verification['verification_ip_email']) ? $verification['verification_ip_email'] : 'Veri yok'; ?></li>
+
                                                 <li class="list-group-item">Oluşturulma Tarihi: <?= $user['created_at'] ? date(DATETIME_FORMAT, strtotime($user['created_at'])) : 'Veri yok'; ?></li>
                                                 <li class="list-group-item">Son Güncelleme Tarihi: <?= $user['updated_at'] ? date(DATETIME_FORMAT, strtotime($user['updated_at'])) : 'Veri yok'; ?></li>
                                             </ul>
