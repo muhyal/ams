@@ -41,21 +41,29 @@ $defaultStartDate = date("Y-m-01");
 $defaultEndDate = date("Y-m-d");
 
 // Kullanıcıdan gelen tarih aralığı değerleri
-$startDate = isset($_POST['startDate']) ? $_POST['startDate'] : $defaultStartDate;
-$endDate = isset($_POST['endDate']) ? $_POST['endDate'] : $defaultEndDate;
+$selectedStartDate = isset($_POST['startDate']) ? $_POST['startDate'] : $defaultStartDate;
+$selectedEndDate = isset($_POST['endDate']) ? $_POST['endDate'] : $defaultEndDate;
+
+// Seçilen tarihlerin ayın başına ve sonuna ayarlanması
+$startDate = date("Y-m-01", strtotime($selectedStartDate));
+$endDate = date("Y-m-t", strtotime($selectedEndDate . ' +1 day'));
 
 // Veritabanı sorgusu
 $query = "SELECT
             academies.id AS academy_id,
             academies.name AS academy_name,
-            COUNT(course_plans.id) AS total_course_plans,
+            COUNT(DISTINCT course_plans.id) AS total_course_plans,
             COALESCE(SUM(accounting.amount), 0) AS total_payments,
-            COALESCE(SUM(course_plans.debt_amount), 0) AS total_debt
+            COALESCE(SUM(course_plans.debt_amount), 0) AS total_debt,
+            COUNT(DISTINCT CASE WHEN course_plans.student_id IS NOT NULL THEN course_plans.student_id END) AS total_active_students,
+            COUNT(DISTINCT CASE WHEN course_plans.teacher_id IS NOT NULL THEN course_plans.teacher_id END) AS total_active_teachers
             FROM academies
             LEFT JOIN course_plans ON academies.id = course_plans.academy_id
             LEFT JOIN accounting ON course_plans.id = accounting.course_plan_id
-            WHERE course_date_1 BETWEEN :startDate AND :endDate
+            WHERE course_plans.created_at BETWEEN :startDate AND :endDate
             GROUP BY academies.id";
+
+
 
 $stmt = $db->prepare($query);
 $stmt->bindParam(":startDate", $startDate, PDO::PARAM_STR);
@@ -121,12 +129,15 @@ require_once(__DIR__ . '/partials/sidebar.php');
                 <div class="col-md-4 mb-4">
                     <div class="card">
                     <div class="card-header">
-                            <h5 class="card-title">' . $row['academy_name'] . '</h5>
+<h5 class="card-title">' . $row['academy_name'] . '<text style="color: gray; font-size: 13px" "> (' . date("d.m.Y", strtotime($startDate)) . ' ile ' . date("d.m.Y", strtotime($endDate)) . ')</text></h5>
         </div>
                         <div class="card-body">
                             <p class="card-text">Toplam Satış: ' . $row['total_course_plans'] . ' Kur</p>
                             <p class="card-text">Toplam Alınan Ödeme: ' . $row['total_payments'] . ' TL</p>
                             <p class="card-text">Toplam Kalan Borç: ' . $row['total_debt'] . ' TL</p>
+                            <p class="card-text">Aktif Öğrenci: ' . $row['total_active_students'] . '</p>
+                            <p class="card-text">Aktif Öğretmen: ' . $row['total_active_students'] . '</p>
+
                         </div>
                     </div>
                 </div>';
