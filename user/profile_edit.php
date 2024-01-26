@@ -62,8 +62,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $stmt = $db->prepare($query);
 
     // Güncelleme sorgusu çalıştırılır
-    $result = $stmt->execute([$first_name, $last_name, $email, $tc_identity, $phone,  $invoice_type, $tax_company_name, $tax_office, $tax_number,
+    $result = $stmt->execute([$first_name, $last_name, $email, $tc_identity, $phone, $invoice_type, $tax_company_name, $tax_office, $tax_number,
         $tc_identity_for_individual_invoice, $user_id]);
+
 
     if ($result) {
         // Başarılı güncelleme durumunda kullanıcıyı bilgilendir

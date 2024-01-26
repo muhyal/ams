@@ -157,10 +157,10 @@ if (isset($_POST["reset_request"])) {
 
 <?php require_once('../user/partials/header.php'); ?>
 
-<div class="container mt-5">
-    <?php if (!isset($_GET["token"])): ?>
-        <!-- Şifre sıfırlama talebi gönderme formu -->
-        <div class="row justify-content-center">
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 mt-5 mb-5">
+            <!-- Uyarı Mesajları -->
             <?php
             foreach ($errors as $error) {
                 echo "<div id='error-alert' class='alert alert-danger' role='alert'>$error</div><br>";
@@ -170,6 +170,14 @@ if (isset($_POST["reset_request"])) {
                 echo "<div id='success-alert' class='alert alert-info' role='alert'>$info</div><br>";
             }
             ?>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+<div class="container mt-5">
+    <?php if (!isset($_GET["token"])): ?>
+        <!-- Şifre sıfırlama talebi gönderme formu -->
 
             <main class="form-signin w-100 m-auto">
                 <img id="logo-body" class="mb-5 mt-5" src="/assets/brand/default_logo_dark.png" alt="<?php echo $siteName ?>" title="<?php echo $siteName ?>" width="80%" height="%80">
