@@ -219,15 +219,51 @@ require_once(__DIR__ . '/partials/header.php');
                                     <option value="0" <?php echo $user["is_active"] == 0 ? 'selected' : ''; ?>>Pasif</option>
                                 </select>
 
-                                <label class="form-label mt-3" for="user_type">Kullanıcı Tipi:</label>
-                                <select class="form-select" name="user_type" required>
-                                    <?php foreach ($userTypes as $type): ?>
-                                        <option value="<?php echo $type['id']; ?>" <?php if ($user["user_type"] === $type['id']) echo "selected"; ?>><?php echo $type['type_name']; ?></option>
-                                    <?php endforeach; ?>
-                                </select>
+                                <div class="mb-3 mt-3">
+                                    <label class="form-label" for="user_type">Kullanıcı tipi:</label>
+                                    <select class="form-select" name="user_type" required>
+                                        <?php
+                                        // Kullanıcı oturumunu kontrol et
+                                        session_start();
+
+                                        // Eğer kullanıcı oturum açmışsa ve user_type değeri varsa, onu kullan
+                                        $currentUserType = isset($_SESSION['admin_type']) ? $_SESSION['admin_type'] : null;
+
+                                        // Kullanıcı rollerine bağlı olarak mevcut seçenekleri tanımla
+                                        $options = [
+                                            1 => ["Yönetici"],
+                                            2 => ["Koordinatör"],
+                                            3 => ["Eğitim Danışmanı"],
+                                            4 => ["Öğretmen"],
+                                            5 => ["Veli"],
+                                            6 => ["Öğrenci"],
+                                        ];
+
+                                        // Kullanıcı tipine bağlı olarak seçenekleri göster
+                                        foreach ($options as $type => $labels) {
+                                            if ($currentUserType == 1) {
+                                                // Yönetici, tüm seçenekleri görebilir
+                                                echo "<option value=\"$type\">" . $labels[0] . "</option>";
+                                            } elseif ($currentUserType == 2) {
+                                                // Koordinatör, sadece belirli seçenekleri görebilir
+                                                if ($type >= 3 && $type <= 6) {
+                                                    echo "<option value=\"$type\">" . $labels[0] . "</option>";
+                                                }
+                                            } elseif ($currentUserType == 3) {
+                                                // Eğitim Danışmanı sadece Öğrenci ve Veli'yi görebilir
+                                                if ($type == 6 || $type == 5) {
+                                                    echo "<option value=\"$type\">" . $labels[0] . "</option>";
+                                                }
+                                            }
+                                        }
+                                        ?>
+                                    </select>
+                                    <div class="invalid-feedback">Kullanıcı tipini seçin.</div>
+                                </div>
 
                                 <label class="form-label mt-3" for="username">Kullanıcı adı:</label>
-                                <input class="form-control" type="text" name="username" value="<?php echo $user["username"]; ?>" required>
+                                <input class="form-control" type="text" name="username" value="<?php echo $user["username"]; ?>" readonly style="background-color: #f8f9fa;" required>
+
 
                                 <label class="form-label mt-3" for="tc_identity">T.C. Kimlik No:</label>
                                 <input class="form-control" type="text" name="tc_identity" value="<?php echo $user["tc_identity"]; ?>" required>
@@ -283,7 +319,20 @@ require_once(__DIR__ . '/partials/header.php');
 
                                 <!-- Kan Grubu -->
                                 <label class="form-label mt-3" for="blood_type">Kan Grubu:</label>
-                                <input class="form-control" type="text" name="blood_type" value="<?php echo $user["blood_type"]; ?>" required>
+                                <select class="form-select" name="blood_type" required>
+                                    <option value="A" <?php echo ($user["blood_type"] == "A") ? 'selected' : ''; ?>>A</option>
+                                    <option value="B" <?php echo ($user["blood_type"] == "B") ? 'selected' : ''; ?>>B</option>
+                                    <option value="AB" <?php echo ($user["blood_type"] == "AB") ? 'selected' : ''; ?>>AB</option>
+                                    <option value="0" <?php echo ($user["blood_type"] == "0") ? 'selected' : ''; ?>>0</option>
+                                    <option value="A+" <?php echo ($user["blood_type"] == "A+") ? 'selected' : ''; ?>>A+</option>
+                                    <option value="A-" <?php echo ($user["blood_type"] == "A-") ? 'selected' : ''; ?>>A-</option>
+                                    <option value="B+" <?php echo ($user["blood_type"] == "B+") ? 'selected' : ''; ?>>B+</option>
+                                    <option value="B-" <?php echo ($user["blood_type"] == "B-") ? 'selected' : ''; ?>>B-</option>
+                                    <option value="AB+" <?php echo ($user["blood_type"] == "AB+") ? 'selected' : ''; ?>>AB+</option>
+                                    <option value="AB-" <?php echo ($user["blood_type"] == "AB-") ? 'selected' : ''; ?>>AB-</option>
+                                    <option value="0+" <?php echo ($user["blood_type"] == "0+") ? 'selected' : ''; ?>>0+</option>
+                                    <option value="0-" <?php echo ($user["blood_type"] == "0-") ? 'selected' : ''; ?>>0-</option>
+                                </select>
 
                                 <!-- Sağlık Sorunu -->
                                 <label class="form-label mt-3" for="health_issue">Sağlık Sorunu:</label>
