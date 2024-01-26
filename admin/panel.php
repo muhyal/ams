@@ -562,11 +562,11 @@ require_once(__DIR__ . '/partials/header.php');
                       options: {
                           plugins: {
                               legend: {
-                                  display: false,
+                                  display: true,
                                   position: 'top', // 'bottom', 'top', 'left', 'right' gibi değerler kullanılabilir
                                   labels: {
                                       font: {
-                                          size: 10 // veya başka bir değer
+                                          size: 7 // veya başka bir değer
                                       }
                                   }
                               },
@@ -574,13 +574,13 @@ require_once(__DIR__ . '/partials/header.php');
                                   display: true,
                                   text: 'Son 7 Günün Satışları',
                                   font: {
-                                      size: 10 // veya başka bir değer
+                                      size: 13 // veya başka bir değer
                                   }
                               }
                           },
                           elements: {
                               line: {
-                                  fill: false,
+                                  fill: true,
                                   tension: 0.4,
                                   borderWidth: 3 // Çizgi kalınlığını istediğiniz değere ayarlayın
                               }
@@ -618,7 +618,7 @@ require_once(__DIR__ . '/partials/header.php');
                                   position: 'top', // 'bottom', 'top', 'left', 'right' gibi değerler kullanılabilir
                                   labels: {
                                       font: {
-                                          size: 10 // veya başka bir değer
+                                          size: 7 // veya başka bir değer
                                       }
                                   }
                               },
@@ -626,7 +626,7 @@ require_once(__DIR__ . '/partials/header.php');
                                   display: true,
                                   text: 'Akademi x Toplam Ders', // Burada başlığı istediğiniz gibi değiştirebilirsiniz
                                   font: {
-                                      size: 10 // veya başka bir değer
+                                      size: 13 // veya başka bir değer
                                   }
                               }
                           },
@@ -671,7 +671,7 @@ require_once(__DIR__ . '/partials/header.php');
                                   display: true,
                                   text: 'Akademi x Toplam Öğrenci', // Burada başlığı istediğiniz gibi değiştirebilirsiniz
                                   font: {
-                                      size: 10 // veya başka bir değer
+                                      size: 13 // veya başka bir değer
                                   }
                               }
                           },
@@ -715,7 +715,7 @@ require_once(__DIR__ . '/partials/header.php');
                                   display: true,
                                   text: 'Derslere Göre Toplam Planlar', // Burada başlığı istediğiniz gibi değiştirebilirsiniz
                                   font: {
-                                      size: 10 // veya başka bir değer
+                                      size: 13 // veya başka bir değer
                                   }
                               }
                           },
