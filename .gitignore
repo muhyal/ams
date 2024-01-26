@@ -1,10 +1,8 @@
 # Uploads folder
-/uploads/*.png
-/uploads/*.jpg
-/uploads/*.jpeg
-/uploads/profile_photos/*.png
-/uploads/profile_photos/*.jpg
-/uploads/profile_photos/*.jpeg
+/uploads/profile_photos/*
+!/uploads/profile_photos/*/
+!/uploads/profile_photos/.gitkeep
+
 
 # Config files
 config/config.php
