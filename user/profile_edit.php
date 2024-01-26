@@ -39,14 +39,31 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $email = htmlspecialchars($_POST["email"], ENT_QUOTES, 'UTF-8');
     $tc_identity = htmlspecialchars($_POST["tc_identity"], ENT_QUOTES, 'UTF-8');
     $phone = htmlspecialchars($_POST["phone"], ENT_QUOTES, 'UTF-8');
+    $invoice_type = isset($_POST["invoice_type"]) ? htmlspecialchars($_POST["invoice_type"], ENT_QUOTES, 'UTF-8') : "";
+    $tax_company_name = isset($_POST["tax_company_name"]) ? htmlspecialchars($_POST["tax_company_name"], ENT_QUOTES, 'UTF-8') : "";
+    $tax_office = isset($_POST["tax_office"]) ? htmlspecialchars($_POST["tax_office"], ENT_QUOTES, 'UTF-8') : "";
+    $tax_number = isset($_POST["tax_number"]) ? htmlspecialchars($_POST["tax_number"], ENT_QUOTES, 'UTF-8') : "";
+    $tc_identity_for_individual_invoice = isset($_POST["tc_identity_for_individual_invoice"]) ? htmlspecialchars($_POST["tc_identity_for_individual_invoice"], ENT_QUOTES, 'UTF-8') : "";
 
 
     // Güncelleme sorgusu hazırlanır
-    $query = "UPDATE users SET first_name = ?, last_name = ?, email = ?, tc_identity = ?, phone = ? WHERE id = ?";
+    $query = "UPDATE users SET 
+            first_name = ?, 
+            last_name = ?, 
+            email = ?, 
+            tc_identity = ?, 
+            phone = ?,  
+            invoice_type = ?, 
+            tax_company_name = ?, 
+            tax_office = ?, 
+            tax_number = ?, 
+            tc_identity_for_individual_invoice = ? 
+            WHERE id = ?";
     $stmt = $db->prepare($query);
 
     // Güncelleme sorgusu çalıştırılır
-    $result = $stmt->execute([$first_name, $last_name, $email, $tc_identity, $phone, $user_id]);
+    $result = $stmt->execute([$first_name, $last_name, $email, $tc_identity, $phone,  $invoice_type, $tax_company_name, $tax_office, $tax_number,
+        $tc_identity_for_individual_invoice, $user_id]);
 
     if ($result) {
         // Başarılı güncelleme durumunda kullanıcıyı bilgilendir
@@ -107,6 +124,36 @@ require_once(__DIR__ . '/partials/header.php');
                         <input type="text" class="form-control" name="phone" value="<?= $user['phone'] ?>" required>
                     </div>
 
+                    <?php if ($user['user_type'] == 6): ?>
+                        <!-- Fatura Tipi Seçimi -->
+                    <div class="form-group mt-3 mx-3">
+                    <label for="invoice_type">Fatura Tipi Seçin:</label>
+                        <select class="form-select" name="invoice_type" id="invoice_type" onchange="toggleInvoiceFields()" required>
+                            <option value="individual" <?php echo $user["invoice_type"] === 'individual' ? 'selected' : ''; ?>>Bireysel</option>
+                            <option value="corporate" <?php echo $user["invoice_type"] === 'corporate' ? 'selected' : ''; ?>>Kurumsal</option>
+                        </select>
+
+                    <!-- Kurumsal Alanları -->
+                        <div id="corporate_fields" style="display: <?php echo $user["invoice_type"] === 'corporate' ? 'block' : 'none'; ?>">
+                            <label class="form-label mt-3" for="tax_company_name">Şirket Ünvanı:</label>
+                            <input class="form-control" type="text" name="tax_company_name" value="<?php echo $user["tax_company_name"]; ?>" required>
+
+                            <label class="form-label mt-3" for="tax_office">Vergi Dairesi:</label>
+                            <input class="form-control" type="text" name="tax_office" value="<?php echo $user["tax_office"]; ?>" required>
+
+                            <label class="form-label mt-3" for="tax_number">Vergi Numarası:</label>
+                            <input class="form-control" type="text" name="tax_number" value="<?php echo $user["tax_number"]; ?>" required>
+                        </div>
+
+                        <!-- Bireysel Alanları -->
+                        <div id="individual_fields" style="display: <?php echo $user["invoice_type"] === 'individual' ? 'block' : 'none'; ?>">
+                            <label class="form-label mt-3" for="tc_identity_for_individual_invoice">Fatura T.C. Kimlik No:</label>
+                            <input class="form-control" type="text" name="tc_identity_for_individual_invoice" value="<?php echo $user["tc_identity_for_individual_invoice"]; ?>" required>
+                        </div>
+                    <?php endif; ?>
+                    </div>
+
+
                     <div class="form-group mt-3 mx-3 mb-3">
                         <button type="submit" class="btn btn-primary">Bilgileri Güncelle</button>
                     </div>
@@ -116,5 +163,32 @@ require_once(__DIR__ . '/partials/header.php');
         </div>
     </div>
 </div>
+
+<script>
+    // Fatura tipi seçildiğinde tetiklenecek fonksiyon
+    function toggleInvoiceFields() {
+        var invoiceType = document.getElementById('invoice_type').value;
+        var corporateFields = document.getElementById('corporate_fields');
+        var individualFields = document.getElementById('individual_fields');
+
+        // Kurumsal ve bireysel alanları göster veya gizle
+        corporateFields.style.display = (invoiceType === 'corporate') ? 'block' : 'none';
+        individualFields.style.display = (invoiceType === 'individual') ? 'block' : 'none';
+
+        // Gerekli alanları kontrol et ve ayarla
+        var taxCompanyInput = document.getElementsByName('tax_company_name')[0];
+        var taxOfficeInput = document.getElementsByName('tax_office')[0];
+        var taxNumberInput = document.getElementsByName('tax_number')[0];
+        var tcIdentityInput = document.getElementsByName('tc_identity_for_individual_invoice')[0];
+
+        taxCompanyInput.required = (invoiceType === 'corporate');
+        taxOfficeInput.required = (invoiceType === 'corporate');
+        taxNumberInput.required = (invoiceType === 'corporate');
+        tcIdentityInput.required = (invoiceType === 'individual');
+    }
+
+    // Sayfa yüklendiğinde varsayılan olarak çalıştır
+    window.onload = toggleInvoiceFields;
+</script>
 
 <?php require_once('../user/partials/footer.php'); ?>
