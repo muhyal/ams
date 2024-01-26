@@ -175,14 +175,16 @@ require_once('../user/partials/header.php');
         <img id="logo-body" class="mb-5 mt-5" src="/assets/brand/default_logo_dark.png" alt="<?php echo $siteName ?>" title="<?php echo $siteName ?>" width="80%" height="%80">
         <h1 class="h3 mb-3 fw-normal">Yönetici Paneli</h1>
         <div class="form-floating">
-            <input type="text" class="form-control" id="identifier" name="identifier" placeholder="@doremuzikakademi.com" autofocus="" required>
+            <input type="text" class="form-control" id="identifier" name="identifier" placeholder="E-posta / Kullanıcı adı" autofocus="" required>
             <label for="floatingInput">E-posta / Kullanıcı adı</label>
         </div>
-        <div class="password-container">
-            <input type="password" class="form-control form-control-lg" name="password" id="password" placeholder="Şifre" required>
+
+        <div class="form-floating">
+            <input type="password" class="form-control" name="password" id="password" placeholder="Şifre" required>
+            <label for="floatingInput">Şifre</label>
             <span class="eye-icon" onclick="togglePasswordVisibility()">
-        <i class="bi bi-eye"></i>
-    </span>
+                <i class="bi bi-eye"></i>
+            </span>
         </div>
 
         <div class="form-group mt-3">

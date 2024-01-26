@@ -40,12 +40,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // reCAPTCHA doğrulaması başarısızsa işlemi reddet
     if (!$recaptchaResponse->success) {
-        die("reCAPTCHA doğrulaması başarısız. İşlem reddedildi.");
+        $errorMessage = "reCAPTCHA doğrulaması başarısız. İşlem reddedildi.";
     }
 
     // CSRF token kontrolü
     if (!isset($_POST['csrf_request']) || $_POST['csrf_request'] !== '1') {
-        die("CSRF hatası! İşlem reddedildi.");
+        $errorMessage = "CSRF hatası! İşlem reddedildi.";
     }
 
     $identifier = htmlspecialchars($_POST["identifier"]); // Kullanıcı adı veya E-posta
@@ -53,7 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Form alanlarının doğrulaması
     if (empty($identifier) || empty($password)) {
-        die("Eksik giriş bilgileri.");
+        $errorMessage = "Eksik giriş bilgileri.";
     }
 
     // Check if the identifier is a valid email format
@@ -68,13 +68,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($user && password_verify($password, $user["password"])) {
             // Check if the user is active
             if ($user["is_active"] == 0) {
-                echo '<div class="alert alert-danger" role="alert">
-            Bu hesap şu anda pasiftir. Giriş yapılamaz.
-        </div>';
+                $errorMessage = "Bu hesap şu anda pasiftir. Giriş yapılamaz.";
             } elseif ($user["deleted_at"] !== null) {
-                echo '<div class="alert alert-danger" role="alert">
-            Bu hesap silinmiştir. Giriş yapılamaz.
-        </div>';
+                $errorMessage = "Bu hesap silinmiştir. Giriş yapılamaz.";
             } else {
                 // Kullanıcı girişi başarılı, oturum başlat
                 $_SESSION["user_id"] = $user["id"];
@@ -86,12 +82,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         } else {
             // Kullanıcı doğrulanamadı, hata mesajı gösterme
-            echo '<div class="alert alert-danger" role="alert">
-        Hatalı e-posta adresi ya da şifre girdiniz.
-    </div>';
+            $errorMessage = "Hatalı e-posta adresi ya da şifre girdiniz.";
         }
     } catch (PDOException $e) {
-        echo "Hata: " . $e->getMessage();
+        $errorMessage = "Hata: " . $e->getMessage();
     }
     // Veritabanı bağlantısını kapat
     $db = null;
@@ -99,6 +93,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ?>
 
 <?php require_once(__DIR__ . '/user/partials/header.php'); ?>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <!-- Uyarı Mesajları -->
+            <?php
+            if (isset($_GET["success_message"])) {
+                echo '<div class="alert alert-success" id="success-alert" role="alert">' . htmlspecialchars($_GET["success_message"]) . '</div>';
+            }
+            if (isset($_GET["error_message"])) {
+                echo '<div class="alert alert-danger" id="error-alert" role="alert">' . htmlspecialchars($_GET["error_message"]) . '</div>';
+            }
+            ?>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <!-- Uyarı Mesajları -->
+            <?php
+            if (isset($errorMessage)) {
+                echo '<div class="alert alert-danger" id="error-alert" role="alert">' . htmlspecialchars($errorMessage) . '</div>';
+            }
+            ?>
+        </div>
+    </div>
+</div>
+
 
 <main class="form-signin w-100 m-auto">
     <form method="post" action="login.php">
@@ -109,15 +133,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <img id="logo-body" class="mb-5 mt-5" src="/assets/brand/default_logo_light.png" alt="<?php echo $siteName ?>" title="<?php echo $siteName ?>" width="80%" height="%80">
         <h1 class="h3 mb-3 fw-normal">Kullanıcı Paneli</h1>
+
         <div class="form-floating">
             <input type="text" class="form-control" id="identifier" name="identifier" placeholder="E-posta / Kullanıcı adı" autofocus="" required>
             <label for="floatingInput">E-posta / Kullanıcı adı</label>
         </div>
-        <div class="password-container">
-            <input type="password" class="form-control form-control-lg" name="password" id="password" placeholder="Şifre" required>
+
+        <div class="form-floating">
+            <input type="password" class="form-control" name="password" id="password" placeholder="Şifre" required>
+            <label for="floatingInput">Şifre</label>
             <span class="eye-icon" onclick="togglePasswordVisibility()">
-        <i class="bi bi-eye"></i>
-    </span>
+                <i class="bi bi-eye"></i>
+            </span>
         </div>
 
         <div class="form-group mt-3">
