@@ -45,4 +45,5 @@ Kurum içi gereksinim nedeniyle oluşturulmuş basit bir öğrenci işleri merke
 * reCaptcha v3 desteği
 * Kullanıcıdan SMS ve e-posta ile dijital imza alınması
 * Öğrenci ile veli ilişkilendirilmesi
+* Kullanıcı profillerine fotoğraf yükleyebilme
 * ...
