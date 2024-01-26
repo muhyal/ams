@@ -173,27 +173,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// Profil fotoğrafını getirme fonksiyonu
-function getProfilePhotoPath($user_id) {
-    $hashed_filename = md5($user_id);
-
-    $profile_photo_files = glob("uploads/profile_photos/{$hashed_filename}.*");
-
-    if (count($profile_photo_files) > 0) {
-        $extension = pathinfo($profile_photo_files[0], PATHINFO_EXTENSION);
-        return "uploads/profile_photos/{$hashed_filename}.{$extension}";
-    } else {
-        return null;
-    }
-}
 
 // Profil fotoğrafını yükleme fonksiyonu
-function uploadProfilePhoto($user_id, $extension) {
+function uploadProfilePhoto($user_id, $extension, $target_width = 300, $target_height = 300, $compression_quality = 50) {
     $hashed_filename = md5($user_id) . "." . $extension;
-    $photo_path = "uploads/profile_photos/{$hashed_filename}";
-    move_uploaded_file($_FILES["profile_photo"]["tmp_name"], $photo_path);
+    $photo_path = "../uploads/profile_photos/{$hashed_filename}"; // "../" ekleyerek bir üst dizine çıkıyoruz
+
+    // Resmi yükle
+    $original_image = imagecreatefromstring(file_get_contents($_FILES["profile_photo"]["tmp_name"]));
+
+    // Orijinal resmin genişliği ve yüksekliği
+    $original_width = imagesx($original_image);
+    $original_height = imagesy($original_image);
+
+    // Yeniden boyutlandırma oranlarını hesapla
+    $resize_ratio = min($target_width / $original_width, $target_height / $original_height);
+
+    // Yeni genişlik ve yüksekliği hesapla
+    $new_width = $original_width * $resize_ratio;
+    $new_height = $original_height * $resize_ratio;
+
+    // Yeni resmi oluştur
+    $resized_image = imagecreatetruecolor($new_width, $new_height);
+    imagecopyresampled($resized_image, $original_image, 0, 0, 0, 0, $new_width, $new_height, $original_width, $original_height);
+
+    // Resmi sıkıştır ve kaydet
+    imagejpeg($resized_image, $photo_path, $compression_quality);
+
+    // Bellekten temizle
+    imagedestroy($original_image);
+    imagedestroy($resized_image);
+
     return $photo_path;
 }
+
+
+
+
 
 // Profil fotoğrafını silme fonksiyonu
 function deleteProfilePhoto($user_id) {
@@ -214,6 +230,19 @@ function updateProfilePhotoPath($user_id, $photo_path) {
     $stmtUpdatePhoto->bindParam(':user_id', $user_id, PDO::PARAM_INT);
     $stmtUpdatePhoto->execute();
 }
+
+// Profil fotoğrafı yolunu alma fonksiyonu
+function getProfilePhotoPath($user_id) {
+    global $db;
+    $getPhotoPathQuery = "SELECT profile_photo FROM users WHERE id = :user_id";
+    $stmtGetPhotoPath = $db->prepare($getPhotoPathQuery);
+    $stmtGetPhotoPath->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+    $stmtGetPhotoPath->execute();
+    $result = $stmtGetPhotoPath->fetch(PDO::FETCH_ASSOC);
+
+    return $result['profile_photo'];
+}
+
 
 ?>
 <?php
@@ -360,12 +389,13 @@ require_once(__DIR__ . '/partials/sidebar.php');
 
 
                         <!-- Profil fotoğrafı gösterme alanı -->
-                        <div id="profilePhotoContainer" class="mt-3 mb-3">
+                        <div id="profilePhotoContainer" class="mt-3 mb-3 text-center"> <!-- text-center sınıfı eklenerek içeriği ortalamış oluyoruz -->
                             <?php
                             $profilePhotoPath = !empty($user['profile_photo']) ? getProfilePhotoPath($user['id']) : "/assets/brand/default_pp.png";
                             ?>
                             <img id="profilePhoto" src="<?= $profilePhotoPath ?>" alt="Profil Fotoğrafı" class="rounded-circle" style="width: 150px; height: 150px;">
                         </div>
+
 
 
                         <!-- Profil fotoğrafı yükleme ve silme formu -->
@@ -401,12 +431,22 @@ require_once(__DIR__ . '/partials/sidebar.php');
                                         contentType: false,
                                         processData: false,
                                         success: function (data) {
-                                            var response = JSON.parse(data);
-                                            alert(response.message);
+                                            try {
+                                                var response = JSON.parse(data);
 
-                                            if (response.success) {
-                                                $('#profilePhotoContainer').html(response.html);
+                                                console.log(response); // Kontrol için konsol log'u
+
+                                                alert(response.message);
+
+                                                if (response.success) {
+                                                    $('#profilePhotoContainer').html(response.html);
+                                                }
+                                            } catch (error) {
+                                                console.error('Ajax isteği sırasında bir hata oluştu:', error);
                                             }
+                                        },
+                                        error: function (xhr, status, error) {
+                                            console.error('Ajax isteği sırasında bir hata oluştu:', error);
                                         }
                                     });
                                 });
@@ -418,16 +458,27 @@ require_once(__DIR__ . '/partials/sidebar.php');
                                         method: 'POST',
                                         data: 'delete_photo=1',
                                         success: function (data) {
-                                            var response = JSON.parse(data);
-                                            alert(response.message);
+                                            try {
+                                                var response = JSON.parse(data);
 
-                                            if (response.success) {
-                                                $('#profilePhotoContainer').html(response.html);
+                                                console.log(response); // Kontrol için konsol log'u
+
+                                                alert(response.message);
+
+                                                if (response.success) {
+                                                    $('#profilePhotoContainer').html(response.html);
+                                                }
+                                            } catch (error) {
+                                                console.error('Ajax isteği sırasında bir hata oluştu:', error);
                                             }
+                                        },
+                                        error: function (xhr, status, error) {
+                                            console.error('Ajax isteği sırasında bir hata oluştu:', error);
                                         }
                                     });
                                 });
                             });
+
                         </script>
 
 

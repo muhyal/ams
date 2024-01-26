@@ -1,3 +1,6 @@
+# Uploads folder
+/uploads/profile_photos/*
+
 # Config files
 config/config.php
 config/db_connection.php
@@ -6,11 +9,6 @@ config/db_connection.php
 /assets/brand/default_pp.png
 /assets/brand/default_logo_dark.png
 /assets/brand/default_logo_light.png
-
-# Uploads folder
-/uploads/*
-/uploads/profile_photos/*
-
 
 # PDFs folder
 /assets/pdfs/*

@@ -173,9 +173,48 @@ $loggedIn = isset($_SESSION["user_id"]);
             </div>
 
             <div class="dropdown text-end">
-                <a href="<?php echo $siteUrl ?>" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="../../assets/brand/default_pp.png" alt="mdo" width="32" height="32" class="rounded-circle">
-                </a>
+                <?php
+                // Kullanıcının oturum açıp açmadığını kontrol et
+                if (isset($_SESSION['user_id'])) {
+                    // Kullanıcının profiline ait profil fotoğrafını veritabanından al
+                    $user_id = $_SESSION['user_id'];
+                    $profilePhotoPath = getProfilePhotoPathFromDB($user_id);
+
+                    if ($profilePhotoPath) {
+                        // Profil fotoğrafı varsa göster
+                        echo '<a href="' . $siteUrl . '" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="' . $profilePhotoPath . '" alt="Profil Fotoğrafı" width="32" height="32" class="rounded-circle">
+                </a>';
+                    } else {
+                        // Profil fotoğrafı yoksa varsayılan fotoğrafı göster
+                        echo '<a href="' . $siteUrl . '" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="../../assets/brand/default_pp.png" alt="Profil Fotoğrafı" width="32" height="32" class="rounded-circle">
+                </a>';
+                    }
+                } else {
+                    // Kullanıcı oturum açmamışsa varsayılan profil fotoğrafını göster
+                    echo '<a href="' . $siteUrl . '" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                <img src="../../assets/brand/default_pp.png" alt="Profil Fotoğrafı" width="32" height="32" class="rounded-circle">
+            </a>';
+                }
+                // Kullanıcının profiline ait profil fotoğrafını veritabanından al
+                function getProfilePhotoPathFromDB($user_id) {
+                    global $db; // Global değişkeni kullanarak $db'yi fonksiyon içinde kullanabiliriz.
+
+                    // SQL sorgusunu hazırla
+                    $query = "SELECT profile_photo FROM users WHERE id = :user_id";
+
+                    // Sorguyu hazırla ve bağlantı üzerinden çalıştır
+                    $statement = $db->prepare($query);
+                    $statement->bindParam(":user_id", $user_id, PDO::PARAM_INT);
+                    $statement->execute();
+                    $profile_photo = $statement->fetchColumn();
+
+                    // Eğer kullanıcının profil fotoğrafı varsa geri döndür
+                    return isset($profile_photo) ? $profile_photo : null;
+                }
+                ?>
+
                 <ul class="dropdown-menu text-small">
                     <?php if (!$loggedIn) { // Oturum açık değilse "Şifremi unuttum" linkini göster ?>
                         <li><a class="dropdown-item" href="/login.php">Oturum aç</a></li>

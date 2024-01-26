@@ -151,8 +151,9 @@ require_once(__DIR__ . '/partials/header.php');
                             <label class="form-label mt-3" for="tc_identity_for_individual_invoice">Fatura T.C. Kimlik No:</label>
                             <input class="form-control" type="text" name="tc_identity_for_individual_invoice" value="<?php echo $user["tc_identity_for_individual_invoice"]; ?>" required>
                         </div>
-                    <?php endif; ?>
                     </div>
+                    <?php endif; ?>
+
 
 
                     <div class="form-group mt-3 mx-3 mb-3">
