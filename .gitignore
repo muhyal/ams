@@ -1,8 +1,10 @@
 # Uploads folder
 /uploads/*
-/uploads/profile_photos/*
 !/uploads/.gitkeep
+
+/uploads/profile_photos/*
 !/uploads/profile_photos/.gitkeep
+
 
 
 # Config files
@@ -492,3 +494,4 @@ composer.lock
 *.css.map
 *.sass.map
 *.scss.map
+/uploads/profile_photos/
