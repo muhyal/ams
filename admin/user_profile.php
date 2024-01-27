@@ -33,6 +33,13 @@ require_once('../config/config.php');
 require_once "../src/functions.php";
 require_once(__DIR__ . '/../vendor/autoload.php');
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+use Infobip\Api\SmsApi;
+use Infobip\Configuration;
+use Infobip\Model\SmsAdvancedTextualRequest;
+use Infobip\Model\SmsDestination;
+use Infobip\Model\SmsTextualMessage;
 use libphonenumber\PhoneNumberUtil;
 use libphonenumber\PhoneNumberFormat;
 use League\ISO3166\ISO3166;
@@ -208,9 +215,6 @@ function uploadProfilePhoto($user_id, $extension, $target_width = 300, $target_h
 }
 
 
-
-
-
 // Profil fotoğrafını silme fonksiyonu
 function deleteProfilePhoto($user_id) {
     $photo_path = getProfilePhotoPath($user_id);
@@ -243,11 +247,148 @@ function getProfilePhotoPath($user_id) {
     return $result['profile_photo'];
 }
 
+// Assuming you have a textarea with the id "messageText" in your HTML form
+$userInputMessage = $_POST['messageText'] ?? ''; // Adjust this according to your form submission method (e.g., $_POST, $_GET)
+
+// Function to send SMS
+function sendSMS($to, $userInputMessage, $first_name, $username, $email) {
+    global $config, $siteName, $siteUrl;
+
+    // Check if Infobip configuration is enabled and valid
+    if (
+        $config['infobip']['enabled']
+        && !empty($config['infobip']['BASE_URL'])
+        && !empty($config['infobip']['API_KEY'])
+        && !empty($config['infobip']['SENDER'])
+    ) {
+        $BASE_URL = $config['infobip']['BASE_URL'];
+        $API_KEY = $config['infobip']['API_KEY'];
+        $SENDER = $config['infobip']['SENDER'];
+
+        // Infobip Configuration sınıfını oluştur
+        $infobipConfig = new \Infobip\Configuration($BASE_URL, $API_KEY, $SENDER);
+
+        // Infobip SmsApi sınıfını başlat
+        $sendSmsApi = new \Infobip\Api\SmsApi(config: $infobipConfig);
+
+        $destination = new SmsDestination(
+            to: $to
+        );
+
+        // Parametreleri şifrele
+        $encryptedPhone = $to;
+
+        $message = new SmsTextualMessage(destinations: [$destination], from: $SENDER, text: "Selam $first_name, Bir mesajın var 🤗. 🧐 $siteName dedi ki: $userInputMessage");
+
+        $request = new SmsAdvancedTextualRequest(messages: [$message]);
+
+        try {
+            $smsResponse = $sendSmsApi->sendSmsMessage($request);
+
+            // Mesajları gönderim sonuçları ile ilgili bilgileri saklayacak değişkenler
+            $smsStatusMessages = [];
+            $smsBulkId = $smsResponse->getBulkId();
+
+            foreach ($smsResponse->getMessages() ?? [] as $message) {
+                $smsStatusMessages[] = sprintf('SMS Gönderim No: %s, Durum: %s', $message->getMessageId(), $message->getStatus()?->getName());
+            }
+
+            // Başarılı mesajları gösteren bir mesaj oluşturuyoruz
+            $smsSuccessMessage = "SMS gönderimi başarılı, Gönderim No: $smsBulkId";
+
+            // Hata mesajını temsil edecek değişkeni boş olarak başlatıyoruz
+            $smsErrorMessage = "";
+        } catch (Throwable $apiException) {
+            // Hata durumunda hata mesajını saklayan değişkeni ayarlıyoruz
+            $smsErrorMessage = "SMS gönderimi sırasında bir hata oluştu: " . $apiException->getMessage();
+
+            // Başarılı ve hata mesajlarını boş olarak başlatıyoruz
+            $smsSuccessMessage = "";
+            $smsStatusMessages = [];
+        }
+    } else {
+        // Log or handle the case where Infobip configuration is not valid
+        $smsErrorMessage = "Infobip configuration is not valid.";
+        // You may want to log this information or handle it appropriately.
+
+        echo json_encode(['success' => false, 'message' => $smsErrorMessage]);
+        exit;
+    }
+}
+
+// Function to send Email
+function sendEmail($to, $userInputMessage, $first_name, $username, $email) {
+    global $config, $siteName, $siteUrl;
+
+    $mail = new PHPMailer(true);
+
+    try {
+        // SMTP ayarları
+        $mail->isSMTP();
+        $mail->Host = $config['smtp']['host'];
+        $mail->SMTPAuth = true;
+        $mail->Username = $config['smtp']['username'];
+        $mail->Password = $config['smtp']['password'];
+        $mail->SMTPSecure = $config['smtp']['encryption'];
+        $mail->Port = $config['smtp']['port'];
+        $mail->CharSet = $config['smtp']['mailCharset'];
+        $mail->ContentType = $config['smtp']['mailContentType'];
+
+        // E-posta ayarları
+        $mail->setFrom($config['smtp']['username'], $siteName);
+        $mail->addAddress($to);
+
+        $mail->isHTML(true);
+        $mail->Subject = '=?UTF-8?B?' . base64_encode($siteName . ' - Bir Mesajın Var 👋') . '?='; // Encode subject in UTF-8
+
+        $mail->Body = "
+            <html>
+                <body>
+                    <p>👋 Selam $first_name,</p>
+                    <p>Bir mesajın var 🤗</p>
+                    <p>🧐 $siteName dedi ki:</p>
+                    <p> $userInputMessage</p>
+                    <p>Müzik dolu günler dileriz 🎸🎹</p>
+                </body>
+            </html>
+        ";
+        // E-postayı gönder
+        $mail->send();
+    } catch (Exception $e) {
+        // E-posta gönderimi hatası
+        echo "E-posta gönderimi başarısız oldu. Hata: {$mail->ErrorInfo}";
+    }
+}
+
+// AJAX endpoint for sending messages
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'sendMessage') {
+    $messageText = $_POST['messageText'];
+    $sendAsSMS = isset($_POST['sendAsSMS']) && $_POST['sendAsSMS'] === 'true';
+    $sendAsEmail = isset($_POST['sendAsEmail']) && $_POST['sendAsEmail'] === 'true';
+
+    // Call the functions to send messages
+    if ($sendAsSMS) {
+        $phoneNumber = $user['phone']; // Replace with the actual field that holds the phone number
+        sendSMS($phoneNumber, $messageText, $user['first_name'], $user['username'], $user['email']);
+    }
+
+    if ($sendAsEmail) {
+        $userEmail = $user['email']; // Replace with the actual field that holds the email address
+        sendEmail($userEmail, $messageText, $user['first_name'], $user['username'], $user['email']);
+    }
+
+    echo json_encode(['success' => true, 'message' => 'Mesaj başarıyla gönderildi.']);
+    exit;
+}
 
 ?>
 <?php
 require_once(__DIR__ . '/partials/header.php');
 ?>
+<script>
+    var user = <?php echo json_encode($user); ?>;
+</script>
+
 <?php
 require_once(__DIR__ . '/partials/sidebar.php');
 ?>
@@ -276,8 +417,8 @@ require_once(__DIR__ . '/partials/sidebar.php');
                         <a href="user_profile.php?id=<?= $user['id'] ?>" class="btn btn-sm btn-outline-secondary">
                             <i class="fas fa-user-lock"></i> Şifre Gönder
                         </a>
-                        <a href="send_verifications.php?id=<?= $user['id'] ?>" class="btn btn-sm btn-outline-secondary">
-                            <i class="fas fa-user-check"></i> Doğrulamaları Gönder
+                        <a href="#" class="btn btn-sm btn-outline-secondary" onclick="openSendMessageModal()">
+                            <i class="fas fa-envelopes-bulk"></i> SMS & E-posta Gönder
                         </a>
                     </div>
                 </div>
@@ -287,6 +428,88 @@ require_once(__DIR__ . '/partials/sidebar.php');
 
         <div class="row">
             <!-- İlk sütun -->
+
+            <!-- Message Modal -->
+            <div class="modal fade" id="sendMessageModal" tabindex="-1" aria-labelledby="sendMessageModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="sendMessageModalLabel">Mesaj Gönder</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <textarea id="messageText" class="form-control" rows="4" placeholder="İletilmek istenen mesaj"></textarea>
+
+                            <div class="form-check mt-3">
+                                <input class="form-check-input" type="checkbox" id="sendAsSMS" checked>
+                                <label class="form-check-label" for="sendAsSMS">SMS olarak gönder</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="sendAsEmail" checked>
+                                <label class="form-check-label" for="sendAsEmail">E-posta olarak gönder</label>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                            <button type="button" class="btn btn-primary btn-sm" onclick="sendMessage()">Mesajı Gönder</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                function openSendMessageModal() {
+                    // Open the modal
+                    $('#sendMessageModal').modal('show');
+                }
+
+                function sendMessage() {
+                    var messageText = document.getElementById('messageText').value;
+                    var sendAsSMS = document.getElementById('sendAsSMS').checked;
+                    var sendAsEmail = document.getElementById('sendAsEmail').checked;
+
+                    // Validate message text
+                    if (messageText.trim() === '') {
+                        alert('Mesaj metni girilmedi!');
+                        return;
+                    }
+
+                    // Send the message via AJAX
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('POST', window.location.href, true);
+                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState === XMLHttpRequest.DONE) {
+                            if (xhr.status === 200) {
+                                try {
+                                    var response = JSON.parse(xhr.responseText);
+                                    if (response.success) {
+                                        alert(response.message);
+                                        // Optionally, close the modal or perform other actions on success
+                                        $('#sendMessageModal').modal('hide'); // Close the modal
+                                    } else {
+                                        alert('Mesaj gönderimi başarısız..');
+                                    }
+                                } catch (e) {
+                                    console.error('Error parsing JSON:', e);
+                                    alert('Mesaj gönderimi başarısız.');
+                                }
+                            } else {
+                                alert('Mesaj gönderimi başarısız.');
+                            }
+                        }
+                    };
+
+                    var formData = new FormData();
+                    formData.append('action', 'sendMessage');
+                    formData.append('messageText', messageText);
+                    formData.append('sendAsSMS', sendAsSMS);
+                    formData.append('sendAsEmail', sendAsEmail);
+
+                    xhr.send(new URLSearchParams(formData));
+                }
+            </script>
+
 
             <div class="col-md-4">
                 <div class="card mt-3 mb-3">
