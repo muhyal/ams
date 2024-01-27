@@ -344,8 +344,7 @@ function sendEmail($to, $userInputMessage, $first_name, $username, $email) {
         $mail->Body = "
             <html>
                 <body>
-                    <p>👋 Selam $first_name,</p>
-                    <p>Bir mesajın var 🤗</p>
+                    <p>👋 Selam $first_name, bir mesajın var 🤗</p>
                     <p>🧐 $siteName dedi ki:</p>
                     <p> $userInputMessage</p>
                     <p>Müzik dolu günler dileriz 🎸🎹</p>
@@ -428,7 +427,6 @@ require_once(__DIR__ . '/partials/sidebar.php');
 
         <div class="row">
             <!-- İlk sütun -->
-
             <!-- Message Modal -->
             <div class="modal fade" id="sendMessageModal" tabindex="-1" aria-labelledby="sendMessageModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
@@ -443,21 +441,60 @@ require_once(__DIR__ . '/partials/sidebar.php');
                             <div class="form-check mt-3">
                                 <input class="form-check-input" type="checkbox" id="sendAsSMS" checked>
                                 <label class="form-check-label" for="sendAsSMS">SMS olarak gönder</label>
+                                <span id="smsCharacterCount" class="ms-2">(160 karakter = 1 SMS)</span>
                             </div>
+
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="sendAsEmail" checked>
                                 <label class="form-check-label" for="sendAsEmail">E-posta olarak gönder</label>
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
-                            <button type="button" class="btn btn-primary btn-sm" onclick="sendMessage()">Mesajı Gönder</button>
+                            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Kapat</button>
+                            <button type="button" class="btn btn-success btn-sm" onclick="sendMessage()">Mesajı Gönder</button>
                         </div>
                     </div>
                 </div>
             </div>
 
             <script>
+                // Function to update character count and SMS message info
+                function updateCharacterCount() {
+                    var maxCharacters = 160; // Adjust this to your desired character limit
+                    var messageText = document.getElementById('messageText').value;
+                    var remainingCharacters = messageText.length;
+                    var characterCountElement = document.getElementById('smsCharacterCount');
+
+                    // Check if the message is not empty
+                    if (remainingCharacters === 0) {
+                        characterCountElement.textContent = ''; // Hide the message when characters are 0
+                        return;
+                    }
+
+                    // Calculate SMS count and remaining characters for countdown
+                    var smsCount = Math.ceil(remainingCharacters / maxCharacters);
+                    var countdown = remainingCharacters % maxCharacters || maxCharacters;
+
+                    // Change the color based on the remaining characters
+                    if (remainingCharacters >= 0) {
+                        characterCountElement.style.color = 'black'; // or your default color
+                    } else {
+                        characterCountElement.style.color = 'red'; // or any color you prefer for exceeding the limit
+                    }
+
+                    // Display a message until 160 characters are reached
+                    if (remainingCharacters > 0) {
+                        characterCountElement.textContent = `(${countdown} karakter = ${smsCount} SMS)`;
+                    } else {
+                        // Display the number of SMS messages needed
+                        characterCountElement.textContent = `${smsCount} SMS gerekli`;
+                    }
+                }
+
+                // Attach the updateCharacterCount function to the input event of the messageText textarea
+                document.getElementById('messageText').addEventListener('input', updateCharacterCount);
+
+
                 function openSendMessageModal() {
                     // Open the modal
                     $('#sendMessageModal').modal('show');
