@@ -506,25 +506,26 @@ ORDER BY course_date DESC
                                                 <a href="../logout.php" class="btn btn-sm btn-danger">
                                                     <i class="fas fa-sign-out-alt"></i> Oturumu kapat
                                                 </a>
-                                                <button type="button" class="btn btn-sm btn-secondary" onclick="showFreezeConfirmationModal()">
+
+                                                <!-- Button trigger modal -->
+                                                <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#FreezeConfirmationModal">
                                                     <i class="fas fa-snowflake"></i>
                                                 </button>
-                                                <div class="modal" tabindex="-1" role="dialog" id="freezeConfirmationModal">
-                                                    <div class="modal-dialog" role="document">
+
+                                                <!-- Modal -->
+                                                <div class="modal fade" id="FreezeConfirmationModal" tabindex="-1" aria-labelledby="FreezeConfirmationModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog">
                                                         <div class="modal-content">
                                                             <div class="modal-header">
-                                                                <h5 class="modal-title">Hesap Dondurulması Onayı</h5>
-                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                    <span aria-hidden="true">&times;</span>
-                                                                </button>
-
+                                                                <h1 class="modal-title fs-5" id="FreezeConfirmationModalLabel">Hesap Dondurulması Onayı</h1>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                             </div>
                                                             <div class="modal-body">
                                                                 Hesabınızı dondurmak istediğinize emin misiniz?
                                                             </div>
                                                             <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hayır</button>
                                                                 <form action="" method="post">
-                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Hayır</button>
                                                                     <button type="submit" class="btn btn-danger" name="confirm_freeze">Evet, Hesabımı Dondur</button>
                                                                 </form>
                                                             </div>
@@ -532,12 +533,6 @@ ORDER BY course_date DESC
                                                     </div>
                                                 </div>
                                             </div>
-
-                                            <script>
-                                                function showFreezeConfirmationModal() {
-                                                    $('#freezeConfirmationModal').modal('show');
-                                                }
-                                            </script>
 
                                             <ul class="list-group list-group-flush">
                                                 <li class="list-group-item">Ad: <?= $user['first_name'] ?>
