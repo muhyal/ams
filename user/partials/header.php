@@ -175,7 +175,7 @@ $loggedIn = isset($_SESSION["user_id"]);
             <div class="dropdown text-end">
                 <?php
                 // Kullanıcının oturum açıp açmadığını kontrol et
-                if (isset($_SESSION['user_id'])) {
+                if ($loggedIn) {
                     // Kullanıcının profiline ait profil fotoğrafını veritabanından al
                     $user_id = $_SESSION['user_id'];
                     $profilePhotoPath = getProfilePhotoPathFromDB($user_id);
@@ -183,13 +183,13 @@ $loggedIn = isset($_SESSION["user_id"]);
                     if ($profilePhotoPath) {
                         // Profil fotoğrafı varsa göster
                         echo '<a href="' . $siteUrl . '" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="' . $profilePhotoPath . '" alt="Profil Fotoğrafı" width="32" height="32" class="rounded-circle">
-                </a>';
+                <img src="' . $profilePhotoPath . '" alt="Profil Fotoğrafı" width="32" height="32" class="rounded-circle">
+            </a>';
                     } else {
                         // Profil fotoğrafı yoksa varsayılan fotoğrafı göster
                         echo '<a href="' . $siteUrl . '" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="../../assets/brand/default_pp.png" alt="Profil Fotoğrafı" width="32" height="32" class="rounded-circle">
-                </a>';
+                <img src="../../assets/brand/default_pp.png" alt="Profil Fotoğrafı" width="32" height="32" class="rounded-circle">
+            </a>';
                     }
                 } else {
                     // Kullanıcı oturum açmamışsa varsayılan profil fotoğrafını göster
@@ -222,12 +222,16 @@ $loggedIn = isset($_SESSION["user_id"]);
                         <li><a class="dropdown-item" href="/reset_password.php">Şifremi unuttum</a></li>
                     <?php } ?>
 
-                    <?php if ($loggedIn) { // Oturum açıldıysa oturumu kapat butonunu göster ?>
+                    <?php if ($loggedIn) { // Oturum açıldıysa ?>
+                        <?php if ($_SESSION['user_type'] == 1) { // Eğer kullanıcı yönetici ise ?>
+                            <li><a class="dropdown-item" href="/admin/panel.php">Yönetici Paneli</a></li>
+                        <?php } ?>
                         <li><a class="dropdown-item" href="/user/panel.php">Kullanıcı Paneli</a></li>
                         <li><a class="dropdown-item" href="/user/profile_edit.php">Bilgileri güncelle</a></li>
                         <li><a class="dropdown-item" href="/logout.php">Oturumu kapat</a></li>
                     <?php } ?>
                 </ul>
+
             </div>
 
         </div>
