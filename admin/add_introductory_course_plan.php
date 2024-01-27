@@ -56,8 +56,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       VALUES (:teacher_id, :academy_id, :class_id, :student_id, :course_id, 
               :course_date, :course_attendance, :created_by_user_id, :created_at)";
 
-
-
     $stmt = $db->prepare($query);
 
     $stmt->bindParam(":teacher_id", $teacher_id, PDO::PARAM_INT);
@@ -206,17 +204,7 @@ require_once(__DIR__ . '/partials/sidebar.php');
                 <input type="datetime-local" name="course_date" class="form-control" value="<?= $today ?>">
             </div>
 
-
-            <!-- Ders Katılımları
-            <div class="form-group mt-3">
-                <label>Katılım Durumu</label><br>
-                <div class="form-check form-check-inline">
-                    <input type="checkbox" name="course_attendance" class="form-check-input">
-                    <label class="form-check-label">Tanışma Dersine Katılım</label>
-                </div>
-            </div> -->
-
-            <button type="submit" class="btn btn-success mt-3">Ekle</button>
+            <button type="submit" class="btn btn-success mt-3">Tanışma Dersini Planla</button>
         </form>
     </main>
 

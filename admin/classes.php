@@ -91,7 +91,7 @@ $classes = $db->query("SELECT * FROM academy_classes")->fetchAll(PDO::FETCH_ASSO
 ?>
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
-                <h2>Sınıf Yönetimi</h2>
+                <h2>Sınıflar</h2>
             </div>
 
             <!-- Sınıf Düzenleme Formu -->
@@ -120,11 +120,9 @@ $classes = $db->query("SELECT * FROM academy_classes")->fetchAll(PDO::FETCH_ASSO
             <?php } ?>
 
             <!-- Sınıf Listesi -->
-            <h2>Sınıf Listesi</h2>
             <table class="table">
                 <thead>
                 <tr>
-                    <th scope="col">No</th>
                     <th scope="col">Sınıf Adı</th>
                     <th scope="col">Sınıf Açıklaması</th>
                     <th scope="col">Sınıf Kodu</th>
@@ -134,7 +132,6 @@ $classes = $db->query("SELECT * FROM academy_classes")->fetchAll(PDO::FETCH_ASSO
                 <tbody>
                 <?php foreach ($classes as $class): ?>
                     <tr>
-                        <td><?php echo $class["id"]; ?></td>
                         <td><?php echo $class["class_name"]; ?></td>
                         <td><?php echo $class["class_description"]; ?></td>
                         <td><?php echo $class["class_code"]; ?></td>
@@ -164,4 +161,4 @@ $classes = $db->query("SELECT * FROM academy_classes")->fetchAll(PDO::FETCH_ASSO
                 </div>
                 <button type="submit" name="add_class" class="btn btn-success">Sınıf Ekle</button>
             </form>
-            <?php require_once('../admin/partials/footer.php'); ?>
+<?php require_once('../admin/partials/footer.php'); ?>

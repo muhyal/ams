@@ -85,7 +85,7 @@ require_once(__DIR__ . '/partials/header.php');
 ?>
             <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
-                    <h2>Öğretmen Listesi</h2>
+                    <h2>Öğretmenler</h2>
                 </div>
                 <script>
                     $(document).ready( function () {
@@ -101,7 +101,6 @@ require_once(__DIR__ . '/partials/header.php');
                     <table id="teachersTable" class="table table-bordered">
                         <thead>
                         <tr>
-                            <th>No</th>
                             <th>Akademiler</th>
                             <th>Ad</th>
                             <th>Soyad</th>
@@ -118,7 +117,6 @@ require_once(__DIR__ . '/partials/header.php');
                         <tbody>
                         <?php foreach ($teachers as $teacher): ?>
                             <tr>
-                                <td><?php echo $teacher['id']; ?></td>
                                 <td><?php echo $teacher['academy_name']; ?></td>
                                 <td><?php echo $teacher['first_name']; ?></td>
                                 <td><?php echo $teacher['last_name']; ?></td>
@@ -138,9 +136,7 @@ require_once(__DIR__ . '/partials/header.php');
                                     <a href="delete_user.php?id=<?php echo $teacher['id']; ?>" class="btn btn-danger btn-sm">
                                         <i class="fas fa-trash-alt"></i>
                                     </a>
-
                                 </td>
-
                             </tr>
                         <?php endforeach; ?>
                         </tbody>

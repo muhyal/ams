@@ -285,9 +285,7 @@ require_once(__DIR__ . '/partials/sidebar.php');
             </div>
 
 
-            <button type="submit" class="btn btn-success mt-3">Ekle</button>
+            <button type="submit" class="btn btn-success mt-3">Dersi Planla</button>
         </form>
     </main>
-
-
 <?php require_once('../admin/partials/footer.php'); ?>

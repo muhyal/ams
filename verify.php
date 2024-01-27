@@ -47,7 +47,6 @@ function updateVerificationStatus($db, $field, $verificationCode, $verificationT
 }
 
 $isUserVerified = false; // Kullanıcının doğrulama durumunu belirleyen değişken
-
 ?>
 
 <?php

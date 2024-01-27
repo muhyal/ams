@@ -106,9 +106,6 @@ require_once(__DIR__ . '/partials/sidebar.php');
                 </div>
             </div>
 
-
-
-
             <div class="row mt-4">
                 <?php
                 if ($_SERVER['REQUEST_METHOD'] == 'POST') {

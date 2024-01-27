@@ -95,9 +95,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $course_date = htmlspecialchars($_POST["course_date"], ENT_QUOTES, 'UTF-8');
     $course_attendance = isset($_POST["course_attendance"]) ? 1 : 0;
 
-
-
-
     $query = "INSERT INTO rescheduled_courses (course_plan_id, teacher_id, academy_id, class_id, student_id, course_id, 
           course_date,
           course_attendance)
@@ -152,7 +149,6 @@ $classes = $classStmt->fetchAll(PDO::FETCH_ASSOC);
 $courseQuery = "SELECT id, course_name FROM courses";
 $courseStmt = $db->query($courseQuery);
 $courses = $courseStmt->fetchAll(PDO::FETCH_ASSOC);
-
 
 // Header ve sidebar dosyalarını dahil et
 require_once(__DIR__ . '/partials/header.php');
@@ -252,7 +248,6 @@ require_once(__DIR__ . '/partials/sidebar.php');
                         return "<i class='fas fa-question text-secondary'></i> <span class='text-secondary'>Belirsiz</span>";
                 }
             }
-
             ?>
 
             <div class="form-group">
@@ -354,19 +349,8 @@ require_once(__DIR__ . '/partials/sidebar.php');
                 <input type="datetime-local" name="course_date" class="form-control" value="<?= $today ?>">
             </div>
 
-
-            <!-- Ders Katılımları
-            <div class="form-group mt-3">
-                <label>Katılım Durumu</label><br>
-                <div class="form-check form-check-inline">
-                    <input type="checkbox" name="course_attendance" class="form-check-input">
-                    <label class="form-check-label">Tanışma Dersine Katılım</label>
-                </div>
-            </div> -->
-
-            <button type="submit" class="btn btn-success mt-3">Ekle</button>
+            <button type="submit" class="btn btn-success mt-3">Telafi Dersini Planla</button>
         </form>
     </main>
-
 
 <?php require_once('../admin/partials/footer.php'); ?>

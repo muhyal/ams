@@ -72,8 +72,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ?>
 <div class="container-fluid">
     <div class="row">
-       <?php
-        require_once(__DIR__ . '/partials/sidebar.php');
+<?php
+require_once(__DIR__ . '/partials/sidebar.php');
 ?>
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
@@ -148,7 +148,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                 </div>
             </div>
-
 
         </main>
     </div>

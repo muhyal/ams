@@ -148,7 +148,7 @@ $userTypes = $userTypeStmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
-                <h2 class="mb-3">Kullanıcı - Akademi İlişkileri</h2>
+                <h2 class="mb-3">Kullanıcı x Akademi İlişkileri</h2>
             </div>
 
             <?php if (isset($successMessage)): ?>
@@ -168,7 +168,6 @@ $userTypes = $userTypeStmt->fetchAll(PDO::FETCH_ASSOC);
                     <table class="table table-bordered">
                         <thead class="thead-light">
                         <tr>
-                            <th scope="col">Kullanıcı No</th>
                             <th scope="col">Kullanıcı Adı</th>
                             <th scope="col">İlişkili Akademiler</th>
                             <th scope="col">İşlemler</th>
@@ -178,8 +177,8 @@ $userTypes = $userTypeStmt->fetchAll(PDO::FETCH_ASSOC);
                         <?php if (!empty($userAssignments) && !empty($academies)): ?>
                         <?php foreach ($userAssignments as $assignment): ?>
                             <tr>
-                                <td><?= $assignment['user_id'] ?></td>
                                 <td><?= $assignment['username'] ?></td>
+
                                 <td>
                                     <?php foreach ($academies as $academy): ?>
                                         <?php
@@ -210,8 +209,4 @@ $userTypes = $userTypeStmt->fetchAll(PDO::FETCH_ASSOC);
                     </table>
                 </div>
             </form>
-
-
-
-
             <?php require_once('../admin/partials/footer.php'); ?>

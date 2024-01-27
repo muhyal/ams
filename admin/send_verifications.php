@@ -96,9 +96,6 @@ function getVerificationLink($emailOrPhone, $code, $verificationId, $type = "ema
     }
 }
 
-
-
-
 // Kullanıcıya doğrulama kodlarını yeniden gönderme işlemi
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Kullanıcıyı veritabanından bul

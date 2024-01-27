@@ -97,7 +97,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     } catch (PDOException $e) {
         // Hata durumunda işlemleri burada ele alın (hata mesajını gösterme, kayıt, vb.)
-        echo "Error: " . $e->getMessage();
+        echo "Hata: " . $e->getMessage();
     }
 }
 
@@ -128,7 +128,7 @@ if (isset($_GET["id"])) {
         }
     } catch (PDOException $e) {
         // Hata durumunda işlemleri burada ele alın (hata mesajını gösterme, kayıt, vb.)
-        echo "Error: " . $e->getMessage();
+        echo "Hata: " . $e->getMessage();
     }
 }
 
@@ -239,7 +239,7 @@ $students = $studentStatement->fetchAll(PDO::FETCH_ASSOC);
             <option value='3' <?php echo ($result["course_attendance"] == 3) ? "selected" : ""; ?>>Mazeretli</option>
         </select>
 
-        <button type='submit' class="btn btn-primary mt-3">Güncelle</button>
+        <button type='submit' class="btn btn-primary mt-3">Tanışma Dersini Düzenle</button>
 
 </form>
 

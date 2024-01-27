@@ -264,7 +264,8 @@ require_once(__DIR__ . '/partials/header.php');
                                                         echo "<option value=\"$type\">" . $labels[0] . "</option>";
                                                     }
                                                 }
-                                            }                                            foreach ($options as $type => $labels) {
+                                            }
+                                            foreach ($options as $type => $labels) {
                                                 // Düzenlenen kullanıcının tipi seçili ise
                                                 $selected = ($type == $userTypeResult['user_type']) ? 'selected' : '';
                                                 echo "<option value=\"$type\" $selected>" . $labels[0] . "</option>";
@@ -273,9 +274,6 @@ require_once(__DIR__ . '/partials/header.php');
                                             echo "<p>Bu kullanıcıyı düzenleme izniniz yok.</p>";
                                             exit();
                                         }
-
-
-
                                         ?>
                                     </select>
                                     <div class="invalid-feedback">Kullanıcı tipini seçin.</div>
@@ -466,15 +464,13 @@ require_once(__DIR__ . '/partials/header.php');
                  }
              </script>
 
-                                <div class="form-group mt-3">
-             <button type="submit" class="btn btn-primary">Güncelle</button>
+         <div class="form-group mt-3">
+             <button type="submit" class="btn btn-primary">Kullanıcıyı Düzenle</button>
          </div>
      </form>
 <?php else: ?>
     <p>Kullanıcı bulunamadı.</p>
 <?php endif; ?>
-
-
 
 </div>
 </div>

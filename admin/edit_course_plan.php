@@ -325,7 +325,7 @@ $students = $studentStatement->fetchAll(PDO::FETCH_ASSOC);
 
                 </div>
             </div>
-        <button type='submit' class="btn btn-primary mt-3">Güncelle</button>
+        <button type='submit' class="btn btn-primary mt-3">Dersi Düzenle</button>
     </div>
 </form>
 

@@ -182,13 +182,9 @@ require_once(__DIR__ . '/partials/sidebar.php');
         </script>
     <?php endif; ?>
 
-
-
-
     <?php if ($errorMessage) : ?>
         <div class="alert alert-danger"><?php echo $errorMessage; ?></div>
     <?php endif; ?>
-
 
     <form action="" method="post">
         <div class="form-group">
@@ -287,7 +283,6 @@ require_once(__DIR__ . '/partials/sidebar.php');
             </select>
         </div>
 
-
         <div class="form-group">
             <label for="paymentNotes">Ödeme Notları (Opsiyonel):</label>
             <textarea class="form-control" name="paymentNotes"></textarea>
@@ -320,8 +315,6 @@ require_once(__DIR__ . '/partials/sidebar.php');
             });
         });
     </script>
-
-
 </main>
 
 <?php require_once('../admin/partials/footer.php'); ?>

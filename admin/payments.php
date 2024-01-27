@@ -131,8 +131,6 @@ $sql_entries = "
 $stmt_entries = $db->query($sql_entries);
 $entries = $stmt_entries->fetchAll(PDO::FETCH_ASSOC) ?? [];
 
-
-
 // Yardımcı fonksiyonlar
 function getCoursePlanDetails($coursePlanId)
 {
@@ -190,8 +188,6 @@ function getTeacherName($teacherId)
     // Eğer belirtilen öğretmen kimliği ile eşleşen bir öğretmen bulunamazsa boş bir dize döndürülür.
     return "";
 }
-
-
 
 
 function getCourseName($courseId)

@@ -40,7 +40,6 @@ $query = "SELECT * FROM users WHERE user_type IN (1, 2, 3)";
 $stmt = $db->prepare($query);
 $stmt->execute();
 $admins = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
 ?>
 <?php
 require_once(__DIR__ . '/partials/header.php');
@@ -52,7 +51,7 @@ require_once(__DIR__ . '/partials/header.php');
         ?>
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
-                <h2>Yönetici Listesi</h2>
+                <h2>Yöneticiler</h2>
             </div>
             <script>
                 $(document).ready( function () {
@@ -70,19 +69,17 @@ require_once(__DIR__ . '/partials/header.php');
                     <table id="adminsTable" class="table table-striped table-sm">
                         <thead class="thead-light">
                     <tr>
-                        <th scope="col" class="text-sm">No</th>
                         <th scope="col" class="text-sm">Kullanıcı Adı</th>
                         <th scope="col" class="text-sm">Ad</th>
                         <th scope="col" class="text-sm">Soyad</th>
                         <th scope="col" class="text-sm">Telefon</th>
                         <th scope="col" class="text-sm">E-posta</th>
-                        <th scope="col" class="text-sm">İşlemler</th>
+                        <th scope="col" class="text-sm"></th>
                     </tr>
                     </thead>
                     <tbody>
                     <?php foreach ($admins as $admin): ?>
                         <tr>
-                            <td><?php echo $admin['id']; ?></td>
                             <td><?php echo $admin['username']; ?></td>
                             <td><?php echo $admin['first_name']; ?></td>
                             <td><?php echo $admin['last_name']; ?></td>
@@ -97,5 +94,4 @@ require_once(__DIR__ . '/partials/header.php');
                     </tbody>
                 </table>
             </div>
-                <?php require_once('../admin/partials/footer.php'); ?>
-
+<?php require_once('../admin/partials/footer.php'); ?>

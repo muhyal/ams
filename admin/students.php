@@ -79,8 +79,6 @@ $query = "
 
 $stmt = $db->query($query);
 $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-
 ?>
 <?php
 require_once(__DIR__ . '/partials/header.php');
@@ -92,7 +90,7 @@ require_once(__DIR__ . '/partials/header.php');
         ?>
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
-                <h2>Öğrenci Listesi</h2>
+                <h2>Öğrenciler</h2>
             </div>
             <script>
                 $(document).ready( function () {
@@ -166,7 +164,7 @@ require_once(__DIR__ . '/partials/header.php');
         <th>Cep Telefonu</th>
         <th>E-posta</th>
         <!-- <th>Veli Ad Soyad</th>
-         <th>Veli Telefon</th>
+         <th>Veli Tam Ad</th>
          <th>Veli E-Posta</th>
            <th>Acil Durumda Aranacak Kişi</th>
            <th>Acil Durumda Aranacak Kişi Telefonu</th>
@@ -203,12 +201,11 @@ require_once(__DIR__ . '/partials/header.php');
                 <a class="btn btn-danger" href="delete_user.php?id=<?php echo $student['id']; ?>"><i class="fas fa-trash-alt"></i></a>
             </td>
 
-
         </tr>
     <?php endforeach; ?>
     </tbody>
 </table>
-            </div>
+</div>
 
 <?php require_once('../admin/partials/footer.php'); ?>
 

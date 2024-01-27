@@ -106,13 +106,11 @@ require_once(__DIR__ . '/partials/header.php');
         sc.id = :planId
 ";
 
-
                 $stmtSelectedPlan = $db->prepare($querySelectedPlan);
                 $stmtSelectedPlan->bindParam(':planId', $selectedPlanId, PDO::PARAM_INT);
                 $stmtSelectedPlan->execute();
                 $selectedPlan = $stmtSelectedPlan->fetch(PDO::FETCH_ASSOC);
             }
-
 
             function getAttendanceStatus($status)
             {
@@ -129,8 +127,6 @@ require_once(__DIR__ . '/partials/header.php');
                         return ($status === null) ? 'Belirsiz' : 'Bilinmeyen Durum';
                 }
             }
-
-
 
             ?>
 
@@ -201,7 +197,6 @@ require_once(__DIR__ . '/partials/header.php');
                     <th><i class="fas fa-clipboard-check"></i> 3</th>
                     <th><i class="fas fa-clipboard-check"></i> 4</th>
                     <th>İşlemler</th>
-
                 </tr>
                 </thead>
                 <tbody>

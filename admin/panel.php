@@ -962,7 +962,6 @@ require_once(__DIR__ . '/partials/header.php');
                   <table class="table table-striped table-sm" style="border: 1px solid #ddd;">
         <thead>
         <tr>
-            <!--  <th scope="col">#</th>-->
             <th scope="col">Tam Ad</th>
             <th scope="col">E-posta</th>
             <th scope="col">T.C. No</th>
@@ -977,7 +976,6 @@ require_once(__DIR__ . '/partials/header.php');
       <tbody>
       <?php foreach ($student_course_teacher_relations as $relation): ?>
           <tr>
-              <!--   <th scope="row"><?= $relation['student_id'] ?></th>-->
               <td><?= $relation['first_name'] ?> <?= $relation['last_name'] ?></td>
               <td onmouseover="this.innerHTML='<?= isset($relation['email']) ? $relation['email'] : '' ?>'" onmouseout="this.innerHTML='<?= isset($relation['email']) ? '******************' . strstr($relation['email'], '@') : '' ?>'"><?= isset($relation['email']) ? '*******************' . strstr($relation['email'], '@') : '' ?></td>
               <td onmouseover="this.innerHTML='<?= isset($relation['tc_identity']) ? $relation['tc_identity'] : '' ?>'" onmouseout="this.innerHTML='<?= isset($relation['tc_identity']) ? '*******' . substr($relation['tc_identity'], -4) : '' ?>'"><?= isset($relation['tc_identity']) ? '*******' . substr($relation['tc_identity'], -4) : '' ?></td>
@@ -1006,7 +1004,6 @@ require_once(__DIR__ . '/partials/header.php');
                   <table class="table table-striped table-sm" style="border: 1px solid #ddd;">
                     <thead>
                     <tr>
-                        <!--  <th scope="col">#</th>-->
                         <th scope="col">Tam Ad</th>
                           <th scope="col">Sınıf</th>
                           <th scope="col">Ders</th>
@@ -1019,7 +1016,6 @@ require_once(__DIR__ . '/partials/header.php');
                     <tbody>
                     <?php foreach ($teachers as $teacher): ?>
                         <tr>
-<!--                            <td>--><?php //= isset($teacher['user_id']) ? $teacher['user_id'] : '' ?><!--</td>-->
                             <td><?= isset($teacher['first_name']) ? $teacher['first_name'] : '' ?> <?= isset($teacher['last_name']) ? $teacher['last_name'] : '' ?></td>
                             <td><?= isset($teacher['class_name']) ? $teacher['class_name'] : '' ?></td>
                             <td><?= isset($teacher['course_name']) ? $teacher['course_name'] : '' ?></td>
@@ -1061,7 +1057,6 @@ require_once(__DIR__ . '/partials/header.php');
                   <table class="table table-striped table-sm" style="border: 1px solid #ddd;">
                       <thead>
                       <tr>
-                          <!--  <th scope="col">#</th>-->
                           <th scope="col">Tam Ad</th>
                           <th scope="col">E-posta</th>
                           <th scope="col">T.C. No</th>
@@ -1070,13 +1065,11 @@ require_once(__DIR__ . '/partials/header.php');
                           <th scope="col">SMS</th>
                           <th scope="col">Rolü</th>
                           <th scope="col"></th>
-
                       </tr>
                       </thead>
                       <tbody>
                       <?php foreach ($users as $user): ?>
                           <tr>
-                              <!--  <th scope="row"><?= $user['id'] ?></th>-->
                               <td><?= $user['first_name'] ?> <?= $user['last_name'] ?></td>
                               <td onmouseover="this.innerHTML='<?= isset($user['email']) ? $user['email'] : '' ?>'" onmouseout="this.innerHTML='<?= isset($user['email']) ? '******************' . strstr($user['email'], '@') : '' ?>'"><?= isset($user['email']) ? '*******************' . strstr($user['email'], '@') : '' ?></td>
                               <td onmouseover="this.innerHTML='<?= isset($user['tc_identity']) ? $user['tc_identity'] : '' ?>'" onmouseout="this.innerHTML='<?= isset($user['tc_identity']) ? '*******' . substr($user['tc_identity'], -4) : '' ?>'"><?= isset($user['tc_identity']) ? '*******' . substr($user['tc_identity'], -4) : '' ?></td>
@@ -1167,8 +1160,7 @@ require_once(__DIR__ . '/partials/header.php');
                       </div>
                   </div>
               </div>
-      </div>
-</div>
+
 
               <script>
                   // Enter tuşuna basıldığında performSearch fonksiyonunu çağırma

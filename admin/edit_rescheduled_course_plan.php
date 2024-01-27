@@ -92,7 +92,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     } catch (PDOException $e) {
         // Hata durumunda işlemleri burada ele alın (hata mesajını gösterme, kayıt, vb.)
-        echo "Error: " . $e->getMessage();
+        echo "Hata: " . $e->getMessage();
     }
 }
 
@@ -123,7 +123,7 @@ if (isset($_GET["id"])) {
         }
     } catch (PDOException $e) {
         // Hata durumunda işlemleri burada ele alın (hata mesajını gösterme, kayıt, vb.)
-        echo "Error: " . $e->getMessage();
+        echo "Hata: " . $e->getMessage();
     }
 }
 
@@ -233,7 +233,7 @@ $students = $studentStatement->fetchAll(PDO::FETCH_ASSOC);
             <option value='2' <?php echo ($result["course_attendance"] == 2) ? "selected" : ""; ?>>Katılmadı</option>
         </select>
 
-        <button type='submit' class="btn btn-primary mt-3">Güncelle</button>
+        <button type='submit' class="btn btn-primary mt-3">Telafi Dersini Düzenle</button>
 
 </form>
 

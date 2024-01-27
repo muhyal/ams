@@ -79,29 +79,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $tax_number = isset($_POST["tax_number"]) ? htmlspecialchars($_POST["tax_number"]) : "";
     $tc_identity_for_individual_invoice = isset($_POST["tc_identity_for_individual_invoice"]) ? htmlspecialchars($_POST["tc_identity_for_individual_invoice"]) : "";
 
-
-// Ülke kodunu ve telefon numarasını birleştir
+    // Ülke kodunu ve telefon numarasını birleştir
     $fullPhoneNumber = $phoneNumberUtil->getCountryCodeForRegion($countryCode) . $phoneNumber;
-// $phone değişkenini güncelle
+    // $phone değişkenini güncelle
     $phone = $fullPhoneNumber;
-// Hash'lenmemiş şifreyi al
+    // Hash'lenmemiş şifreyi al
     $plainPassword = isset($_POST["password"]) ? $_POST["password"] : "";
 
-
-// Şifreyi hash'leyerek bir değişkene atayalım
+    // Şifreyi hash'leyerek bir değişkene atayalım
     $hashedPassword = password_hash($plainPassword, PASSWORD_DEFAULT);
 
     // Kullanıcı tipi bilgisini al
     $userType = $_POST["user_type"];
 
     // Kullanıcının daha önce kayıtlı olup olmadığını kontrol et
-    $queryCheck = "SELECT * FROM users WHERE email = ? OR tc_identity = ? OR phone = ? OR username = ?";
+    $queryCheck = "SELECT * FROM users WHERE tc_identity = ?";
     $stmtCheck = $db->prepare($queryCheck);
-    $stmtCheck->execute([$email, $tc_identity, $phone, $username]);
+    $stmtCheck->execute([$tc_identity]);
     $existingUser = $stmtCheck->fetch(PDO::FETCH_ASSOC);
 
     if ($existingUser) {
-        $message = "Bu e-posta, T.C. kimlik numarası veya telefon numarası zaten kayıtlı!";
+        $message = "Bu T.C. kimlik numarası zaten kayıtlı!";
     } else {
         // Yeni kayıt işlemi
         $verificationCodeEmail = generateVerificationCode();
@@ -179,10 +177,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Handle the exception
             $message = "Hata: " . $e->getMessage();
         }
-
-
     }
-
 }
 
 // E-posta gönderme fonksiyonu
@@ -234,7 +229,6 @@ function sendVerificationEmail($to, $verificationCode, $first_name, $plainPasswo
         echo "E-posta gönderimi başarısız oldu. Hata: {$mail->ErrorInfo}";
     }
 }
-
 
 // SMS gönderme fonksiyonu
 function sendVerificationSms($to, $verificationCode, $first_name, $plainPassword, $username, $email) {
@@ -311,7 +305,6 @@ function getVerificationLink($emailOrPhone, $code, $type="email") {
 	}else{
 		 return "$siteUrl/verify.php?email=$emailOrPhone&code=$code";
 	}
-
 }
 ?>
 <?php
@@ -372,14 +365,12 @@ require_once(__DIR__ . '/partials/header.php');
                 </script>
             <?php endif; ?>
 
-
-
             <!-- SMS gönderim başarılı mesajı -->
-    <?php if (isset($smsSuccessMessage) && $smsSuccessMessage !== ""): ?>
-        <div class="alert alert-success" role="alert">
-      <?= $smsSuccessMessage ?>
-    </div>
-  <?php endif; ?>
+           <?php if (isset($smsSuccessMessage) && $smsSuccessMessage !== ""): ?>
+             <div class="alert alert-success" role="alert">
+           <?= $smsSuccessMessage ?>
+            </div>
+           <?php endif; ?>
 
   <!-- SMS gönderim hata mesajı -->
     <?php if (isset($smsErrorMessage) && $smsErrorMessage !== ""): ?>
@@ -440,7 +431,6 @@ require_once(__DIR__ . '/partials/header.php');
                             </select>
                             <div class="invalid-feedback">Kullanıcı tipini seçin.</div>
                         </div>
-
 
                         <?php
                         // Rastgele 3 karakter oluşturan fonksiyon
@@ -535,8 +525,6 @@ require_once(__DIR__ . '/partials/header.php');
                                 </div>
                             </div>
                         </div>
-
-
                     </div>
 
                     <div class="col-md-6">
@@ -699,8 +687,6 @@ require_once(__DIR__ . '/partials/header.php');
                     toggleInvoiceFields();
                 </script>
 
-
-
                 <div class="form-group mt-3">
       <button type="submit" class="btn btn-primary">Kaydet</button>
       </div>
@@ -710,4 +696,3 @@ require_once(__DIR__ . '/partials/header.php');
 </div>
 
 <?php require_once('../admin/partials/footer.php'); ?>
-

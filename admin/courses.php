@@ -92,7 +92,7 @@ $courses = $db->query("SELECT * FROM courses")->fetchAll(PDO::FETCH_ASSOC);
 ?>
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
-                <h2>Ders Yönetimi</h2>
+                <h2>Dersler</h2>
             </div>
 
             <!-- Ders Düzenleme Formu -->
@@ -101,7 +101,6 @@ $courses = $db->query("SELECT * FROM courses")->fetchAll(PDO::FETCH_ASSOC);
                 $editId = $_GET["edit_id"];
                 $editCourse = $db->query("SELECT * FROM courses WHERE id = $editId")->fetch(PDO::FETCH_ASSOC);
                 ?>
-                <h2>Ders Düzenle</h2>
                 <form method="post">
                     <input type="hidden" name="id" value="<?php echo $editCourse["id"]; ?>">
                     <div class="mb-3">
@@ -121,11 +120,9 @@ $courses = $db->query("SELECT * FROM courses")->fetchAll(PDO::FETCH_ASSOC);
             <?php } ?>
 
             <!-- Ders Listesi -->
-            <h2>Ders Listesi</h2>
             <table class="table">
                 <thead>
                 <tr>
-                    <th scope="col">No</th>
                     <th scope="col">Ders Adı</th>
                     <th scope="col">Ders Açıklaması</th>
                     <th scope="col">Ders Kodu</th>
@@ -135,7 +132,6 @@ $courses = $db->query("SELECT * FROM courses")->fetchAll(PDO::FETCH_ASSOC);
                 <tbody>
                 <?php foreach ($courses as $course): ?>
                     <tr>
-                        <td><?php echo $course["id"]; ?></td>
                         <td><?php echo $course["course_name"]; ?></td>
                         <td><?php echo $course["description"]; ?></td>
                         <td><?php echo $course["course_code"]; ?></td>

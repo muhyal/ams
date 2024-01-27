@@ -138,9 +138,7 @@ if (isset($_GET["edit"])) {
     $editAcademy = $editStmt->fetch(PDO::FETCH_ASSOC);
 }
 ?>
-<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/pikaday/css/pikaday.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/pikaday/pikaday.js"></script>
+
 <?php
 require_once(__DIR__ . '/partials/header.php');
 ?>
