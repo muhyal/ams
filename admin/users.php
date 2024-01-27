@@ -68,6 +68,21 @@ $stmt = $db->prepare($query);
 $stmt->execute();
 $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+if (isset($_GET["id"]) && is_numeric($_GET["id"])) {
+    $user_id = $_GET["id"];
+
+    $query = "UPDATE users SET deleted_at = NULL WHERE id = :user_id";
+    $stmt = $db->prepare($query);
+    $stmt->bindParam(":user_id", $user_id, PDO::PARAM_INT);
+
+    if ($stmt->execute()) {
+        // Reload the page to reflect the changes
+        header("Location: ".$_SERVER['PHP_SELF']);
+        exit();
+    } else {
+        echo "Kullanıcı geri alınamadı.";
+    }
+}
 ?>
 <?php
 require_once(__DIR__ . '/partials/header.php');
@@ -161,9 +176,9 @@ require_once(__DIR__ . '/partials/header.php');
                                     <a class="btn btn-secondary btn-sm" href="send_verifications.php?id=<?php echo $user['id']; ?>"><i class="fas fa-user-check fa-sm"></i></a>
                                     <a class="btn btn-warning btn-sm" href="reset_password_and_send.php?id=<?php echo $user['id']; ?>"><i class="fas fa-lock-open fa-sm"></i></a>
                                     <a class="btn btn-warning btn-sm" href="edit_user.php?id=<?php echo $user['id']; ?>"><i class="fas fa-edit fa-sm"></i></a>
-                                    <a class="btn btn-primary btn-sm" href="restore_user.php?id=<?php echo $user['id']; ?>" onclick="return confirm('Bu kullanıcıyı silmeyi geri almak istediğinizden emin misiniz?')">
-                                        <i class="fa-solid fa-clock-rotate-left"></i>
-                                    </a>
+        <a class="btn btn-primary btn-sm" href="?action=restore&id=<?php echo $user['id']; ?>" onclick="return confirm('Bu kullanıcıyı silmeyi geri almak istediğinizden emin misiniz?')">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+        </a>
                                 <?php else: ?>
                                 <!-- Silinmeyen kullanıcılar için düzenleme ve silme bağlantıları -->
                                     <a class="btn btn-primary btn-sm" href="user_profile.php?id=<?php echo $user['id']; ?>"><i class="fas fa-eye fa-sm"></i></a>
