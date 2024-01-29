@@ -4,6 +4,29 @@ Kurum içi gereksinim nedeniyle oluşturulmuş basit bir öğrenci işleri merke
 
 /!\ Henüz geliştirilme aşamasındadır ve hataları ile fonksiyonel çalışmayan alanları olabilir /!\
 
+### Geliştirildiği ortam & gereksinimler
+* PHP 8.2
+* MySQL 5.7.39 (PDO)
+* Composer
+
+### Composer ile kurulması gerekenler
+```
+"infobip/infobip-api-php-client": "^5.1"
+"ext-pdo": "*"
+"phpmailer/phpmailer": "^6.5"
+"phpoffice/phpspreadsheet": "^1.29"
+"dompdf/dompdf": "^2.0"
+"league/iso3166": "^4.3"
+"giggsey/libphonenumber-for-php": "^8.13"
+"ext-gd": "^8.2"
+```
+
+### Neler kullanıldı
+* [Bootstrap 5](https://github.com/twbs/bootstrap)
+* [Pikaday](https://github.com/Pikaday/Pikaday)
+* [Datatables](https://github.com/DataTables/DataTables)
+* [Select2](https://github.com/select2/select2)
+
 ### Ek bilgiler
 * Veritabanı için oim.sql dosyası kullanılabilir
 
@@ -32,18 +55,31 @@ Kurum içi gereksinim nedeniyle oluşturulmuş basit bir öğrenci işleri merke
 * Özel SMS bağlantısı ile kullanıcı doğrulaması (IP adresi ve zaman damgası kaydı)
 * Özel e-posta bağlantısı ile kullanıcı doğrulaması (IP adresi ve zaman damgası kaydı)
 * Kullanıcı doğrulamasının yinelenebilmesi
+* Kullanıcı doğrulama geçmişini görüntüleyebilme
 * Öğrenci ve öğretmenler için doğum günü takibi
 * Öğrenci ve Öğretmenlere özel günlerde kutlama SMS ve e-postası gönderilmesi (Geliştiriliyor)
-* Öğrenci ve Öğretmenlerekatılım sağlayacakları eğitim hakkında SMS ve e-postası gönderilmesi (Geliştiriliyor)
+* Öğrenci ve Öğretmenlere katılım sağlayacakları eğitim hakkında SMS ve e-postası gönderilmesi (Geliştiriliyor)
 * Çoklu lokasyon ve birime özel öğrenci, öğretmen, ders, muhasebe kayıtları (Geliştiriliyor)
 * Basit muhasebe kayıtlarının tutulması (Geliştiriliyor)
 * Muhasebe kayıtlarını Excel formatında rapor alabilme
 * Akademi bazında günlük PDF ciro raporu alabilme
 * Akademi - Gün bazında ders planı raporu alabilme
 * Ders bazında PDF fatura istemi alabilme
+* Öğrenci bireysel ve kurumsal fatura bilgilerinin tuutlması 
 * Kullanıcı oluşturulduğunda SMS ve e-posta ile kullanıcı adı, şifre bilgisi iletilmesi
 * reCaptcha v3 desteği
 * Kullanıcıdan SMS ve e-posta ile dijital imza alınması
 * Öğrenci ile veli ilişkilendirilmesi
 * Kullanıcı profillerine fotoğraf yükleyebilme
+* Kullanıcı özelinde özel SMS ve e-posta gönderebilme
+* Kullanıcı özelinde gönderilmiş özel SMS ve e-posta geçmişini görüntüleyebilme
+* Kullanıcı aktif/pasif hale getirebilme
+* Kullanıcının kendi hesabını dondurabilmesi
 * ...
+
+### Güvenlik
+Bir güvenlik açığı bulduğunuzu düşünüyorsanız (veya emin değilseniz) benimle iletişime geçmek e-posta adresimi kullanabilirsiniz.
+
+
+
+
