@@ -50,6 +50,7 @@ $iso3166 = new ISO3166();
 
 // Kullanıcı bilgilerini kullanabilirsiniz
 $admin_id = $_SESSION["admin_id"];
+
 $student_id = isset($_GET['student_id']) ? $_GET['student_id'] : null;
 $admin_username = $_SESSION["admin_username"];
 
@@ -359,11 +360,15 @@ function sendEmail($to, $userInputMessage, $first_name, $username, $email) {
     }
 }
 
+$receiverId = isset($_GET['id']) ? $_GET['id'] : null;
+
+
 // AJAX endpoint for sending messages
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'sendMessage') {
     $messageText = $_POST['messageText'];
-    $sendAsSMS = isset($_POST['sendAsSMS']) && $_POST['sendAsSMS'] === 'true';
-    $sendAsEmail = isset($_POST['sendAsEmail']) && $_POST['sendAsEmail'] === 'true';
+    $sendAsSMS = isset($_POST['sendAsSMS']) ? 1 : 0; // Convert true/false to 1/0
+    $sendAsEmail = isset($_POST['sendAsEmail']) ? 1 : 0; // Convert true/false to 1/0
+    $receiverId = $_POST['receiverId'];
 
     // Call the functions to send messages
     if ($sendAsSMS) {
@@ -376,8 +381,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         sendEmail($userEmail, $messageText, $user['first_name'], $user['username'], $user['email']);
     }
 
+    // Save the message to the database
+    saveMessageToDatabase($receiverId, $messageText, $sendAsSMS, $sendAsEmail);
+
     echo json_encode(['success' => true, 'message' => 'Mesaj başarıyla gönderildi.']);
     exit;
+}
+
+/// Function to save the message to the database
+function saveMessageToDatabase($receiverId, $messageText, $sendAsSMS, $sendAsEmail) {
+    global $db;
+
+    // Oturum açmış adminin ID'sini al
+    $senderId = $_SESSION['admin_id'];
+    $currentDateTime = date('Y-m-d H:i:s');
+
+    try {
+        // Insert the message into the database with the current date and time
+        $query = "INSERT INTO sent_messages (sender_id, receiver_id, sent_at, message_text, send_as_sms, send_as_email) VALUES (:sender_id, :receiver_id, :sent_at, :message_text, :send_as_sms, :send_as_email)";
+        $stmt = $db->prepare($query);
+        $stmt->bindParam(':sender_id', $senderId, PDO::PARAM_INT);
+        $stmt->bindParam(':receiver_id', $receiverId, PDO::PARAM_INT);
+        $stmt->bindParam(':sent_at', $currentDateTime, PDO::PARAM_STR);
+        $stmt->bindParam(':message_text', $messageText, PDO::PARAM_STR);
+
+        // Kullanıcı hem SMS'i hem de e-postayı seçtiyse, her ikisini de kaydet
+        if ($sendAsSMS && $sendAsEmail) {
+            $sendAsSMS = 1;
+            $sendAsEmail = 1;
+        } else {
+            // Tek seçenek seçiliyse diğerini 0 yap
+            $sendAsSMS = $sendAsSMS ? 1 : 0;
+            $sendAsEmail = $sendAsEmail ? 1 : 0;
+        }
+
+        $stmt->bindParam(':send_as_sms', $sendAsSMS, PDO::PARAM_INT);
+        $stmt->bindParam(':send_as_email', $sendAsEmail, PDO::PARAM_INT);
+
+        $stmt->execute();
+    } catch (PDOException $e) {
+        echo 'Veritabanına kayıt hatası: ' . $e->getMessage();
+        exit;
+    }
 }
 
 ?>
@@ -396,7 +441,7 @@ require_once(__DIR__ . '/partials/sidebar.php');
     <!-- Ana içerik -->
 <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
-            <h2>Kullanıcı Profili</h2>
+            <h2><?= $user['first_name'] ?> <?= $user['last_name'] ?> <small>(<?= $user['tc_identity'] ?>)</small> Profili</h2>
         </div>
 
     <div class="container-fluid">
@@ -419,6 +464,70 @@ require_once(__DIR__ . '/partials/sidebar.php');
                         <a href="#" class="btn btn-sm btn-outline-secondary" onclick="openSendMessageModal()">
                             <i class="fas fa-envelopes-bulk"></i> SMS & E-posta Gönder
                         </a>
+                        <a href="#" class="btn btn-sm btn-outline-secondary" onclick="openUserReceivedMessagesModal()">
+                            <i class="fas fa-envelope-open"></i> Kullanıcının Mesaj Geçmişi
+                        </a>
+
+                        <div class="modal fade" id="userReceivedMessagesModal" tabindex="-1" aria-labelledby="userReceivedMessagesModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="userReceivedMessagesModalLabel">Kullanıcıya Gönderilen Mesajlar</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <table class="table">
+                                            <thead>
+                                            <tr>
+                                                <th>Gönderen</th>
+                                                <th>Gönderim Tarihi</th>
+                                                <th>Mesaj Metni</th>
+                                                <th>SMS Olarak</th>
+                                                <th>E-posta Olarak</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <?php
+                                            // Kullanıcının alınan mesajlarını çekmek için sorguyu hazırlayın
+                                            $query = "SELECT sm.*, u.first_name, u.last_name FROM sent_messages sm 
+                  INNER JOIN users u ON sm.sender_id = u.id 
+                  WHERE sm.receiver_id = :receiver_id";
+                                            $stmt = $db->prepare($query);
+                                            $stmt->bindParam(':receiver_id', $user['id'], PDO::PARAM_INT);
+                                            $stmt->execute();
+
+                                            // Her bir mesaj için bir satır oluşturun
+                                            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                                                $senderName = $row['first_name'] . ' ' . $row['last_name'];
+                                                $smsStatus = ($row['send_as_sms'] == 1) ? 'Evet' : 'Hayır';
+                                                $emailStatus = ($row['send_as_email'] == 1) ? 'Evet' : 'Hayır';
+
+                                                echo "<tr>";
+                                                echo "<td>{$senderName}</td>";
+                                                echo "<td>" . date('H:i d.m.Y', strtotime($row['sent_at'])) . "</td>";
+                                                echo "<td>{$row['message_text']}</td>";
+                                                echo "<td>{$smsStatus}</td>";
+                                                echo "<td>{$emailStatus}</td>";
+                                                echo "</tr>";
+                                            }
+                                            ?>
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Kapat</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <script>
+                            function openUserReceivedMessagesModal() {
+                                $('#userReceivedMessagesModal').modal('show');
+                            }
+                        </script>
+
                     </div>
                 </div>
             </div>
@@ -511,6 +620,16 @@ require_once(__DIR__ . '/partials/sidebar.php');
                         return;
                     }
 
+                    // Validate at least one option is selected
+                    if (!sendAsSMS && !sendAsEmail) {
+                        alert('En az bir gönderim seçeneği seçilmelidir (SMS veya E-posta)!');
+                        return;
+                    }
+
+                    // Get the receiverId from the URL
+                    var urlParams = new URLSearchParams(window.location.search);
+                    var receiverId = urlParams.get('id');
+
                     // Send the message via AJAX
                     var xhr = new XMLHttpRequest();
                     xhr.open('POST', window.location.href, true);
@@ -542,9 +661,11 @@ require_once(__DIR__ . '/partials/sidebar.php');
                     formData.append('messageText', messageText);
                     formData.append('sendAsSMS', sendAsSMS);
                     formData.append('sendAsEmail', sendAsEmail);
+                    formData.append('receiverId', receiverId); // Include receiverId in the request
 
                     xhr.send(new URLSearchParams(formData));
                 }
+
             </script>
 
 
