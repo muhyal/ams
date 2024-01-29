@@ -133,30 +133,39 @@ foreach ($relationships as $relationship) {
             <?php endforeach; ?>
 
             <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-                <!-- Öğrenci Seçimi -->
-                <div class="form-group">
-                    <label for="student">Öğrenci Seçin:</label>
-                    <select id="student" name="student" class="form-control" required>
-                        <?php foreach ($students as $student) : ?>
-                            <option value="<?php echo $student['id']; ?>"><?php echo $student['first_name'] . ' ' . $student['last_name'] . ' - ' . $student['tc_identity']; ?></option>
-                        <?php endforeach; ?>
-                    </select>
+                <div class="row">
+                    <!-- Öğrenci Seçimi -->
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="student">Öğrenci Seçin:</label>
+                            <select id="student" name="student" class="form-control" required>
+                                <?php foreach ($students as $student) : ?>
+                                    <option value="<?php echo $student['id']; ?>"><?php echo $student['first_name'] . ' ' . $student['last_name'] . ' - ' . $student['tc_identity']; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Veli Seçimi -->
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="parent">Veli Seçin:</label>
+                            <select id="parent" name="parent" class="form-control" required>
+                                <?php foreach ($parents as $parent) : ?>
+                                    <option value="<?php echo $parent['id']; ?>"><?php echo $parent['first_name'] . ' ' . $parent['last_name'] . ' - ' . $parent['tc_identity']; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <button type="submit" name="addRelationship" class="btn btn-primary btn-sm mt-3 mb-3">İlişkilendir</button>
+                        </div>
+                    </div>
                 </div>
-
-                <!-- Veli Seçimi -->
-                <div class="form-group">
-                    <label for="parent">Veli Seçin:</label>
-                    <select id="parent" name="parent" class="form-control" required>
-                        <?php foreach ($parents as $parent) : ?>
-                            <option value="<?php echo $parent['id']; ?>"><?php echo $parent['first_name'] . ' ' . $parent['last_name'] . ' - ' . $parent['tc_identity']; ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-
-
-
-                <button type="submit" name="addRelationship" class="btn btn-primary btn-sm mt-3 mb-3">İlişkilendir</button>
             </form>
+
 
             <!-- Mevcut ilişkileri listeleme -->
             <h2>Mevcut İlişkiler</h2>
