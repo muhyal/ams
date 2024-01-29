@@ -349,7 +349,9 @@ require_once(__DIR__ . '/partials/sidebar.php');
                 <input type="datetime-local" name="course_date" class="form-control" value="<?= $today ?>">
             </div>
 
-            <button type="submit" class="btn btn-success mt-3">Telafi Dersini Planla</button>
+                <button type="submit" class="btn btn-success mt-3">
+                    <i class="far fa-clock"></i> Telafi Dersini Planla
+                </button>
         </form>
     </main>
 

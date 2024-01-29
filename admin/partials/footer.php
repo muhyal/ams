@@ -111,5 +111,68 @@
         observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-bs-theme'] });
     });
 </script>
+<script>
+    $(document).ready(function () {
+        // select2 uygula
+        $('#country').select2();
+        $('#student').select2();
+        $('#parent').select2();
+        $('#studentDropdown').select2();
+        $('#teacherDropdown').select2();
+        $('[name="selectCoursePlan"]').select2();
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        // Geçerli sayfa URL'sini al
+        var currentUrl = window.location.href;
+
+        // Eğer geçerli URL, "admin/panel.php" içermiyorsa DataTables'i uygula
+        if (currentUrl.indexOf("admin/panel.php") === -1 && currentUrl.indexOf("admin/user_profile.php") === -1) {
+            $('table').DataTable({
+                pageLength: 25, // Her sayfada gösterilecek satır sayısı
+                lengthMenu: [5, 10, 25], // Sayfa uzunluğu seçenekleri
+                autoFill: {
+                    focus: 'click'
+                },
+                responsive: true,
+                dom: '<"bottom" Blfrtip>', // Düğmeleri aşağıda göstermek için düzenleme
+                buttons: [
+                    {
+                        extend: 'copy',
+                        text: '<i class="fas fa-copy"></i>',
+                        className: 'btn btn-light btn-sm'
+                    },
+                    {
+                        extend: 'csv',
+                        text: '<i class="fas fa-file-csv"></i>',
+                        className: 'btn btn-light btn-sm'
+                    },
+                    {
+                        extend: 'excel',
+                        text: '<i class="fas fa-file-excel"></i>',
+                        className: 'btn btn-light btn-sm'
+                    },
+                    {
+                        extend: 'pdf',
+                        text: '<i class="fas fa-file-pdf"></i>',
+                        className: 'btn btn-light btn-sm'
+                    },
+                    {
+                        extend: 'print',
+                        text: '<i class="fas fa-print"></i>',
+                        className: 'btn btn-light btn-sm'
+                    }
+                ],
+                language: {
+                    "url": "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Turkish.json"
+                },
+            });
+        }
+        // Eğer içeriyorsa, DataTables'i etkinleştirmemeyi veya başka bir işlem yapmayı düşünebilirsiniz.
+    });
+</script>
+
+
 </body>
 </html>

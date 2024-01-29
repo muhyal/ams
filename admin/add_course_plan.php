@@ -181,111 +181,122 @@ require_once(__DIR__ . '/partials/sidebar.php');
         <?php endif; ?>
 
         <form method="POST" action="add_course_plan.php">
-            <!-- Öğretmen Dropdown -->
-            <div class="form-group mt-3">
-                <label for="teacher_id">Öğretmen</label>
-                <select name="teacher_id" class="form-control">
-                    <?php foreach ($teachers as $teacher): ?>
-                        <option value="<?= $teacher['id'] ?>"><?= $teacher['full_name'] ?></option>
-                    <?php endforeach; ?>
-                </select>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <!-- İlk kolon içeriği -->
+                    <!-- Öğretmen Dropdown -->
+                    <div class="form-group mt-3">
+                        <label for="teacher_id">Öğretmen</label>
+                        <select name="teacher_id" class="form-control" id="teacherDropdown">
+                            <?php foreach ($teachers as $teacher): ?>
+                                <option value="<?= $teacher['id'] ?>"><?= $teacher['full_name'] ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <!-- Akademi Dropdown -->
+                    <div class="form-group mt-3">
+                        <label for="academy_id">Akademi</label>
+                        <select name="academy_id" class="form-control">
+                            <?php foreach ($academies as $academy): ?>
+                                <option value="<?= $academy['id'] ?>"><?= $academy['name'] ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <!-- Sınıf Dropdown -->
+                    <div class="form-group mt-3">
+                        <label for="class_id">Sınıf</label>
+                        <select name="class_id" class="form-control">
+                            <?php foreach ($classes as $class): ?>
+                                <option value="<?= $class['id'] ?>"><?= $class['class_name'] ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <!-- Öğrenci Dropdown -->
+                    <div class="form-group mt-3">
+                        <label for="student_id">Öğrenci</label>
+                        <select name="student_id" class="form-control" id="studentDropdown">
+                            <?php foreach ($students as $student): ?>
+                                <option value="<?= $student['id'] ?>"><?= $student['full_name'] ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <!-- Ders Dropdown -->
+                    <div class="form-group mt-3">
+                        <label for="course_id">Ders</label>
+                        <select name="course_id" class="form-control">
+                            <?php foreach ($courses as $course): ?>
+                                <option value="<?= $course['id'] ?>"><?= $course['course_name'] ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <!-- Ders Ücreti -->
+                    <div class="form-group mt-3">
+                        <label for="course_fee">Ders Ücreti</label>
+                        <input type="number" name="course_fee" class="form-control" placeholder="4739" value="4739" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <!-- İkinci kolon içeriği -->
+                    <!-- Ders Tarihleri -->
+                    <?php
+                    $today = date('Y-m-d\TH:i'); // Bugünün tarihi ve saati
+                    ?>
+
+                    <div class="form-group mt-3">
+                        <label for="course_date_1">1. Ders Tarihi</label>
+                        <input type="datetime-local" name="course_date_1" class="form-control" value="<?= $today ?>">
+                    </div>
+
+                    <script>
+                        // Birinci ders tarihini seçildiğinde diğer ders tarihlerini ayarla
+                        document.querySelector('[name="course_date_1"]').addEventListener('change', function (event) {
+                            var firstDate = new Date(event.target.value);
+
+                            // İkinci ders tarihini ayarla (1 hafta sonrası)
+                            var secondDate = new Date(firstDate);
+                            secondDate.setDate(firstDate.getDate() + 7);
+                            document.querySelector('[name="course_date_2"]').value = secondDate.toISOString().slice(0, 16);
+
+                            // Üçüncü ders tarihini ayarla (2 hafta sonrası)
+                            var thirdDate = new Date(firstDate);
+                            thirdDate.setDate(firstDate.getDate() + 14);
+                            document.querySelector('[name="course_date_3"]').value = thirdDate.toISOString().slice(0, 16);
+
+                            // Dördüncü ders tarihini ayarla (3 hafta sonrası)
+                            var fourthDate = new Date(firstDate);
+                            fourthDate.setDate(firstDate.getDate() + 21);
+                            document.querySelector('[name="course_date_4"]').value = fourthDate.toISOString().slice(0, 16);
+                        });
+                    </script>
+
+                    <div class="form-group mt-3">
+                        <label for="course_date_2">2. Ders Tarihi</label>
+                        <input type="datetime-local" name="course_date_2" class="form-control" value="<?= $today ?>">
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label for="course_date_3">3. Ders Tarihi</label>
+                        <input type="datetime-local" name="course_date_3" class="form-control" value="<?= $today ?>">
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label for="course_date_4">4. Ders Tarihi</label>
+                        <input type="datetime-local" name="course_date_4" class="form-control" value="<?= $today ?>">
+                    </div>
+                </div>
             </div>
+            <button type="submit" class="btn btn-success mt-3">
+                <i class="far fa-clock"></i> Dersi Planla
+            </button>
 
-            <!-- Akademi Dropdown -->
-            <div class="form-group mt-3">
-                <label for="academy_id">Akademi</label>
-                <select name="academy_id" class="form-control">
-                    <?php foreach ($academies as $academy): ?>
-                        <option value="<?= $academy['id'] ?>"><?= $academy['name'] ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-
-            <!-- Sınıf Dropdown -->
-            <div class="form-group mt-3">
-                <label for="class_id">Sınıf</label>
-                <select name="class_id" class="form-control">
-                    <?php foreach ($classes as $class): ?>
-                        <option value="<?= $class['id'] ?>"><?= $class['class_name'] ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-
-            <!-- Öğrenci Dropdown -->
-            <div class="form-group mt-3">
-                <label for="student_id">Öğrenci</label>
-                <select name="student_id" class="form-control">
-                    <?php foreach ($students as $student): ?>
-                        <option value="<?= $student['id'] ?>"><?= $student['full_name'] ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-
-            <!-- Ders Dropdown -->
-            <div class="form-group mt-3">
-                <label for="course_id">Ders</label>
-                <select name="course_id" class="form-control">
-                    <?php foreach ($courses as $course): ?>
-                        <option value="<?= $course['id'] ?>"><?= $course['course_name'] ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-
-            <!-- Ders Ücreti -->
-            <div class="form-group mt-3">
-                <label for="course_fee">Ders Ücreti</label>
-                <input type="number" name="course_fee" class="form-control" placeholder="4739" value="4739" required>
-            </div>
-
-            <!-- Ders Tarihleri -->
-            <?php
-            $today = date('Y-m-d\TH:i'); // Bugünün tarihi ve saati
-            ?>
-
-            <div class="form-group mt-3">
-                <label for="course_date_1">1. Ders Tarihi</label>
-                <input type="datetime-local" name="course_date_1" class="form-control" value="<?= $today ?>">
-            </div>
-
-            <script>
-                // Birinci ders tarihini seçildiğinde diğer ders tarihlerini ayarla
-                document.querySelector('[name="course_date_1"]').addEventListener('change', function (event) {
-                    var firstDate = new Date(event.target.value);
-
-                    // İkinci ders tarihini ayarla (1 hafta sonrası)
-                    var secondDate = new Date(firstDate);
-                    secondDate.setDate(firstDate.getDate() + 7);
-                    document.querySelector('[name="course_date_2"]').value = secondDate.toISOString().slice(0, 16);
-
-                    // Üçüncü ders tarihini ayarla (2 hafta sonrası)
-                    var thirdDate = new Date(firstDate);
-                    thirdDate.setDate(firstDate.getDate() + 14);
-                    document.querySelector('[name="course_date_3"]').value = thirdDate.toISOString().slice(0, 16);
-
-                    // Dördüncü ders tarihini ayarla (3 hafta sonrası)
-                    var fourthDate = new Date(firstDate);
-                    fourthDate.setDate(firstDate.getDate() + 21);
-                    document.querySelector('[name="course_date_4"]').value = fourthDate.toISOString().slice(0, 16);
-                });
-            </script>
-
-            <div class="form-group mt-3">
-                <label for="course_date_2">2. Ders Tarihi</label>
-                <input type="datetime-local" name="course_date_2" class="form-control" value="<?= $today ?>">
-            </div>
-
-            <div class="form-group mt-3">
-                <label for="course_date_3">3. Ders Tarihi</label>
-                <input type="datetime-local" name="course_date_3" class="form-control" value="<?= $today ?>">
-            </div>
-
-            <div class="form-group mt-3">
-                <label for="course_date_4">4. Ders Tarihi</label>
-                <input type="datetime-local" name="course_date_4" class="form-control" value="<?= $today ?>">
-            </div>
-
-
-            <button type="submit" class="btn btn-success mt-3">Dersi Planla</button>
+        </div>
         </form>
+
     </main>
 <?php require_once('../admin/partials/footer.php'); ?>

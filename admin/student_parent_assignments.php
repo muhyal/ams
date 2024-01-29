@@ -153,7 +153,9 @@ foreach ($relationships as $relationship) {
                     </select>
                 </div>
 
-                <button type="submit" name="addRelationship" class="btn btn-primary">Veli Olarak İlişkilendir</button>
+
+
+                <button type="submit" name="addRelationship" class="btn btn-primary btn-sm mt-3 mb-3">İlişkilendir</button>
             </form>
 
             <!-- Mevcut ilişkileri listeleme -->
@@ -161,8 +163,8 @@ foreach ($relationships as $relationship) {
             <table class="table">
                 <thead>
                 <tr>
-                    <th>Öğrenci Ad Soyad - T.C. Kimlik No</th>
-                    <th>Veli Ad Soyad - T.C. Kimlik No</th>
+                    <th>Öğrenci Ad Soyad - T.C. No</th>
+                    <th>Veli Ad Soyad - T.C. No</th>
                     <th>İşlemler</th>
                 </tr>
                 </thead>
@@ -186,7 +188,7 @@ foreach ($relationships as $relationship) {
                         <td>
                             <form method="post" action="<?= $_SERVER['PHP_SELF']; ?>">
                                 <input type="hidden" name="relationshipId" value="<?= $relationship['id']; ?>">
-                                <button type="submit" name="deleteRelationship" class="btn btn-danger">Sil</button>
+                                <button type="submit" name="deleteRelationship" class="btn btn-danger btn-sm">Sil</button>
                             </form>
                         </td>
                     </tr>

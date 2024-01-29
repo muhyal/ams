@@ -545,6 +545,7 @@ require_once(__DIR__ . '/partials/header.php');
                             </div>
                         </div>
 
+
                         <div class="mb-3">
                             <label for="phone" class="form-label">Telefon:</label>
                             <div class="input-group">
@@ -688,7 +689,9 @@ require_once(__DIR__ . '/partials/header.php');
                 </script>
 
                 <div class="form-group mt-3">
-      <button type="submit" class="btn btn-primary">Kaydet</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Kullanıcıyı Ekle
+                    </button>
       </div>
   </form>
 </main>

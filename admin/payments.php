@@ -242,16 +242,6 @@ function getBankName($bankId)
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
                 <h2>Ödemeler</h2>
-                <script>
-                    $(document).ready( function () {
-                        // Tabloyu Datatables ile başlatma ve Türkçe dilini kullanma
-                        $('#accountingListTable').DataTable({
-                            "language": {
-                                "url": "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Turkish.json"
-                            }
-                        });
-                    });
-                </script>
                 <div class="btn-toolbar mb-2 mb-md-0">
                     <div class="btn-group mr-2">
                         <a href="add_payment.php" class="btn btn-sm btn-outline-secondary">Ödeme Ekle</a>
@@ -260,7 +250,7 @@ function getBankName($bankId)
                 </div>
             </div>
     <div class="table-responsive">
-        <table id="accountingListTable" class="table table-bordered table-striped">
+        <table id="accountingListTable" class="table table-striped table-sm" style="border: 1px solid #ddd;">
             <thead class="thead-dark">
             <tr>
                 <th>Plan</th>

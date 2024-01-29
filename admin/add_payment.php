@@ -61,7 +61,7 @@ $errorMessage = "";
 
 // Eğer form gönderilmişse
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $rowId = isset($_POST["rowId"]) ? htmlspecialchars($_POST["rowId"], ENT_QUOTES, 'UTF-8') : null;
+    $selectCoursePlan = isset($_POST["selectCoursePlan"]) ? htmlspecialchars($_POST["selectCoursePlan"], ENT_QUOTES, 'UTF-8') : null;
     $paymentAmount = isset($_POST["paymentAmount"]) ? htmlspecialchars($_POST["paymentAmount"], ENT_QUOTES, 'UTF-8') : null;
     $paymentMethod = isset($_POST["paymentMethod"]) ? htmlspecialchars($_POST["paymentMethod"], ENT_QUOTES, 'UTF-8') : null;
     $paymentNotes = isset($_POST["paymentNotes"]) ? htmlspecialchars($_POST["paymentNotes"], ENT_QUOTES, 'UTF-8') : null;
@@ -75,9 +75,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     try {
         // Ödeme yapılan ders planını alın
-        $selectQuery = "SELECT * FROM course_plans WHERE id = :rowId";
+        $selectQuery = "SELECT * FROM course_plans WHERE id = :selectCoursePlan";
         $selectStatement = $db->prepare($selectQuery);
-        $selectStatement->bindParam(':rowId', $rowId, PDO::PARAM_INT);
+        $selectStatement->bindParam(':selectCoursePlan', $selectCoursePlan, PDO::PARAM_INT);
         $selectStatement->execute();
         $coursePlan = $selectStatement->fetch(PDO::FETCH_ASSOC);
 
@@ -91,20 +91,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             throw new Exception("Bu ders planına ait bir borç bulunmuyor.");
         }
 
+        // Eğer ödeme miktarı kalan borcu aşıyorsa işlem yapma
+        if ($paymentAmount > $coursePlan["debt_amount"]) {
+            throw new Exception("Ödeme miktarı, kalan borçtan fazla olamaz.");
+        }
+
         // Ödeme yapılan öğrencinin toplam borcunu güncelle
         $newDebtAmount = $coursePlan["debt_amount"] - $paymentAmount;
 
-        $updateDebtQuery = "UPDATE course_plans SET debt_amount = :newDebtAmount WHERE id = :rowId";
+        $updateDebtQuery = "UPDATE course_plans SET debt_amount = :newDebtAmount WHERE id = :selectCoursePlan";
         $updateDebtStatement = $db->prepare($updateDebtQuery);
         $updateDebtStatement->bindParam(':newDebtAmount', $newDebtAmount, PDO::PARAM_INT);
-        $updateDebtStatement->bindParam(':rowId', $rowId, PDO::PARAM_INT);
+        $updateDebtStatement->bindParam(':selectCoursePlan', $selectCoursePlan, PDO::PARAM_INT);
         $updateDebtStatement->execute();
 
         // Accounting tablosuna ödeme kaydını ekle
         $insertPaymentQuery = "INSERT INTO accounting (course_plan_id, amount, payment_method, payment_notes, bank_name, received_by_id)
                       VALUES (:coursePlanId, :paymentAmount, :paymentMethod, :paymentNotes, :bankId, :receivedById)";
         $insertPaymentStatement = $db->prepare($insertPaymentQuery);
-        $insertPaymentStatement->bindParam(':coursePlanId', $rowId, PDO::PARAM_INT);
+        $insertPaymentStatement->bindParam(':coursePlanId', $selectCoursePlan, PDO::PARAM_INT);
         $insertPaymentStatement->bindParam(':paymentAmount', $paymentAmount, PDO::PARAM_INT);
         $insertPaymentStatement->bindParam(':paymentMethod', $paymentMethod, PDO::PARAM_STR);
         $insertPaymentStatement->bindParam(':paymentNotes', $paymentNotes, PDO::PARAM_STR);
@@ -151,6 +156,34 @@ require_once(__DIR__ . '/partials/sidebar.php');
         </div>
     </div>
 
+    <script>
+        $(document).ready(function () {
+            var planSelect = $('[name="selectCoursePlan"]');
+            var paymentAmountInput = $('[name="paymentAmount"]');
+
+            // Select2'yi başlat
+            planSelect.select2();
+
+            // Select2 olaylarını dinle
+            planSelect.on('select2:select', function (e) {
+                var selectedOption = $(this).find(':selected');
+
+                // Seçilen ders planının kalan borç miktarını al
+                var debtAmount = parseFloat(selectedOption.data('debtamount'));
+
+                // Sadece kalan borç miktarını ödeme miktarına kopyala
+                paymentAmountInput.val(debtAmount);
+
+                // Update the "data-debtamount" attribute for reference
+                paymentAmountInput.data('debtamount', debtAmount);
+            });
+        });
+
+    </script>
+
+
+
+
     <?php if ($successMessage) : ?>
         <div class="alert alert-success" id="successMessage"><?php echo $successMessage; ?></div>
 
@@ -188,8 +221,9 @@ require_once(__DIR__ . '/partials/sidebar.php');
 
     <form action="" method="post">
         <div class="form-group">
-            <label for="rowId">Ders Planı Seç:</label>
-            <select class="form-control" name="rowId" required>
+            <label for="selectCoursePlan">Ders Planı Seç:</label>
+
+            <select class="form-control" name="selectCoursePlan" required>
                 <?php
                 // Ders planlarını ve öğrenci bilgilerini, öğretmen bilgilerini ve ders adlarını çek
                 $selectPlansQuery = "SELECT cp.id, cp.course_fee, cp.debt_amount, cp.course_date_1, cp.course_date_2, cp.course_date_3, cp.course_date_4,
@@ -288,7 +322,9 @@ require_once(__DIR__ . '/partials/sidebar.php');
             <textarea class="form-control" name="paymentNotes"></textarea>
         </div>
 
-        <button type="submit" class="btn btn-primary mt-3 mb-3">Ödemeyi İşle</button>
+        <button type="submit" class="btn btn-primary mt-3 mb-3">
+            <i class="fas fa-money-check"></i> Ödemeyi İşle
+        </button>
     </form>
     <script>
         document.addEventListener("DOMContentLoaded", function () {

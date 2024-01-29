@@ -66,19 +66,8 @@ require_once(__DIR__ . '/partials/header.php');
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
                 <h2>Tanışma Dersleri</h2>
             </div>
-            <script>
-                $(document).ready( function () {
-                    // Tabloyu Datatables ile başlatma ve Türkçe dilini kullanma
-                    $('#introductoryCoursesTable').DataTable({
-                        "language": {
-                            "url": "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Turkish.json"
-                        },
-                        "responsive": true
-                    });
-                });
-            </script>
             <div class="table-responsive">
-            <table id="introductoryCoursesTable" class="table table-striped">
+            <table id="introductoryCoursesTable" class="table table-striped table-sm" style="border: 1px solid #ddd;">
                 <thead>
                 <tr>
                     <th>Öğretmen</th>

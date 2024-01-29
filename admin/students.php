@@ -92,69 +92,11 @@ require_once(__DIR__ . '/partials/header.php');
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
                 <h2>Öğrenciler</h2>
             </div>
-            <script>
-                $(document).ready( function () {
-                    // Tabloyu Datatables ile başlatma ve Türkçe dilini kullanma
-                    $('#studentsTable').DataTable({
-                        "language": {
-                            "url": "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Turkish.json"
-                        },
-                        "responsive": true
-                    });
-                });
-            </script>
-            <style>
-                table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    overflow-x: auto;
-                    background-color: #f8f9fa; /* Arka plan rengi */
-                }
 
-                th, td {
-                    border: 1px solid #dee2e6; /* Kenarlık rengi */
-                    padding: 12px;
-                    text-align: left;
-                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Hafif gölgelendirme */
-                }
 
-                th {
-                    background-color: #6b6b6b; /* Başlık arka plan rengi */
-                    color: #ffffff; /* Başlık metin rengi */
-                }
-
-                tbody tr:nth-child(even) {
-                    background-color: #f2f2f2; /* Sıra arka plan rengi */
-                }
-
-                tbody tr:hover {
-                    background-color: #e9ecef; /* Hover efekti arka plan rengi */
-                }
-
-                .action-buttons {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                }
-
-                .action-buttons a {
-                    display: block;
-                    margin-bottom: 5px;
-                    padding: 8px;
-                    text-align: center;
-                    background-color: #007bff; /* Buton arka plan rengi */
-                    color: #ffffff; /* Buton metin rengi */
-                    text-decoration: none;
-                    border-radius: 5px;
-                }
-
-                .action-buttons a:hover {
-                    background-color: #0056b3; /* Hover efekti arka plan rengi */
-                }
-            </style>
             <div class="table-responsive">
 
-            <table id="studentsTable">
+            <table id="studentsTable" class="table table-striped table-sm" style="border: 1px solid #ddd;">
     <thead>
     <tr><th>Akademi</th>
         <th>Adı</th>
@@ -196,9 +138,9 @@ require_once(__DIR__ . '/partials/header.php');
             <td><?php echo $student['district']; ?></td>
             <td><?php echo $student['address']; ?></td>-->
             <td>
-                <a class="btn btn-primary" href="user_profile.php?id=<?php echo $student['id']; ?>"><i class="fas fa-user"></i></a>
-                <a class="btn btn-warning" href="edit_user.php?id=<?php echo $student['id']; ?>"><i class="fas fa-edit"></i></a>
-                <a class="btn btn-danger" href="delete_user.php?id=<?php echo $student['id']; ?>"><i class="fas fa-trash-alt"></i></a>
+                <a class="btn btn-primary btn-sm" href="user_profile.php?id=<?php echo $student['id']; ?>"><i class="fas fa-user"></i></a>
+                <a class="btn btn-warning btn-sm" href="edit_user.php?id=<?php echo $student['id']; ?>"><i class="fas fa-edit"></i></a>
+                <a class="btn btn-danger btn-sm" href="delete_user.php?id=<?php echo $student['id']; ?>"><i class="fas fa-trash-alt"></i></a>
             </td>
 
         </tr>

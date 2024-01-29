@@ -133,17 +133,6 @@ require_once(__DIR__ . '/partials/header.php');
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
                 <h2>Ders Planları</h2>
             </div>
-            <script>
-                $(document).ready(function () {
-                    // Tabloyu DataTables ile başlatma ve Türkçe dilini kullanma
-                    $('#coursePlansTable').DataTable({
-                        "language": {
-                            "url": "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Turkish.json"
-                        },
-                        "responsive": true
-                    });
-                });
-            </script>
             <?php
             if ($selectedPlan) {
                 echo "
@@ -179,7 +168,6 @@ require_once(__DIR__ . '/partials/header.php');
 
 
             <div class="table-responsive">
-
             <table id="coursePlansTable" class="table table-striped table-sm" style="border: 1px solid #ddd;">
                 <thead>
                 <tr>
@@ -276,9 +264,14 @@ require_once(__DIR__ . '/partials/header.php');
                     }
 
                     // İşlemler column (Actions)
-                    echo "<td><a href='edit_course_plan.php?id={$result['id']}' class='btn btn-warning btn-sm'><i class='fas fa-edit'></i></a>
-                    <a href='course_plans.php?id={$result['id']}' class='btn btn-primary btn-sm'><i class='fas fa-user-graduate'></i></a></td>";
+                    // İşlemler column (Actions)
+                    echo "<td>
+        <a href='edit_course_plan.php?id={$result['id']}' class='btn btn-warning btn-sm'><i class='fas fa-edit'></i></a>
+        <a href='course_plans.php?id={$result['id']}' class='btn btn-primary btn-sm'><i class='fas fa-user-graduate'></i></a>
+        <a href='cancel_course_plan.php?id={$result['id']}' class='btn btn-danger btn-sm' onclick='return confirm(\"Ders planını iptal etmek istediğinize emin misiniz?\")'><i class='fas fa-trash-alt'></i></a>
+    </td>";
                     echo "</tr>";
+
                 }
 
                 ?>
