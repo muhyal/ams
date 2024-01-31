@@ -140,7 +140,7 @@ require_once(__DIR__ . '/partials/header.php');
             <td>
                 <a class="btn btn-primary btn-sm" href="user_profile.php?id=<?php echo $student['id']; ?>"><i class="fas fa-user"></i></a>
                 <a class="btn btn-warning btn-sm" href="edit_user.php?id=<?php echo $student['id']; ?>"><i class="fas fa-edit"></i></a>
-                <a class="btn btn-danger btn-sm" href="delete_user.php?id=<?php echo $student['id']; ?>"><i class="fas fa-trash-alt"></i></a>
+                <a class="btn btn-danger btn-sm" href="users.php?delete_user=1&id=<?php echo $student['id']; ?>"><i class="fas fa-trash-alt"></i></a>
             </td>
 
         </tr>

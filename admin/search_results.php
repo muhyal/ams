@@ -90,7 +90,7 @@ $searchResults = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <?php if ($searchType === "user" || $searchType === "student" || $searchType === "teacher") { ?>
                             <a href="user_profile.php?id=<?php echo $result['id']; ?>" class="btn btn-info btn-sm"><i class="fas fa-user"></i></a>
                             <a href="edit_user.php?id=<?php echo $result['id']; ?>" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
-                            <a href="delete_user.php?id=<?php echo $result['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Bu kullanıcıyı silmek istediğinizden emin misiniz?')"><i class="fas fa-trash-alt"></i></a>
+                            <a href="users.php?delete_user=1&id=<?php echo $result['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Bu kullanıcıyı silmek istediğinizden emin misiniz?')"><i class="fas fa-trash-alt"></i></a>
                         <?php } elseif ($searchType === "class") { ?>
                             <a href="classes.php?edit_id=<?php echo $result['id']; ?>" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
                             <a href="classes.php?delete_id=<?php echo $result['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Bu sınıfı silmek istediğinizden emin misiniz?')"><i class="fas fa-trash-alt"></i></a>

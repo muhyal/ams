@@ -189,47 +189,6 @@ function getTeacherName($teacherId)
     return "";
 }
 
-
-function getCourseName($courseId)
-{
-    global $courses;
-    foreach ($courses as $course) {
-        if ($course['id'] == $courseId) {
-            return $course['course_name'];
-        }
-    }
-    return "";
-}
-
-function getPaymentMethodName($paymentMethodId)
-{
-    global $payment_methods;
-    foreach ($payment_methods as $payment_method) {
-        if ($payment_method['id'] == $paymentMethodId && isset($payment_method['name'])) {
-            return $payment_method['name'];
-        }
-    }
-    return "";
-}
-
-
-function getBankName($bankId)
-{
-    global $db;
-    try {
-        // Banka ismini çek
-        $query = "SELECT bank_name FROM banks WHERE id = :bank_id";
-        $stmt = $db->prepare($query);
-        $stmt->bindParam(':bank_id', $bankId, PDO::PARAM_INT);
-        $stmt->execute();
-
-        // Eğer belirtilen banka ID'si bulunursa banka ismini döndür; yoksa 'Belirsiz' döndür.
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result ? $result['bank_name'] : 'Belirsiz';
-    } catch (PDOException $e) {
-        die("Veritabanından banka ismi çekerken bir hata oluştu: " . $e->getMessage());
-    }
-}
 ?>
 <?php require_once('../admin/partials/header.php'); ?>
 

@@ -24,6 +24,7 @@ global $db, $showErrors, $siteName, $siteShortName, $siteUrl;
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
 require_once(__DIR__ . '/../config/config.php');
+require_once(__DIR__ . '/../src/functions.php');
 
 // Oturum kontrolü
 session_start();
@@ -91,89 +92,7 @@ if (isset($_GET["id"])) {
 }
 
 
-// Yeni şifre oluşturma fonksiyonu
-function generateRandomPassword($length = 8) {
-    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    $password = '';
-    for ($i = 0; $i < $length; $i++) {
-        $password .= $characters[rand(0, strlen($characters) - 1)];
-    }
-    return $password;
-}
 
-// Kullanıcıya şifre sıfırlama mesajı gönderme fonksiyonu
-function sendPasswordResetMessage($email, $phone, $new_password) {
-    global $config, $siteName, $siteShortName, $first_name;
-
-    // E-posta gönderme fonksiyonu
-    $mail = new PHPMailer(true);
-
-    try {
-        // SMTP ayarları
-        $mail->isSMTP();
-        $mail->Host = $config['smtp']['host'];
-        $mail->SMTPAuth = true;
-        $mail->Username = $config['smtp']['username'];
-        $mail->Password = $config['smtp']['password'];
-        $mail->SMTPSecure = $config['smtp']['encryption'];
-        $mail->Port = $config['smtp']['port'];
-        $mail->CharSet = $config['smtp']['mailCharset'];
-        $mail->ContentType = $config['smtp']['mailContentType'];
-
-        // E-posta ayarları
-        $mail->setFrom($config['smtp']['username'], $siteName);
-        $mail->addAddress($email);
-
-        $mail->Subject = 'Talebiniz Üzerine Şifreniz Sıfırlandı';
-
-        // Bağlantı oluştur
-        $mail->Body = "
-            <html>
-            <body>
-                <p>👋 Selam $first_name,</p>
-                <p>Talebiniz üzerine şifreniz sıfırlandı!</p>
-                <p>Yeni şifreniz: $new_password</p>
-                <p>Müzik dolu günler dileriz 🎸🎹</p>
-            </body>
-            </html>
-        ";
-
-        // E-postayı gönder
-        $mail->send();
-    } catch (Exception $e) {
-        // E-posta gönderimi hatası
-        echo "E-posta gönderimi başarısız oldu. Hata: {$mail->ErrorInfo}";
-    }
-
-    // SMS gönderme fonksiyonu
-    $smsConfiguration = new Configuration(
-        host: $config['infobip']['BASE_URL'],
-        apiKey: $config['infobip']['API_KEY']
-    );
-
-    $sendSmsApi = new SmsApi(config: $smsConfiguration);
-
-    $destination = new SmsDestination(
-        to: $phone
-    );
-
-    $text = "👋 Selam $first_name, $siteName - $siteShortName şifreniz talebiniz üzerine sıfırlandı! Yeni şifreniz: $new_password";
-    $message = new SmsTextualMessage(destinations: [$destination], from: $config['infobip']['SENDER'], text: $text);
-
-    $request = new SmsAdvancedTextualRequest(messages: [$message]);
-
-    try {
-        $smsResponse = $sendSmsApi->sendSmsMessage($request);
-
-        if ($smsResponse->getMessages()[0]->getStatus()->getGroupName() === 'PENDING') {
-            echo 'SMS başarıyla gönderildi.';
-        } else {
-            echo 'SMS gönderimi başarısız.';
-        }
-    } catch (\Throwable $exception) {
-        echo 'SMS gönderimi sırasında bir hata oluştu. Hata: ' . $exception->getMessage();
-    }
-}
 ?>
 <?php require_once('../admin/partials/header.php'); ?>
 <div class="container-fluid">

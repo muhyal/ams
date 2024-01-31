@@ -78,7 +78,7 @@ require_once(__DIR__ . '/partials/header.php');
                             <td><?php echo $admin['email']; ?></td>
                             <td>
                                 <a class="btn btn-warning btn-sm" href="edit_user.php?id=<?php echo $admin['id']; ?>"><i class="fas fa-edit fa-sm"></i></a>
-                                <a class="btn btn-danger btn-sm" href="delete_user.php?id=<?php echo $admin['id']; ?>"><i class="fas fa-trash-alt fa-sm"></i></a>
+                                <a class="btn btn-danger btn-sm" href="users.php?delete_user=1&id=<?php echo $admin['id']; ?>"><i class="fas fa-trash-alt fa-sm"></i></a>
                             </td>
                         </tr>
                     <?php endforeach; ?>

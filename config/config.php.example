@@ -48,7 +48,6 @@ $siteShortName = 'OIM';
 $siteUrl = 'https://oim.example.com';
 $siteVirtualClassroomUrl = 'https://zoom.us';
 $siteHeroDescription ='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus vel vestibulum erat. Aliquam nec diam nec justo sollicitudin imperdiet. Donec est mauris, viverra id dolor eget, convallis mollis massa. Cras commodo ligula hendrerit bibendum euismod.';
-$resetPasswordDescription = 'Şifrenizi sıfırlamak için sistemde kayıtlı e-posta adresinizi girin. E-posta adresiniz kayıtlı bir e-posta adresi ile eşleşir ise yeni şifrenizi belirleyebileceğiniz bir bağlantı gönderilecektir.';
 $siteVerifyDescription = 'Size gönderilen onay bağlantısı ile dijital olarak bütünlüğü bozulamaz bir şekilde sözleşmelerinizi kolayca onaylayabilirsiniz. SMS ve e-posta adreslerinize gönderilen bağlantılar sadece size özeldir ve şifrelenmiş olarak sistemlerimizde saklanmaktadır.';
 $agreementLink = 'https://oim.example.com/agreement.php';
 $siteAcademyUrl = 'https://www.example.com';

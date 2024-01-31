@@ -124,7 +124,7 @@ require_once(__DIR__ . '/partials/header.php');
                                     <a href="edit_user.php?id=<?php echo $teacher['id']; ?>" class="btn btn-warning btn-sm">
                                         <i class="fas fa-pencil-alt"></i>
                                     </a>
-                                    <a href="delete_user.php?id=<?php echo $teacher['id']; ?>" class="btn btn-danger btn-sm">
+                                    <a href="users.php?delete_user=1&id=<?php echo $teacher['id']; ?>" class="btn btn-danger btn-sm">
                                         <i class="fas fa-trash-alt"></i>
                                     </a>
                                 </td>

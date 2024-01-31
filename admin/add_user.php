@@ -53,11 +53,6 @@ use League\ISO3166\ISO3166;
 $phoneNumberUtil = PhoneNumberUtil::getInstance();
 $iso3166 = new ISO3166();
 
-// Rastgele doğrulama kodu oluşturma fonksiyonu
-function generateVerificationCode() {
-    return mt_rand(100000, 999999); // Örnek: 6 haneli rastgele kod
-}
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = isset($_POST["username"]) ? htmlspecialchars($_POST["username"]) : "";
     $tc_identity = isset($_POST["tc_identity"]) ? htmlspecialchars($_POST["tc_identity"]) : "";
@@ -162,6 +157,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $tax_number,
                 $tc_identity_for_individual_invoice,
                 1,  // is_active
+                1,  // is_active
                 date("Y-m-d H:i:s"),
                 $_SESSION["admin_id"],
                 date("Y-m-d H:i:s"),
@@ -169,8 +165,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             ]);
 
             // E-posta ve SMS gönderme işlemleri
-            sendVerificationEmail($email, $verificationCodeEmail, $first_name, $plainPassword, $username, $email);
-            sendVerificationSms($phone, $verificationCodeSms, $first_name, $plainPassword, $username, $email);
+            sendWelcomeEmail($email, $verificationCodeEmail, $first_name, $plainPassword, $username, $email);
+            sendWelcomeSms($phone, $verificationCodeSms, $first_name, $plainPassword, $username, $email);
 
             // The rest of your code
         } catch (PDOException $e) {
@@ -180,132 +176,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// E-posta gönderme fonksiyonu
-function sendVerificationEmail($to, $verificationCode, $first_name, $plainPassword, $username, $email) {
-    global $config, $siteName, $siteUrl;
-
-    $mail = new PHPMailer(true);
-
-    try {
-        // SMTP ayarları
-        $mail->isSMTP();
-        $mail->Host = $config['smtp']['host'];
-        $mail->SMTPAuth = true;
-        $mail->Username = $config['smtp']['username'];
-        $mail->Password = $config['smtp']['password'];
-        $mail->SMTPSecure = $config['smtp']['encryption'];
-        $mail->Port = $config['smtp']['port'];
-        $mail->CharSet = $config['smtp']['mailCharset'];
-        $mail->ContentType = $config['smtp']['mailContentType'];
-
-        // E-posta ayarları
-        $mail->setFrom($config['smtp']['username'], $siteName);
-        $mail->addAddress($to);
-
-        $mail->isHTML(true);
-        $mail->Subject = '=?UTF-8?B?' . base64_encode($siteName . ' - Hoş Geldiniz 👋') . '?='; // Encode subject in UTF-8
-
-        // Parametreleri şifrele
-        $encryptedEmail = $to;
-        $encryptedCode = $verificationCode;
-
-        // Gizli bağlantı oluştur
-        $verificationLink = getVerificationLink($encryptedEmail, $encryptedCode);
-
-        $mail->Body = "
-    <html>
-    <body>
-        <p>👋 Selam $first_name,</p>
-        <p>$siteName 'e hoş geldin 🤗.</p>
-        <p>🧐 $siteName paneline $siteUrl adresinden $username kullanıcı adın ya da $email e-postan ve şifren $plainPassword ile oturum açabilirsin.</p>
-        <p>Müzik dolu günler dileriz 🎸🎹</p>
-    </body>
-    </html>
-";
-        // E-postayı gönder
-        $mail->send();
-    } catch (Exception $e) {
-        // E-posta gönderimi hatası
-        echo "E-posta gönderimi başarısız oldu. Hata: {$mail->ErrorInfo}";
-    }
-}
-
-// SMS gönderme fonksiyonu
-function sendVerificationSms($to, $verificationCode, $first_name, $plainPassword, $username, $email) {
-    global $siteName, $siteUrl, $config, $first_name, $plainPassword, $username, $email;
-
-    // Check if Infobip configuration is enabled and valid
-    if (
-        $config['infobip']['enabled']
-        && !empty($config['infobip']['BASE_URL'])
-        && !empty($config['infobip']['API_KEY'])
-        && !empty($config['infobip']['SENDER'])
-    ) {
-        $BASE_URL = $config['infobip']['BASE_URL'];
-        $API_KEY = $config['infobip']['API_KEY'];
-        $SENDER = $config['infobip']['SENDER'];
-
-        // Infobip Configuration sınıfını oluştur
-        $infobipConfig = new \Infobip\Configuration($BASE_URL, $API_KEY, $SENDER);
-
-        // Infobip SmsApi sınıfını başlat
-        $sendSmsApi = new \Infobip\Api\SmsApi(config: $infobipConfig);
-
-        $destination = new SmsDestination(
-            to: $to
-        );
-
-        // Parametreleri şifrele
-        $encryptedPhone = $to;
-        $encryptedCode = $verificationCode;
-
-        // Gizli bağlantı oluştur
-        $verificationLink = getVerificationLink($encryptedPhone, $encryptedCode, "phone");
-
-        $message = new SmsTextualMessage(destinations: [$destination], from: $SENDER, text: "Selam $first_name, $siteName 'e hoş geldin 🤗. $siteUrl üzerinden $email e-posta adresin ya da $username kullanıcı adın ve şifren $plainPassword ile $siteName panelinde oturum açabilirsin.");
-
-        $request = new SmsAdvancedTextualRequest(messages: [$message]);
-
-        try {
-            $smsResponse = $sendSmsApi->sendSmsMessage($request);
-
-            // Mesajları gönderim sonuçları ile ilgili bilgileri saklayacak değişkenler
-            $smsStatusMessages = [];
-            $smsBulkId = $smsResponse->getBulkId();
-
-            foreach ($smsResponse->getMessages() ?? [] as $message) {
-                $smsStatusMessages[] = sprintf('SMS Gönderim No: %s, Durum: %s', $message->getMessageId(), $message->getStatus()?->getName());
-            }
-
-            // Başarılı mesajları gösteren bir mesaj oluşturuyoruz
-            $smsSuccessMessage = "SMS gönderimi başarılı, Gönderim No: $smsBulkId";
-
-            // Hata mesajını temsil edecek değişkeni boş olarak başlatıyoruz
-            $smsErrorMessage = "";
-        } catch (Throwable $apiException) {
-            // Hata durumunda hata mesajını saklayan değişkeni ayarlıyoruz
-            $smsErrorMessage = "SMS gönderimi sırasında bir hata oluştu: " . $apiException->getMessage();
-
-            // Başarılı ve hata mesajlarını boş olarak başlatıyoruz
-            $smsSuccessMessage = "";
-            $smsStatusMessages = [];
-        }
-    } else {
-        // Log or handle the case where Infobip configuration is not valid
-        $smsErrorMessage = "Infobip configuration is not valid.";
-        // You may want to log this information or handle it appropriately.
-    }
-}
-
-// Doğrulama bağlantısı oluşturma
-function getVerificationLink($emailOrPhone, $code, $type="email") {
-    global $siteUrl;
-	if($type == "phone"){
-	 return "$siteUrl/verify.php?phone=$emailOrPhone&code=$code";
-	}else{
-		 return "$siteUrl/verify.php?email=$emailOrPhone&code=$code";
-	}
-}
 ?>
 <?php
 require_once(__DIR__ . '/partials/header.php');
@@ -433,12 +303,7 @@ require_once(__DIR__ . '/partials/header.php');
                         </div>
 
                         <?php
-                        // Rastgele 3 karakter oluşturan fonksiyon
-                        function generateRandomChars() {
-                            $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
-                            $length = 3;
-                            return substr(str_shuffle($characters), 0, $length);
-                        }
+
 
                         // Veritabanı bağlantısı
                         require_once(__DIR__ . '/../config/db_connection.php');
@@ -557,20 +422,22 @@ require_once(__DIR__ . '/partials/header.php');
 
                         <script>
                             // JavaScript ile ülke seçimi değiştiğinde telefon kodunu güncelle
-                            var countrySelect = document.getElementById("country");
-                            var phoneAddon = document.getElementById("phone-addon");
+                            $(document).ready(function () {
+                                var countrySelect = $("#country");
+                                var phoneAddon = $("#phone-addon");
 
-                            countrySelect.addEventListener("change", function () {
-                                var selectedOption = this.options[this.selectedIndex];
-                                var countryCode = (selectedOption && selectedOption.getAttribute("data-country-code")) || "+90";
+                                countrySelect.on("change", function () {
+                                    var selectedOption = $(this).find("option:selected");
+                                    var countryCode = (selectedOption && selectedOption.data("country-code")) || "+90";
 
-                                phoneAddon.innerText = countryCode;
+                                    phoneAddon.text(countryCode);
+                                });
+
+                                // Sayfa yüklendiğinde de ilk değeri al
+                                var defaultCountryOption = countrySelect.find("option:selected");
+                                var defaultCountryCode = (defaultCountryOption && defaultCountryOption.data("country-code")) || "+90";
+                                phoneAddon.text(defaultCountryCode);
                             });
-
-                            // Sayfa yüklendiğinde de ilk değeri al
-                            var defaultCountryOption = countrySelect.options[countrySelect.selectedIndex];
-                            var defaultCountryCode = (defaultCountryOption && defaultCountryOption.getAttribute("data-country-code")) || "+90";
-                            phoneAddon.innerText = defaultCountryCode;
                         </script>
 
                         <div class="mb-3">
@@ -617,7 +484,7 @@ require_once(__DIR__ . '/partials/header.php');
 
                         <!-- Bireysel Alanları -->
                         <div id="individual_fields">
-                            <label class="form-label mt-3" for="tc_identity_for_individual_invoice">TC Kimlik Numarası:</label>
+                            <label class="form-label mt-3" for="tc_identity_for_individual_invoice">Fatura T.C. Kimlik Numarası:</label>
                             <input class="form-control" type="text" name="tc_identity_for_individual_invoice" value="" required>
                         </div>
 

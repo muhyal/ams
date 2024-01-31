@@ -32,7 +32,7 @@ session_destroy();
 if (!empty($previousPage)) {
     header("Location: $previousPage");
 } else {
-    header("Location: /panel.php"); // Varsayılan sayfaya yönlendirme
+    header("Location: /admin/panel.php"); // Varsayılan sayfaya yönlendirme
 }
 
 exit();
