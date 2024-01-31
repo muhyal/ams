@@ -4,6 +4,8 @@ return [
     'welcome' => 'Welcome',
     'admin_panel' => 'Admin Panel',
     'email_username' => 'Email / Username',
+    'email' => 'Email',
+    'your_email' => 'Your email address',
     'password' => 'Password',
     'lost_password' => 'Forgot Password',
     'lost_password_submit' => 'Submit Password Reset Request',

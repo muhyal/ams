@@ -37,6 +37,8 @@ global $resetPasswordDescription, $db, $showErrors, $siteName, $siteShortName, $
 require_once(__DIR__ . '/../config/db_connection.php');
 require_once('../config/config.php');
 require_once(__DIR__ . '/../vendor/autoload.php');
+require_once(__DIR__ . '/../src/functions.php');
+
 
 $errors = [];
 $infoMessages = [];
@@ -183,8 +185,10 @@ if (isset($_POST["reset_request"])) {
                 <img id="logo-body" class="mb-5 mt-5" src="/assets/brand/default_logo_dark.png" alt="<?php echo $siteName ?>" title="<?php echo $siteName ?>" width="80%" height="%80">
                 <form method="post" action="">
                     <div class="mb-3">
-                        <label for="email" class="form-label">E-posta:</label>
-                        <input type="email" id="email" name="email" class="form-control" required>
+                        <label for="email" class="form-label"><?= translate('email', $selectedLanguage) ?></label>
+                        <input type="email" id="email" name="email" placeholder="<?= translate('your_email', $selectedLanguage) ?>" class="form-control" required>
+                        <p class="mb-3 mt-3"><small><?= translate('lost_password_description', $selectedLanguage) ?></small></p>
+
                     </div>
                     <div class="mb-3">
                         <!-- reCAPTCHA v3 için gizli alan -->
@@ -192,7 +196,7 @@ if (isset($_POST["reset_request"])) {
                     </div>
                     <div class="form-group mt-3">
                         <button class="btn btn-primary w-100 py-2" name="reset_request" type="submit">
-                            <i class="fas fa-sign-in-alt"></i> Şifre Sıfırlama Talebi Gönder
+                            <i class="fas fa-sign-in-alt"></i> <?= translate('lost_password_submit', $selectedLanguage) ?>
                         </button>
                     </div>
                     <div class="form-group mt-2">
