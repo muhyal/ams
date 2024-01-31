@@ -137,6 +137,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errorMessage = "Hata: " . $e->getMessage();
     }
 }
+
+// Banks tablosundan banka verilerini çek
+$queryBanks = "SELECT id, bank_name FROM banks";
+$stmtBanks = $db->prepare($queryBanks);
+$stmtBanks->execute();
+$banks = $stmtBanks->fetchAll(PDO::FETCH_ASSOC);
+
 // Header ve sidebar dosyalarını dahil et
 require_once(__DIR__ . '/partials/header.php');
 require_once(__DIR__ . '/partials/sidebar.php');
@@ -288,7 +295,6 @@ require_once(__DIR__ . '/partials/sidebar.php');
 
                 // Display payment methods in the dropdown
                 foreach ($paymentMethods as $method) {
-                    // ID'si 2 veya 3 ise banka seçeneklerini göster
                     if ($method["id"] === "2" || $method["id"] === "3" || $method["id"] === "5") {
                         echo "<option value='{$method["id"]}'>{$method["name"]}</option>";
                     } else {
@@ -304,16 +310,9 @@ require_once(__DIR__ . '/partials/sidebar.php');
         <div class="form-group" id="bankSelection" style="display: none;">
             <label for="bankId">Banka Seçimi:</label>
             <select class="form-control" name="bankId">
-                <option value="1">Ziraat Bankası</option>
-                <option value="2">VakıfBank</option>
-                <option value="3">İş Bankası</option>
-                <option value="4">Halkbank</option>
-                <option value="5">Garanti BBVA</option>
-                <option value="6">Yapı Kredi</option>
-                <option value="7">Akbank</option>
-                <option value="8">QNB Finansbank</option>
-                <option value="9">DenizBank</option>
-                <option value="10">TEB</option>
+                <?php foreach ($banks as $bank): ?>
+                    <option value="<?= $bank['id'] ?>"><?= $bank['bank_name'] ?></option>
+                <?php endforeach; ?>
             </select>
         </div>
 
@@ -332,23 +331,24 @@ require_once(__DIR__ . '/partials/sidebar.php');
             var bankSelection = document.getElementById("bankSelection");
 
             // Sayfa yüklendiğinde kontrol et
-            if (paymentMethodSelect.value === "bank_transfer" || paymentMethodSelect.value === "2" || paymentMethodSelect.value === "3" || paymentMethodSelect.value === "5") {
+            if (paymentMethodSelect.value === "2" || paymentMethodSelect.value === "3" || paymentMethodSelect.value === "5") {
                 bankSelection.style.display = "block";
             } else {
                 bankSelection.style.display = "none";
             }
 
-            // Ödeme yöntemi değiştiğinde kontrol et
+// Ödeme yöntemi değiştiğinde kontrol et
             paymentMethodSelect.addEventListener("change", function () {
                 var selectedPaymentMethod = this.value;
 
-                // Ödeme yöntemi "bank_transfer" ise veya seçilen ödeme yöntemi bir banka ID'si ise banka seçimini göster
-                if (selectedPaymentMethod === "bank_transfer" || selectedPaymentMethod === "2" || selectedPaymentMethod === "3" || selectedPaymentMethod === "5") {
+                // Ödeme yöntemi "2" veya "3" veya "5" ise banka seçimini göster
+                if (selectedPaymentMethod === "2" || selectedPaymentMethod === "3" || selectedPaymentMethod === "5") {
                     bankSelection.style.display = "block";
                 } else {
                     bankSelection.style.display = "none";
                 }
             });
+
         });
     </script>
 </main>

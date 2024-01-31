@@ -212,24 +212,23 @@ function getPaymentMethodName($paymentMethodId)
     return "";
 }
 
+
 function getBankName($bankId)
 {
-    // Banka ID'lerini ve isimlerini içeren bir dizi
-    $banks = [
-        1 => 'Ziraat Bankası',
-        2 => 'VakıfBank',
-        3 => 'İş Bankası',
-        4 => 'Halkbank',
-        5 => 'Garanti BBVA',
-        6 => 'Yapı Kredi',
-        7 => 'Akbank',
-        8 => 'QNB Finansbank',
-        9 => 'DenizBank',
-        10 => 'TEB',
-    ];
+    global $db;
+    try {
+        // Banka ismini çek
+        $query = "SELECT bank_name FROM banks WHERE id = :bank_id";
+        $stmt = $db->prepare($query);
+        $stmt->bindParam(':bank_id', $bankId, PDO::PARAM_INT);
+        $stmt->execute();
 
-    // Eğer belirtilen banka ID'si dizide varsa, banka ismini döndür; yoksa 'Belirsiz' döndür.
-    return isset($banks[$bankId]) ? $banks[$bankId] : 'Belirsiz';
+        // Eğer belirtilen banka ID'si bulunursa banka ismini döndür; yoksa 'Belirsiz' döndür.
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result ? $result['bank_name'] : 'Belirsiz';
+    } catch (PDOException $e) {
+        die("Veritabanından banka ismi çekerken bir hata oluştu: " . $e->getMessage());
+    }
 }
 ?>
 <?php require_once('../admin/partials/header.php'); ?>
