@@ -17,8 +17,8 @@
  *
  * You should have received a copy of the GNU Affero General Public License, version 3,
  * along with this program. If not, see <http://www.gnu.org/licenses/>
- *
  */
+
 global $siteName, $siteShortName, $siteUrl, $db;
 // Oturum kontrolü
 session_start();
@@ -30,7 +30,6 @@ if (!isset($_SESSION["admin_id"])) {
 }
 
 require_once(__DIR__ . '/../config/db_connection.php');
-
 
 // Kullanıcı bilgilerini kullanabilirsiniz
 $admin_id = $_SESSION["admin_id"];
@@ -68,25 +67,33 @@ $stmt = $db->prepare($query);
 $stmt->execute();
 $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-if (isset($_GET["id"]) && is_numeric($_GET["id"])) {
+if (isset($_GET["action"]) && $_GET["action"] === "restore" && isset($_GET["id"])) {
     $user_id = $_GET["id"];
 
-    $query = "UPDATE users SET deleted_at = NULL WHERE id = :user_id";
+    $query = "UPDATE users SET deleted_at = NULL WHERE id = ?";
     $stmt = $db->prepare($query);
-    $stmt->bindParam(":user_id", $user_id, PDO::PARAM_INT);
+    $stmt->execute([$user_id]);
 
-    if ($stmt->execute()) {
-        // Reload the page to reflect the changes
-        header("Location: ".$_SERVER['PHP_SELF']);
-        exit();
-    } else {
-        echo "Kullanıcı geri alınamadı.";
-    }
+    // Reload the page to reflect the changes
+    header("Location: ".$_SERVER['PHP_SELF']);
+    exit();
 }
+
+
+if (isset($_GET["action"]) && $_GET["action"] === "delete" && isset($_GET["id"])) {
+    $user_id = $_GET["id"];
+
+    $query = "UPDATE users SET deleted_at = CURRENT_TIMESTAMP, deleted_by_user_id = ? WHERE id = ?";
+    $stmt = $db->prepare($query);
+    $stmt->execute([$admin_id, $user_id]);
+
+    // Reload the page to reflect the changes
+    header("Location: ".$_SERVER['PHP_SELF']);
+    exit();
+}
+
 ?>
-<?php
-require_once(__DIR__ . '/partials/header.php');
-?>
+<?php require_once(__DIR__ . '/partials/header.php'); ?>
 <style>
     /* Silinmiş kullanıcıları soluk yap */
     table.table-striped tbody tr.deleted-user {
@@ -101,9 +108,7 @@ require_once(__DIR__ . '/partials/header.php');
 
 <div class="container-fluid">
     <div class="row">
-        <?php
-        require_once(__DIR__ . '/partials/sidebar.php');
-        ?>
+        <?php require_once(__DIR__ . '/partials/sidebar.php'); ?>
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
                 <h2>Kullanıcılar</h2>
@@ -159,16 +164,18 @@ require_once(__DIR__ . '/partials/header.php');
                                     <a class="btn btn-secondary btn-sm" href="send_verifications.php?id=<?php echo $user['id']; ?>"><i class="fas fa-user-check fa-sm"></i></a>
                                     <a class="btn btn-warning btn-sm" href="reset_password_and_send.php?id=<?php echo $user['id']; ?>"><i class="fas fa-lock-open fa-sm"></i></a>
                                     <a class="btn btn-warning btn-sm" href="edit_user.php?id=<?php echo $user['id']; ?>"><i class="fas fa-edit fa-sm"></i></a>
-        <a class="btn btn-primary btn-sm" href="?action=restore&id=<?php echo $user['id']; ?>" onclick="return confirm('Bu kullanıcıyı silmeyi geri almak istediğinizden emin misiniz?')">
-            <i class="fa-solid fa-clock-rotate-left"></i>
-        </a>
+                                    <a class="btn btn-success btn-sm" href="?action=restore&id=<?php echo $user['id']; ?>" onclick="return confirm('Bu kullanıcıyı silmeyi geri almak istediğinizden emin misiniz?')">
+                                        <i class="fa-solid fa-clock-rotate-left"></i>
+                                    </a>
                                 <?php else: ?>
-                                <!-- Silinmeyen kullanıcılar için düzenleme ve silme bağlantıları -->
+                                    <!-- Silinmeyen kullanıcılar için düzenleme ve silme bağlantıları -->
                                     <a class="btn btn-primary btn-sm" href="user_profile.php?id=<?php echo $user['id']; ?>"><i class="fas fa-eye fa-sm"></i></a>
                                     <a class="btn btn-success btn-sm" href="send_verifications.php?id=<?php echo $user['id']; ?>"><i class="fas fa-feather-alt fa-sm"></i></a>
                                     <a class="btn btn-warning btn-sm" href="reset_password_and_send.php?id=<?php echo $user['id']; ?>"><i class="fas fa-lock-open fa-sm"></i></a>
                                     <a class="btn btn-warning btn-sm" href="edit_user.php?id=<?php echo $user['id']; ?>"><i class="fas fa-edit fa-sm"></i></a>
-                                    <a class="btn btn-danger btn-sm" href="delete_user.php?id=<?php echo $user['id']; ?>"><i class="fas fa-trash-alt fa-sm"></i></a>
+                                    <a class="btn btn-danger btn-sm" href="?action=delete&id=<?php echo $user['id']; ?>" onclick="return confirm('Bu kullanıcıyı silmek istediğinizden emin misiniz?')">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
                                 <?php endif; ?>
                             </td>
                         </tr>
@@ -181,4 +188,3 @@ require_once(__DIR__ . '/partials/header.php');
 </div>
 
 <?php require_once('../admin/partials/footer.php'); ?>
-
