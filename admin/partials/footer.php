@@ -32,7 +32,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-6 mt-3">
-                <p>&copy; <?php echo (new DateTime())->format('Y') ?>, <?php echo $siteName ?>. Tüm hakları saklıdır.</p>
+                <p>&copy; <?php echo (new DateTime())->format('Y') ?>, <?php echo $siteName ?>. <?= translate('all_rights_reserved', $selectedLanguage) ?></p>
             </div>
         </div>
     </div>

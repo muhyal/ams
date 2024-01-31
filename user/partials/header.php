@@ -23,7 +23,9 @@ global $db, $showErrors, $siteName, $siteShortName, $siteUrl, $config, $oimVersi
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
+require_once(__DIR__ . '/../../config/db_connection.php');
 require_once(__DIR__ . '/../../config/config.php');
+require_once(__DIR__ . '/../../src/functions.php');
 // Oturum açıldıysa oturum değişkeni set edilir
 $loggedIn = isset($_SESSION["user_id"]);
 ?>
@@ -150,29 +152,46 @@ $loggedIn = isset($_SESSION["user_id"]);
 <body>
 <header class="p-3 mb-3 border-bottom">
     <div class="container">
-        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+        <div class="d-flex flex-wrap align-items-center justify-content-between justify-content-lg-start">
             <a href="<?php echo $siteUrl ?>" class="d-flex align-items-center mb-1 mt-1 mb-lg-0 link-body-emphasis text-decoration-none">
                 <img id="logo-header" src="/assets/brand/default_logo_dark.png" alt="<?php echo $siteName ?> - <?php echo $siteShortName ?>" title="<?php echo $siteName ?> - <?php echo $siteShortName ?>" width="15%" height="15%">
             </a>
+
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
                 <li><a href="<?php echo $siteUrl ?>" class="nav-link px-2 link-secondary"></a></li>
             </ul>
 
 
-            <!-- Sosyal Medya İkonları -->
-            <div class="social-icons ms-3 mx-5">
-                <a href="#" class="text-decoration-none me-2 text-dark">
-                    <i class="fab fa-facebook-f"></i>
-                </a>
-                <a href="#" class="text-decoration-none me-2 text-dark">
-                    <i class="fab fa-twitter"></i>
-                </a>
-                <a href="#" class="text-decoration-none text-dark">
-                    <i class="fab fa-instagram"></i>
-                </a>
+            <div class="dropdown text-end ml-auto">
+                <button class="btn btn-link text-decoration-none dropdown-toggle text-dark-emphasis" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-globe"></i>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="languageDropdown">
+                    <li><a class="dropdown-item" href="?lang=tr">Türkçe</a></li>
+                    <li><a class="dropdown-item" href="?lang=en">English</a></li>
+                    <!-- Diğer dil seçenekleri buraya eklenebilir -->
+                </ul>
             </div>
 
-            <div class="dropdown text-end">
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    var selectedLanguage = "<?php echo $selectedLanguage; ?>";
+                    var languageDropdown = document.getElementById('languageDropdown');
+
+                    languageDropdown.addEventListener('show.bs.dropdown', function () {
+                        var dropdownItems = this.nextElementSibling.querySelectorAll('.dropdown-item');
+
+                        dropdownItems.forEach(function(item) {
+                            item.classList.remove('active');
+                            if (item.getAttribute('href') === '?lang=' + selectedLanguage) {
+                                item.classList.add('active');
+                            }
+                        });
+                    });
+                });
+            </script>
+
+            <div class="dropdown text-end ml-auto">
                 <?php
                 // Kullanıcının oturum açıp açmadığını kontrol et
                 if ($loggedIn) {
@@ -253,7 +272,7 @@ $loggedIn = isset($_SESSION["user_id"]);
     </symbol>
 </svg>
 
-<div class="dropdown position-fixed bottom-0 end-0 mb-3 me-3 bd-mode-toggle">
+<  <div class="dropdown position-fixed bottom-0 end-0 mb-3 me-3 bd-mode-toggle">
     <button class="btn btn-bd-primary py-2 dropdown-toggle d-flex align-items-center"
             id="bd-theme"
             type="button"
@@ -261,27 +280,27 @@ $loggedIn = isset($_SESSION["user_id"]);
             data-bs-toggle="dropdown"
             aria-label="Toggle theme (auto)">
         <svg class="bi my-1 theme-icon-active" width="1em" height="1em"><use href="#circle-half"></use></svg>
-        <span class="visually-hidden" id="bd-theme-text">Toggle theme</span>
+        <span class="visually-hidden" id="bd-theme-text"><?= translate('theme_mode', $selectedLanguage) ?></span>
     </button>
     <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="bd-theme-text">
         <li>
             <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light" aria-pressed="false">
                 <svg class="bi me-2 opacity-50 theme-icon" width="1em" height="1em"><use href="#sun-fill"></use></svg>
-                Aydınlık
+                <?= translate('light', $selectedLanguage) ?>
                 <svg class="bi ms-auto d-none" width="1em" height="1em"><use href="#check2"></use></svg>
             </button>
         </li>
         <li>
             <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark" aria-pressed="false">
                 <svg class="bi me-2 opacity-50 theme-icon" width="1em" height="1em"><use href="#moon-stars-fill"></use></svg>
-                Karanlık
+                <?= translate('dark', $selectedLanguage) ?>
                 <svg class="bi ms-auto d-none" width="1em" height="1em"><use href="#check2"></use></svg>
             </button>
         </li>
         <li>
             <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="auto" aria-pressed="true">
                 <svg class="bi me-2 opacity-50 theme-icon" width="1em" height="1em"><use href="#circle-half"></use></svg>
-                Otomatik
+                <?= translate('auto', $selectedLanguage) ?>
                 <svg class="bi ms-auto d-none" width="1em" height="1em"><use href="#check2"></use></svg>
             </button>
         </li>

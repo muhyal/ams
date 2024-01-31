@@ -21,6 +21,8 @@
  */
 global $db, $showErrors, $siteName, $siteShortName, $siteUrl, $siteHeroDescription, $oimVersion, $adminUsername;
 require_once(__DIR__ . '/../../config/db_connection.php');
+require_once(__DIR__ . '/../../config/config.php');
+require_once(__DIR__ . '/../../src/functions.php');
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
@@ -171,27 +173,27 @@ $adminLastName = $_SESSION['admin_last_name'];
               data-bs-toggle="dropdown"
               aria-label="Toggle theme (auto)">
           <svg class="bi my-1 theme-icon-active" width="1em" height="1em"><use href="#circle-half"></use></svg>
-          <span class="visually-hidden" id="bd-theme-text">Temayı değiştir</span>
+          <span class="visually-hidden" id="bd-theme-text"><?= translate('theme_mode', $selectedLanguage) ?></span>
       </button>
       <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="bd-theme-text">
           <li>
               <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light" aria-pressed="false">
                   <svg class="bi me-2 opacity-50 theme-icon" width="1em" height="1em"><use href="#sun-fill"></use></svg>
-                  Aydınlık
+                  <?= translate('light', $selectedLanguage) ?>
                   <svg class="bi ms-auto d-none" width="1em" height="1em"><use href="#check2"></use></svg>
               </button>
           </li>
           <li>
               <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark" aria-pressed="false">
                   <svg class="bi me-2 opacity-50 theme-icon" width="1em" height="1em"><use href="#moon-stars-fill"></use></svg>
-                  Karanlık
+                  <?= translate('dark', $selectedLanguage) ?>
                   <svg class="bi ms-auto d-none" width="1em" height="1em"><use href="#check2"></use></svg>
               </button>
           </li>
           <li>
               <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="auto" aria-pressed="true">
                   <svg class="bi me-2 opacity-50 theme-icon" width="1em" height="1em"><use href="#circle-half"></use></svg>
-                  Otomatik
+                  <?= translate('auto', $selectedLanguage) ?>
                   <svg class="bi ms-auto d-none" width="1em" height="1em"><use href="#check2"></use></svg>
               </button>
           </li>

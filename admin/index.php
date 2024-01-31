@@ -23,6 +23,8 @@ global $showErrors, $siteName, $siteShortName, $siteUrl, $db;
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
+
+
 require_once('../config/config.php');
 
 // Oturum kontrolü
@@ -173,22 +175,22 @@ require_once('../user/partials/header.php');
 
         <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
         <img id="logo-body" class="mb-5 mt-5" src="/assets/brand/default_logo_dark.png" alt="<?php echo $siteName ?>" title="<?php echo $siteName ?>" width="80%" height="%80">
-        <h1 class="h3 mb-3 fw-normal">Yönetici Paneli</h1>
+        <h1 class="h3 mb-3 fw-normal"><?= translate('admin_panel', $selectedLanguage) ?></h1>
         <div class="form-floating">
-            <input type="text" class="form-control" id="identifier" name="identifier" placeholder="E-posta / Kullanıcı adı" autofocus="" required>
-            <label for="floatingInput">E-posta / Kullanıcı adı</label>
+            <input type="text" class="form-control" id="identifier" name="identifier" placeholder="<?= translate('email_username', $selectedLanguage) ?>" autofocus="" required>
+            <label for="floatingInput"><?= translate('email_username', $selectedLanguage) ?></label>
         </div>
 
         <div class="form-floating">
-            <input type="password" class="form-control" name="password" id="password" placeholder="Şifre" required>
-            <label for="floatingInput">Şifre</label>
+            <input type="password" class="form-control" name="password" id="password" placeholder="<?= translate('password', $selectedLanguage) ?>" required>
+            <label for="floatingInput"><?= translate('password', $selectedLanguage) ?></label>
             <span class="eye-icon" onclick="togglePasswordVisibility()">
                 <i class="bi bi-eye"></i>
             </span>
         </div>
 
         <div class="form-group mt-3">
-            <a class="text-light-emphasis text-decoration-none" href="reset_password.php">Şifremi unuttum</a>
+            <a class="text-light-emphasis text-decoration-none" href="reset_password.php"><?= translate('lost_password', $selectedLanguage) ?></a>
         </div>
 
         <style>
@@ -221,13 +223,14 @@ require_once('../user/partials/header.php');
 
         <div class="form-group mt-3">
             <button class="btn btn-primary w-100 py-2" type="submit">
-                <i class="fas fa-sign-in-alt"></i> Oturum aç
+                <i class="fas fa-sign-in-alt"></i> <?= translate('login', $selectedLanguage) ?>
             </button>
             <a href="<?php echo $siteUrl ?>" class="btn btn-secondary w-100 py-2 mt-2">
                 <i class="fas fa-home"></i> <?php echo $siteName ?> - <?php echo $siteShortName ?>
             </a>
         </div>
     </form>
+
     <?php
     foreach ($errors as $error) {
         echo "<div id='error-alert' class='alert alert-danger mt-3 mb-3' role='alert'>$error</div>";
