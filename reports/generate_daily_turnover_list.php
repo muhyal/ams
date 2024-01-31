@@ -152,24 +152,30 @@ $remainingDebtInfo = $stmtRemainingDebt->fetch(PDO::FETCH_ASSOC);
 
 
 // Banka adlarını ve ödeme yöntemlerini çek
-$paymentMethodNames = array(
-    1 => 'Ziraat Bankası',
-    2 => 'VakıfBank',
-    3 => 'İş Bankası',
-    4 => 'Halkbank',
-    5 => 'Garanti BBVA',
-    6 => 'Yapı Kredi',
-    7 => 'Akbank',
-    8 => 'QNB Finansbank',
-    9 => 'DenizBank',
-    10 => 'TEB'
-);
+$queryBankNames = "SELECT id, bank_name FROM banks";
+$stmtBankNames = $db->prepare($queryBankNames);
+$stmtBankNames->execute();
+$paymentBankNames = $stmtBankNames->fetchAll(PDO::FETCH_KEY_PAIR);
+
+
+// Ödeme yöntemlerini çek
+$queryPaymentMethods = "SELECT id, name FROM payment_methods";
+$stmtPaymentMethods = $db->prepare($queryPaymentMethods);
+$stmtPaymentMethods->execute();
+$paymentMethodNames = $stmtPaymentMethods->fetchAll(PDO::FETCH_KEY_PAIR);
+
+
 
 foreach ($payments as &$payment) {
     // Ödeme yöntemini ve banka adını id'ye göre değiştir
-    $payment['payment_method'] = isset($paymentMethodNames[$payment['payment_method']]) ? $paymentMethodNames[$payment['payment_method']] : '-';
-    $payment['bank_name'] = isset($paymentMethodNames[$payment['bank_name']]) ? $paymentMethodNames[$payment['bank_name']] : '-';
+    $paymentMethodId = $payment['payment_method'];
+    $bankNameId = $payment['bank_name'];
+
+    $payment['payment_method'] = isset($paymentMethodNames[$paymentMethodId]) ? $paymentMethodNames[$paymentMethodId] : 'Bilinmeyen Ödeme Yöntemi';
+    $payment['bank_name'] = isset($paymentBankNames[$bankNameId]) ? $paymentBankNames[$bankNameId] : 'Bilinmeyen Banka';
 }
+
+
 
 // Function to get admin information including academy name
 function getAdminInfo($adminId) {
@@ -315,27 +321,33 @@ $html .= "
         <td>{$remainingDebtInfo['debt_amount']} TL</td>";
 
 // Ödeme bilgilerini tabloya ekle
-if (count($payments) > 0) {
-    $payment = $payments[0]; // Sadece ilk ödeme bilgisini alıyoruz, isteğe bağlı olarak diğer ödemeleri de ekleyebilirsiniz
-    $html .= "
+    if (count($payments) > 0) {
+        $payment = $payments[0]; // Sadece ilk ödeme bilgisini alıyoruz, isteğe bağlı olarak diğer ödemeleri de ekleyebilirsiniz
+
+        // Ödeme yöntemini ve banka adını id'ye göre değiştir
+        $paymentMethod = isset($paymentMethodNames[$payment['payment_method']]) ? $paymentMethodNames[$payment['payment_method']] : 'Yok';
+        $bankName = isset($paymentBankNames[$payment['bank_name']]) ? $paymentBankNames[$payment['bank_name']] : 'Yok';
+
+        $html .= "
         <td>{$payment['amount']} TL</td>
         <td>" . date('d.m.Y H:i', strtotime($payment['payment_date'])) . "</td>
-        <td>{$payment['payment_method']}</td>
-        <td>{$payment['bank_name']}</td>
+        <td>{$paymentMethod}</td>
+        <td>{$bankName}</td>
         <td>{$payment['payment_notes']}</td>
         <td>{$payment['received_by_first_name']} {$payment['received_by_last_name']}</td>";
-} else {
-    // Eğer ödeme bilgisi yoksa boş hücreler ekleyebilirsiniz
-    $html .= "
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>";
-}
+    } else {
+        // Eğer ödeme bilgisi yoksa boş hücreler ekleyebilirsiniz
+        $html .= "
+        <td>Yok</td>
+        <td>Yok</td>
+        <td>Yok</td>
+        <td>Yok</td>
+        <td>Yok</td>
+        <td>Yok</td>";
+    }
 
-$html .= "</tr>";
+    $html .= "</tr>";
+
 }
 
 // Toplam ödeme tutarını hesapla

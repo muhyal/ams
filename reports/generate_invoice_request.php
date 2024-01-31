@@ -62,6 +62,7 @@ $query = "
         u.city AS academy_city,
         u.district AS academy_district,
         u.tax_company_name,
+        u.tc_identity_for_individual_invoice,
         u.phone AS student_phone,
         u.email AS student_email,
         u.tc_identity,
@@ -92,29 +93,6 @@ $stmt->bindParam(':course_plan_id', $coursePlanId, PDO::PARAM_INT);
 $stmt->execute();
 $coursePlan = $stmt->fetch(PDO::FETCH_ASSOC);
 
-$queryPayments = "
-    SELECT
-        a.amount,
-        a.payment_date,
-        a.payment_method,
-        a.bank_name,
-        a.payment_notes,
-        a.received_by_id,
-        u.first_name AS received_by_first_name,
-        u.last_name AS received_by_last_name
-    FROM
-        accounting a
-    LEFT JOIN
-        users u ON a.received_by_id = u.id
-    WHERE
-        a.course_plan_id = :course_plan_id
-";
-
-$stmtPayments = $db->prepare($queryPayments);
-$stmtPayments->bindParam(':course_plan_id', $coursePlanId, PDO::PARAM_INT);
-$stmtPayments->execute();
-$payments = $stmtPayments->fetchAll(PDO::FETCH_ASSOC);
-
 
 $queryRemainingDebt = "
     SELECT
@@ -141,24 +119,41 @@ $remainingDebtInfo = $stmtRemainingDebt->fetch(PDO::FETCH_ASSOC);
 
 
 // Banka adlarını ve ödeme yöntemlerini çek
-$paymentMethodNames = array(
-    1 => 'Ziraat Bankası',
-    2 => 'VakıfBank',
-    3 => 'İş Bankası',
-    4 => 'Halkbank',
-    5 => 'Garanti BBVA',
-    6 => 'Yapı Kredi',
-    7 => 'Akbank',
-    8 => 'QNB Finansbank',
-    9 => 'DenizBank',
-    10 => 'TEB'
-);
+$queryBankNames = "SELECT id, bank_name FROM banks";
+$stmtBankNames = $db->prepare($queryBankNames);
+$stmtBankNames->execute();
+$paymentBankNames = $stmtBankNames->fetchAll(PDO::FETCH_KEY_PAIR);
 
-foreach ($payments as &$payment) {
-    // Ödeme yöntemini ve banka adını id'ye göre değiştir
-    $payment['payment_method'] = isset($paymentMethodNames[$payment['payment_method']]) ? $paymentMethodNames[$payment['payment_method']] : '-';
-    $payment['bank_name'] = isset($paymentMethodNames[$payment['bank_name']]) ? $paymentMethodNames[$payment['bank_name']] : '-';
-}
+// Ödeme yöntemlerini çek
+$queryPaymentMethods = "SELECT id, name FROM payment_methods";
+$stmtPaymentMethods = $db->prepare($queryPaymentMethods);
+$stmtPaymentMethods->execute();
+$paymentMethodNames = $stmtPaymentMethods->fetchAll(PDO::FETCH_KEY_PAIR);
+
+
+$queryPayments = "
+    SELECT
+        a.amount,
+        a.payment_date,
+        a.payment_method,
+        a.bank_name,
+        a.payment_notes,
+        a.received_by_id,
+        u.first_name AS received_by_first_name,
+        u.last_name AS received_by_last_name
+    FROM
+        accounting a
+    LEFT JOIN
+        users u ON a.received_by_id = u.id
+    WHERE
+        a.course_plan_id = :course_plan_id
+";
+
+$stmtPayments = $db->prepare($queryPayments);
+$stmtPayments->bindParam(':course_plan_id', $coursePlanId, PDO::PARAM_INT);
+$stmtPayments->execute();
+$payments = $stmtPayments->fetchAll(PDO::FETCH_ASSOC);
+
 
 if (!$coursePlan) {
     echo json_encode(array('success' => false, 'message' => 'Ders planı bulunamadı.'));
@@ -226,6 +221,10 @@ $html = "
               <tr>
                 <td>Fatura Türü</td>
                 <td>" . ($coursePlan['invoice_type'] == 'corporate' ? 'Kurumsal' : 'Bireysel') . "</td>
+            </tr>
+              <tr>
+                <td>Fatura T.C. Kimlik No</td>
+                <td>{$coursePlan['tc_identity_for_individual_invoice']}</td>
             </tr>
             <tr>
                 <td>Şirket Ünvanı</td>
@@ -310,7 +309,14 @@ $html = "
                 <td>Ödemeyi İşleyen</td>
             </tr>";
 
-foreach ($payments as $payment) {
+foreach ($payments as &$payment) {
+    // Ödeme yöntemini ve banka adını id'ye göre değiştir
+    $paymentMethodId = $payment['payment_method'];
+    $bankNameId = $payment['bank_name'];
+
+    $payment['payment_method'] = isset($paymentMethodNames[$paymentMethodId]) ? $paymentMethodNames[$paymentMethodId] : 'Yok';
+    $payment['bank_name'] = isset($paymentBankNames[$bankNameId]) ? $paymentBankNames[$bankNameId] : 'Yok';
+
     $html .= "
             <tr>
                 <td>{$payment['amount']} TL</td>
