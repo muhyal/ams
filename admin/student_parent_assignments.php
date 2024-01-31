@@ -168,7 +168,7 @@ foreach ($relationships as $relationship) {
 
 
             <!-- Mevcut ilişkileri listeleme -->
-            <h2>Mevcut İlişkiler</h2>
+            <h3 class="mt-3 mb-3">Mevcut İlişkiler</h3>
             <table class="table">
                 <thead>
                 <tr>

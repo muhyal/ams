@@ -114,41 +114,28 @@ require_once(__DIR__ . '/partials/header.php');
                 <table id="usersTable" class="table table-striped table-sm">
                     <thead class="thead-light">
                     <tr>
-                        <th scope="col" class="text-sm">#</th>
                         <th scope="col" class="text-sm">Tam Ad</th>
                         <th scope="col" class="text-sm">E-posta</th>
-                        <!--<th scope="col" class="text-sm">T.C. Kimlik No</th>-->
+                        <th scope="col" class="text-sm">T.C. Kimlik No</th>
                         <th scope="col" class="text-sm">Telefon</th>
-                        <!--<th scope="col" class="text-sm">SMS Doğrulaması Gönderildi</th>-->
-                        <!--<th scope="col" class="text-sm">SMS Doğrulaması Onaylandı</th>-->
                         <th scope="col" class="text-sm">Rolü</th>
-                        <!--<th scope="col" class="text-sm">SMS Doğrulama IP</th>
-                        <!--<th scope="col" class="text-sm">E-Posta Doğrulaması Gönderildi</th>-->
-                        <!--<th scope="col" class="text-sm">E-Posta Doğrulaması Onaylandı</th>-->
                         <th scope="col" class="text-sm"><i class="fas fa-mobile-alt text-dark"></i></th>
                         <th scope="col" class="text-sm"><i class="fas fa-envelope text-dark"></i></th>
                         <th scope="col" class="text-sm"><i class="fas fa-user-lock text-dark"></th>
-                        <!--<th scope="col" class="text-sm">E-posta Doğrulama IP</th>-->
+                        <th scope="col" class="text-sm"><i class="fas fa-check-double"></i></th>
                         <th scope="col" class="text-sm">İşlemler</th>
                     </tr>
                     </thead>
                     <tbody>
                     <?php foreach ($users as $user): ?>
                         <tr <?php echo $user['deleted_at'] ? 'class="deleted-user"' : ''; ?>>
-                            <th scope="row"><?= $user['id'] ?></th>
                             <td><?= $user['first_name'] ?> <?= $user['last_name'] ?></td>
                             <td><?= $user['email'] ?></td>
-                            <!--<td><?= $user['tc_identity'] ?></td>-->
+                            <td><?= $user['tc_identity'] ?></td>
                             <td><?= $user['phone'] ?></td>
-                            <!--<td><?= $user['verification_time_sms_sent'] ?></td>-->
-                            <!--<td><?= $user['verification_time_sms_confirmed'] ?></td>-->
                             <td><?= $user['type_name'] ?></td>
                             <td><?= $user['latest_verification_time_sms_confirmed'] ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-times text-danger"></i>' ?></td>
-                            <!--<td><?= $user['verification_ip_sms'] ?></td>-->
-                            <!--<td><?= $user['verification_time_email_sent'] ?></td>-->
-                            <!--<td><?= $user['verification_time_email_confirmed'] ?></td>-->
                             <td><?= $user['latest_verification_time_email_confirmed'] ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-times text-danger"></i>' ?></td>
-                            <!--<td><?= $user['verification_ip_email'] ?></td>-->
                             <td>
                                 <?php
                                 if ($user['deleted_at']) {
@@ -161,6 +148,12 @@ require_once(__DIR__ . '/partials/header.php');
                                 ?>
                             </td>
                             <td>
+                                <?php
+                                echo $user['two_factor_enabled'] ? '<i class="fas fa-lock text-success"></i>' : '<i class="fas fa-unlock text-secondary"></i>';
+                                ?>
+                            </td>
+
+                            <td>
                                 <?php if ($user['deleted_at']): ?>
                                     <a class="btn btn-primary btn-sm" href="user_profile.php?id=<?php echo $user['id']; ?>"><i class="fas fa-eye fa-sm"></i></a>
                                     <a class="btn btn-secondary btn-sm" href="send_verifications.php?id=<?php echo $user['id']; ?>"><i class="fas fa-user-check fa-sm"></i></a>
@@ -172,7 +165,7 @@ require_once(__DIR__ . '/partials/header.php');
                                 <?php else: ?>
                                 <!-- Silinmeyen kullanıcılar için düzenleme ve silme bağlantıları -->
                                     <a class="btn btn-primary btn-sm" href="user_profile.php?id=<?php echo $user['id']; ?>"><i class="fas fa-eye fa-sm"></i></a>
-                                    <a class="btn btn-secondary btn-sm" href="send_verifications.php?id=<?php echo $user['id']; ?>"><i class="fas fa-user-check fa-sm"></i></a>
+                                    <a class="btn btn-success btn-sm" href="send_verifications.php?id=<?php echo $user['id']; ?>"><i class="fas fa-feather-alt fa-sm"></i></a>
                                     <a class="btn btn-warning btn-sm" href="reset_password_and_send.php?id=<?php echo $user['id']; ?>"><i class="fas fa-lock-open fa-sm"></i></a>
                                     <a class="btn btn-warning btn-sm" href="edit_user.php?id=<?php echo $user['id']; ?>"><i class="fas fa-edit fa-sm"></i></a>
                                     <a class="btn btn-danger btn-sm" href="delete_user.php?id=<?php echo $user['id']; ?>"><i class="fas fa-trash-alt fa-sm"></i></a>

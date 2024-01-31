@@ -99,8 +99,8 @@ require_once(__DIR__ . '/partials/header.php');
                             <th>Doğum Tarihi</th>
                             <th>Telefon</th>
                             <th>E-posta</th>
-                            <th>Sınıf</th>
-                            <th>Ders</th>
+                            <th>Sınıflar</th>
+                            <th>Dersler</th>
                             <th>İşlemler</th>
 
                         </tr>

@@ -736,6 +736,7 @@ require_once(__DIR__ . '/partials/sidebar.php');
                     </div>
                     <div class="card-body">
                         <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><strong>İki Faktörlü Kimlik Doğrulama:</strong> <?= $user['two_factor_enabled'] ? '<i class="fas fa-lock text-success"></i> Aktif' : '<i class="fas fa-unlock text-secondary"></i> Pasif' ?></li>
                             <li class="list-group-item"><strong>SMS Onay Durumu:</strong> <?= $user['verification_time_sms_confirmed'] ? '<i class="fas fa-check text-success"></i> Doğrulandı' : '<i class="fas fa-times text-danger"></i> Doğrulanmadı' ?></li>
                             <li class="list-group-item"><strong>E-posta Onay Durumu:</strong> <?= $user['verification_time_email_confirmed'] ? '<i class="fas fa-check text-success"></i> Doğrulandı' : '<i class="fas fa-times text-danger"></i> Doğrulanmadı' ?></li>
                             <li class="list-group-item"><strong>Kullanıcı Türü:</strong> <?= $userType ?></li>

@@ -105,6 +105,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $first_name = isset($_POST["first_name"]) ? htmlspecialchars($_POST["first_name"], ENT_QUOTES, 'UTF-8') : "";
     $last_name = isset($_POST["last_name"]) ? htmlspecialchars($_POST["last_name"], ENT_QUOTES, 'UTF-8') : "";
     $email = htmlspecialchars($_POST["email"], ENT_QUOTES, 'UTF-8');
+    $two_factor_enabled = htmlspecialchars($_POST["two_factor_enabled"], ENT_QUOTES, 'UTF-8');
     $phone = htmlspecialchars($_POST["phone"], ENT_QUOTES, 'UTF-8');
     $birth_date = htmlspecialchars($_POST["birth_date"], ENT_QUOTES, 'UTF-8');
     $city = htmlspecialchars($_POST["city"], ENT_QUOTES, 'UTF-8');
@@ -132,6 +133,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         first_name = ?, 
         last_name = ?, 
         email = ?, 
+        two_factor_enabled = ?,
         phone = ?, 
         user_type = ?, 
         notes = ?, 
@@ -153,7 +155,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Şifre değişikliği yapılacak mı kontrolü
     $params = [
-        $username, $tc_identity, $first_name, $last_name, $email, $phone,
+        $username, $tc_identity, $first_name, $last_name, $email,  $two_factor_enabled, $phone,
         $user_type, $notes, $is_active,
         $invoice_type, $tax_company_name, $tax_office, $tax_number,
         $tc_identity_for_individual_invoice, $birth_date, $city, $district, $country,
@@ -296,6 +298,14 @@ require_once(__DIR__ . '/partials/header.php');
                                 <input class="form-control" type="email" name="email" aria-describedby="emailHelp" value="<?php echo $user["email"]; ?>" required>
                                 <div id="emailHelp" class="form-text">Geçerli bir e-posta adresi olmalıdır.</div>
 
+                                <label class="form-label mt-3" for="two_factor_enabled">İki Faktörlü Kimlik Doğrulama:</label>
+                                <select class="form-select" name="two_factor_enabled" required>
+                                    <option value="0" <?php echo ($user["two_factor_enabled"] == 0) ? 'selected' : ''; ?>>Pasif</option>
+                                    <option value="1" <?php echo ($user["two_factor_enabled"] == 1) ? 'selected' : ''; ?>>Aktif</option>
+                                </select>
+                                <div id="2faHelp" class="form-text">Güvenlik kodu kullanıcının kayıtlı telefon numarası ve e-posta adresine gönderilmektedir.</div>
+
+
 
                                 <div class="mt-3">
                                     <label for="country" class="form-label">Ülke:</label>
@@ -320,6 +330,7 @@ require_once(__DIR__ . '/partials/header.php');
 
                                 <label class="form-label mt-3" for="phone">Telefon:</label>
                                 <input class="form-control" type="text" name="phone" value="<?php echo $user["phone"]; ?>" required>
+                                <div id="phoneHelp" class="form-text">Kullanıcı oluşturulurken seçilen ülkeye göre alan kodu otomatik eklenir, eğer alan kodu ekli değilse mutlaka eklenmelidir.</div>
 
 
                                 <!-- Doğum Tarihi -->
@@ -380,6 +391,7 @@ require_once(__DIR__ . '/partials/header.php');
                                 <div id="individual_fields">
                                     <label class="form-label mt-3" for="tc_identity_for_individual_invoice">Fatura T.C. Kimlik No:</label>
                                     <input class="form-control" type="text" name="tc_identity_for_individual_invoice" value="<?php echo $user["tc_identity_for_individual_invoice"]; ?>" required>
+                                    <div id="tc_identity_for_individual_invoice_Help" class="form-text">Faturanın oluşturulacağı T.C. kimlik numarası kullanıcının T.C. kimlik numarası ile aynı ya da farklı olmaksızın bu alana girilmelidir.</div>
                                 </div>
 
                                 <script>

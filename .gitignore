@@ -20,6 +20,8 @@ config/db_connection.php
 # PDFs folder
 /assets/pdfs/*
 
+/package.xml
+
 ##### Windows
 # Windows thumbnail cache files
 Thumbs.db

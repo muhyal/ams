@@ -128,7 +128,7 @@
         var currentUrl = window.location.href;
 
         // Eğer geçerli URL, "admin/panel.php" içermiyorsa DataTables'i uygula
-        if (currentUrl.indexOf("admin/panel.php") === -1 && currentUrl.indexOf("admin/user_profile.php") === -1) {
+        if (currentUrl.indexOf("admin/panel.php") === -1 && currentUrl.indexOf("admin/user_profile.php") === -1 && currentUrl.indexOf("admin/academy_date_course_plans.php") === -1) {
             $('table').DataTable({
                 pageLength: 25, // Her sayfada gösterilecek satır sayısı
                 lengthMenu: [5, 10, 25], // Sayfa uzunluğu seçenekleri
