@@ -188,9 +188,15 @@
 
                     <ul class="nav flex-column mb-auto">
                         <li class="nav-item">
+                            <a class="text-light-emphasis nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/options.php') ? 'active' : ''; ?>" href="/admin/options.php">
+                                <i class="fas fa-gear"></i>
+                                Site Seçenekleri
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="text-light-emphasis nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/profile_edit.php') ? 'active' : ''; ?>" href="/admin/profile_edit.php">
                                 <i class="fas fa-user-gear"></i>
-                                Ayarlar
+                                Profilim
                             </a>
                         </li>
                         <li class="nav-item">
