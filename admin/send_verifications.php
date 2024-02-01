@@ -24,6 +24,8 @@ global $db, $showErrors, $siteName, $siteShortName, $siteUrl;
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
 require_once(__DIR__ . '/../config/config.php');
+require_once('../src/functions.php');
+
 
 // Oturum kontrolü
 session_start();
@@ -86,15 +88,7 @@ if ($user) {
     $message = "Kullanıcı bulunamadı.";
 }
 
-// Doğrulama bağlantısı oluşturma
-function getVerificationLink($emailOrPhone, $code, $verificationId, $type = "email") {
-    global $siteUrl, $user_type;
-    if ($type == "phone") {
-        return "$siteUrl/verify.php?phone=$emailOrPhone&code=$code&type=$user_type&verification_id=$verificationId";
-    } else {
-        return "$siteUrl/verify.php?email=$emailOrPhone&code=$code&type=$user_type&verification_id=$verificationId";
-    }
-}
+
 
 // Kullanıcıya doğrulama kodlarını yeniden gönderme işlemi
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
