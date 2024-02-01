@@ -23,6 +23,8 @@ global $db, $showErrors, $siteName, $siteShortName, $siteUrl, $siteHeroDescripti
 require_once(__DIR__ . '/../../config/db_connection.php');
 require_once(__DIR__ . '/../../config/config.php');
 require_once(__DIR__ . '/../../src/functions.php');
+$option = getConfigurationFromDatabase($db);
+extract($option, EXTR_IF_EXISTS);
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
@@ -36,11 +38,11 @@ $adminLastName = $_SESSION['admin_last_name'];
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?php echo $siteName ?> - <?php echo $siteShortName ?></title>
-    <meta name="description" content="<?php echo $siteHeroDescription ?>">
+    <title><?php echo $option['site_name']; ?> - <?php echo $option['site_short_name']; ?></title>
+    <meta name="description" content="<?php echo $option['site_hero_description']; ?>">
     <meta name="robots" content="noindex, nofollow" />
     <meta name="author" content="Muhammed Yalçınkaya">
-    <meta name="generator" content="<?php echo $siteShortName ?> - <?php echo $oimVersion ?>">
+    <meta name="generator" content="<?php echo $option['site_short_name']; ?> - <?php echo $option['version']; ?>">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link href="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-1.13.8/af-2.6.0/b-2.4.2/b-colvis-2.4.2/b-html5-2.4.2/b-print-2.4.2/date-1.5.1/fc-4.3.0/fh-3.4.0/r-2.5.0/datatables.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
@@ -201,8 +203,8 @@ $adminLastName = $_SESSION['admin_last_name'];
   </div>
 
   <header class="navbar sticky-top bg-dark flex-md-nowrap p-0 shadow" data-bs-theme="dark">
-      <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6 text-white d-flex justify-content-center align-items-center" href="<?php echo $siteUrl ?>/admin/index.php">
-          <img id="logo" src="/assets/brand/default_logo_dark.png" alt="<?php echo $siteName ?> - <?php echo $siteShortName ?>" title="<?php echo $siteName ?> - <?php echo $siteShortName ?>" width="50%" height="auto">
+      <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6 text-white d-flex justify-content-center align-items-center" href="<?php echo $option['site_url']; ?>/admin/index.php">
+          <img id="logo" src="/assets/brand/default_logo_dark.png" alt="<?php echo $option['site_name']; ?> - <?php echo $option['site_short_name']; ?>" title="<?php echo $option['site_name']; ?> - <?php echo $option['site_short_name']; ?>" width="50%" height="auto">
       </a>
       <div id="navbarSearch" class="navbar-search w-100 collapse">
           <div class="input-group mb-3">
@@ -213,10 +215,10 @@ $adminLastName = $_SESSION['admin_last_name'];
           </div>
       </div>
 
-      <div class="container text-light">
+      <div class="container text-light ml-auto"">
           <!-- Yeni butonu menüsü -->
           <div class="btn-group d-none d-md-block">
-              <button type="button" class="btn btn-success dropdown-toggle btn-sm" data-bs-toggle="dropdown" aria-expanded="false">
+              <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                   <i class="fas fa-plus"></i> Yeni
               </button>
               <ul class="dropdown-menu">
@@ -235,11 +237,11 @@ $adminLastName = $_SESSION['admin_last_name'];
               }
           </style>
           <!-- Saat ve tarih -->
-          <div id="datetime-container" class="text-light">
+          <div id="datetime-container" class="dropdown text-end ml-auto">
               <i class="fas fa-clock-four"></i>
               <?php
               $current_datetime = date("d.m.Y H:i");
-              echo "<span id='current-datetime'>$current_datetime</span>";
+              echo "<span id='current-datetime' class='dropdown text-end ml-auto'>$current_datetime</span>";
               ?>
           </div>
 
@@ -247,7 +249,8 @@ $adminLastName = $_SESSION['admin_last_name'];
           <div class="row">
               <div class="col-md-12">
                   <div class="d-flex justify-content-end align-items-center">
-                      <p id="greeting"></p>
+
+                      <div class="dropdown text-end ml-auto" id="greeting"></div>
                       <script>
                           document.addEventListener("DOMContentLoaded", function() {
                               var adminFirstName = "<?php echo $adminFirstName; ?>";
@@ -262,6 +265,36 @@ $adminLastName = $_SESSION['admin_last_name'];
                               }
                           });
                       </script>
+
+                      <div class="dropdown text-end ml-auto">
+                          <button class="btn btn-link text-decoration-none dropdown-toggle text-dark-emphasis" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                              <i class="fas fa-globe"></i>
+                          </button>
+                          <ul class="dropdown-menu" aria-labelledby="languageDropdown">
+                              <li><a class="dropdown-item" href="?lang=tr">Türkçe</a></li>
+                              <li><a class="dropdown-item" href="?lang=en">English</a></li>
+                              <!-- Diğer dil seçenekleri buraya eklenebilir -->
+                          </ul>
+                      </div>
+
+                      <script>
+                          document.addEventListener('DOMContentLoaded', function () {
+                              var selectedLanguage = "<?php echo $selectedLanguage; ?>";
+                              var languageDropdown = document.getElementById('languageDropdown');
+
+                              languageDropdown.addEventListener('show.bs.dropdown', function () {
+                                  var dropdownItems = this.nextElementSibling.querySelectorAll('.dropdown-item');
+
+                                  dropdownItems.forEach(function(item) {
+                                      item.classList.remove('active');
+                                      if (item.getAttribute('href') === '?lang=' + selectedLanguage) {
+                                          item.classList.add('active');
+                                      }
+                                  });
+                              });
+                          });
+                      </script>
+
                       <!-- Boşluk ekleyin -->
                       <div class="separator"></div>
                       <a class="nav-link d-flex align-items-center text-light-emphasis" href="/admin/profile_edit.php">
@@ -272,6 +305,7 @@ $adminLastName = $_SESSION['admin_last_name'];
                       <a class="nav-link d-flex align-items-center text-light-emphasis" href="/admin/logout.php">
                           <i class="fas fa-door-closed"></i>
                       </a>
+
 
                       <ul class="navbar-nav flex-row d-md-none">
                           <li class="nav-item text-nowrap">
