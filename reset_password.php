@@ -51,7 +51,7 @@ if (isset($_POST["reset_request"])) {
     $recaptchaToken = $_POST['recaptcha_response'] ?? '';
 
     // reCAPTCHA doğrulama
-    $recaptchaVerify = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=" . RECAPTCHA_SECRET_KEY . "&response={$recaptchaToken}");
+    $recaptchaVerify = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=" . $recaptchaSecretKey . "&response={$recaptchaToken}");
     $recaptchaResponse = json_decode($recaptchaVerify);
 
     // reCAPTCHA doğrulaması başarısızsa işlemi reddet

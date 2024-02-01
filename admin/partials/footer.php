@@ -19,6 +19,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  *
  */
+global $db, $showErrors, $siteName, $siteShortName, $siteUrl, $config, $oimVersion, $siteHeroDescription;
+require_once(__DIR__ . '/../../src/functions.php');
+$option = getConfigurationFromDatabase($db);
+extract($option, EXTR_IF_EXISTS);
 ?>
 </main>
 </div>
@@ -32,7 +36,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-6 mt-3">
-                <p>&copy; <?php echo (new DateTime())->format('Y') ?>, <?php echo $siteName ?>. <?= translate('all_rights_reserved', $selectedLanguage) ?></p>
+                <p>&copy; <?php echo (new DateTime())->format('Y') ?>, <?php echo $option['site_name']; ?>. <?= translate('all_rights_reserved', $selectedLanguage) ?></p>
             </div>
         </div>
     </div>
@@ -59,11 +63,11 @@
     });
 </script>
 <!-- Recaptcha kütüphanesi -->
-<script src="https://www.google.com/recaptcha/api.js?render=<?php echo RECAPTCHA_SITE_KEY; ?>"></script>
+<script src="https://www.google.com/recaptcha/api.js?render=<?php echo $option['recaptcha_site_key']; ?>"></script>
 <script>
     // Recaptcha token'ını alma
     grecaptcha.ready(function () {
-        grecaptcha.execute('<?php echo RECAPTCHA_SITE_KEY; ?>', { action: 'login' }).then(function (token) {
+        grecaptcha.execute('<?php echo $option['recaptcha_site_key']; ?>', { action: 'login' }).then(function (token) {
             document.getElementById('recaptcha_response').value = token;
         });
     });

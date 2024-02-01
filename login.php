@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $recaptchaToken = $_POST['recaptcha_response'] ?? '';
 
     // reCAPTCHA doğrulama
-    $recaptchaVerify = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=" . RECAPTCHA_SECRET_KEY . "&response={$recaptchaToken}");
+    $recaptchaVerify = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=" . $recaptchaSecretKey . "&response={$recaptchaToken}");
     $recaptchaResponse = json_decode($recaptchaVerify);
 
     // reCAPTCHA doğrulaması başarısızsa işlemi reddet
@@ -131,7 +131,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <input type="hidden" name="csrf_request" value="1">
 
-        <img id="logo-body" class="mb-5 mt-5" src="/assets/brand/default_logo_light.png" alt="<?php echo $siteName ?>" title="<?php echo $siteName ?>" width="80%" height="%80">
+        <img id="logo-body" class="mb-5 mt-5" src="/assets/brand/default_logo_light.png" alt=" <?php echo $option['site_name']; ?>" title=" <?php echo $option['site_name']; ?>" width="80%" height="%80">
         <h1 class="h3 mb-3 fw-normal">Kullanıcı Paneli</h1>
 
         <div class="form-floating">
@@ -183,8 +183,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <button class="btn btn-primary w-100 py-2" type="submit">
                 <i class="fas fa-sign-in-alt"></i> Oturum aç
             </button>
-            <a href="<?php echo $siteUrl ?>" class="btn btn-secondary w-100 py-2 mt-2">
-                <i class="fas fa-home"></i> <?php echo $siteName ?> - <?php echo $siteShortName ?>
+            <a href="<?php echo $option['site_url']; ?>" class="btn btn-secondary w-100 py-2 mt-2">
+                <i class="fas fa-home"></i>  <?php echo $option['site_name']; ?> -  <?php echo $option['site_short_name']; ?>
             </a>
         </div>
     </form>

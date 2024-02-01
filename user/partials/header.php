@@ -26,6 +26,8 @@ $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_er
 require_once(__DIR__ . '/../../config/db_connection.php');
 require_once(__DIR__ . '/../../config/config.php');
 require_once(__DIR__ . '/../../src/functions.php');
+$option = getConfigurationFromDatabase($db);
+extract($option, EXTR_IF_EXISTS);
 // Oturum açıldıysa oturum değişkeni set edilir
 $loggedIn = isset($_SESSION["user_id"]);
 ?>
@@ -34,11 +36,11 @@ $loggedIn = isset($_SESSION["user_id"]);
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?php echo $siteName ?> - <?php echo $siteShortName ?></title>
-    <meta name="description" content="<?php echo $siteHeroDescription ?>">
+    <title> <?php echo $option['site_name']; ?> -  <?php echo $option['site_short_name']; ?></title>
+    <meta name="description" content=" <?php echo $option['site_hero_description']; ?>">
     <meta name="robots" content="noindex, nofollow" />
     <meta name="author" content="Muhammed Yalçınkaya">
-    <meta name="generator" content="<?php echo $siteShortName ?> - <?php echo $oimVersion ?>">
+    <meta name="generator" content=" <?php echo $option['site_short_name']; ?> -  <?php echo $option['version']; ?>">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="../../assets/js/color-modes.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -153,8 +155,8 @@ $loggedIn = isset($_SESSION["user_id"]);
 <header class="p-3 mb-3 border-bottom">
     <div class="container">
         <div class="d-flex flex-wrap align-items-center justify-content-between justify-content-lg-start">
-            <a href="<?php echo $siteUrl ?>" class="d-flex align-items-center mb-1 mt-1 mb-lg-0 link-body-emphasis text-decoration-none">
-                <img id="logo-header" src="/assets/brand/default_logo_dark.png" alt="<?php echo $siteName ?> - <?php echo $siteShortName ?>" title="<?php echo $siteName ?> - <?php echo $siteShortName ?>" width="15%" height="15%">
+            <a href="<?php echo $option['site_url']; ?>" class="d-flex align-items-center mb-1 mt-1 mb-lg-0 link-body-emphasis text-decoration-none">
+                <img id="logo-header" src="/assets/brand/default_logo_dark.png" alt="<?php echo $option['site_name']; ?> - <?php echo $option['site_short_name']; ?>" title="<?php echo $option['site_name']; ?> - <?php echo $option['site_short_name']; ?>" width="15%" height="15%">
             </a>
 
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">

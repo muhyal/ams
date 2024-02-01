@@ -130,8 +130,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     updated_by_user_id 
 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-
-
         try {
             $stmt = $db->prepare($insertQuery);
 
@@ -165,23 +163,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION["admin_id"]
             ]);
 
-
             // E-posta ve SMS gönderme işlemleri
+
+            $dbConfig = getConfigurationFromDatabase($db);
 
             // E-posta gönderme işlemi
             $sendWelcomeEmail = isset($_POST["sendWelcomeEmail"]) ? true : false;
-            if ($config['smtp']['enabled'] && $sendWelcomeEmail) {
-                // Only execute the following code if SMTP is enabled and the checkbox is selected
+            if ($dbConfig['smtp_enabled'] === 'true' && $sendWelcomeEmail) {
+                // Only execute the following code if SMTP is enabled in the database and the checkbox is selected
                 sendWelcomeEmail($email, $verificationCodeEmail, $first_name, $plainPassword, $username, $email);
             }
 
-// Infobip SMS gönderme işlemi
+            // Infobip SMS gönderme işlemi
             $sendWelcomeSms = isset($_POST["sendWelcomeSms"]) ? true : false;
-            if ($config['infobip']['enabled'] && $sendWelcomeSms) {
-                // Only execute the following code if Infobip is enabled and the checkbox is selected
+            if ($dbConfig['infobip_enabled'] === 'true' && $sendWelcomeSms) {
+                // Only execute the following code if Infobip is enabled in the database and the checkbox is selected
                 sendWelcomeSms($phone, $verificationCodeSms, $first_name, $plainPassword, $username, $email);
             }
-
 
 
             // The rest of your code

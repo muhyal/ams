@@ -606,4 +606,18 @@ function sendVerificationSms($to, $verificationCode, $first_name, $verificationI
     }
 }
 
+function getConfigurationFromDatabase($db) {
+    $queryOptions = "SELECT * FROM options";
+    $stmtOptions = $db->prepare($queryOptions);
+    $stmtOptions->execute();
+    $options = $stmtOptions->fetchAll(PDO::FETCH_ASSOC);
+
+    $config = [];
+    foreach ($options as $option) {
+        $config[$option['option_name']] = $option['option_value'];
+    }
+
+    return $config;
+}
+
 ?>
