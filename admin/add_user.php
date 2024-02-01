@@ -19,11 +19,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  *
  */
-global $db, $showErrors, $siteName, $siteShortName, $siteUrl;
+global $db, $showErrors, $siteName, $siteShortName, $siteUrl, $config;
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
 require_once('../config/config.php');
+require_once('../src/functions.php');
 
 session_start();
 session_regenerate_id(true);
@@ -130,6 +131,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 
+
         try {
             $stmt = $db->prepare($insertQuery);
 
@@ -157,16 +159,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $tax_number,
                 $tc_identity_for_individual_invoice,
                 1,  // is_active
-                1,  // is_active
                 date("Y-m-d H:i:s"),
                 $_SESSION["admin_id"],
                 date("Y-m-d H:i:s"),
                 $_SESSION["admin_id"]
             ]);
 
+
             // E-posta ve SMS gönderme işlemleri
-            sendWelcomeEmail($email, $verificationCodeEmail, $first_name, $plainPassword, $username, $email);
-            sendWelcomeSms($phone, $verificationCodeSms, $first_name, $plainPassword, $username, $email);
+
+            // E-posta gönderme işlemi
+            $sendWelcomeEmail = isset($_POST["sendWelcomeEmail"]) ? true : false;
+            if ($config['smtp']['enabled'] && $sendWelcomeEmail) {
+                // Only execute the following code if SMTP is enabled and the checkbox is selected
+                sendWelcomeEmail($email, $verificationCodeEmail, $first_name, $plainPassword, $username, $email);
+            }
+
+// Infobip SMS gönderme işlemi
+            $sendWelcomeSms = isset($_POST["sendWelcomeSms"]) ? true : false;
+            if ($config['infobip']['enabled'] && $sendWelcomeSms) {
+                // Only execute the following code if Infobip is enabled and the checkbox is selected
+                sendWelcomeSms($phone, $verificationCodeSms, $first_name, $plainPassword, $username, $email);
+            }
+
+
 
             // The rest of your code
         } catch (PDOException $e) {
@@ -541,19 +557,28 @@ require_once(__DIR__ . '/partials/header.php');
                         var taxCompanyInput = document.getElementsByName('tax_company_name')[0];
                         var taxOfficeInput = document.getElementsByName('tax_office')[0];
                         var taxNumberInput = document.getElementsByName('tax_number')[0];
-                        var eInvoiceSelect = document.getElementsByName('e_invoice')[0];
                         var tcIdentityInput = document.getElementsByName('tc_identity_for_individual_invoice')[0];
 
                         taxCompanyInput.required = (invoiceType === 'corporate');
                         taxOfficeInput.required = (invoiceType === 'corporate');
                         taxNumberInput.required = (invoiceType === 'corporate');
-                        eInvoiceSelect.required = (invoiceType === 'corporate');
                         tcIdentityInput.required = (invoiceType === 'individual');
                     }
 
                     // Call the function to set the initial state
                     toggleInvoiceFields();
                 </script>
+
+                <div class="mb-3 mt-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="sendWelcomeEmail" name="sendWelcomeEmail" checked>
+                    <label class="form-check-label" for="sendWelcomeEmail">Hoşgeldin E-postası Gönder</label>
+                </div>
+
+                <div class="mb-3 mt-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="sendWelcomeSms" name="sendWelcomeSms" checked>
+                    <label class="form-check-label" for="sendWelcomeSms">Hoşgeldin SMS'i Gönder</label>
+                </div>
+
 
                 <div class="form-group mt-3">
                     <button type="submit" class="btn btn-primary">
