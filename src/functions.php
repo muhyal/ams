@@ -140,8 +140,7 @@ function sendSMS($to, $userInputMessage, $first_name, $username, $email) {
 
     // Check if Infobip configuration is enabled and valid
     if (
-        $config['infobip']['enabled']
-        && !empty($config['infobip']['BASE_URL'])
+        !empty($config['infobip']['BASE_URL'])
         && !empty($config['infobip']['API_KEY'])
         && !empty($config['infobip']['SENDER'])
     ) {
@@ -342,8 +341,7 @@ function sendWelcomeSms($to, $verificationCode, $first_name, $plainPassword, $us
 
     // Check if Infobip configuration is enabled and valid
     if (
-        $config['infobip']['enabled']
-        && !empty($config['infobip']['BASE_URL'])
+        !empty($config['infobip']['BASE_URL'])
         && !empty($config['infobip']['API_KEY'])
         && !empty($config['infobip']['SENDER'])
     ) {
