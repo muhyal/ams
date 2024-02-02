@@ -41,8 +41,18 @@ extract($option, EXTR_IF_EXISTS);
         </div>
     </div>
 </footer>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
-<script src="../../assets/js/dashboard.js"></script>
+
+<script>
+    // Tüm [data-bs-toggle="popover"] öğelerini seç
+    const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
+
+    // Her bir öğe için Popover oluştur ve etkinleştir
+    const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl));
+
+    const popover = new bootstrap.Popover('.popover-dismiss', {
+        trigger: 'focus'
+    })
+</script>
 </body>
 <script>
     // Sayfa yüklendikten sonra uyarıyı otomatik kapat
@@ -136,9 +146,9 @@ extract($option, EXTR_IF_EXISTS);
             $('table').DataTable({
                 pageLength: 25, // Her sayfada gösterilecek satır sayısı
                 lengthMenu: [5, 10, 25], // Sayfa uzunluğu seçenekleri
-                autoFill: {
-                    focus: 'click'
-                },
+                //autoFill: {
+                //    focus: 'click'
+                //},
                 responsive: true,
                 dom: '<"bottom" Blfrtip>', // Düğmeleri aşağıda göstermek için düzenleme
                 buttons: [

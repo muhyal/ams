@@ -32,6 +32,8 @@ $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_er
 $adminUsername = $_SESSION['admin_username'];
 $adminFirstName = $_SESSION['admin_first_name'];
 $adminLastName = $_SESSION['admin_last_name'];
+
+logoutUser();
 ?>
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
@@ -44,6 +46,9 @@ $adminLastName = $_SESSION['admin_last_name'];
     <meta name="author" content="Muhammed Yalçınkaya">
     <meta name="generator" content="<?php echo $option['site_short_name']; ?> - <?php echo $option['version']; ?>">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="../../assets/js/dashboard.js"></script>
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
     <link href="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-1.13.8/af-2.6.0/b-2.4.2/b-colvis-2.4.2/b-html5-2.4.2/b-print-2.4.2/date-1.5.1/fc-4.3.0/fh-3.4.0/r-2.5.0/datatables.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
@@ -302,7 +307,7 @@ $adminLastName = $_SESSION['admin_last_name'];
                       </a>
                       <!-- Boşluk ekleyin -->
                       <div class="separator"></div>
-                      <a class="nav-link d-flex align-items-center text-light-emphasis" href="/admin/logout.php">
+                      <a class="nav-link d-flex align-items-center text-light-emphasis" href="?action=logout">
                           <i class="fas fa-door-closed"></i>
                       </a>
 

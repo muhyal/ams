@@ -30,6 +30,7 @@ $option = getConfigurationFromDatabase($db);
 extract($option, EXTR_IF_EXISTS);
 // Oturum açıldıysa oturum değişkeni set edilir
 $loggedIn = isset($_SESSION["user_id"]);
+logoutUser();
 ?>
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
@@ -160,7 +161,7 @@ $loggedIn = isset($_SESSION["user_id"]);
             </a>
 
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-                <li><a href="<?php echo $siteUrl ?>" class="nav-link px-2 link-secondary"></a></li>
+                <li><a href="<?php echo $option['site_url']; ?>" class="nav-link px-2 link-secondary"></a></li>
             </ul>
 
 
@@ -249,7 +250,7 @@ $loggedIn = isset($_SESSION["user_id"]);
                         <?php } ?>
                         <li><a class="dropdown-item" href="/user/panel.php">Kullanıcı Paneli</a></li>
                         <li><a class="dropdown-item" href="/user/profile_edit.php">Bilgileri güncelle</a></li>
-                        <li><a class="dropdown-item" href="/logout.php">Oturumu kapat</a></li>
+                        <li><a class="dropdown-item" href="?action=logout">Oturumu kapat</a></li>
                     <?php } ?>
                 </ul>
 

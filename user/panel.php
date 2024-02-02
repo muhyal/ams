@@ -503,7 +503,7 @@ ORDER BY course_date DESC
                                                 <a href="profile_edit.php" class="btn btn-sm btn-primary mr-2">
                                                     <i class="fas fa-user-edit"></i> Bilgilerim
                                                 </a>
-                                                <a href="../logout.php" class="btn btn-sm btn-danger">
+                                                <a href="?action=logout" class="btn btn-sm btn-danger">
                                                     <i class="fas fa-sign-out-alt"></i> Oturumu kapat
                                                 </a>
 

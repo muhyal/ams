@@ -200,7 +200,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="text-light-emphasis nav-link d-flex align-items-center gap-2" href="/admin/logout.php">
+                            <a class="text-light-emphasis nav-link d-flex align-items-center gap-2" href="?action=logout">
                                 <i class="fas fa-door-closed"></i>
                                 Oturumu kapat
                             </a>
