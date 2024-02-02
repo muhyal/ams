@@ -218,10 +218,10 @@ function getTeacherName($teacherId)
                 <th>Ders</th>
                 <th>Tutar</th>
                 <th>Tarih</th>
-                <th>Ödeme Yöntemi</th>
+                <th>Yöntem</th>
                 <th>Banka</th>
                 <th>Not</th>
-                <th>Ödemeyi İşleyen</th>
+                <th>İşleyen</th>
             </tr>
             </thead>
             <tbody>
@@ -231,7 +231,7 @@ function getTeacherName($teacherId)
                         <td>
                             <?php
                             $coursePlanId = isset($entry['course_plan_id']) ? $entry['course_plan_id'] : 'Belirsiz';
-                            echo "<a href='course_plans.php?id=$coursePlanId' class='btn btn-success btn-sm'><i class='bi bi-eye-fill'></i></a>";
+                            echo "<a href='course_plans.php?id=$coursePlanId' class='btn btn-outline-success btn-sm'><i class='fas fa-eye'></i></a>";
                             ?>
                         </td>
                         <?php
@@ -258,7 +258,14 @@ function getTeacherName($teacherId)
                         </td>
                         <td><?= isset($entry['payment_method']) ? getPaymentMethodName($entry['payment_method']) : 'Belirsiz' ?></td>
                         <td><?= isset($entry['bank_name']) ? getBankName($entry['bank_name']) : 'Belirsiz' ?></td>
-                        <td><?= isset($entry['payment_notes']) ? $entry['payment_notes'] : 'Belirsiz' ?></td>
+                        <td>
+                            <?php if (isset($entry['payment_notes']) && $entry['payment_notes'] != ''): ?>
+                                <a tabindex="0" class="btn btn-outline-dark btn-sm" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-title="Ödeme Notları" data-bs-content="<?= isset($entry['payment_notes']) ? $entry['payment_notes'] : 'Yok' ?>"><i class="fas fa-eye"></i></a>
+
+                            <?php else: ?>
+                                <span class="text-muted"></span>
+                            <?php endif; ?>
+                        </td>
                         <td><?= isset($entry['received_by_first_name']) ? $entry['received_by_first_name'] . ' ' . $entry['received_by_last_name'] : 'Belirsiz' ?></td>
                     </tr>
                 <?php endforeach; ?>
@@ -270,4 +277,5 @@ function getTeacherName($teacherId)
             </tbody>
                 </table>
             </div>
+
 <?php require_once('../admin/partials/footer.php'); ?>
