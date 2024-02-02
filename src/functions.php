@@ -620,4 +620,25 @@ function getConfigurationFromDatabase($db) {
     return $config;
 }
 
+function logoutUser() {
+    // Eğer "action" parametresi "logout" ise oturumu kapat
+    if (isset($_GET['action']) && $_GET['action'] == 'logout') {
+        // Önceki sayfanın URL'sini al
+        $previousPage = $_SERVER["HTTP_REFERER"];
+
+        // Oturumu temizle ve sonlandır
+        session_unset();
+        session_destroy();
+
+        // Eğer önceki sayfa bilgisi varsa, kullanıcıyı o sayfaya yönlendir
+        if (!empty($previousPage)) {
+            header("Location: $previousPage");
+        } else {
+            header("Location: /admin/panel.php"); // Varsayılan sayfaya yönlendirme
+        }
+
+        exit(); // İşlemi sonlandır
+    }
+}
+
 ?>
