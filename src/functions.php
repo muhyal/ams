@@ -606,18 +606,30 @@ function sendVerificationSms($to, $verificationCode, $first_name, $verificationI
     }
 }
 
-function getConfigurationFromDatabase($db) {
-    $queryOptions = "SELECT * FROM options";
-    $stmtOptions = $db->prepare($queryOptions);
-    $stmtOptions->execute();
-    $options = $stmtOptions->fetchAll(PDO::FETCH_ASSOC);
+function getConfigurationFromDatabase($db)
+{
+    try {
+        $query = "SELECT * FROM options";
+        $stmt = $db->prepare($query);
+        $stmt->execute();
 
-    $config = [];
-    foreach ($options as $option) {
-        $config[$option['option_name']] = $option['option_value'];
+        $options = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Check if any options are found
+        if (!$options) {
+            throw new Exception("Options not found");
+        }
+
+        // Transform options into an associative array
+        $result = [];
+        foreach ($options as $option) {
+            $result[$option['option_name']] = $option['option_value'];
+        }
+
+        return $result;
+    } catch (PDOException $e) {
+        die("Error: " . $e->getMessage());
     }
-
-    return $config;
 }
 
 function logoutUser() {
