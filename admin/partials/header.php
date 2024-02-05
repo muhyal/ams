@@ -304,7 +304,7 @@ logoutUser();
 
                       <!-- Boşluk ekleyin -->
                       <div class="separator"></div>
-                      <a class="nav-link d-flex align-items-center text-light-emphasis" href="/admin/profile_edit.php">
+                      <a class="nav-link d-flex align-items-center text-light-emphasis" href="/admin/edit_user.php?id=<?php echo $_SESSION["admin_id"]; ?>">
                           <i class="fas fa-user-gear"></i>
                       </a>
                       <!-- Boşluk ekleyin -->

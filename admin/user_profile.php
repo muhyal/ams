@@ -233,6 +233,7 @@ require_once(__DIR__ . '/partials/sidebar.php');
             <h2><?= $user['first_name'] ?> <?= $user['last_name'] ?> <small>(<?= $user['tc_identity'] ?>)</small> Profili</h2>
         </div>
 
+
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-12">
@@ -869,9 +870,60 @@ require_once(__DIR__ . '/partials/sidebar.php');
 
                     </div>
                 </div>
-           </div>
-        </div>
 
+
+                <?php
+                // Kullanıcının tipini kontrol et
+                $userTypeQuery = "SELECT user_type FROM users WHERE id = ?";
+                $userTypeStmt = $db->prepare($userTypeQuery);
+                $userTypeStmt->execute([$admin_id]);
+                $userType = $userTypeStmt->fetchColumn();
+
+                // Yetkilendirme kontrolü
+                if ($userType == 1 || $userType == 2 || $userType == 3) {
+                    // Kullanıcı tipi izin verilen tipler arasında ise içeriği göster
+                    ?>
+                    <div class="card mt-3 mb-3">
+                        <div class="card-header">
+                            <h5 class="card-title">Yetkili Olduğu Akademiler</h5>
+                        </div>
+                        <div class="card-body">
+                            <?php
+                            $academyAssignmentQuery = "SELECT DISTINCT a.name, a.city, a.district
+                FROM academies a
+                JOIN user_academy_assignment uaa ON a.id = uaa.academy_id
+                WHERE uaa.user_id = ?";
+                            $academyAssignmentStmt = $db->prepare($academyAssignmentQuery);
+                            $academyAssignmentStmt->execute([$admin_id]);
+                            $assignedAcademies = $academyAssignmentStmt->fetchAll(PDO::FETCH_ASSOC);
+                            ?>
+                            <div class="form-group">
+                                <div class="card shadow-sm">
+                                    <div class="card-body">
+                                        <?php if (!empty($assignedAcademies)): ?>
+                                            <ul class="list-group list-group-flush">
+                                                <?php foreach ($assignedAcademies as $assignedAcademy): ?>
+                                                    <li class="list-group-item py-2">
+                                                        <?php echo $assignedAcademy['city'] . ' ili ' . $assignedAcademy['district'] . ' ilçesindeki ' . $assignedAcademy['name'] . ' akademisi'; ?>
+                                                    </li>
+                                                <?php endforeach; ?>
+                                            </ul>
+                                        <?php else: ?>
+                                            <p class="card-text m-0">Kullanıcıya atanmış akademi bulunmamaktadır.</p>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <?php
+                }
+                ?>
+
+
+
+            </div>
+        </div>
 
 
             <?php
