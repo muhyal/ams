@@ -19,7 +19,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-global $showErrors, $siteName, $siteShortName, $siteUrl, $db;
+global $showErrors, $db;
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
@@ -40,6 +40,7 @@ $csrf_token = $_SESSION['csrf_token'];
 
 require_once(__DIR__ . '/../config/db_connection.php');
 require_once(__DIR__ . '/../vendor/autoload.php');
+require_once(__DIR__ . '/../src/functions.php');
 
 
 use PHPMailer\PHPMailer\PHPMailer;
@@ -52,6 +53,10 @@ use Infobip\Model\SmsTextualMessage;
 use libphonenumber\PhoneNumberUtil;
 use libphonenumber\PhoneNumberFormat;
 use League\ISO3166\ISO3166;
+
+
+$option = getConfigurationFromDatabase($db);
+extract($option, EXTR_IF_EXISTS);
 
 // Hataları tutacak dizi
 $errors = [];
@@ -105,9 +110,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $allowedUserTypes = [1, 2, 3];
                 if (in_array($admin["user_type"], $allowedUserTypes)) {
                     // Check if Infobip is enabled
-                    global $config, $siteName, $siteShortName;
+                    global $config ;
 
                     if ($config['infobip']['enabled']) {
+
                         // Send an SMS using Infobip
                         $phone = $admin["phone"];
 
@@ -122,7 +128,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             to: $phone
                         );
 
-                        $text = "Merhaba, $siteName - $siteShortName üzerinde yönetici oturumu açıldı. Bilginiz dışında ise lütfen kontrol ediniz.";
+
+                        $text = "Merhaba, $option[site_name] - $option[site_short_name] üzerinde yönetici oturumu açıldı. Bilginiz dışında ise lütfen kontrol ediniz.";
                         $message = new SmsTextualMessage(destinations: [$destination], from: $config['infobip']['SENDER'], text: $text);
 
                         $request = new SmsAdvancedTextualRequest(messages: [$message]);
@@ -225,8 +232,8 @@ require_once('../user/partials/header.php');
             <button class="btn btn-primary w-100 py-2" type="submit">
                 <i class="fas fa-sign-in-alt"></i> <?= translate('login', $selectedLanguage) ?>
             </button>
-            <a href="<?php echo $siteUrl ?>" class="btn btn-secondary w-100 py-2 mt-2">
-                <i class="fas fa-home"></i> <?php echo $siteName ?> - <?php echo $siteShortName ?>
+            <a href="<?php echo $option['site_url']; ?>" class="btn btn-secondary w-100 py-2 mt-2">
+                <i class="fas fa-home"></i> <?php echo $option['site_name']; ?> - <?php echo $option['site_short_name']; ?>
             </a>
         </div>
     </form>

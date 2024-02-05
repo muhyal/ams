@@ -22,9 +22,11 @@
 global $db, $showErrors, $siteName, $siteShortName, $siteUrl, $siteHeroDescription, $oimVersion, $adminUsername;
 require_once(__DIR__ . '/../../config/db_connection.php');
 require_once(__DIR__ . '/../../config/config.php');
+
 require_once(__DIR__ . '/../../src/functions.php');
 $option = getConfigurationFromDatabase($db);
 extract($option, EXTR_IF_EXISTS);
+
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
