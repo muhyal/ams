@@ -119,6 +119,7 @@ if (isset($_GET["action"]) && $_GET["action"] === "delete" && isset($_GET["id"])
                 <table id="usersTable" class="table table-striped table-sm">
                     <thead class="thead-light">
                     <tr>
+                        <th scope="col" class="text-sm">Fotoğraf</th>
                         <th scope="col" class="text-sm">Tam Ad</th>
                         <th scope="col" class="text-sm">E-posta</th>
                         <th scope="col" class="text-sm">T.C. Kimlik No</th>
@@ -134,6 +135,13 @@ if (isset($_GET["action"]) && $_GET["action"] === "delete" && isset($_GET["id"])
                     <tbody>
                     <?php foreach ($users as $user): ?>
                         <tr <?php echo $user['deleted_at'] ? 'class="deleted-user"' : ''; ?>>
+                            <td>
+                                <?php if (!empty($user['profile_photo'])): ?>
+                                    <img src="<?= $user['profile_photo'] ?>" alt="<?= $user['first_name'] ?> <?= $user['last_name'] ?> Fotoğrafı"  style="border-radius: 50%; width: 50px; height: 50px;">
+                                <?php else: ?>
+                                    <img src="/assets/brand/default_pp.png" alt="Varsayılan Profil Fotoğrafı" style="border-radius: 50%; width: 50px; height: 50px;">
+                                <?php endif; ?>
+                            </td>
                             <td><?= $user['first_name'] ?> <?= $user['last_name'] ?></td>
                             <td><?= $user['email'] ?></td>
                             <td><?= $user['tc_identity'] ?></td>
