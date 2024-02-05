@@ -25,17 +25,21 @@ global $db, $showErrors, $siteName, $siteShortName, $siteUrl, $config;
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
 
+require_once(__DIR__ . '/config/db_connection.php');
+require_once(__DIR__ . '/vendor/autoload.php');
 require_once(__DIR__ . '/config/config.php');
+require_once(__DIR__ . '/src/functions.php');
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
+
+$option = getConfigurationFromDatabase($db);
+extract($option, EXTR_IF_EXISTS);
 
 // Oturum kontrolü
 session_start();
 session_regenerate_id(true);
 
-require_once(__DIR__ . '/config/db_connection.php');
-require_once(__DIR__ . '/vendor/autoload.php');
 
 $errors = array(); // Hata mesajlarını tutacak dizi
 
@@ -51,7 +55,7 @@ if (isset($_POST["reset_request"])) {
     $recaptchaToken = $_POST['recaptcha_response'] ?? '';
 
     // reCAPTCHA doğrulama
-    $recaptchaVerify = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=" . $recaptchaSecretKey . "&response={$recaptchaToken}");
+    $recaptchaVerify = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=" . $option['recaptcha_secret_key'] . "&response={$recaptchaToken}");
     $recaptchaResponse = json_decode($recaptchaVerify);
 
     // reCAPTCHA doğrulaması başarısızsa işlemi reddet
