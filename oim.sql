@@ -103,6 +103,12 @@ CREATE TABLE `logs` (
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `options` (
+  `option_id` int(11) NOT NULL,
+  `option_name` varchar(255) DEFAULT NULL,
+  `option_value` text
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE `payment_methods` (
   `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL
@@ -158,7 +164,7 @@ CREATE TABLE `users` (
   `user_type` int(11) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `invoice_type` enum('individual','corporate') DEFAULT 'individual',
+  `invoice_type` varchar(255) DEFAULT NULL,
   `tax_company_name` varchar(255) DEFAULT NULL,
   `tax_office` varchar(255) DEFAULT NULL,
   `tax_number` varchar(20) DEFAULT NULL,
@@ -181,6 +187,15 @@ CREATE TABLE `user_academy_assignment` (
 CREATE TABLE `user_types` (
   `id` int(11) NOT NULL,
   `type_name` varchar(25) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `user_uploads` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `filename` varchar(255) NOT NULL,
+  `file_type` varchar(50) NOT NULL,
+  `description` text,
+  `upload_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `verifications` (
@@ -239,6 +254,9 @@ ALTER TABLE `introductory_course_plans`
 ALTER TABLE `logs`
   ADD PRIMARY KEY (`log_id`);
 
+ALTER TABLE `options`
+  ADD PRIMARY KEY (`option_id`);
+
 ALTER TABLE `payment_methods`
   ADD PRIMARY KEY (`id`);
 
@@ -273,6 +291,9 @@ ALTER TABLE `user_academy_assignment`
 ALTER TABLE `user_types`
   ADD PRIMARY KEY (`id`);
 
+ALTER TABLE `user_uploads`
+  ADD PRIMARY KEY (`id`);
+
 ALTER TABLE `verifications`
   ADD PRIMARY KEY (`id`),
   ADD KEY `verifications_ibfk_1` (`user_id`);
@@ -299,6 +320,9 @@ ALTER TABLE `introductory_course_plans`
 ALTER TABLE `logs`
   MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT;
 
+ALTER TABLE `options`
+  MODIFY `option_id` int(11) NOT NULL AUTO_INCREMENT;
+
 ALTER TABLE `payment_methods`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
@@ -318,6 +342,9 @@ ALTER TABLE `user_academy_assignment`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `user_types`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `user_uploads`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `verifications`
