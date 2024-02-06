@@ -486,68 +486,55 @@ ORDER BY course_date DESC
 
 // Check if the form is submitted for file upload
     if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["upload"])) {
-        // Validate and handle file upload
+        // Dosya yükleme işlemi için güvenlik önlemleri
         $uploadDirectory = __DIR__ . '/../uploads/user_uploads/';
 
-        // Check if the file was uploaded without errors
+        // Dosya hatası kontrolü
         if ($_FILES["file"]["error"] == UPLOAD_ERR_OK) {
-            // Get file information
+            // Dosya bilgilerini al
             $fileName = basename($_FILES["file"]["name"]);
             $fileType = $_POST["fileType"];
-            $description = $_POST["description"];
+            $description = htmlspecialchars($_POST["description"], ENT_QUOTES, 'UTF-8');
 
-            // Add error_log statements for debugging
-            error_log('File Name: ' . $fileName);
-            error_log('File Type: ' . $fileType);
-            error_log('Description: ' . $description);
-
-            // Define allowed file types (adjust as needed)
-            $allowedTypes = array("pdf", "doc", "docx", "jpg", "png", "mp3");
-
-            // Get the file extension
+            // Dosya uzantısını kontrol et
             $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
 
-            // Check if the file type is allowed
+            // Dosya türü izin kontrolü
+            $allowedTypes = array("pdf", "jpg", "png");
             if (in_array($fileExtension, $allowedTypes)) {
-                // Generate a unique filename to avoid overwriting existing files
-                $uniqueFileName = uniqid('', true);
+                // Dosya boyutu kontrolü ekleyebilirsiniz
+                $maxFileSize = 10 * 1024 * 1024; // 10 MB
+                if ($_FILES["file"]["size"] <= $maxFileSize) {
+                    // Dosya adını güvenli bir şekilde oluştur
+                    $uniqueFileName = uniqid('', true);
+                    $uniqueFileName .= "." . $fileExtension;
 
-                // Get the file extension
-                $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+                    // Dosyayı taşı
+                    $uploadPath = $uploadDirectory . $uniqueFileName;
+                    if (move_uploaded_file($_FILES["file"]["tmp_name"], $uploadPath)) {
+                        // Veritabanına ekle
+                        $user_id = $_SESSION['user_id'];
+                        $query = "INSERT INTO user_uploads (user_id, filename, file_type, description) VALUES (?, ?, ?, ?)";
+                        $stmt = $db->prepare($query);
+                        $stmt->execute([$user_id, $uniqueFileName, $fileType, $description]);
 
-                // Append the original file extension to the unique filename
-                $uniqueFileName .= "." . $fileExtension;
-
-                // Move the file to the upload directory
-                $uploadPath = $uploadDirectory . $uniqueFileName;
-                if (move_uploaded_file($_FILES["file"]["tmp_name"], $uploadPath)) {
-                    // File upload successful, you can now store information in the database if needed
-                    // Insert file information into the database
-                    $user_id = $_SESSION['user_id'];
-
-                    $query = "INSERT INTO user_uploads (user_id, filename, file_type, description) VALUES (?, ?, ?, ?)";
-                    $stmt = $db->prepare($query);
-                    $stmt->execute([$user_id, $uniqueFileName, $fileType, $description]);
-
-
-
-                    // Redirect back to the main page with a success message
-                    header("Location: /user/panel.php?success=1");
-                    exit();
+                        // Başarı mesajı ile ana sayfaya yönlendir
+                        header("Location: /user/panel.php?success=1");
+                        exit();
+                    } else {
+                        $errorMessage = "Dosya yükleme hatası.";
+                    }
                 } else {
-                    // Error moving the file
-                    $errorMessage = "Error moving the file to the upload directory.";
+                    $errorMessage = "Dosya boyutu çok büyük. Maksimum dosya boyutu: " . $maxFileSize / (1024 * 1024) . " MB";
                 }
             } else {
-                // Invalid file type
-                $errorMessage = "Invalid file type. Allowed types are: " . implode(", ", $allowedTypes);
+                $errorMessage = "Geçersiz dosya türü. İzin verilen türler: " . implode(", ", $allowedTypes);
             }
         } else {
-            // File upload error
-            $errorMessage = "Error uploading the file. Error code: " . $_FILES["file"]["error"];
+            $errorMessage = "Dosya yükleme hatası. Hata kodu: " . $_FILES["file"]["error"];
         }
 
-        // Redirect back to the main page with an error message
+        // Hata durumunda ana sayfaya hata mesajı ile yönlendir
         header("Location: /user/panel.php?error=" . urlencode($errorMessage));
         exit();
     }
@@ -594,7 +581,7 @@ ORDER BY course_date DESC
 
 
                                                 <button type="button" class="btn btn-secondary btn-sm" onclick="openPopup()">
-                                                    <i class="fas fa-file-archive"></i> Dosyalarım
+                                                    <i class="fas fa-file"></i> Dosyalarım
                                                 </button>
 
                                                 <!-- Bootstrap Modal -->
@@ -603,8 +590,7 @@ ORDER BY course_date DESC
                                                         <div class="modal-content">
                                                             <div class="modal-header">
                                                                 <h5 class="modal-title" id="fileUploadModalLabel">Dosyalarım</h5>
-                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                    <span aria-hidden="true">&times;</span>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                                 </button>
                                                             </div>
                                                             <div class="modal-body">
@@ -612,8 +598,12 @@ ORDER BY course_date DESC
                                                                 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" enctype="multipart/form-data">
                                                                     <div class="form-group mt-3 mb-3">
                                                                         <label for="file">Dosya Seç:</label>
-                                                                        <input type="file" class="form-control-file" name="file" id="file" required>
+                                                                        <input type="file" name="file" id="file" accept=".pdf, .doc, .docx, .jpg, .png, .mp3" onchange="showFileInfo()">
                                                                     </div>
+
+                                                                    <!-- Dosya boyutu ve izin verilen dosya türleri bilgisini gösteren div -->
+                                                                    <div id="fileInfo" style="display:none; margin-top: 10px;"></div>
+
 
                                                                     <div class="form-group mt-3 mb-3">
                                                                         <label for="fileType">Dosya Türü:</label>
@@ -696,6 +686,38 @@ ORDER BY course_date DESC
                                                     </div>
                                                 </div>
 
+                                                <script>
+                                                    function showFileInfo() {
+                                                        var fileInput = document.getElementById('file');
+                                                        var fileInfoDiv = document.getElementById('fileInfo');
+                                                        var maxTotalSizeMB = 10; // Maksimum izin verilen toplam dosya boyutu (MB)
+
+                                                        if (fileInput.files.length > 0) {
+                                                            var totalSize = 0;
+                                                            var allowedTypes = ["pdf", "jpg", "png"];
+
+                                                            for (var i = 0; i < fileInput.files.length; i++) {
+                                                                totalSize += fileInput.files[i].size;
+                                                            }
+
+                                                            var totalSizeKB = totalSize / 1024; // Byte'ı KB'ye çevir
+                                                            var totalSizeMB = totalSizeKB / 1024; // KB'yi MB'ye çevir
+
+                                                            fileInfoDiv.innerHTML = "Toplam Dosya Boyutu: " + totalSizeMB.toFixed(2) + " MB<br>";
+                                                            fileInfoDiv.innerHTML += "İzin Verilen Dosya Türleri: " + allowedTypes.join(", ");
+
+                                                            // Maksimum izin verilen dosya boyutunu kontrol et
+                                                            if (totalSizeMB > maxTotalSizeMB) {
+                                                                fileInfoDiv.innerHTML += "<br><strong style='color: red;'>Uyarı: Toplam dosya boyutu izin verilen sınırı aşıyor!</strong>";
+                                                            }
+
+                                                            fileInfoDiv.style.display = 'block';
+                                                        } else {
+                                                            fileInfoDiv.style.display = 'none';
+                                                        }
+                                                    }
+                                                </script>
+
 
                                                 <!-- Script to handle modal opening and closing -->
                                                 <script>
@@ -735,7 +757,23 @@ ORDER BY course_date DESC
                                             <ul class="list-group list-group-flush">
                                                 <li class="list-group-item">Ad: <?= $user['first_name'] ?>
                                                 <li class="list-group-item">Soyad: <?= $user['last_name'] ?></li>
-                                                <li class="list-group-item">E-posta: <?= $user['email'] ?></li>
+                                                <li class="list-group-item" onmouseover="showFullEmail(this)" onmouseout="hideFullEmail(this)">
+                                                    E-posta: <span class="short-email"><?= substr($user['email'], 0, 25) . ' ...' ?></span>
+                                                    <span class="full-email" style="display:none;"><?= $user['email'] ?></span>
+                                                </li>
+
+                                                <script>
+                                                    function showFullEmail(element) {
+                                                        element.querySelector('.short-email').style.display = 'none';
+                                                        element.querySelector('.full-email').style.display = 'inline';
+                                                    }
+
+                                                    function hideFullEmail(element) {
+                                                        element.querySelector('.short-email').style.display = 'inline';
+                                                        element.querySelector('.full-email').style.display = 'none';
+                                                    }
+                                                </script>
+
                                                 <li class="list-group-item">T.C. Kimlik No: <?= $user['tc_identity'] ?></li>
                                                 <li class="list-group-item">Telefon: <?= $user['phone'] ?></li>
                                                 <!-- SMS Onay Durumu -->
