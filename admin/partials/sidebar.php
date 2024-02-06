@@ -108,6 +108,13 @@
                             </a>
                         </li>
 
+
+                        <li class="nav-item">
+                            <a class="text-light-emphasis nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/user_uploads.php') ? 'active' : ''; ?>" href="/admin/user_uploads.php">
+                                Dosyalar
+                            </a>
+                        </li>
+
                         <!-- Sınıflar Menüsü -->
                         <li class="nav-item">
                             <a class="text-light-emphasis nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/classes.php') ? 'active' : ''; ?>" href="/admin/classes.php">

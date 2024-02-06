@@ -7,6 +7,9 @@
 !/uploads/profile_photos/*/
 !/uploads/profile_photos/.gitkeep
 
+/uploads/user_uploads/*
+!/uploads/user_uploads/*/
+!/uploads/user_uploads/.gitkeep
 
 # Config files
 config/config.php
@@ -499,3 +502,4 @@ composer.lock
 *.scss.map
 /uploads/profile_photos/
 /uploads/profile_photos/
+/uploads/user_uploads/

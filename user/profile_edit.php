@@ -155,7 +155,6 @@ require_once(__DIR__ . '/partials/header.php');
                     <?php endif; ?>
 
 
-
                     <div class="form-group mt-3 mx-3 mb-3">
                         <button type="submit" class="btn btn-primary">Bilgileri Güncelle</button>
                     </div>

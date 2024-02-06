@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License, version 3,
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
-global $db, $showErrors, $siteName, $siteShortName, $siteUrl, $config;
+global $db, $showErrors, $siteName, $siteShortName, $siteUrl, $config, $user_id;
 // Hata mesajlarını göster veya gizle ve ilgili işlemleri gerçekleştir
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
@@ -477,6 +477,80 @@ ORDER BY course_date DESC
     }
 
 
+// Modify the SQL query to retrieve files uploaded by the current user
+    $query = "SELECT * FROM user_uploads WHERE user_id = ?";
+    $stmt = $db->prepare($query);
+    $stmt->execute([$user['id']]);
+    $user_uploads = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+// Check if the form is submitted for file upload
+    if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["upload"])) {
+        // Validate and handle file upload
+        $uploadDirectory = __DIR__ . '/../uploads/user_uploads/';
+
+        // Check if the file was uploaded without errors
+        if ($_FILES["file"]["error"] == UPLOAD_ERR_OK) {
+            // Get file information
+            $fileName = basename($_FILES["file"]["name"]);
+            $fileType = $_POST["fileType"];
+            $description = $_POST["description"];
+
+            // Add error_log statements for debugging
+            error_log('File Name: ' . $fileName);
+            error_log('File Type: ' . $fileType);
+            error_log('Description: ' . $description);
+
+            // Define allowed file types (adjust as needed)
+            $allowedTypes = array("pdf", "doc", "docx", "jpg", "png", "mp3");
+
+            // Get the file extension
+            $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+            // Check if the file type is allowed
+            if (in_array($fileExtension, $allowedTypes)) {
+                // Generate a unique filename to avoid overwriting existing files
+                $uniqueFileName = uniqid('', true);
+
+                // Get the file extension
+                $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+                // Append the original file extension to the unique filename
+                $uniqueFileName .= "." . $fileExtension;
+
+                // Move the file to the upload directory
+                $uploadPath = $uploadDirectory . $uniqueFileName;
+                if (move_uploaded_file($_FILES["file"]["tmp_name"], $uploadPath)) {
+                    // File upload successful, you can now store information in the database if needed
+                    // Insert file information into the database
+                    $user_id = $_SESSION['user_id'];
+
+                    $query = "INSERT INTO user_uploads (user_id, filename, file_type, description) VALUES (?, ?, ?, ?)";
+                    $stmt = $db->prepare($query);
+                    $stmt->execute([$user_id, $uniqueFileName, $fileType, $description]);
+
+
+
+                    // Redirect back to the main page with a success message
+                    header("Location: /user/panel.php?success=1");
+                    exit();
+                } else {
+                    // Error moving the file
+                    $errorMessage = "Error moving the file to the upload directory.";
+                }
+            } else {
+                // Invalid file type
+                $errorMessage = "Invalid file type. Allowed types are: " . implode(", ", $allowedTypes);
+            }
+        } else {
+            // File upload error
+            $errorMessage = "Error uploading the file. Error code: " . $_FILES["file"]["error"];
+        }
+
+        // Redirect back to the main page with an error message
+        header("Location: /user/panel.php?error=" . urlencode($errorMessage));
+        exit();
+    }
 
     require_once(__DIR__ . '/partials/header.php');
     ?>
@@ -495,6 +569,16 @@ ORDER BY course_date DESC
                                     echo "<div id='success-alert' class='alert alert-success' role='alert'>$successMessage</div>";
                                 }
                                 ?>
+                                <?php
+                                // Check for success or error messages
+                                if (isset($_GET["success"]) && $_GET["success"] == 1) {
+                                    echo "<div class='alert alert-success' id='success-alert' role='alert'>Dosya başarıyla yüklendi!</div>";
+                                } elseif (isset($_GET["error"])) {
+                                    $errorMessage = urldecode($_GET["error"]);
+                                    echo "<div class='alert alert-danger' id='error-alert' role='alert'>$errorMessage</div>";
+                                }
+                                ?>
+
                                 <div class="col-lg-4">
                                     <div class="card">
                                         <div class="card-body">
@@ -506,6 +590,120 @@ ORDER BY course_date DESC
                                                 <a href="?action=logout" class="btn btn-sm btn-danger">
                                                     <i class="fas fa-sign-out-alt"></i> Oturumu kapat
                                                 </a>
+
+
+
+                                                <button type="button" class="btn btn-secondary btn-sm" onclick="openPopup()">
+                                                    <i class="fas fa-file-archive"></i> Dosyalarım
+                                                </button>
+
+                                                <!-- Bootstrap Modal -->
+                                                <div class="modal fade" id="fileUploadModal" tabindex="-1" role="dialog" aria-labelledby="fileUploadModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog modal-lg" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="fileUploadModalLabel">Dosyalarım</h5>
+                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <!-- File Upload Form -->
+                                                                <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" enctype="multipart/form-data">
+                                                                    <div class="form-group mt-3 mb-3">
+                                                                        <label for="file">Dosya Seç:</label>
+                                                                        <input type="file" class="form-control-file" name="file" id="file" required>
+                                                                    </div>
+
+                                                                    <div class="form-group mt-3 mb-3">
+                                                                        <label for="fileType">Dosya Türü:</label>
+                                                                        <select class="form-control" name="fileType" id="fileType" required>
+                                                                            <option value="health_report">Sağlık Raporu</option>
+                                                                            <option value="permission_document">İzin Belgesi</option>
+                                                                            <option value="payment_receipt">Ödeme Belgesi</option>                                                                            <option value="petition">Dilekçe</option>
+                                                                            <option value="petition">Dilekçe</option>
+                                                                            <option value="photo">Fotoğraf</option>
+                                                                            <option value="other">Diğer</option>
+                                                                        </select>
+                                                                    </div>
+
+                                                                    <div class="form-group mt-3 mb-3">
+                                                                        <label for="description">Açıklama (Yüklenen dosya ile ilgili açıklama):</label>
+                                                                        <textarea class="form-control" name="description" id="description" rows="4" required></textarea>
+                                                                    </div>
+
+                                                                    <button type="submit" name="upload" class="btn btn-primary mt-3 mb-3">
+                                                                        <i class="fas fa-cloud-upload-alt"></i> Dosyayı Yükle
+                                                                    </button>
+                                                                </form>
+
+                                                                <h5 class="mt-4">Dosyalarınız</h5>
+                                                                <table class="table table-bordered">
+                                                                    <thead>
+                                                                    <tr>
+                                                                        <th>Önizleme</th>
+                                                                        <th>Ad</th>
+                                                                        <th>Tür</th>
+                                                                        <th>Açıklama</th>
+                                                                        <th>İşlemler</th>
+                                                                    </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                    <?php foreach ($user_uploads as $upload): ?>
+                                                                        <tr>
+                                                                            <td><img src="/uploads/user_uploads/<?php echo $upload['filename']; ?>" style="width: 30px; height: 30px;" alt="Dosya Küçük Resmi"></td>
+                                                                            <td><?php echo $upload['filename']; ?></td>
+                                                                            <td>
+                                                                                <?php
+                                                                                $fileType = $upload['file_type'];
+
+                                                                                switch ($fileType) {
+                                                                                    case 'health_report':
+                                                                                        echo 'Sağlık Raporu';
+                                                                                        break;
+                                                                                    case 'permission_document':
+                                                                                        echo 'İzin Belgesi';
+                                                                                        break;
+                                                                                    case 'payment_receipt':
+                                                                                        echo 'Ödeme Belgesi';
+                                                                                        break;
+                                                                                    case 'petition':
+                                                                                        echo 'Dilekçe';
+                                                                                        break;
+                                                                                    case 'other':
+                                                                                        echo 'Diğer';
+                                                                                        break;
+                                                                                    case 'photo':
+                                                                                        echo 'Fotoğraf';
+                                                                                        break;
+                                                                                    default:
+                                                                                        echo $fileType; // Eğer tanımlanmamışsa orijinal değeri göster
+                                                                                }
+                                                                                ?>
+                                                                            </td>
+                                                                            <td><?php echo $upload['description']; ?></td>
+                                                                            <td>
+                                                                                <a href="dl.php?file=<?php echo $upload['filename']; ?>" class="btn btn-primary btn-sm">
+                                                                                    <i class="fas fa-download"></i>
+                                                                                </a>
+                                                                            </td>
+                                                                        </tr>
+                                                                    <?php endforeach; ?>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+                                                <!-- Script to handle modal opening and closing -->
+                                                <script>
+                                                    function openPopup() {
+                                                        $('#fileUploadModal').modal('show');
+                                                    }
+                                                </script>
+
 
                                                 <!-- Button trigger modal -->
                                                 <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#FreezeConfirmationModal">
