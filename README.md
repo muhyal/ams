@@ -42,7 +42,7 @@ Kurum içi gereksinim nedeniyle oluşturulmuş basit bir öğrenci işleri merke
 * Yöneticilere özel oturum aç, şifremi unuttum özelliği
 * Yönetici oturum açtığında mobil telefon numarasına SMS gönderilmesi
 * Yöneticinin kendi bilgilerini güncelleyebilmesi
-* Gelişmiş yönetici paneli (Geliştiriliyor)
+* Gelişmiş yönetici paneli
 * Yönetim panelinden öğrenci ekleyip, düzenleyip, silebilme
 * Yönetim panelinden kullanıcı ekleyip, düzenleyip, silebilme
 * Yönetim panelinden sınıf ekleyip, düzenleyip, silebilme
@@ -57,9 +57,9 @@ Kurum içi gereksinim nedeniyle oluşturulmuş basit bir öğrenci işleri merke
 * Kullanıcı doğrulamasının yinelenebilmesi
 * Kullanıcı doğrulama geçmişini görüntüleyebilme
 * Öğrenci ve öğretmenler için doğum günü takibi
-* Öğrenci ve Öğretmenlere özel günlerde kutlama SMS ve e-postası gönderilmesi (Geliştiriliyor)
-* Öğrenci ve Öğretmenlere katılım sağlayacakları eğitim hakkında SMS ve e-postası gönderilmesi (Geliştiriliyor)
-* Çoklu lokasyon ve birime özel öğrenci, öğretmen, ders, muhasebe kayıtları (Geliştiriliyor)
+* Öğrenci ve Öğretmenlere özel günlerde kutlama SMS ve e-postası gönderilmesi (?)
+* Öğrenci ve Öğretmenlere katılım sağlayacakları eğitim hakkında SMS ve e-postası gönderilmesi (?)
+* Çoklu lokasyon ve birime özel öğrenci, öğretmen, ders, muhasebe kayıtları
 * Basit muhasebe kayıtlarının tutulması (Geliştiriliyor)
 * Muhasebe kayıtlarını Excel formatında rapor alabilme
 * Akademi bazında günlük PDF ciro raporu alabilme
@@ -75,7 +75,14 @@ Kurum içi gereksinim nedeniyle oluşturulmuş basit bir öğrenci işleri merke
 * Kullanıcı özelinde gönderilmiş özel SMS ve e-posta geçmişini görüntüleyebilme
 * Kullanıcı aktif/pasif hale getirebilme
 * Kullanıcının kendi hesabını dondurabilmesi
+* Duyuru sistemi
+* Çoklu dil desteği (TR, EN ve artırılabilir)
+* Kullanıcı kendi panelinden dosyalar yükleyebilir ve görüntüleyebilir
+* Profil fotoğrafı özelliği eklendi
+* Site seçenekleri yönetici panelinden değiştirilebilir
 * ...
+
+? = Geliştiriliyor
 
 ### Güvenlik
 Bir güvenlik açığı bulduğunuzu düşünüyorsanız (veya emin değilseniz) benimle iletişime geçmek e-posta adresimi kullanabilirsiniz.
