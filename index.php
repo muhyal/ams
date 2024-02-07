@@ -24,6 +24,15 @@ global $showErrors, $siteUrl, $db;
 $showErrors ? ini_set('display_errors', 1) : ini_set('display_errors', 0);
 $showErrors ? ini_set('display_startup_errors', 1) : ini_set('display_startup_errors', 0);
 
+require_once('./config/config.php');
+require_once(__DIR__ . '/./config/db_connection.php');
+
+// Son 3 duyuruyu çekme
+$query = "SELECT id, title, content, created_at FROM announcements ORDER BY created_at DESC LIMIT 3";
+$stmt = $db->prepare($query);
+$stmt->execute();
+$announcements = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 require_once(__DIR__ . '/user/partials/header.php');
 ?>
 
@@ -36,14 +45,51 @@ require_once(__DIR__ . '/user/partials/header.php');
         <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
             <a href="<?php echo $option['site_virtual_classroom_url']; ?>" target="_blank"
                class="btn btn-success btn-md px-4 gap-3" role="button" aria-pressed="true">
-                <i class="bi bi-door-open"></i> Sanal Sınıf
+                <i class="bi bi-door-open"></i> <?= translate('virtual_classroom', $selectedLanguage) ?>
             </a>
             <a href="<?php echo $option['site_academy_url']; ?>/" target="_blank"
                class="btn btn-primary btn-md px-4 gap-3" role="button" aria-pressed="true">
-                <i class="bi bi-file-earmark-text"></i> <?php echo $option['site_name']; ?>'ye git
+                <i class="bi bi-file-earmark-text"></i> <?php echo $option['site_name']; ?> <?= translate('website', $selectedLanguage) ?>
             </a>
         </div>
     </div>
 </div>
+
+<div class="container text-center">
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title">
+                <i class="fas fa-bullhorn"></i> <?= translate('announcements', $selectedLanguage) ?>
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <?php foreach ($announcements as $announcement): ?>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header h6">
+                                <?php
+                                $title = (strlen($announcement['title']) > 100) ? substr($announcement['title'], 0, 100) . '...' : $announcement['title'];
+                                echo $title;
+                                ?>
+                            </div>
+                            <div class="card-body">
+                                <?php
+                                $content = (strlen($announcement['content']) > 250) ? substr($announcement['content'], 0, 250) . '...' : $announcement['content'];
+                                echo $content;
+                                ?>
+                            </div>
+                            <div class="card-footer">
+                                <small class="text-muted"><?= translate('announced', $selectedLanguage) ?>: <?php echo date('d.m.Y H:i', strtotime($announcement['created_at'])); ?></small>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 <?php require_once(__DIR__ . '/user/partials/footer.php'); ?>

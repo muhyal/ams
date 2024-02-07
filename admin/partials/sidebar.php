@@ -108,10 +108,15 @@
                             </a>
                         </li>
 
-
                         <li class="nav-item">
                             <a class="text-light-emphasis nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/user_uploads.php') ? 'active' : ''; ?>" href="/admin/user_uploads.php">
                                 Dosyalar
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="text-light-emphasis nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/announcements.php') ? 'active' : ''; ?>" href="/admin/announcements.php">
+                                Duyurular
                             </a>
                         </li>
 
