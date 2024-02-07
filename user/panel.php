@@ -476,7 +476,6 @@ ORDER BY course_date DESC
         }
     }
 
-
 // Modify the SQL query to retrieve files uploaded by the current user
     $query = "SELECT * FROM user_uploads WHERE user_id = ?";
     $stmt = $db->prepare($query);
@@ -598,7 +597,7 @@ ORDER BY course_date DESC
                                                                 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" enctype="multipart/form-data">
                                                                     <div class="form-group mt-3 mb-3">
                                                                         <label for="file">Dosya Seç:</label>
-                                                                        <input type="file" name="file" id="file" accept=".pdf, .doc, .docx, .jpg, .png, .mp3" onchange="showFileInfo()">
+                                                                        <input type="file" name="file" id="file" accept=".pdf, jpg, .png" onchange="showFileInfo()">
                                                                     </div>
 
                                                                     <!-- Dosya boyutu ve izin verilen dosya türleri bilgisini gösteren div -->
