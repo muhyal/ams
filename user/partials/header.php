@@ -240,18 +240,18 @@ logoutUser();
 
                 <ul class="dropdown-menu text-small">
                     <?php if (!$loggedIn) { // Oturum açık değilse "Şifremi unuttum" linkini göster ?>
-                        <li><a class="dropdown-item" href="/login.php">Oturum aç</a></li>
+                        <li><a class="dropdown-item" href="/login.php"><?= translate('login', $selectedLanguage) ?></a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="/reset_password.php">Şifremi unuttum</a></li>
+                        <li><a class="dropdown-item" href="/reset_password.php"><?= translate('lost_password', $selectedLanguage) ?></a></li>
                     <?php } ?>
 
                     <?php if ($loggedIn) { // Oturum açıldıysa ?>
                         <?php if ($_SESSION['user_type'] == 1) { // Eğer kullanıcı yönetici ise ?>
-                            <li><a class="dropdown-item" href="/admin/panel.php">Yönetici Paneli</a></li>
+                            <li><a class="dropdown-item" href="/admin/panel.php"><?= translate('admin_panel', $selectedLanguage) ?></a></li>
                         <?php } ?>
-                        <li><a class="dropdown-item" href="/user/panel.php">Kullanıcı Paneli</a></li>
-                        <li><a class="dropdown-item" href="/user/profile_edit.php">Bilgileri güncelle</a></li>
-                        <li><a class="dropdown-item" href="?action=logout">Oturumu kapat</a></li>
+                        <li><a class="dropdown-item" href="/user/panel.php"><?= translate('user_panel', $selectedLanguage) ?></a></li>
+                        <li><a class="dropdown-item" href="/user/profile_edit.php"><?= translate('edit_profile', $selectedLanguage) ?></a></li>
+                        <li><a class="dropdown-item" href="?action=logout"><?= translate('logout', $selectedLanguage) ?></a></li>
                     <?php } ?>
                 </ul>
 

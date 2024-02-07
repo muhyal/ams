@@ -136,23 +136,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <input type="hidden" name="csrf_request" value="1">
 
         <img id="logo-body" class="mb-5 mt-5" src="/assets/brand/default_logo_light.png" alt=" <?php echo $option['site_name']; ?>" title=" <?php echo $option['site_name']; ?>" width="80%" height="%80">
-        <h1 class="h3 mb-3 fw-normal">Kullanıcı Paneli</h1>
+        <h1 class="h3 mb-3 fw-normal"><?= translate('user_panel', $selectedLanguage) ?></h1>
 
         <div class="form-floating">
-            <input type="text" class="form-control" id="identifier" name="identifier" placeholder="E-posta / Kullanıcı adı" autofocus="" required>
-            <label for="floatingInput">E-posta / Kullanıcı adı</label>
+            <input type="text" class="form-control" id="identifier" name="identifier" placeholder="<?= translate('email_username', $selectedLanguage) ?>" autofocus="" required>
+            <label for="floatingInput"><?= translate('email_username', $selectedLanguage) ?></label>
         </div>
 
         <div class="form-floating">
-            <input type="password" class="form-control" name="password" id="password" placeholder="Şifre" required>
-            <label for="floatingInput">Şifre</label>
+            <input type="password" class="form-control" name="password" id="password" placeholder="<?= translate('password', $selectedLanguage) ?>" required>
+            <label for="floatingInput"><?= translate('password', $selectedLanguage) ?></label>
             <span class="eye-icon" onclick="togglePasswordVisibility()">
                 <i class="bi bi-eye"></i>
             </span>
         </div>
 
         <div class="form-group mt-3">
-            <a class="text-light-emphasis text-decoration-none" href="reset_password.php">Şifremi unuttum</a>
+            <a class="text-light-emphasis text-decoration-none" href="reset_password.php"><?= translate('lost_password', $selectedLanguage) ?></a>
         </div>
 
         <style>
@@ -185,7 +185,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <div class="form-group mt-3">
             <button class="btn btn-primary w-100 py-2" type="submit">
-                <i class="fas fa-sign-in-alt"></i> Oturum aç
+                <i class="fas fa-sign-in-alt"></i> <?= translate('login', $selectedLanguage) ?>
             </button>
             <a href="<?php echo $option['site_url']; ?>" class="btn btn-secondary w-100 py-2 mt-2">
                 <i class="fas fa-home"></i>  <?php echo $option['site_name']; ?> -  <?php echo $option['site_short_name']; ?>
