@@ -1,11 +1,11 @@
 # OIM (Öğrenci İşleri Merkezi)
 
-Kurum içi gereksinim nedeniyle oluşturulmuş basit bir öğrenci işleri merkezi betiği.
+Kurum içi gereksinim nedeniyle (Framework kullanılmadan) pure PHP dili ile geliştirilmiş akademi yönetim platformu.
 
 /!\ Henüz geliştirilme aşamasındadır ve hataları ile fonksiyonel çalışmayan alanları olabilir /!\
 
 ### Geliştirildiği ortam & gereksinimler
-* PHP 8.2
+* PHP 8.3
 * MySQL 5.7.39 (PDO)
 * Composer
 
