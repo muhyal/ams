@@ -1,4 +1,4 @@
-# OIM (Öğrenci İşleri Merkezi)
+# OIM (Akademi Yönetim Platformu)
 
 Kurum içi gereksinim nedeniyle (Framework kullanılmadan) pure PHP dili ile geliştirilmiş akademi yönetim platformu.
 
