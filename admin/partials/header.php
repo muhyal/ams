@@ -19,7 +19,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  *
  */
-global $db, $showErrors, $siteName, $siteShortName, $siteUrl, $siteHeroDescription, $oimVersion, $adminUsername;
+global $db, $showErrors, $siteName, $siteShortName, $siteUrl, $siteHeroDescription, $amsVersion, $adminUsername;
 require_once(__DIR__ . '/../../config/db_connection.php');
 require_once(__DIR__ . '/../../config/config.php');
 

@@ -19,7 +19,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  *
  */
-global $db, $showErrors, $siteName, $siteShortName, $siteUrl, $config, $oimVersion, $siteHeroDescription;
+global $db, $showErrors, $siteName, $siteShortName, $siteUrl, $config, $amsVersion, $siteHeroDescription;
 require_once(__DIR__ . '/../../src/functions.php');
 $option = getConfigurationFromDatabase($db);
 extract($option, EXTR_IF_EXISTS);

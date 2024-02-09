@@ -44,12 +44,12 @@ $config = array(
 );
 
 $siteName = 'Example';
-$siteShortName = 'OIM';
-$siteUrl = 'https://oim.example.com';
+$siteShortName = 'AMS';
+$siteUrl = 'https://ams.example.com';
 $siteVirtualClassroomUrl = 'https://zoom.us';
 $siteHeroDescription ='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus vel vestibulum erat. Aliquam nec diam nec justo sollicitudin imperdiet. Donec est mauris, viverra id dolor eget, convallis mollis massa. Cras commodo ligula hendrerit bibendum euismod.';
 $siteVerifyDescription = 'Size gönderilen onay bağlantısı ile dijital olarak bütünlüğü bozulamaz bir şekilde sözleşmelerinizi kolayca onaylayabilirsiniz. SMS ve e-posta adreslerinize gönderilen bağlantılar sadece size özeldir ve şifrelenmiş olarak sistemlerimizde saklanmaktadır.';
-$agreementLink = 'https://oim.example.com/agreement.php';
+$agreementLink = 'https://ams.example.com/agreement.php';
 $siteAcademyUrl = 'https://www.example.com';
 
 // Türkiye saat dilimini kullan
@@ -59,11 +59,11 @@ date_default_timezone_set('Europe/Istanbul');
 define('DATE_FORMAT', 'd.m.Y H:i:s');
 
 $mailFromAddress = 'noreply@example.com';
-$mailFromName = 'OIM';
+$mailFromName = 'AMS';
 $mailCharset = 'UTF-8';
 $mailContentType = 'text/plain; charset=UTF-8';
 
-$oimVersion = "Beta";
+$amsVersion = "Beta";
 
 // Hata gösterme ayarını kontrol etmek için bir değişken
 $showErrors = true;
