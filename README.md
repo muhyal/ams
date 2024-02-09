@@ -1,6 +1,6 @@
-# OIM (Akademi Yönetim Platformu)
+# OIM (Akademi Yönetim Sistemi)
 
-Kurum içi gereksinim nedeniyle (Framework kullanılmadan) pure PHP dili ile geliştirilmiş akademi yönetim platformu.
+Kurum içi gereksinim nedeniyle (Framework kullanılmadan) pure PHP dili ile geliştirilmiş açık kaynak kodlud akademi yönetim sistemi.
 
 /!\ Henüz geliştirilme aşamasındadır ve hataları ile fonksiyonel çalışmayan alanları olabilir /!\
 
