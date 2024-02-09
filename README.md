@@ -1,6 +1,6 @@
-# OIM (Akademi Yönetim Sistemi)
+# AMS (Akademi Yönetim Sistemi)
 
-Kurum içi gereksinim nedeniyle (Framework kullanılmadan) pure PHP dili ile geliştirilmiş açık kaynak kodlud akademi yönetim sistemi.
+Framework kullanılmadan pure PHP dili ile geliştirilmiş açık kaynak kodlu akademi yönetim sistemi.
 
 /!\ Henüz geliştirilme aşamasındadır ve hataları ile fonksiyonel çalışmayan alanları olabilir /!\
 
