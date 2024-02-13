@@ -584,7 +584,7 @@ require_once(__DIR__ . '/partials/sidebar.php');
                                     <?php if (!empty($user['profile_photo'])): ?>
                                         <input type="hidden" name="delete_photo" value="1">
                                         <button type="button" id="deleteBtn" class="btn btn-danger">
-                                            Sil <i class="bi bi-trash"></i>
+                                            Sil <i class="fas fa-trash"></i>
                                         </button>
                                     <?php endif; ?>
                                 </div>
@@ -701,7 +701,7 @@ require_once(__DIR__ . '/partials/sidebar.php');
 
                         <!-- Button trigger modal -->
                         <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#verificationsModal">
-                            <i class="bi bi-clock"></i> Doğrulama Geçmişi
+                            <i class="fas fa-clock"></i> Doğrulama Geçmişi
                         </button>
                     </div>
                 </div>

@@ -45,11 +45,11 @@ require_once(__DIR__ . '/user/partials/header.php');
         <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
             <a href="<?php echo $option['site_virtual_classroom_url']; ?>" target="_blank"
                class="btn btn-success btn-md px-4 gap-3" role="button" aria-pressed="true">
-                <i class="bi bi-door-open"></i> <?= translate('virtual_classroom', $selectedLanguage) ?>
+                <i class="fas fa-door-open"></i> <?= translate('virtual_classroom', $selectedLanguage) ?>
             </a>
             <a href="<?php echo $option['site_academy_url']; ?>/" target="_blank"
                class="btn btn-primary btn-md px-4 gap-3" role="button" aria-pressed="true">
-                <i class="bi bi-file-earmark-text"></i> <?php echo $option['site_name']; ?> <?= translate('website', $selectedLanguage) ?>
+                <i class="fas fa-file-alt"></i> <?php echo $option['site_name']; ?> <?= translate('website', $selectedLanguage) ?>
             </a>
         </div>
     </div>

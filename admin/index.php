@@ -192,7 +192,7 @@ require_once('../user/partials/header.php');
             <input type="password" class="form-control" name="password" id="password" placeholder="<?= translate('password', $selectedLanguage) ?>" required>
             <label for="floatingInput"><?= translate('password', $selectedLanguage) ?></label>
             <span class="eye-icon" onclick="togglePasswordVisibility()">
-                <i class="bi bi-eye"></i>
+                <i class="fas fa-eye"></i>
             </span>
         </div>
 
@@ -224,7 +224,7 @@ require_once('../user/partials/header.php');
                 passwordInput.setAttribute('type', type);
 
                 // Change eye icon based on password visibility
-                eyeIcon.innerHTML = type === 'password' ? '<i class="bi bi-eye"></i>' : '<i class="bi bi-eye-slash"></i>';
+                eyeIcon.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
             }
         </script>
 
