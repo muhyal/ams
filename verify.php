@@ -48,6 +48,8 @@ function updateVerificationStatus($db, $field, $verificationCode, $verificationT
 
 $isUserVerified = false; // Kullanıcının doğrulama durumunu belirleyen değişken
 ?>
+<!-- SignaturePad kütüphanesi CDN üzerinden eklendi -->
+<script src="https://unpkg.com/signature_pad"></script>
 
 <?php
 $userType = isset($_GET['type']) ? (int)$_GET['type'] : 0;
