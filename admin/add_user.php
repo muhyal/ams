@@ -61,6 +61,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $last_name = isset($_POST["last_name"]) ? htmlspecialchars($_POST["last_name"]) : "";
     $email = isset($_POST["email"]) ? htmlspecialchars($_POST["email"]) : "";
     $phone = isset($_POST["phone"]) ? htmlspecialchars($_POST["phone"]) : "";
+    $email_preference = isset($_POST["email_preference"]) ? htmlspecialchars($_POST["email_preference"], ENT_QUOTES, 'UTF-8') : "";
+    $sms_preference = isset($_POST["sms_preference"]) ? htmlspecialchars($_POST["sms_preference"], ENT_QUOTES, 'UTF-8') : "";
     $birth_date = isset($_POST["birth_date"]) ? htmlspecialchars($_POST["birth_date"]) : "";
     $city = isset($_POST["city"]) ? htmlspecialchars($_POST["city"]) : "";
     $district = isset($_POST["district"]) ? htmlspecialchars($_POST["district"]) : "";
@@ -110,6 +112,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     last_name, 
     email, 
     phone, 
+    email_preference,
+    sms_preference,
     password, 
     user_type, 
     birth_date,
@@ -127,8 +131,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     created_at,
     created_by_user_id,
     updated_at,
-    updated_by_user_id 
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    updated_by_user_id
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try {
             $stmt = $db->prepare($insertQuery);
@@ -143,6 +147,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $last_name,
                 $email,
                 $phone,
+                $email_preference,
+                $sms_preference,
                 $hashedPassword,
                 $userType,
                 $birth_date,
@@ -317,38 +323,6 @@ require_once(__DIR__ . '/partials/header.php');
                         </div>
 
                         <?php
-
-
-                        // Veritabanı bağlantısı
-                        require_once(__DIR__ . '/../config/db_connection.php');
-
-                        // Benzersiz bir kullanıcı adı oluşturana kadar dönen fonksiyon
-                        function getUniqueRandomUsername($db) {
-                            $isUnique = false;
-                            $maxAttempts = 10; // Maksimum deneme sayısı
-                            $attempts = 0;
-
-                            while (!$isUnique && $attempts < $maxAttempts) {
-                                $generatedChars = generateRandomChars();
-                                $currentDate = date('dmy'); // Bugünün gün, ay ve yıl bilgisi (2 haneli yıl)
-
-                                $generatedUsername = "d" . $generatedChars . $currentDate;
-
-                                $checkQuery = "SELECT COUNT(*) as count FROM users WHERE username = ?";
-                                $stmt = $db->prepare($checkQuery);
-                                $stmt->execute([$generatedUsername]);
-                                $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-                                if ($result['count'] == 0) {
-                                    $isUnique = true;
-                                }
-
-                                $attempts++;
-                            }
-
-                            return $isUnique ? $generatedUsername : null;
-                        }
-
                         // Oluşturulan benzersiz kullanıcı adını alın
                         $generatedUsername = getUniqueRandomUsername($db);
                         ?>
@@ -453,6 +427,27 @@ require_once(__DIR__ . '/partials/header.php');
                                 phoneAddon.text(defaultCountryCode);
                             });
                         </script>
+
+
+
+                        <!-- E-posta ile iletişim -->
+                        <div class="form-group mt-3 mb-3">
+                            <label for="email_preference">E-posta ile iletişim:</label>
+                            <select class="form-select" name="email_preference" required>
+                                <option value="1" <?php echo (["email_preference"] == 1) ? 'selected' : ''; ?>>Evet</option>
+                                <option value="0" <?php echo (["email_preference"] == 0) ? 'selected' : ''; ?>>Hayır</option>
+                            </select>
+                        </div>
+
+                        <!-- SMS ile iletişim -->
+                        <div class="form-group mt-3 mb-3">
+                            <label for="sms_preference">SMS ile iletişim:</label>
+                            <select class="form-select" name="sms_preference" required>
+                                <option value="1" <?php echo (["sms_preference"] == 1) ? 'selected' : ''; ?>>Evet</option>
+                                <option value="0" <?php echo (["sms_preference"] == 0) ? 'selected' : ''; ?>>Hayır</option>
+                            </select>
+                        </div>
+
 
                         <div class="mb-3">
                             <label for="city" class="form-label">Şehir:</label>

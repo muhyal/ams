@@ -124,6 +124,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $tax_number = isset($_POST["tax_number"]) ? htmlspecialchars($_POST["tax_number"], ENT_QUOTES, 'UTF-8') : "";
     $tc_identity_for_individual_invoice = isset($_POST["tc_identity_for_individual_invoice"]) ? htmlspecialchars($_POST["tc_identity_for_individual_invoice"], ENT_QUOTES, 'UTF-8') : "";
     $country = isset($_POST["country"]) ? htmlspecialchars($_POST["country"], ENT_QUOTES, 'UTF-8') : "";
+    $email_preference = isset($_POST["email_preference"]) ? htmlspecialchars($_POST["email_preference"], ENT_QUOTES, 'UTF-8') : "";
+    $sms_preference = isset($_POST["sms_preference"]) ? htmlspecialchars($_POST["sms_preference"], ENT_QUOTES, 'UTF-8') : "";
 
 
     // Güncelleme sorgusunu oluşturun
@@ -150,6 +152,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         blood_type = ?, 
         health_issue = ?, 
         updated_at = ?,
+        email_preference = ?,
+        sms_preference = ?,
         updated_by_user_id = ?"; // Include the updated_by_user_id field
 
 
@@ -161,7 +165,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $tc_identity_for_individual_invoice, $birth_date, $city, $district, $country,
         $blood_type, $health_issue,
         date("Y-m-d H:i:s"),
-        $admin_id // Assuming $admin_id is the ID of the admin user making the update
+        $email_preference, $sms_preference, $admin_id // Assuming $admin_id is the ID of the admin user making the update
     ];
 
     if (!empty($new_password)) {
@@ -331,6 +335,21 @@ require_once(__DIR__ . '/partials/header.php');
                                 <label class="form-label mt-3" for="phone">Telefon:</label>
                                 <input class="form-control" type="text" name="phone" value="<?php echo $user["phone"]; ?>" required>
                                 <div id="phoneHelp" class="form-text">Kullanıcı oluşturulurken seçilen ülkeye göre alan kodu otomatik eklenir, eğer alan kodu ekli değilse mutlaka eklenmelidir.</div>
+
+                                <!-- E-posta ile iletişim -->
+                                <label class="form-label mt-3" for="email_preference">E-posta ile iletişim:</label>
+                                    <select class="form-select" name="email_preference" required>
+                                        <option value="0" <?php echo ($user["email_preference"] == 0) ? 'selected' : ''; ?>>Hayır</option>
+                                        <option value="1" <?php echo ($user["email_preference"] == 1) ? 'selected' : ''; ?>>Evet</option>
+                                    </select>
+
+
+                                <!-- SMS ile iletişim -->
+                                <label class="form-label mt-3" for="sms_preference">SMS ile iletişim:</label>
+                                    <select class="form-select" name="sms_preference" required>
+                                        <option value="0" <?php echo ($user["sms_preference"] == 0) ? 'selected' : ''; ?>>Hayır</option>
+                                        <option value="1" <?php echo ($user["sms_preference"] == 1) ? 'selected' : ''; ?>>Evet</option>
+                                    </select>
 
 
                                 <!-- Doğum Tarihi -->

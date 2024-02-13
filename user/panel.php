@@ -775,6 +775,11 @@ ORDER BY course_date DESC
 
                                                 <li class="list-group-item">T.C. Kimlik No: <?= $user['tc_identity'] ?></li>
                                                 <li class="list-group-item">Telefon: <?= $user['phone'] ?></li>
+
+                                                <li class="list-group-item">E-posta ile iletişim izni: <?= $user['email_preference'] ? '<i class="fas fa-check text-success"></i> Var' : '<i class="fas fa-times text-danger"></i> Yok' ?></li>
+                                                <li class="list-group-item">SMS ile iletişim izni: <?= $user['sms_preference'] ? '<i class="fas fa-check text-success"></i> Var' : '<i class="fas fa-times text-danger"></i> Yok' ?></li>
+
+
                                                 <!-- SMS Onay Durumu -->
                                                 <li class="list-group-item">SMS Onay Durumu: <?= isset($verification['verification_time_sms_confirmed']) ? ($verification['verification_time_sms_confirmed'] !== null ? '<i class="fas fa-check text-success"></i> Doğrulandı' : '<i class="fas fa-times text-danger"></i> Doğrulanmadı') : '<i class="fas fa-times text-danger"></i> Doğrulanmadı'; ?></li>
 

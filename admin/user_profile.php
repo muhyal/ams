@@ -531,6 +531,8 @@ require_once(__DIR__ . '/partials/sidebar.php');
                             <li class="list-group-item"><strong>SMS Onay Durumu:</strong> <?= $user['verification_time_sms_confirmed'] ? '<i class="fas fa-check text-success"></i> Doğrulandı' : '<i class="fas fa-times text-danger"></i> Doğrulanmadı' ?></li>
                             <li class="list-group-item"><strong>E-posta Onay Durumu:</strong> <?= $user['verification_time_email_confirmed'] ? '<i class="fas fa-check text-success"></i> Doğrulandı' : '<i class="fas fa-times text-danger"></i> Doğrulanmadı' ?></li>
                             <li class="list-group-item"><strong>Kullanıcı Türü:</strong> <?= $userType ?></li>
+                            <li class="list-group-item"><strong>E-posta ile iletişim izni:</strong> <?= $user['email_preference'] ? '<i class="fas fa-check text-success"></i> Var' : '<i class="fas fa-times text-danger"></i> Yok' ?></li>
+                            <li class="list-group-item"><strong>SMS ile iletişim izni:</strong> <?= $user['sms_preference'] ? '<i class="fas fa-check text-success"></i> Var' : '<i class="fas fa-times text-danger"></i> Yok' ?></li>
                             <li class="list-group-item"><strong>Oluşturan:</strong> <?= !empty($user['created_by_name']) ? $user['created_by_name'] : 'Veri yok'; ?></li>
                             <li class="list-group-item"><strong>Oluşturulma:</strong> <?= $user['created_at'] ? date(DATETIME_FORMAT, strtotime($user['created_at'])) : 'Veri yok'; ?></li>
                             <li class="list-group-item"><strong>Güncelleyen:</strong> <?= !empty($user['updated_by_name']) ? $user['updated_by_name'] : 'Veri yok'; ?></li>

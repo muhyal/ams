@@ -44,6 +44,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $tax_office = isset($_POST["tax_office"]) ? htmlspecialchars($_POST["tax_office"], ENT_QUOTES, 'UTF-8') : "";
     $tax_number = isset($_POST["tax_number"]) ? htmlspecialchars($_POST["tax_number"], ENT_QUOTES, 'UTF-8') : "";
     $tc_identity_for_individual_invoice = isset($_POST["tc_identity_for_individual_invoice"]) ? htmlspecialchars($_POST["tc_identity_for_individual_invoice"], ENT_QUOTES, 'UTF-8') : "";
+    $email_preference = isset($_POST["email_preference"]) ? htmlspecialchars($_POST["email_preference"], ENT_QUOTES, 'UTF-8') : "";
+    $sms_preference = isset($_POST["sms_preference"]) ? htmlspecialchars($_POST["sms_preference"], ENT_QUOTES, 'UTF-8') : "";
 
 
     // Güncelleme sorgusu hazırlanır
@@ -57,13 +59,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             tax_company_name = ?, 
             tax_office = ?, 
             tax_number = ?, 
-            tc_identity_for_individual_invoice = ? 
+            tc_identity_for_individual_invoice = ?,
+            email_preference = ?,
+            sms_preference = ?
             WHERE id = ?";
     $stmt = $db->prepare($query);
 
     // Güncelleme sorgusu çalıştırılır
     $result = $stmt->execute([$first_name, $last_name, $email, $tc_identity, $phone, $invoice_type, $tax_company_name, $tax_office, $tax_number,
-        $tc_identity_for_individual_invoice, $user_id]);
+        $tc_identity_for_individual_invoice, $email_preference, $sms_preference, $user_id]);
 
 
     if ($result) {
@@ -89,7 +93,6 @@ $stmt->execute();
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
 require_once(__DIR__ . '/partials/header.php');
-
 ?>
 
 <!-- Ana içerik -->
@@ -124,6 +127,25 @@ require_once(__DIR__ . '/partials/header.php');
                         <label for="phone">Telefon:</label>
                         <input type="text" class="form-control" name="phone" value="<?= $user['phone'] ?>" required>
                     </div>
+
+                    <!-- E-posta ile iletişim -->
+                    <div class="form-group mt-3 mx-3">
+                        <label for="email_preference">E-posta ile iletişim:</label>
+                        <select class="form-select" name="email_preference" required>
+                            <option value="0" <?php echo ($user["email_preference"] == 0) ? 'selected' : ''; ?>>Hayır</option>
+                            <option value="1" <?php echo ($user["email_preference"] == 1) ? 'selected' : ''; ?>>Evet</option>
+                        </select>
+                    </div>
+
+                    <!-- SMS ile iletişim -->
+                    <div class="form-group mt-3 mx-3">
+                        <label for="sms_preference">SMS ile iletişim:</label>
+                        <select class="form-select" name="sms_preference" required>
+                            <option value="0" <?php echo ($user["sms_preference"] == 0) ? 'selected' : ''; ?>>Hayır</option>
+                            <option value="1" <?php echo ($user["sms_preference"] == 1) ? 'selected' : ''; ?>>Evet</option>
+                        </select>
+                    </div>
+
 
                     <?php if ($user['user_type'] == 6): ?>
                         <!-- Fatura Tipi Seçimi -->

@@ -653,4 +653,31 @@ function logoutUser() {
     }
 }
 
+// Benzersiz bir kullanıcı adı oluşturana kadar dönen fonksiyon
+function getUniqueRandomUsername($db) {
+    $isUnique = false;
+    $maxAttempts = 10; // Maksimum deneme sayısı
+    $attempts = 0;
+
+    while (!$isUnique && $attempts < $maxAttempts) {
+        $generatedChars = generateRandomChars();
+        $currentDate = date('dmy'); // Bugünün gün, ay ve yıl bilgisi (2 haneli yıl)
+
+        $generatedUsername = "d" . $generatedChars . $currentDate;
+
+        $checkQuery = "SELECT COUNT(*) as count FROM users WHERE username = ?";
+        $stmt = $db->prepare($checkQuery);
+        $stmt->execute([$generatedUsername]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($result['count'] == 0) {
+            $isUnique = true;
+        }
+
+        $attempts++;
+    }
+
+    return $isUnique ? $generatedUsername : null;
+}
+
 ?>
