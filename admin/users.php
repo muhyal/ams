@@ -83,6 +83,20 @@ if (isset($_GET["action"]) && $_GET["action"] === "restore" && isset($_GET["id"]
 if (isset($_GET["action"]) && $_GET["action"] === "delete" && isset($_GET["id"])) {
     $user_id = $_GET["id"];
 
+    // Fetch user information
+    $queryUser = "SELECT * FROM users WHERE id = ?";
+    $stmtUser = $db->prepare($queryUser);
+    $stmtUser->execute([$user_id]);
+    $userToDelete = $stmtUser->fetch(PDO::FETCH_ASSOC);
+
+    // Check if the user_type is 1 or 2
+    if ($userToDelete['user_type'] == 1 || $userToDelete['user_type'] == 2) {
+        // Users with user_type 1 or 2 cannot be deleted
+        // Display a JavaScript popup with an error message
+        echo '<script>alert("Hata: Yönetici veya koordinatör rolündeki kullanıcılar silinemez!"); window.location.href="'.$_SERVER['PHP_SELF'].'";</script>';
+        exit();
+    }
+
     $query = "UPDATE users SET deleted_at = CURRENT_TIMESTAMP, deleted_by_user_id = ? WHERE id = ?";
     $stmt = $db->prepare($query);
     $stmt->execute([$admin_id, $user_id]);
@@ -91,6 +105,8 @@ if (isset($_GET["action"]) && $_GET["action"] === "delete" && isset($_GET["id"])
     header("Location: ".$_SERVER['PHP_SELF']);
     exit();
 }
+
+
 
 ?>
 <?php require_once(__DIR__ . '/partials/header.php'); ?>
