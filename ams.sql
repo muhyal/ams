@@ -187,7 +187,9 @@ CREATE TABLE `users` (
   `is_active` tinyint(1) DEFAULT '1',
   `profile_photo` varchar(255) DEFAULT NULL,
   `two_factor_code` text,
-  `two_factor_enabled` tinyint(1) DEFAULT '0'
+  `two_factor_enabled` tinyint(1) DEFAULT '0',
+  `email_preference` tinyint(1) DEFAULT NULL,
+  `sms_preference` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `user_academy_assignment` (

@@ -183,7 +183,7 @@ require_once(__DIR__ . '/partials/header.php');
                                 <button class="btn btn-warning" onclick="showEditForm(<?php echo $announcement['id']; ?>)">
                                     <i class="fas fa-edit"></i> Düzenle
                                 </button>
-                                <a href="announcements.php?delete_announcement=<?php echo $announcement['id']; ?>" class="btn btn-danger">
+                                <a href="announcements.php?delete_announcement=<?php echo $announcement['id']; ?>" class="btn btn-danger" onclick="return confirm('Duyuruyu silmek istediğinizden emin misiniz?')">
                                     <i class="fas fa-trash-alt"></i> Sil
                                 </a>
                             </td>
