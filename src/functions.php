@@ -1,5 +1,4 @@
 <?php
-
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use Infobip\Api\SmsApi;
@@ -7,6 +6,43 @@ use Infobip\Configuration;
 use Infobip\Model\SmsAdvancedTextualRequest;
 use Infobip\Model\SmsDestination;
 use Infobip\Model\SmsTextualMessage;
+
+function getConfigurationFromDatabase($db)
+{
+    try {
+        if ($db === null) {
+            throw new Exception("Database connection is null");
+        }
+
+        $query = "SELECT * FROM options";
+        $stmt = $db->prepare($query);
+
+        if (!$stmt) {
+            throw new Exception("Error preparing the query.");
+        }
+
+        $stmt->execute();
+
+        $options = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Check if any options are found
+        if (!$options) {
+            throw new Exception("Options not found");
+        }
+
+        // Transform options into an associative array
+        $result = [];
+        foreach ($options as $option) {
+            $result[$option['option_name']] = $option['option_value'];
+        }
+
+        return $result;
+    } catch (PDOException $e) {
+        die("Database Error: " . $e->getMessage());
+    } catch (Exception $e) {
+        die("Error: " . $e->getMessage());
+    }
+}
 
 
 // Dil seçimini tarayıcı dilinden al, eğer belirtilmemişse varsayılan olarak "tr" kullan
@@ -603,32 +639,6 @@ function sendVerificationSms($to, $verificationCode, $first_name, $verificationI
         // Başarılı ve hata mesajlarını boş olarak başlatıyoruz
         $smsSuccessMessage = "";
         $smsStatusMessages = [];
-    }
-}
-
-function getConfigurationFromDatabase($db)
-{
-    try {
-        $query = "SELECT * FROM options";
-        $stmt = $db->prepare($query);
-        $stmt->execute();
-
-        $options = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        // Check if any options are found
-        if (!$options) {
-            throw new Exception("Options not found");
-        }
-
-        // Transform options into an associative array
-        $result = [];
-        foreach ($options as $option) {
-            $result[$option['option_name']] = $option['option_value'];
-        }
-
-        return $result;
-    } catch (PDOException $e) {
-        die("Error: " . $e->getMessage());
     }
 }
 

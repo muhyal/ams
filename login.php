@@ -69,30 +69,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->execute([$identifier]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($user && password_verify($password, $user["password"])) {
+        // Check if the user account is active
+        if ($user && $user["is_active"] == 1) {
             // Check if the user is active
-            if ($user["is_active"] == 0) {
-                $errorMessage = "Bu hesap şu anda pasiftir. Giriş yapılamaz.";
-            } elseif ($user["deleted_at"] !== null) {
+            if ($user["deleted_at"] !== null) {
                 $errorMessage = "Bu hesap silinmiştir. Giriş yapılamaz.";
             } else {
-                // Kullanıcı girişi başarılı, oturum başlat
-                $_SESSION["user_id"] = $user["id"];
-                $_SESSION["user_type"] = $user["user_type"];
+                // Check if the password is correct
+                if (password_verify($password, $user["password"])) {
+                    // Kullanıcı girişi başarılı, oturum başlat
+                    $_SESSION["user_id"] = $user["id"];
+                    $_SESSION["user_type"] = $user["user_type"];
 
-                // Kullanıcı türüne göre yönlendirme yap
-                header("Location: /user/panel.php");
-                exit();
+                    // Kullanıcı türüne göre yönlendirme yap
+                    header("Location: /user/panel.php");
+                    exit();
+                } else {
+                    // Kullanıcı doğrulanamadı, hata mesajı gösterme
+                    $errorMessage = "Hatalı e-posta adresi ya da şifre girdiniz.";
+                }
             }
         } else {
-            // Kullanıcı doğrulanamadı, hata mesajı gösterme
-            $errorMessage = "Hatalı e-posta adresi ya da şifre girdiniz.";
+            $errorMessage = "Bu hesap şu anda pasiftir. Giriş yapılamaz.";
         }
     } catch (PDOException $e) {
         $errorMessage = "Hata: " . $e->getMessage();
     }
-    // Veritabanı bağlantısını kapat
-    $db = null;
+
 }
 ?>
 
