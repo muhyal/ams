@@ -44,6 +44,24 @@ function getConfigurationFromDatabase($db)
     }
 }
 
+function generatePassword() {
+    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()-_+=<>?';
+    $password = '';
+    $length = 10;
+
+    for ($i = 0; $i < $length; $i++) {
+        $randomIndex = rand(0, strlen($characters) - 1);
+        $password .= $characters[$randomIndex];
+    }
+
+    return $password;
+}
+
+// Ajax isteğini işle
+if (isset($_GET['action']) && $_GET['action'] == 'generatePassword') {
+    $password = generatePassword();
+    echo $password;
+}
 
 // Dil seçimini tarayıcı dilinden al, eğer belirtilmemişse varsayılan olarak "tr" kullan
 $selectedLanguage = isset($_GET['lang']) ? $_GET['lang'] : (isset($_SESSION['selectedLanguage']) ? $_SESSION['selectedLanguage'] : substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2));

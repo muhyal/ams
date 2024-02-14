@@ -195,7 +195,7 @@ $userTypeText = isset($userTypeAgreementTexts[$userType]) ? $userTypeAgreementTe
 
         // Check if the signature data is empty (no drawing) or confirmation is not checked
         if (signaturePad.isEmpty() || !confirmation) {
-            alert("İmza eksik veya onaylanmadı. Lütfen hem imzayı tamamlayıp hem de onaylayınız.");
+            alert("İmza eksik ya da onay kutucuğu seçilmedi. Lütfen hem imzanızı tamamlayıp hem de onay kutucuğunu seçin.");
             return;
         }
 

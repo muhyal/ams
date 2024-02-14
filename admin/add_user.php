@@ -373,7 +373,7 @@ require_once(__DIR__ . '/partials/header.php');
                                     <div class="btn-group">
                                         <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('password')">Göster</button>
                                         <button type="button" class="btn btn-outline-secondary" onclick="copyPassword('password')">Kopyala</button>
-                                        <button type="button" class="btn btn-outline-secondary" onclick="generateAndSetPassword('password')">Üret</button>
+                                        <button type="button" class="btn btn-outline-secondary" onclick="generatePassword('password')">Şifre Üret</button>
                                     </div>
                                 </div>
                             </div>
@@ -517,7 +517,7 @@ require_once(__DIR__ . '/partials/header.php');
                         alert("Şifre kopyalandı: " + passwordInput.value);
                     }
 
-                    function generateAndSetPassword(passwordId) {
+                    function generatePassword(passwordId) {
                         var generatedPasswordInput = document.getElementById(passwordId);
                         var xhr = new XMLHttpRequest();
                         xhr.onreadystatechange = function () {
@@ -525,13 +525,13 @@ require_once(__DIR__ . '/partials/header.php');
                                 generatedPasswordInput.value = xhr.responseText;
                             }
                         };
-                        xhr.open("GET", "/src/generate_password.php", true);
+                        xhr.open("GET", "/src/functions.php?action=generatePassword", true);
                         xhr.send();
                     }
 
                     // Sayfa yüklendiğinde otomatik olarak şifre üretme fonksiyonunu çağırabilirsiniz
                     window.onload = function () {
-                        generateAndSetPassword('password');
+                        generatePassword('password');
                     };
                 </script>
 

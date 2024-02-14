@@ -452,50 +452,52 @@ require_once(__DIR__ . '/partials/header.php');
                                 <div class="form-group mt-3">
                                     <label class="form-label" for="new_password">Yeni Şifre (Güncelleme olmayacak ise boş bırakabilirsiniz):</label>
                                     <div class="input-group">
-                                        <input class="form-control" type="password" name="new_password" id="new_password">
+                                        <input class="form-control" type="password" name="new_password" id="new_password" required>
                                         <div class="input-group-append">
-                                            <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('new_password')">Şifreyi Göster</button>
-                                        </div>
-                                        <div class="input-group-append">
-                                            <button type="button" class="btn btn-outline-secondary" onclick="copyPassword('new_password')">Kopyala</button>
-                                        </div>
-                                        <div class="input-group-append">
-                                            <button type="button" class="btn btn-outline-secondary" onclick="generatePassword('new_password')">Şifre Üret</button>
+                                            <div class="btn-group">
+                                                <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('new_password')">Göster</button>
+                                                <button type="button" class="btn btn-outline-secondary" onclick="copyPassword('new_password')">Kopyala</button>
+                                                <button type="button" class="btn btn-outline-secondary" onclick="generatePassword('new_password')">Şifre Üret</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
-             <script>
-                 function togglePassword(passwordId) {
-                     var passwordInput = document.getElementById(passwordId);
-                     if (passwordInput.type === "new_password") {
-                         passwordInput.type = "text";
-                     } else {
-                         passwordInput.type = "new_password";
-                     }
-                 }
+                                <script>
+                                    function togglePassword(passwordId) {
+                                        var passwordInput = document.getElementById(passwordId);
+                                        if (passwordInput.type === "new_password") {
+                                            passwordInput.type = "text";
+                                        } else {
+                                            passwordInput.type = "new_password";
+                                        }
+                                    }
 
-                 function copyPassword(passwordId) {
-                     var passwordInput = document.getElementById(passwordId);
-                     passwordInput.select();
-                     document.execCommand("copy");
-                     alert("Şifre kopyalandı: " + passwordInput.value);
-                 }
+                                    function copyPassword(passwordId) {
+                                        var passwordInput = document.getElementById(passwordId);
+                                        passwordInput.select();
+                                        document.execCommand("copy");
+                                        alert("Şifre kopyalandı: " + passwordInput.value);
+                                    }
 
-                 function generatePassword(passwordId) {
-                     var generatedPasswordInput = document.getElementById(passwordId);
-                     var xhr = new XMLHttpRequest();
-                     xhr.onreadystatechange = function () {
-                         if (xhr.readyState === 4 && xhr.status === 200) {
-                             generatedPasswordInput.value = xhr.responseText;
-                         }
-                     };
-                     xhr.open("GET", "/src/generate_password.php", true);
-                     xhr.send();
-                 }
-             </script>
+                                    function generatePassword(passwordId) {
+                                        var generatedPasswordInput = document.getElementById(passwordId);
+                                        var xhr = new XMLHttpRequest();
+                                        xhr.onreadystatechange = function () {
+                                            if (xhr.readyState === 4 && xhr.status === 200) {
+                                                generatedPasswordInput.value = xhr.responseText;
+                                            }
+                                        };
+                                        xhr.open("GET", "/src/functions.php?action=generatePassword", true);
+                                        xhr.send();
+                                    }
 
-         <div class="form-group mt-3">
+                                </script>
+
+
+
+
+                                <div class="form-group mt-3">
              <button type="submit" class="btn btn-primary">Kullanıcıyı Düzenle</button>
          </div>
      </form>
