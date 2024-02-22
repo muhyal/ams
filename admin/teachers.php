@@ -58,6 +58,7 @@ $query = "
         u.birth_date,
         u.phone,
         u.email,
+        u.profile_photo,
         GROUP_CONCAT(DISTINCT c.class_name ORDER BY c.class_name) as class_name,
         GROUP_CONCAT(DISTINCT co.course_name ORDER BY co.course_name) as course_name,
         GROUP_CONCAT(DISTINCT a.name ORDER BY a.name) as academy_name 
@@ -75,71 +76,71 @@ $teachers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 require_once('../config/config.php');
 ?>
-<?php
-require_once(__DIR__ . '/partials/header.php');
-?>
-    <div class="container-fluid">
-        <div class="row">
-           <?php
-        require_once(__DIR__ . '/partials/sidebar.php');
-?>
-            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
-                    <h2>Öğretmenler</h2>
-                </div>
+<?php require_once(__DIR__ . '/partials/header.php'); ?>
 
-                <div class="table-responsive">
-                    <table id="teachersTable" class="table table-striped table-sm" style="border: 1px solid #ddd;">
-                        <thead>
-                        <tr>
-                            <th>Akademiler</th>
-                            <th>Ad</th>
-                            <th>Soyad</th>
-                            <th>T.C. Kimlik No</th>
-                            <th>Doğum Tarihi</th>
-                            <th>Telefon</th>
-                            <th>E-posta</th>
-                            <th>Sınıflar</th>
-                            <th>Dersler</th>
-                            <th>İşlemler</th>
+<div class="container-fluid">
+    <div class="row">
+        <?php require_once(__DIR__ . '/partials/sidebar.php'); ?>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
+                <h2>Öğretmenler</h2>
+            </div>
 
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <?php foreach ($teachers as $teacher): ?>
-                            <tr>
-                                <td><?php echo $teacher['academy_name']; ?></td>
-                                <td><?php echo $teacher['first_name']; ?></td>
-                                <td><?php echo $teacher['last_name']; ?></td>
-                                <td><?php echo $teacher['tc_identity']; ?></td>
-                                <td><?php echo $teacher['birth_date']; ?></td>
-                                <td><?php echo $teacher['phone']; ?></td>
-                                <td><?php echo $teacher['email']; ?></td>
-                                <td><?php echo $teacher['class_name']; ?></td>
-                                <td><?php echo $teacher['course_name']; ?></td>
-                                <td>
+            <div class="row">
+                <?php foreach ($teachers as $teacher): ?>
+                    <div class="col-md-3 mb-4">
+                        <div class="card">
+                            <?php if (!empty($teacher['profile_photo'])): ?>
+                                <img src="<?= $teacher['profile_photo'] ?>" alt="<?= $teacher['first_name'] ?> <?= $teacher['last_name'] ?> Fotoğrafı" class="card-img-top rounded-circle mx-auto mt-3" style="width: 100px; height: 100px;">
+                            <?php else: ?>
+                                <img src="/assets/brand/default_pp.png" alt="Varsayılan Profil Fotoğrafı" class="card-img-top rounded-circle mx-auto mt-3" style="width: 100px; height: 100px;">
+                            <?php endif; ?>
+                            <div class="card-body">
+                                <h5 class="card-title text-center"><?php echo $teacher['first_name'] . ' ' . $teacher['last_name']; ?></h5>
+
+                                <ul class="list-group mb-2">
+                                    <li class="list-group-item"><strong>T.C. Kimlik No:</strong> <?php echo $teacher['tc_identity']; ?></li>
+                                    <li class="list-group-item"><strong>Doğum Tarihi:</strong> <?php echo $teacher['birth_date']; ?></li>
+                                    <li class="list-group-item"><strong>Telefon:</strong> <?php echo $teacher['phone']; ?></li>
+                                    <li class="list-group-item"><strong>E-posta:</strong> <?php echo $teacher['email']; ?></li>
+                                </ul>
+
+                                <div class="list-group mb-2">
+                                    <li class="list-group-item"><strong>Derse Girdiği Sınıflar:</strong></li>
+                                    <?php foreach (explode(',', $teacher['class_name']) as $class): ?>
+                                        <li class="list-group-item"><?php echo $class; ?></li>
+                                    <?php endforeach; ?>
+                                </div>
+
+                                <div class="list-group mb-2">
+                                    <li class="list-group-item"><strong>Verdiği Dersler:</strong></li>
+                                    <?php foreach (explode(',', $teacher['course_name']) as $course): ?>
+                                        <li class="list-group-item"><?php echo $course; ?></li>
+                                    <?php endforeach; ?>
+                                </div>
+
+                                <div class="btn-group" role="group" aria-label="Öğretmen İşlemleri">
                                     <a href="user_profile.php?id=<?php echo $teacher['id']; ?>" class="btn btn-info btn-sm">
-                                        <i class="fas fa-user"></i>
+                                        <i class="fas fa-user"></i> Profil
                                     </a>
                                     <a href="edit_user.php?id=<?php echo $teacher['id']; ?>" class="btn btn-warning btn-sm">
-                                        <i class="fas fa-pencil-alt"></i>
+                                        <i class="fas fa-pencil-alt"></i> Düzenle
                                     </a>
-                                    <a href="users.php?delete_user=1&id=<?php echo $teacher['id']; ?>" class="btn btn-danger btn-sm">
-                                        <i class="fas fa-trash-alt"></i>
+                                    <a class="btn btn-danger btn-sm" href="?action=delete&id=<?php echo $teacher['id']; ?>" onclick="return confirm('Bu kullanıcıyı silmek istediğinizden emin misiniz?')">
+                                        <i class="fas fa-trash-alt"></i> Sil
                                     </a>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
 
-                <button onclick="location.href='add_user.php'" type="button" class="btn btn-success">
-                    <i class="fas fa-plus"></i> Yeni Öğretmen Ekle
-                </button>
-
-            </main>
-        </div>
+            <button onclick="location.href='add_user.php'" type="button" class="btn btn-success">
+                <i class="fas fa-plus"></i> Yeni Öğretmen Ekle
+            </button>
+        </main>
     </div>
+</div>
 
 <?php require_once('../admin/partials/footer.php'); ?>

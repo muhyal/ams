@@ -452,7 +452,7 @@ require_once(__DIR__ . '/partials/header.php');
                                 <div class="form-group mt-3">
                                     <label class="form-label" for="new_password">Yeni Şifre (Güncelleme olmayacak ise boş bırakabilirsiniz):</label>
                                     <div class="input-group">
-                                        <input class="form-control" type="password" name="new_password" id="new_password" required>
+                                        <input class="form-control" type="password" name="new_password" id="new_password">
                                         <div class="input-group-append">
                                             <div class="btn-group">
                                                 <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('new_password')">Göster</button>
