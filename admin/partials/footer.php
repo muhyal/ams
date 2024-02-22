@@ -27,8 +27,6 @@ extract($option, EXTR_IF_EXISTS);
 </main>
 </div>
 </div>
-</body>
-</html>
 <!-- Boş alan -->
 <div style="height: 75px;"></div>
 <!-- Footer -->
@@ -53,7 +51,6 @@ extract($option, EXTR_IF_EXISTS);
         trigger: 'focus'
     })
 </script>
-</body>
 <script>
     // Sayfa yüklendikten sonra uyarıyı otomatik kapat
     $(document).ready(function(){

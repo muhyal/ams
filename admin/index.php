@@ -166,9 +166,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     } catch (PDOException $e) {
         $errors[] = "Hata: " . $e->getMessage();
-    } finally {
-        // Veritabanı bağlantısını kapat
-        $db = null;
+
     }
 }
 ?>

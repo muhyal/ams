@@ -805,7 +805,9 @@ require_once(__DIR__ . '/partials/sidebar.php');
                             echo '</div>';
                             echo '</div>';
                         } else {
+                            echo '<div class="alert alert-info mt-3" role="alert">';
                             echo "Bu öğrenciye ait veli bulunmamaktadır.";
+                            echo '</div>';
                         }
                     } elseif ($user['user_type'] == 5) {
                         // Kullanıcı veli ise buraya gerekli kodları ekleyebilirsiniz.
@@ -852,13 +854,19 @@ require_once(__DIR__ . '/partials/sidebar.php');
                             echo '</div>';
                             echo '</div>';
                         } else {
+                            echo '<div class="alert alert-info mt-3" role="alert">';
                             echo "Bu veliye bağlı öğrenci bulunmamaktadır.";
+                            echo '</div>';
                         }
                     } else {
-                        echo "Bu kullanıcı türü desteklenmemektedir.";
+                        echo '<div class="alert alert-info mt-3" role="alert">';
+                        echo "Kullanıcının türünde veli/öğrenci ilişkisi desteklenmemektedir.";
+                        echo '</div>';
                     }
                 } else {
+                    echo '<div class="alert alert-info mt-3" role="alert">';
                     echo "Kullanıcı türü belirtilmemiş.";
+                    echo '</div>';
                 }
                 ?>
 
@@ -892,11 +900,11 @@ require_once(__DIR__ . '/partials/sidebar.php');
                         <div class="card-body">
                             <?php
                             $academyAssignmentQuery = "SELECT DISTINCT a.name, a.city, a.district
-                FROM academies a
-                JOIN user_academy_assignment uaa ON a.id = uaa.academy_id
-                WHERE uaa.user_id = ?";
+FROM academies a
+JOIN user_academy_assignment uaa ON a.id = uaa.academy_id
+WHERE uaa.user_id = ?";
                             $academyAssignmentStmt = $db->prepare($academyAssignmentQuery);
-                            $academyAssignmentStmt->execute([$admin_id]);
+                            $academyAssignmentStmt->execute([$user_id]);
                             $assignedAcademies = $academyAssignmentStmt->fetchAll(PDO::FETCH_ASSOC);
                             ?>
                             <div class="form-group">
