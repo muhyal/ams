@@ -1015,7 +1015,7 @@ WHERE uaa.user_id = ?";
                 }
 
                 echo '
-    <div class="col-md-4 mb-5 mt-5">
+    <div class="col-md-4 mb-1 mt-1">
         <div class="card ' . $cardBorderStyle . '">
             <div class="card-header">
                 <h6 class="card-title"><strong>' . ($user['user_type'] == 4 ? $result['student_name'] : $result['teacher_name']) . ' ile ' . $result['lesson_name'] . '</strong></h6>
