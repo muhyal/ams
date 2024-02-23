@@ -461,11 +461,27 @@ require_once(__DIR__ . '/partials/header.php');
                             <div class="invalid-feedback">Bu alan gereklidir.</div>
                         </div>
 
+                        <!-- Kan Grubu -->
                         <div class="mb-3">
                             <label for="blood_type" class="form-label">Kan Grubu:</label>
-                            <input type="text" name="blood_type" class="form-control" required>
+                            <select class="form-select" name="blood_type" required>
+                                <option value="" selected disabled>Seçim Yapınız</option>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="AB">AB</option>
+                                <option value="0">0</option>
+                                <option value="A+">A+</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B-">B-</option>
+                                <option value="AB+">AB+</option>
+                                <option value="AB-">AB-</option>
+                                <option value="0+">0+</option>
+                                <option value="0-">0-</option>
+                            </select>
                             <div class="invalid-feedback">Bu alan gereklidir.</div>
                         </div>
+
 
                         <div class="mb-3">
                             <label for="health_issue" class="form-label">Sağlık Sorunu:</label>
