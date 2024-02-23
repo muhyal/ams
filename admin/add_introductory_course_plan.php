@@ -147,7 +147,7 @@ require_once(__DIR__ . '/partials/sidebar.php');
             <!-- Öğretmen Dropdown -->
             <div class="form-group mt-3">
                 <label for="teacher_id">Öğretmen</label>
-                <select name="teacher_id" class="form-control">
+                <select name="teacher_id" class="form-control" id="addICPTeacherDropdown">
                     <?php foreach ($teachers as $teacher): ?>
                         <option value="<?= $teacher['id'] ?>"><?= $teacher['full_name'] ?></option>
                     <?php endforeach; ?>
@@ -167,7 +167,7 @@ require_once(__DIR__ . '/partials/sidebar.php');
             <!-- Sınıf Dropdown -->
             <div class="form-group mt-3">
                 <label for="class_id">Sınıf</label>
-                <select name="class_id" class="form-control">
+                <select name="class_id" class="form-control" id="addICPClassDropdown">
                     <?php foreach ($classes as $class): ?>
                         <option value="<?= $class['id'] ?>"><?= $class['class_name'] ?></option>
                     <?php endforeach; ?>
@@ -177,7 +177,7 @@ require_once(__DIR__ . '/partials/sidebar.php');
             <!-- Öğrenci Dropdown -->
             <div class="form-group mt-3">
                 <label for="student_id">Öğrenci</label>
-                <select name="student_id" class="form-control">
+                <select name="student_id" class="form-control" id="addICPStudentDropdown">
                     <?php foreach ($students as $student): ?>
                         <option value="<?= $student['id'] ?>"><?= $student['full_name'] ?></option>
                     <?php endforeach; ?>

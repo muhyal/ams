@@ -253,7 +253,7 @@ require_once(__DIR__ . '/partials/sidebar.php');
             <div class="form-group">
                 <div class="form-group">
                     <label for="rowId">Ders Planı Seç:</label>
-                    <select class="form-control" name="course_plan_id_from_form" required>
+                    <select class="form-control" name="course_plan_id_from_form" id="addRCPCoursePlanDropdown" required>
                         <?php
                         // Ders planlarını ve öğrenci bilgilerini, öğretmen bilgilerini ve ders adlarını çek
                         $selectPlansQuery = "SELECT cp.id, cp.course_fee, cp.debt_amount, cp.course_date_1, cp.course_date_2, cp.course_date_3, cp.course_date_4,
@@ -271,7 +271,7 @@ require_once(__DIR__ . '/partials/sidebar.php');
                         $coursePlans = $selectPlansStatement->fetchAll(PDO::FETCH_ASSOC);
 
                         // Ders planlarını seçenek listesine ekle
-                        echo "<option value='' selected disabled>Seçim Yapın</option>";
+                        echo "<option value='' selected disabled>Telafi Dersi Yapılacak Olan Ders Planını Seçiniz</option>";
 
                         foreach ($coursePlans as $plan) {
                             $courseDates = implode(", ", array_filter([$plan["course_date_1"], $plan["course_date_2"], $plan["course_date_3"], $plan["course_date_4"]]));
@@ -292,7 +292,7 @@ require_once(__DIR__ . '/partials/sidebar.php');
             <!-- Öğretmen Dropdown -->
             <div class="form-group mt-3">
                 <label for="teacher_id">Öğretmen</label>
-                <select name="teacher_id" class="form-control">
+                <select name="teacher_id" class="form-control" id="addRCPTeacherDropdown">
                     <?php foreach ($teachers as $teacher): ?>
                         <option value="<?= $teacher['id'] ?>"><?= $teacher['full_name'] ?></option>
                     <?php endforeach; ?>
@@ -312,7 +312,7 @@ require_once(__DIR__ . '/partials/sidebar.php');
             <!-- Sınıf Dropdown -->
             <div class="form-group mt-3">
                 <label for="class_id">Sınıf</label>
-                <select name="class_id" class="form-control">
+                <select name="class_id" class="form-control" id="addRCPClassDropdown">
                     <?php foreach ($classes as $class): ?>
                         <option value="<?= $class['id'] ?>"><?= $class['class_name'] ?></option>
                     <?php endforeach; ?>
@@ -322,7 +322,7 @@ require_once(__DIR__ . '/partials/sidebar.php');
             <!-- Öğrenci Dropdown -->
             <div class="form-group mt-3">
                 <label for="student_id">Öğrenci</label>
-                <select name="student_id" class="form-control">
+                <select name="student_id" class="form-control" id="addRCPStudentDropdown">
                     <?php foreach ($students as $student): ?>
                         <option value="<?= $student['id'] ?>"><?= $student['full_name'] ?></option>
                     <?php endforeach; ?>

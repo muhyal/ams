@@ -131,6 +131,13 @@ extract($option, EXTR_IF_EXISTS);
         $('#studentDropdown').select2();
         $('#teacherDropdown').select2();
         $('[name="selectCoursePlan"]').select2();
+        $('#addICPClassDropdown').select2();
+        $('#addICPStudentDropdown').select2();
+        $('#addICPTeacherDropdown').select2();
+        $('#addRCPClassDropdown').select2();
+        $('#addRCPStudentDropdown').select2();
+        $('#addRCPTeacherDropdown').select2();
+        $('#addRCPCoursePlanDropdown').select2();
     });
 </script>
 <script>

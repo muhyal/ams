@@ -249,7 +249,7 @@ require_once(__DIR__ . '/partials/sidebar.php');
                 $coursePlans = $selectPlansStatement->fetchAll(PDO::FETCH_ASSOC);
 
                 // Ders planlarını seçenek listesine ekle
-                echo "<option value='' selected disabled>Seçim Yapın</option>";
+                echo "<option value='' selected disabled>Ödeme Eklemek İstediğiniz Ders Planını Seçiniz</option>";
 
                 foreach ($coursePlans as $plan) {
                     $courseDates = implode(", ", array_filter([$plan["course_date_1"], $plan["course_date_2"], $plan["course_date_3"], $plan["course_date_4"]]));
