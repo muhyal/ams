@@ -979,24 +979,14 @@ WHERE uaa.user_id = ?";
 
                     $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-                    // Display active and completed cards in separate rows
+                    echo ' <button type="button" class="btn btn-outline-secondary btn-sm mb-3 mt-3" data-bs-toggle="modal" data-bs-target="#archivedCoursesModal">Arşivlenen Dersler</button>';
                     echo '<div class="row">';
-                    echo '<div class="col-md-6 mt-5 mb-3"><h3>Aktif Dersler</h3>';
+                    echo '<h3>Aktif Dersler</h3>';
+
                     foreach ($results as $result) {
                         // Check if the last class date is more than 1 day ago
                         if (strtotime($result['course_date_4']) < strtotime('-1 day')) {
                             continue; // Skip to next iteration if the course is completed
-                        }
-
-                        displayCourseCard($result);
-                    }
-                    echo '</div>';
-
-                    echo '<div class="col-md-6 mt-5 mb-3"><h3>Arşivlenen Dersler</h3>';
-                    foreach ($results as $result) {
-                        // Check if the last class date is not more than 1 day ago
-                        if (strtotime($result['course_date_4']) >= strtotime('-1 day')) {
-                            continue; // Skip to next iteration if the course is not completed
                         }
 
                         displayCourseCard($result);
@@ -1025,7 +1015,7 @@ WHERE uaa.user_id = ?";
                 }
 
                 echo '
-    <div class="col-md-6 mb-5 mt-5">
+    <div class="col-md-4 mb-5 mt-5">
         <div class="card ' . $cardBorderStyle . '">
             <div class="card-header">
                 <h6 class="card-title"><strong>' . ($user['user_type'] == 4 ? $result['student_name'] : $result['teacher_name']) . ' ile ' . $result['lesson_name'] . '</strong></h6>
@@ -1074,8 +1064,38 @@ WHERE uaa.user_id = ?";
             }
             ?>
 
+    <!-- Modal for Archived Courses -->
+    <div class="modal fade" id="archivedCoursesModal" tabindex="-1" aria-labelledby="archivedCoursesModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="archivedCoursesModalLabel">Arşivlenen Dersler</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <?php
+                    echo '<div class="row">';
+                    foreach ($results as $result) {
+                        // Check if the last class date is not more than 1 day ago
+                        if (strtotime($result['course_date_4']) >= strtotime('-1 day')) {
+                            continue; // Skip to the next iteration if the course is not completed
+                        }
+
+                        displayCourseCard($result);
+                    }
+                    ?>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
-    </main>
+
+
+
+</main>
 
 <?php require_once('../admin/partials/footer.php'); ?>
