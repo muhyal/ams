@@ -708,4 +708,28 @@ function getUniqueRandomUsername($db) {
     return $isUnique ? $generatedUsername : null;
 }
 
+// Function to log verification details in an HTML file
+function logVerificationDetails($verificationId, $userType, $verificationTimeColumn, $verificationIPColumn, $signatureColumn, $signatureData, $userTypeText)
+{
+
+    $firstName = isset($_POST['first_name']) ? $_POST['first_name'] : '';
+    $lastName = isset($_POST['last_name']) ? $_POST['last_name'] : '';
+    $tcNumber = isset($_POST['tc_number']) ? $_POST['tc_number'] : '';
+    $phoneNumber = isset($_POST['phone_number']) ? $_POST['phone_number'] : '';
+
+
+    $logFileName = "verifications/verification_log_$verificationId.html";
+    $logContent = "<html><head><title>Verification Log - User ID: $verificationId</title></head><body>";
+    $logContent .= "<h2>Verification Details for User ID: $verificationId</h2>";
+    $logContent .= "<p>User Type: $userTypeText</p>";
+    $logContent .= "<p>Name: $firstName $lastName</p>"; // Assuming you have $firstName and $lastName variables
+    $logContent .= "<p>TC: $tcNumber</p>"; // Assuming you have $tcNumber variable
+    $logContent .= "<p>Phone: $phoneNumber</p>"; // Assuming you have $phoneNumber variable
+    $logContent .= "<p>Verification Time: " . date('Y-m-d H:i:s') . "</p>";
+    $logContent .= "<p>Verification IP: " . $_SERVER['REMOTE_ADDR'] . "</p>";
+    $logContent .= "<p>Signature Data: $signatureData</p>";
+    $logContent .= "</body></html>";
+
+    file_put_contents($logFileName, $logContent);
+}
 ?>
