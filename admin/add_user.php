@@ -71,7 +71,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $countryCode = isset($_POST["country"]) ? htmlspecialchars($_POST["country"]) : "";
     $phoneNumber = isset($_POST["phone"]) ? htmlspecialchars($_POST["phone"]) : "";
     $country = $_POST["country"];
+
     $invoice_type = isset($_POST["invoice_type"]) ? htmlspecialchars($_POST["invoice_type"]) : "";
+
+    // Check if "Fatura Gerekmiyor" is selected
+    if ($invoice_type === 'no_invoice') {
+        // Reset invoice related fields
+        $tax_company_name = '';
+        $tax_office = '';
+        $tax_number = '';
+        $tc_identity_for_individual_invoice = '';
+
+        // Set invoice_type to "no_invoice"
+        $invoice_type = 'no_invoice';
+    }
+
     $tax_company_name = isset($_POST["tax_company_name"]) ? htmlspecialchars($_POST["tax_company_name"]) : "";
     $tax_office = isset($_POST["tax_office"]) ? htmlspecialchars($_POST["tax_office"]) : "";
     $tax_number = isset($_POST["tax_number"]) ? htmlspecialchars($_POST["tax_number"]) : "";
@@ -478,6 +492,7 @@ require_once(__DIR__ . '/partials/header.php');
                                 <option value="AB-">AB-</option>
                                 <option value="0+">0+</option>
                                 <option value="0-">0-</option>
+                                <option value="Bilinmiyor">Bilinmiyor</option>
                             </select>
                             <div class="invalid-feedback">Bu alan gereklidir.</div>
                         </div>
@@ -493,6 +508,7 @@ require_once(__DIR__ . '/partials/header.php');
                         <select class="form-select" name="invoice_type" id="invoice_type" onchange="toggleInvoiceFields()" required>
                             <option value="individual" selected>Bireysel</option>
                             <option value="corporate">Kurumsal</option>
+                            <option value="no_invoice">Fatura Gerekmiyor</option>
                         </select>
 
                         <!-- Kurumsal Alanları -->
@@ -568,15 +584,28 @@ require_once(__DIR__ . '/partials/header.php');
                         var taxNumberInput = document.getElementsByName('tax_number')[0];
                         var tcIdentityInput = document.getElementsByName('tc_identity_for_individual_invoice')[0];
 
-                        taxCompanyInput.required = (invoiceType === 'corporate');
-                        taxOfficeInput.required = (invoiceType === 'corporate');
-                        taxNumberInput.required = (invoiceType === 'corporate');
-                        tcIdentityInput.required = (invoiceType === 'individual');
+                        if (invoiceType === 'corporate') {
+                            taxCompanyInput.required = true;
+                            taxOfficeInput.required = true;
+                            taxNumberInput.required = true;
+                            tcIdentityInput.required = false;
+                        } else if (invoiceType === 'individual') {
+                            taxCompanyInput.required = false;
+                            taxOfficeInput.required = false;
+                            taxNumberInput.required = false;
+                            tcIdentityInput.required = true;
+                        } else {
+                            taxCompanyInput.required = false;
+                            taxOfficeInput.required = false;
+                            taxNumberInput.required = false;
+                            tcIdentityInput.required = false;
+                        }
                     }
 
                     // Call the function to set the initial state
                     toggleInvoiceFields();
                 </script>
+
 
                 <div class="mb-3 mt-3 form-check">
                     <input type="checkbox" class="form-check-input" id="sendWelcomeEmail" name="sendWelcomeEmail" checked>

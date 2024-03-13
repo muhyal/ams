@@ -117,8 +117,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $notes = htmlspecialchars($_POST["notes"], ENT_QUOTES, 'UTF-8');
     $is_active = htmlspecialchars($_POST["is_active"], ENT_QUOTES, 'UTF-8');
 
-// Kurumsal bilgileri güvenli bir şekilde alın
+    // Kurumsal bilgileri güvenli bir şekilde alın
     $invoice_type = isset($_POST["invoice_type"]) ? htmlspecialchars($_POST["invoice_type"], ENT_QUOTES, 'UTF-8') : "";
+
+    // Check if "Fatura Gerekmiyor" is selected
+    if ($invoice_type === 'no_invoice') {
+        // Reset invoice related fields
+        $tax_company_name = '';
+        $tax_office = '';
+        $tax_number = '';
+        $tc_identity_for_individual_invoice = '';
+    }
+
+    // Güncellenecek alanları kontrol edin ve değerleri güncelleyin
+    if ($invoice_type !== 'no_invoice') {
+        $tax_company_name = isset($_POST["tax_company_name"]) ? htmlspecialchars($_POST["tax_company_name"]) : "";
+        $tax_office = isset($_POST["tax_office"]) ? htmlspecialchars($_POST["tax_office"]) : "";
+        $tax_number = isset($_POST["tax_number"]) ? htmlspecialchars($_POST["tax_number"]) : "";
+        $tc_identity_for_individual_invoice = isset($_POST["tc_identity_for_individual_invoice"]) ? htmlspecialchars($_POST["tc_identity_for_individual_invoice"]) : "";
+    }
+
     $tax_company_name = isset($_POST["tax_company_name"]) ? htmlspecialchars($_POST["tax_company_name"], ENT_QUOTES, 'UTF-8') : "";
     $tax_office = isset($_POST["tax_office"]) ? htmlspecialchars($_POST["tax_office"], ENT_QUOTES, 'UTF-8') : "";
     $tax_number = isset($_POST["tax_number"]) ? htmlspecialchars($_POST["tax_number"], ENT_QUOTES, 'UTF-8') : "";
@@ -387,29 +405,30 @@ require_once(__DIR__ . '/partials/header.php');
                                 <input class="form-control" type="text" name="health_issue" value="<?php echo $user["health_issue"]; ?>" required>
 
 
-                                <!-- Bireysel ve Kurumsal alanlarına ID eklendi -->
+                                <!-- Bireysel ve Kurumsal alanları -->
                                 <label class="form-label mt-3" for="invoice_type">Fatura Tipi Seçin:</label>
                                 <select class="form-select" name="invoice_type" id="invoice_type" onchange="toggleInvoiceFields()" required>
                                     <option value="individual" <?php echo $user["invoice_type"] === 'individual' ? 'selected' : ''; ?>>Bireysel</option>
                                     <option value="corporate" <?php echo $user["invoice_type"] === 'corporate' ? 'selected' : ''; ?>>Kurumsal</option>
+                                    <option value="no_invoice" <?php echo $user["invoice_type"] === 'no_invoice' ? 'selected' : ''; ?>>Fatura Gerekmiyor</option>
                                 </select>
 
                                 <!-- Kurumsal Alanları -->
-                                <div id="corporate_fields">
+                                <div id="corporate_fields" style="<?php echo $user["invoice_type"] === 'corporate' ? 'display:block;' : 'display:none;'; ?>">
                                     <label class="form-label mt-3" for="tax_company_name">Şirket Ünvanı:</label>
-                                    <input class="form-control" type="text" name="tax_company_name" value="<?php echo $user["tax_company_name"]; ?>" required>
+                                    <input class="form-control" type="text" name="tax_company_name" value="<?php echo $user["tax_company_name"]; ?>" <?php echo $user["invoice_type"] === 'corporate' ? 'required' : ''; ?>>
 
                                     <label class="form-label mt-3" for="tax_office">Vergi Dairesi:</label>
-                                    <input class="form-control" type="text" name="tax_office" value="<?php echo $user["tax_office"]; ?>" required>
+                                    <input class="form-control" type="text" name="tax_office" value="<?php echo $user["tax_office"]; ?>" <?php echo $user["invoice_type"] === 'corporate' ? 'required' : ''; ?>>
 
                                     <label class="form-label mt-3" for="tax_number">Vergi Numarası:</label>
-                                    <input class="form-control" type="text" name="tax_number" value="<?php echo $user["tax_number"]; ?>" required>
+                                    <input class="form-control" type="text" name="tax_number" value="<?php echo $user["tax_number"]; ?>" <?php echo $user["invoice_type"] === 'corporate' ? 'required' : ''; ?>>
                                 </div>
 
                                 <!-- Bireysel Alanları -->
-                                <div id="individual_fields">
+                                <div id="individual_fields" style="<?php echo $user["invoice_type"] === 'individual' ? 'display:block;' : 'display:none;'; ?>">
                                     <label class="form-label mt-3" for="tc_identity_for_individual_invoice">Fatura T.C. Kimlik No:</label>
-                                    <input class="form-control" type="text" name="tc_identity_for_individual_invoice" value="<?php echo $user["tc_identity_for_individual_invoice"]; ?>" required>
+                                    <input class="form-control" type="text" name="tc_identity_for_individual_invoice" value="<?php echo $user["tc_identity_for_individual_invoice"]; ?>" <?php echo $user["invoice_type"] === 'individual' ? 'required' : ''; ?>>
                                     <div id="tc_identity_for_individual_invoice_Help" class="form-text">Faturanın oluşturulacağı T.C. kimlik numarası kullanıcının T.C. kimlik numarası ile aynı ya da farklı olmaksızın bu alana girilmelidir.</div>
                                 </div>
 
@@ -431,11 +450,26 @@ require_once(__DIR__ . '/partials/header.php');
                                         var eInvoiceSelect = document.getElementsByName('e_invoice')[0];
                                         var tcIdentityInput = document.getElementsByName('tc_identity_for_individual_invoice')[0];
 
-                                        taxCompanyInput.required = (invoiceType === 'corporate');
-                                        taxOfficeInput.required = (invoiceType === 'corporate');
-                                        taxNumberInput.required = (invoiceType === 'corporate');
-                                        eInvoiceSelect.required = (invoiceType === 'corporate');
-                                        tcIdentityInput.required = (invoiceType === 'individual');
+                                        if (invoiceType === 'corporate') {
+                                            taxCompanyInput.required = true;
+                                            taxOfficeInput.required = true;
+                                            taxNumberInput.required = true;
+                                            eInvoiceSelect.required = true;
+                                            tcIdentityInput.required = false;
+                                        } else if (invoiceType === 'individual') {
+                                            taxCompanyInput.required = false;
+                                            taxOfficeInput.required = false;
+                                            taxNumberInput.required = false;
+                                            eInvoiceSelect.required = false;
+                                            tcIdentityInput.required = true;
+                                        } else {
+                                            // "Fatura Gerekmiyor" seçeneği için ilgili alanları gizle ve gereksinimlerini kaldır
+                                            taxCompanyInput.required = false;
+                                            taxOfficeInput.required = false;
+                                            taxNumberInput.required = false;
+                                            eInvoiceSelect.required = false;
+                                            tcIdentityInput.required = false;
+                                        }
                                     }
 
                                     // Sayfa yüklendiğinde varsayılan olarak çalıştır

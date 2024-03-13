@@ -505,7 +505,17 @@ require_once(__DIR__ . '/partials/sidebar.php');
                             ?>
                             <li class="list-group-item"><strong>Kan Grubu:</strong> <?= $user['blood_type'] ? $user['blood_type'] : 'Veri yok'; ?></li>
                             <li class="list-group-item"><strong>Bilinen Sağlık Sorunu:</strong> <?= $user['health_issue'] ? $user['health_issue'] : 'Veri yok'; ?></li>
-                              <li class="list-group-item"><strong>Fatura Türü:</strong> <?= $user['invoice_type'] == 'individual' ? 'Bireysel' : 'Kurumsal' ?></li>
+                            <li class="list-group-item"><strong>Fatura Türü:</strong>
+                                <?php
+                                if ($user['invoice_type'] == 'individual') {
+                                    echo 'Bireysel';
+                                } elseif ($user['invoice_type'] == 'corporate') {
+                                    echo 'Kurumsal';
+                                } elseif ($user['invoice_type'] == 'no_invoice') {
+                                    echo 'Fatura Gerekmiyor';
+                                }
+                                ?>
+                            </li>
                             <?php if ($user['invoice_type'] == 'individual'): ?>
                                 <li class="list-group-item"><strong>Fatura T.C. Kimlik No:</strong> <?= $user['tc_identity_for_individual_invoice'] ?></li>
                             <?php elseif ($user['invoice_type'] == 'corporate'): ?>
@@ -513,6 +523,7 @@ require_once(__DIR__ . '/partials/sidebar.php');
                                 <li class="list-group-item"><strong>Vergi Dairesi:</strong> <?= $user['tax_office'] ?></li>
                                 <li class="list-group-item"><strong>Vergi Numarası:</strong> <?= $user['tax_number'] ?></li>
                             <?php endif; ?>
+
                         </ul>
                     </div>
                 </div>       </div>

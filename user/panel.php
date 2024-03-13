@@ -796,7 +796,17 @@ ORDER BY course_date DESC
                                         <div class="card-body">
                                             <ul class="list-group list-group-flush">
                                                 <?php if ($user['user_type'] == 6): ?>
-                                                    <li class="list-group-item">Fatura Türü: <?= $user['invoice_type'] == 'individual' ? 'Bireysel' : 'Kurumsal' ?></li>
+                                                    <li class="list-group-item">Fatura Türü:
+                                                        <?php
+                                                        if ($user['invoice_type'] == 'individual') {
+                                                            echo 'Bireysel';
+                                                        } elseif ($user['invoice_type'] == 'corporate') {
+                                                            echo 'Kurumsal';
+                                                        } elseif ($user['invoice_type'] == 'no_invoice') {
+                                                            echo 'Fatura Gerekmiyor';
+                                                        }
+                                                        ?>
+                                                    </li>
                                                     <?php if ($user['invoice_type'] == 'corporate'): ?>
                                                         <li class="list-group-item">Şirket Ünvanı: <?= $user['tax_company_name'] ?></li>
                                                         <li class="list-group-item">Vergi Dairesi: <?= $user['tax_office'] ?></li>
@@ -805,6 +815,7 @@ ORDER BY course_date DESC
                                                         <li class="list-group-item">Fatura T.C. Kimlik No: <?= $user['tc_identity_for_individual_invoice'] ?></li>
                                                     <?php endif; ?>
                                                 <?php endif; ?>
+
 
                                                 <li class="list-group-item">Doğum Tarihi: <?php echo isset($user['birth_date']) ? date("d.m.Y", strtotime($user['birth_date'])) : ''; ?></li>
                                                 <li class="list-group-item">Şehir: <?= $user['city'] ?></li>
