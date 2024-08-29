@@ -206,6 +206,12 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="text-light-emphasis nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/about.php') ? 'active' : ''; ?>" href="/admin/about.php">
+                                <i class="fas fa-circle-info"></i>
+                                Hakkında
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="text-light-emphasis nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/edit_user.php') ? 'active' : ''; ?>" href="/admin/edit_user.php?id=<?php echo $_SESSION["admin_id"]; ?>">
                                 <i class="fas fa-user-gear"></i>
                                 Profilim

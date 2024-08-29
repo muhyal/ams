@@ -138,6 +138,9 @@ extract($option, EXTR_IF_EXISTS);
         $('#addRCPStudentDropdown').select2();
         $('#addRCPTeacherDropdown').select2();
         $('#addRCPCoursePlanDropdown').select2();
+        $('#cities').select2();
+        $('#districts').select2();
+
     });
 </script>
 <script>

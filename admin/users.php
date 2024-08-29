@@ -45,21 +45,17 @@ $query = "
     SELECT
         users.*,
         user_types.type_name,
-        (
-            SELECT MAX(verification_time_email_sent)
-            FROM verifications
-            WHERE user_id = users.id
-            ORDER BY verification_time_email_sent DESC
-            LIMIT 1
-        ) AS latest_verification_time_email_confirmed,
-        (
-            SELECT MAX(verification_time_sms_sent)
-            FROM verifications
-            WHERE user_id = users.id
-            ORDER BY verification_time_sms_sent DESC
-            LIMIT 1
-        ) AS latest_verification_time_sms_confirmed
-    FROM users
+    (
+        SELECT MAX(verification_time_email_confirmed)
+        FROM verifications
+        WHERE user_id = users.id
+    ) AS latest_verification_time_email_confirmed,
+    (
+        SELECT MAX(verification_time_sms_confirmed)
+        FROM verifications
+        WHERE user_id = users.id
+    ) AS latest_verification_time_sms_confirmed
+FROM users
     LEFT JOIN user_types ON users.user_type = user_types.id
 ";
 

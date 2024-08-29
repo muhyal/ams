@@ -79,12 +79,24 @@ SELECT
     verifications.verification_signature_sms,
     CONCAT(u_created_by.first_name, ' ', u_created_by.last_name) AS created_by_name,
     CONCAT(u_updated_by.first_name, ' ', u_updated_by.last_name) AS updated_by_name,
-    CONCAT(u_deleted_by.first_name, ' ', u_deleted_by.last_name) AS deleted_by_name
+    CONCAT(u_deleted_by.first_name, ' ', u_deleted_by.last_name) AS deleted_by_name,
+    user_types.type_name,
+    (
+        SELECT MAX(verification_time_email_confirmed)
+        FROM verifications
+        WHERE user_id = users.id
+    ) AS latest_verification_time_email_confirmed,
+    (
+        SELECT MAX(verification_time_sms_confirmed)
+        FROM verifications
+        WHERE user_id = users.id
+    ) AS latest_verification_time_sms_confirmed
 FROM users
 LEFT JOIN users u_created_by ON users.created_by_user_id = u_created_by.id
 LEFT JOIN users u_updated_by ON users.updated_by_user_id = u_updated_by.id
 LEFT JOIN users u_deleted_by ON users.deleted_by_user_id = u_deleted_by.id
 LEFT JOIN verifications ON users.id = verifications.user_id
+LEFT JOIN user_types ON users.user_type = user_types.id
 WHERE users.id = :user_id
 ";
 
@@ -92,6 +104,7 @@ WHERE users.id = :user_id
     $stmt->bindParam(":user_id", $user_id, PDO::PARAM_INT);
     $stmt->execute();
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
 
     $query = "SELECT * FROM verifications WHERE user_id = :user_id";
     $stmt = $db->prepare($query);
@@ -212,7 +225,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
     echo json_encode(['success' => true, 'message' => 'Mesaj başarıyla gönderildi.']);
     exit;
+
+
+
 }
+
+
+// En son SMS imza verisini alma (null dahil)
+$querySMS = "SELECT verification_signature_sms FROM verifications WHERE user_id = ? ORDER BY id DESC LIMIT 1";
+$stmtSMS = $db->prepare($querySMS);
+$stmtSMS->execute([$user_id]); // $user_id, ilgili kullanıcının ID'si olmalı
+$signatureDataSMS = $stmtSMS->fetchColumn();
+
+// En son E-posta imza verisini alma (null dahil)
+$queryEmail = "SELECT verification_signature_email FROM verifications WHERE user_id = ? ORDER BY id DESC LIMIT 1";
+$stmtEmail = $db->prepare($queryEmail);
+$stmtEmail->execute([$user_id]); // $user_id, ilgili kullanıcının ID'si olmalı
+$signatureDataEmail = $stmtEmail->fetchColumn();
+
+
 
 ?>
 <?php
@@ -247,6 +278,9 @@ require_once(__DIR__ . '/partials/sidebar.php');
                         </a>
                         <a href="edit_user.php?id=<?= $user['id'] ?>" class="btn btn-sm btn-outline-secondary">
                             <i class="fas fa-edit"></i> Kullanıcı Düzenle
+                        </a>
+                        <a href="send_verifications.php?id=<?= $user['id'] ?>" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-feather-alt fa-sm"></i> Doğrulamaları Gönder
                         </a>
                         <a href="reset_password_and_send.php?id=<?= $user['id'] ?>" class="btn btn-sm btn-outline-secondary">
                             <i class="fas fa-user-lock"></i> Şifre Gönder
@@ -539,8 +573,8 @@ require_once(__DIR__ . '/partials/sidebar.php');
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item"><strong>Durumu:</strong> <?= $user['is_active'] ? '<i class="fas fa-circle-dot text-success"></i> Aktif' : '<i class="fas fa-circle-dot text-secondary"></i> Pasif' ?></li>
                             <li class="list-group-item"><strong>İki Faktörlü Kimlik Doğrulama:</strong> <?= $user['two_factor_enabled'] ? '<i class="fas fa-lock text-success"></i> Güvenli' : '<i class="fas fa-unlock text-secondary"></i> Güvensiz' ?></li>
-                            <li class="list-group-item"><strong>SMS Onay Durumu:</strong> <?= $user['verification_time_sms_confirmed'] ? '<i class="fas fa-check text-success"></i> Doğrulandı' : '<i class="fas fa-times text-danger"></i> Doğrulanmadı' ?></li>
-                            <li class="list-group-item"><strong>E-posta Onay Durumu:</strong> <?= $user['verification_time_email_confirmed'] ? '<i class="fas fa-check text-success"></i> Doğrulandı' : '<i class="fas fa-times text-danger"></i> Doğrulanmadı' ?></li>
+                            <li class="list-group-item"><strong>SMS Onay Durumu:</strong> <?= $user['latest_verification_time_sms_confirmed'] ? '<i class="fas fa-check text-success"></i> Doğrulandı' : '<i class="fas fa-times text-danger"></i> Doğrulanmadı' ?></li>
+                            <li class="list-group-item"><strong>E-posta Onay Durumu:</strong> <?= $user['latest_verification_time_email_confirmed'] ? '<i class="fas fa-check text-success"></i> Doğrulandı' : '<i class="fas fa-times text-danger"></i> Doğrulanmadı' ?></li>
                             <li class="list-group-item"><strong>Kullanıcı Türü:</strong> <?= $userType ?></li>
                             <li class="list-group-item"><strong>E-posta ile iletişim izni:</strong> <?= $user['email_preference'] ? '<i class="fas fa-check text-success"></i> Var' : '<i class="fas fa-times text-danger"></i> Yok' ?></li>
                             <li class="list-group-item"><strong>SMS ile iletişim izni:</strong> <?= $user['sms_preference'] ? '<i class="fas fa-check text-success"></i> Var' : '<i class="fas fa-times text-danger"></i> Yok' ?></li>
@@ -672,50 +706,50 @@ require_once(__DIR__ . '/partials/sidebar.php');
                     </div>
                 </div>
 
-                <div class="card mt-3 mb-3">
-                    <div class="card-header">
-                        <h5 class="card-title">Doğrulama Bilgileri</h5>
-                    </div>
-                    <div class="card-body">
-
-                        <div class="row mt-3 mb-3">
-                            <!-- SMS İmza Gösterim Alanı -->
-                            <div class="col-md-6">
-                                <p style="font-weight: bold;">SMS İmza</p>
-                                <?php
-                                if ($user['verification_signature_sms']) {
-                                    $signatureDataSMS = $user['verification_signature_sms']; // SMS İmza verisini al
-
+                <div class="card-body">
+                    <div class="row mt-3 mb-3">
+                        <!-- SMS İmza Gösterim Alanı -->
+                        <div class="col-md-6">
+                            <p style="font-weight: bold;">SMS İmza</p>
+                            <?php
+                            if ($signatureDataSMS !== false) { // Veri varsa veya null ise kontrol et
+                                if ($signatureDataSMS) {
                                     // İmzayı panelden göster
                                     echo '<img src="' . $signatureDataSMS . '" alt="User SMS Signature" style="border: 1px solid #ccc; max-width: 75%; max-height: 200px;">';
                                 } else {
                                     echo "SMS imzası yok.";
                                 }
-                                ?>
-                            </div>
+                            } else {
+                                echo "SMS imzası yok.";
+                            }
+                            ?>
+                        </div>
 
-                            <!-- E-posta İmza Gösterim Alanı -->
-                            <div class="col-md-6">
-                                <p style="font-weight: bold;">E-posta İmza</p>
-                                <?php
-                                if ($user['verification_signature_email']) {
-                                    $signatureDataEmail = $user['verification_signature_email']; // E-posta İmza verisini al
-
+                        <!-- E-posta İmza Gösterim Alanı -->
+                        <div class="col-md-6">
+                            <p style="font-weight: bold;">E-posta İmza</p>
+                            <?php
+                            if ($signatureDataEmail !== false) { // Veri varsa veya null ise kontrol et
+                                if ($signatureDataEmail) {
                                     // İmzayı panelden göster
                                     echo '<img src="' . $signatureDataEmail . '" alt="User Email Signature" style="border: 1px solid #ccc; max-width: 75%; max-height: 200px;">';
                                 } else {
                                     echo "E-posta imzası yok.";
                                 }
-                                ?>
-                            </div>
+                            } else {
+                                echo "E-posta imzası yok.";
+                            }
+                            ?>
                         </div>
-
-                        <!-- Button trigger modal -->
-                        <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#verificationsModal">
-                            <i class="fas fa-clock"></i> Doğrulama Geçmişi
-                        </button>
                     </div>
+
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#verificationsModal">
+                        <i class="fas fa-clock"></i> Doğrulama Geçmişi
+                    </button>
                 </div>
+
+
                 <!-- Verifications Modal -->
                 <div class="modal fade" id="verificationsModal" tabindex="-1" aria-labelledby="verificationsModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered" style="max-width: 90%;">
@@ -807,7 +841,7 @@ require_once(__DIR__ . '/partials/sidebar.php');
                                 echo '<tr>';
                                 echo '<td>' . $parent['first_name'] . ' ' . $parent['last_name'] . '</td>';
                                 echo '<td>' . $parent['tc_identity'] . '</td>';
-                                echo '<td><a href="user_profile.php?id=' . $parent['id'] . '" class="btn btn-secondary"><i class="fas fa-user"></i></a></td>';
+                                echo '<td><a href="user_profile.php?id=' . $parent['id'] . '" class="btn btn-secondary btn-sm"><i class="fas fa-user"></i></a></td>';
                                 echo '</tr>';
                             }
 
@@ -891,6 +925,101 @@ require_once(__DIR__ . '/partials/sidebar.php');
 
                     </div>
                 </div>
+
+
+
+
+                <?php
+                // Kullanıcı ve dosya bilgilerini sorgula
+                if (isset($user_id)) {
+                    $query = "SELECT user_uploads.id, users.first_name, users.last_name, user_uploads.filename, user_uploads.file_type, user_uploads.description, user_uploads.upload_date
+          FROM user_uploads
+          INNER JOIN users ON user_uploads.user_id = users.id
+          WHERE user_uploads.user_id = :user_id";
+                    $stmt = $db->prepare($query);
+                    $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+                    $stmt->execute();
+                    $fileUploads = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                } else {
+                    $fileUploads = [];
+                }
+                ?>
+
+                <!-- Kullanıcının Yüklediği Dosyalar Bölümü -->
+                <div class="card mt-3 mb-3">
+                    <div class="card-header">
+                        <h5 class="card-title"><?php echo isset($fileUploads[0]['first_name']) ? $fileUploads[0]['first_name'] . " " . $fileUploads[0]['last_name'] : 'Kullanıcı'; ?>  Kullanıcısının Yüklediği Dosyalar</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th><i class="fa-solid fa-eye"></i></th>
+                                    <th>Ad</th>
+                                    <th>Tür</th>
+                                    <th>Açıklama</th>
+                                    <th>Yüklendi</th>
+                                    <th><i class="fa-solid fa-cloud-arrow-down"></i></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php if (!empty($fileUploads)): ?>
+                                    <?php foreach ($fileUploads as $upload): ?>
+                                        <tr>
+                                            <td><img src="/uploads/user_uploads/<?php echo $upload['filename']; ?>" style="width: 100%; max-width: 50px; height: auto;" alt="Dosya Küçük Resmi"></td>
+                                            <td><?php echo $upload['filename']; ?></td>
+                                            <td>
+                                                <?php
+                                                $fileType = $upload['file_type'];
+
+                                                switch ($fileType) {
+                                                    case 'health_report':
+                                                        echo 'Sağlık Raporu';
+                                                        break;
+                                                    case 'permission_document':
+                                                        echo 'İzin Belgesi';
+                                                        break;
+                                                    case 'payment_receipt':
+                                                        echo 'Ödeme Belgesi';
+                                                        break;
+                                                    case 'petition':
+                                                        echo 'Dilekçe';
+                                                        break;
+                                                    case 'other':
+                                                        echo 'Diğer';
+                                                        break;
+                                                    case 'photo':
+                                                        echo 'Fotoğraf';
+                                                        break;
+                                                    default:
+                                                        echo $fileType; // Eğer tanımlanmamışsa orijinal değeri göster
+                                                }
+                                                ?>
+                                            </td>
+                                            <td><?php echo $upload['description']; ?></td>
+                                            <td><?php echo date("d.m.Y H:i", strtotime($upload['upload_date'])); ?></td>
+                                            <td>
+                                                <a href="/user/dl.php?file=<?php echo $upload['filename']; ?>" class="btn btn-primary btn-sm">
+                                                    <i class="fas fa-download"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <tr>
+                                        <td colspan="6">Bu kullanıcıya ait yüklenen dosya bulunmamaktadır.</td>
+                                    </tr>
+                                <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
 
 
                 <?php

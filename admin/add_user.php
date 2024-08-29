@@ -183,8 +183,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION["admin_id"]
             ]);
 
-            // E-posta ve SMS gönderme işlemleri
+            // Kullanıcı başarıyla eklendiği durumda bir uyarı mesajı oluştur
+            $message = "Kullanıcı başarıyla oluşturuldu.";
 
+            // E-posta ve SMS gönderme işlemleri
             $dbConfig = getConfigurationFromDatabase($db);
 
             // E-posta gönderme işlemi
@@ -200,7 +202,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Only execute the following code if Infobip is enabled in the database and the checkbox is selected
                 sendWelcomeSms($phone, $verificationCodeSms, $first_name, $plainPassword, $username, $email);
             }
-
 
             // The rest of your code
         } catch (PDOException $e) {
@@ -461,7 +462,6 @@ require_once(__DIR__ . '/partials/header.php');
                                 <option value="0" <?php echo (["sms_preference"] == 0) ? 'selected' : ''; ?>>Hayır</option>
                             </select>
                         </div>
-
 
                         <div class="mb-3">
                             <label for="city" class="form-label">Şehir:</label>

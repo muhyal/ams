@@ -189,7 +189,7 @@ function getProfilePhotoPath($user_id) {
 }
 
 // Function to send SMS
-function sendSMS($to, $userInputMessage, $first_name, $username, $email) {
+function sendSMS($to, $userInputMessage, $first_name, $username, $phone) {
     global $config, $siteName, $siteUrl;
 
     // Check if Infobip configuration is enabled and valid
@@ -456,14 +456,34 @@ function sendWelcomeSms($to, $verificationCode, $first_name, $plainPassword, $us
 }
 
 // Doğrulama bağlantısı oluşturma
-function getVerificationLink($emailOrPhone, $code, $type="email") {
-    global $siteUrl;
-    if($type == "phone"){
-        return "$siteUrl/verify.php?phone=$emailOrPhone&code=$code";
-    }else{
-        return "$siteUrl/verify.php?email=$emailOrPhone&code=$code";
+function getVerificationLink($emailOrPhone, $code, $type = "email") {
+    global $siteUrl, $db;
+
+    // Veritabanından user_type değerini çekme
+    $stmt = $db->prepare("SELECT user_type FROM users WHERE email = :contact OR phone = :contact LIMIT 1");
+    $stmt->execute([':contact' => $emailOrPhone]);
+
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($result) {
+        $user_type = $result['user_type'];
+    } else {
+        throw new Exception("Kullanıcı bulunamadı.");
+    }
+
+    // Parametreleri URL güvenliği için kodlayın
+    $encodedContact = urlencode($emailOrPhone);
+    $encodedCode = urlencode($code);
+    $encodedUserType = urlencode($user_type);
+
+    if ($type == "phone") {
+        return "$siteUrl/verify.php?phone=$encodedContact&code=$encodedCode&type=$encodedUserType";
+    } else {
+        return "$siteUrl/verify.php?email=$encodedContact&code=$encodedCode&type=$encodedUserType";
     }
 }
+
+
 
 // Rastgele 3 karakter oluşturan fonksiyon
 function generateRandomChars() {
@@ -615,19 +635,14 @@ function sendVerificationSms($to, $verificationCode, $first_name, $verificationI
     $infobipConfig = $config['infobip'];
     $smsConfiguration = new Configuration(host: $infobipConfig['BASE_URL'], apiKey: $infobipConfig['API_KEY']);
 
-
     $sendSmsApi = new SmsApi(config: $smsConfiguration);
 
     $destination = new SmsDestination(
         to: $to
     );
 
-    // Parametreleri şifrele
-    $encryptedPhone = $to;
-    $encryptedCode = $verificationCode;
-
-    // Bağlantı oluştur
-    $verificationLink = getVerificationLink($to, $verificationCode, $verificationId, "phone");
+    // Telefon numarası ve SMS doğrulama kodu kullanarak link oluşturun
+    $verificationLink = getVerificationLink($to, $verificationCode, "phone");
 
     $message = new SmsTextualMessage(destinations: [$destination], from: $SENDER, text: "Selam $first_name, $siteName platformuna hoş geldin 🤗 Kaydının tamamlanabilmesi için sözleşmeleri okuyup onaylaman gerekiyor: $verificationLink.");
 
@@ -659,6 +674,7 @@ function sendVerificationSms($to, $verificationCode, $first_name, $verificationI
         $smsStatusMessages = [];
     }
 }
+
 
 function logoutUser() {
     // Eğer "action" parametresi "logout" ise oturumu kapat
