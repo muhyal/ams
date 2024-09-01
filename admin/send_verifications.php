@@ -92,6 +92,8 @@ if ($user) {
 
 // Kullanıcıya doğrulama kodlarını yeniden gönderme işlemi
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Oturumda yer alan kullanıcının ID'sini alın
+    $sent_by_user_id = $_SESSION["admin_id"];
     // Kullanıcıyı veritabanından bul
     $query = "SELECT * FROM users WHERE email = ? AND phone = ?";
     $stmt = $db->prepare($query);
@@ -111,15 +113,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $verificationTimeEmail = date("Y-m-d H:i:s", time());
         $verificationTimeSms = date("Y-m-d H:i:s", time());
 
-// Veritabanında ekle (insert)
-        $insertQuery = "INSERT INTO verifications (user_id, email, phone, verification_code_email, verification_code_sms, verification_time_email_sent, verification_time_sms_sent)
-                VALUES (?, ?, ?, ?, ?, ?, ?)";
+        // Veritabanında ekle (insert)
+        $insertQuery = "INSERT INTO verifications (user_id, email, phone, verification_code_email, verification_code_sms, verification_time_email_sent, verification_time_sms_sent, sent_by_user_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         $stmtInsert = $db->prepare($insertQuery);
 
 // Insert sırasında oluşan id'yi al
         $verificationId = null;
-        if ($stmtInsert->execute([$user_id, $email, $phone, $verificationCodeEmail, $verificationCodeSms, $verificationTimeEmail, $verificationTimeSms])) {
+        if ($stmtInsert->execute([$user_id, $email, $phone, $verificationCodeEmail, $verificationCodeSms, $verificationTimeEmail, $verificationTimeSms, $sent_by_user_id])) {
             $verificationId = $db->lastInsertId();
         }
 
