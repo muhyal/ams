@@ -81,3 +81,42 @@ if ($showErrors) {
 // reCAPTCHA v3 anahtarları
 define('RECAPTCHA_SITE_KEY', '');
 define('RECAPTCHA_SECRET_KEY', '');
+
+
+$userTypeAgreementTexts = [
+    1 => <<<HTML
+<p><strong>Yönetici Sözleşmesi Metni</strong></p>
+<p>Bu sözleşme, yöneticilerin görev ve sorumluluklarını tanımlar...</p>
+<p>Yönetici, akademinin genel faaliyetlerinden sorumlu olacaktır...</p>
+HTML,
+
+    2 => <<<HTML
+<p><strong>Koordinatör Sözleşmesi Metni</strong></p>
+<p>Bu sözleşme, koordinatörlerin görev ve sorumluluklarını tanımlar...</p>
+<p>Koordinatör, belirlenen programların düzenlenmesinden sorumlu olacaktır...</p>
+HTML,
+
+    3 => <<<HTML
+<p><strong>Eğitim Danışmanı Sözleşmesi Metni</strong></p>
+<p>Bu sözleşme, eğitim danışmanlarının görev ve sorumluluklarını tanımlar...</p>
+<p>Eğitim danışmanı, öğrenci rehberliği ve danışmanlık hizmetlerinden sorumlu olacaktır...</p>
+HTML,
+
+    4 => <<<HTML
+<p><strong>Öğretmen Sözleşmesi Metni</strong></p>
+<p>Bu sözleşme, öğretmenlerin görev ve sorumluluklarını tanımlar...</p>
+<p>Öğretmen, derslerin işlenişi ve öğrenci başarısından sorumlu olacaktır...</p>
+HTML,
+
+    5 => <<<HTML
+<p><strong>Veli Sözleşmesi Metni</strong></p>
+<p>Bu sözleşme, velilerin yükümlülüklerini ve beklentilerini tanımlar...</p>
+<p>Veliler, öğrencilerin düzenli olarak okula devamını sağlamakla yükümlüdür...</p>
+HTML,
+
+    6 => <<<HTML
+<p><strong>Öğrenci Sözleşmesi Metni</strong></p>
+<p>Bu sözleşme, öğrencilerin haklarını ve sorumluluklarını tanımlar...</p>
+<p>Öğrenciler, derslere katılım ve öğrenim süreçlerine aktif olarak dahil olmakla yükümlüdür...</p>
+HTML
+];
