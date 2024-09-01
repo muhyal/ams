@@ -759,42 +759,58 @@ require_once(__DIR__ . '/partials/sidebar.php');
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <table class="table table-bordered">
-                                    <thead>
-                                    <tr>
-                                        <th>E-posta</th>
-                                        <th>Telefon</th>
-                                        <th>E-posta Kod</th>
-                                        <th>SMS Kod</th>
-                                        <th>E-posta IP</th>
-                                        <th>SMS IP</th>
-                                        <th>E-posta Gönderim</th>
-                                        <th>SMS Gönderim</th>
-                                        <th>E-posta Onay</th>
-                                        <th>SMS Onay</th>
-                                        <th>E-posta İmza</th>
-                                        <th>SMS İmza</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <?php foreach ($verifications as $verification): ?>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead>
                                         <tr>
-                                            <td><?= !empty($verification['email']) ? $verification['email'] : 'Veri yok' ?></td>
-                                            <td><?= !empty($verification['phone']) ? $verification['phone'] : 'Veri yok' ?></td>
-                                            <td><?= !empty($verification['verification_code_email']) ? $verification['verification_code_email'] : 'Veri yok' ?></td>
-                                            <td><?= !empty($verification['verification_code_sms']) ? $verification['verification_code_sms'] : 'Veri yok' ?></td>
-                                            <td><?= !empty($verification['verification_ip_email']) ? $verification['verification_ip_email'] : 'Veri yok' ?></td>
-                                            <td><?= !empty($verification['verification_ip_sms']) ? $verification['verification_ip_sms'] : 'Veri yok' ?></td>
-                                            <td><?= isset($verification['verification_time_email_sent']) ? date(DATETIME_FORMAT, strtotime($verification['verification_time_email_sent'])) : 'Veri yok' ?></td>
-                                            <td><?= isset($verification['verification_time_sms_sent']) ? date(DATETIME_FORMAT, strtotime($verification['verification_time_sms_sent'])) : 'Veri yok' ?></td>
-                                            <td><?= isset($verification['verification_time_email_confirmed']) ? date(DATETIME_FORMAT, strtotime($verification['verification_time_email_confirmed'])) : 'Veri yok' ?></td>
-                                            <td><?= isset($verification['verification_time_sms_confirmed']) ? date(DATETIME_FORMAT, strtotime($verification['verification_time_sms_confirmed'])) : 'Veri yok' ?></td>
-                                            <td><?= $verification['verification_signature_email'] ? '<img src="' . $verification['verification_signature_email'] . '" alt="Verification Signature Email" style="max-width: 75px; max-height: 75px;">' : 'Veri yok' ?></td>
-                                            <td><?= $verification['verification_signature_sms'] ? '<img src="' . $verification['verification_signature_sms'] . '" alt="Verification Signature SMS" style="max-width: 75px; max-height: 75px;">' : 'Veri yok' ?></td>
+                                            <th>Gönderen</th>
+                                            <th>E-posta İmza</th>
+                                            <th>SMS İmza</th>
+                                            <th>E-posta</th>
+                                            <th>Telefon</th>
+                                            <th>E-posta Kod</th>
+                                            <th>SMS Kod</th>
+                                            <th>E-posta IP</th>
+                                            <th>SMS IP</th>
+                                            <th>E-posta Gönderim</th>
+                                            <th>SMS Gönderim</th>
+                                            <th>E-posta Onay</th>
+                                            <th>SMS Onay</th>
                                         </tr>
-                                    <?php endforeach; ?>
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                        <?php foreach ($verifications as $verification): ?>
+                                            <tr>
+                                                <td>
+                                                    <?php
+                                                    if (!empty($verification['sent_by_user_id'])) {
+                                                        $stmt = $db->prepare("SELECT CONCAT(first_name, ' ', last_name) as full_name FROM users WHERE id = :id");
+                                                        $stmt->bindParam(':id', $verification['sent_by_user_id'], PDO::PARAM_INT);
+                                                        $stmt->execute();
+                                                        $fullName = $stmt->fetchColumn();
+                                                        echo $fullName ? $fullName : 'Veri yok';
+                                                    } else {
+                                                        echo 'Veri yok';
+                                                    }
+                                                    ?>
+                                                </td>
+                                                <td><?= $verification['verification_signature_email'] ? '<img src="' . $verification['verification_signature_email'] . '" alt="Verification Signature Email" style="max-width: 75px; max-height: 75px;">' : 'Veri yok' ?></td>
+                                                <td><?= $verification['verification_signature_sms'] ? '<img src="' . $verification['verification_signature_sms'] . '" alt="Verification Signature SMS" style="max-width: 75px; max-height: 75px;">' : 'Veri yok' ?></td>
+                                                <td><?= !empty($verification['email']) ? $verification['email'] : 'Veri yok' ?></td>
+                                                <td><?= !empty($verification['phone']) ? $verification['phone'] : 'Veri yok' ?></td>
+                                                <td><?= !empty($verification['verification_code_email']) ? $verification['verification_code_email'] : 'Veri yok' ?></td>
+                                                <td><?= !empty($verification['verification_code_sms']) ? $verification['verification_code_sms'] : 'Veri yok' ?></td>
+                                                <td><?= !empty($verification['verification_ip_email']) ? $verification['verification_ip_email'] : 'Veri yok' ?></td>
+                                                <td><?= !empty($verification['verification_ip_sms']) ? $verification['verification_ip_sms'] : 'Veri yok' ?></td>
+                                                <td><?= isset($verification['verification_time_email_sent']) ? date(DATETIME_FORMAT, strtotime($verification['verification_time_email_sent'])) : 'Veri yok' ?></td>
+                                                <td><?= isset($verification['verification_time_sms_sent']) ? date(DATETIME_FORMAT, strtotime($verification['verification_time_sms_sent'])) : 'Veri yok' ?></td>
+                                                <td><?= isset($verification['verification_time_email_confirmed']) ? date(DATETIME_FORMAT, strtotime($verification['verification_time_email_confirmed'])) : 'Veri yok' ?></td>
+                                                <td><?= isset($verification['verification_time_sms_confirmed']) ? date(DATETIME_FORMAT, strtotime($verification['verification_time_sms_confirmed'])) : 'Veri yok' ?></td>
+                                                 </tr>
+                                        <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
@@ -802,6 +818,7 @@ require_once(__DIR__ . '/partials/sidebar.php');
                         </div>
                     </div>
                 </div>
+
 
                 <?php
                 // Kullanıcının rolünü kontrol et
