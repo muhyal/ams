@@ -1,12 +1,31 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.0
+-- https://www.phpmyadmin.net/
+--
+-- Host: localhost:8889
+-- Generation Time: Sep 01, 2024 at 06:42 PM
+-- Server version: 5.7.39
+-- PHP Version: 8.2.0
+
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
+
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
+--
+-- Database: `ams`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `academies`
+--
 
 CREATE TABLE `academies` (
   `id` int(11) NOT NULL,
@@ -20,6 +39,12 @@ CREATE TABLE `academies` (
   `working_hours` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `academy_classes`
+--
+
 CREATE TABLE `academy_classes` (
   `id` int(11) NOT NULL,
   `class_name` varchar(255) NOT NULL,
@@ -27,6 +52,12 @@ CREATE TABLE `academy_classes` (
   `class_description` text NOT NULL,
   `academy_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `accounting`
+--
 
 CREATE TABLE `accounting` (
   `id` int(11) NOT NULL,
@@ -38,6 +69,12 @@ CREATE TABLE `accounting` (
   `payment_notes` varchar(250) DEFAULT NULL,
   `received_by_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `announcements`
+--
 
 CREATE TABLE `announcements` (
   `id` int(11) NOT NULL,
@@ -51,10 +88,33 @@ CREATE TABLE `announcements` (
   `deleted_by` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `banks`
+--
+
 CREATE TABLE `banks` (
   `id` int(11) NOT NULL,
   `bank_name` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cities`
+--
+
+CREATE TABLE `cities` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `city_name` varchar(20) COLLATE utf8_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `courses`
+--
 
 CREATE TABLE `courses` (
   `id` int(11) NOT NULL,
@@ -62,6 +122,12 @@ CREATE TABLE `courses` (
   `course_name` varchar(100) NOT NULL,
   `description` text
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `course_plans`
+--
 
 CREATE TABLE `course_plans` (
   `id` int(11) NOT NULL,
@@ -87,6 +153,24 @@ CREATE TABLE `course_plans` (
   `deleted_by_user_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `districts`
+--
+
+CREATE TABLE `districts` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `city_id` int(11) NOT NULL,
+  `district_name` varchar(20) COLLATE utf8_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `introductory_course_plans`
+--
+
 CREATE TABLE `introductory_course_plans` (
   `id` int(11) NOT NULL,
   `academy_id` int(11) NOT NULL,
@@ -102,6 +186,12 @@ CREATE TABLE `introductory_course_plans` (
   `updated_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `logs`
+--
+
 CREATE TABLE `logs` (
   `log_id` int(11) NOT NULL,
   `user_id` int(11) DEFAULT NULL,
@@ -115,16 +205,34 @@ CREATE TABLE `logs` (
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `options`
+--
+
 CREATE TABLE `options` (
   `option_id` int(11) NOT NULL,
   `option_name` varchar(255) DEFAULT NULL,
   `option_value` text
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `payment_methods`
+--
+
 CREATE TABLE `payment_methods` (
   `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `rescheduled_courses`
+--
 
 CREATE TABLE `rescheduled_courses` (
   `id` int(11) NOT NULL,
@@ -138,6 +246,12 @@ CREATE TABLE `rescheduled_courses` (
   `course_attendance` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `sent_messages`
+--
+
 CREATE TABLE `sent_messages` (
   `id` int(11) NOT NULL,
   `sender_id` int(11) DEFAULT NULL,
@@ -148,11 +262,23 @@ CREATE TABLE `sent_messages` (
   `send_as_email` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `student_parents`
+--
+
 CREATE TABLE `student_parents` (
   `id` int(11) NOT NULL,
   `student_id` int(11) NOT NULL,
   `parent_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users`
+--
 
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
@@ -192,16 +318,34 @@ CREATE TABLE `users` (
   `sms_preference` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_academy_assignment`
+--
+
 CREATE TABLE `user_academy_assignment` (
   `id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `academy_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_types`
+--
+
 CREATE TABLE `user_types` (
   `id` int(11) NOT NULL,
   `type_name` varchar(25) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_uploads`
+--
 
 CREATE TABLE `user_uploads` (
   `id` int(11) NOT NULL,
@@ -211,6 +355,12 @@ CREATE TABLE `user_uploads` (
   `description` text,
   `upload_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `verifications`
+--
 
 CREATE TABLE `verifications` (
   `id` int(11) NOT NULL,
@@ -226,35 +376,66 @@ CREATE TABLE `verifications` (
   `verification_time_email_confirmed` datetime DEFAULT NULL,
   `verification_time_sms_confirmed` datetime DEFAULT NULL,
   `verification_signature_email` text,
-  `verification_signature_sms` text
+  `verification_signature_sms` text,
+  `sent_by_user_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Indexes for dumped tables
+--
 
+--
+-- Indexes for table `academies`
+--
 ALTER TABLE `academies`
   ADD PRIMARY KEY (`id`);
 
+--
+-- Indexes for table `academy_classes`
+--
 ALTER TABLE `academy_classes`
   ADD PRIMARY KEY (`id`),
   ADD KEY `academy_id` (`academy_id`);
 
+--
+-- Indexes for table `accounting`
+--
 ALTER TABLE `accounting`
   ADD PRIMARY KEY (`id`),
   ADD KEY `accounting_entries_ibfk_5` (`payment_method`),
   ADD KEY `course_plan_id` (`course_plan_id`),
   ADD KEY `bank_name` (`bank_name`);
 
+--
+-- Indexes for table `announcements`
+--
 ALTER TABLE `announcements`
   ADD PRIMARY KEY (`id`),
   ADD KEY `created_by` (`created_by`),
   ADD KEY `edited_by` (`updated_by`),
   ADD KEY `deleted_by` (`deleted_by`);
 
+--
+-- Indexes for table `banks`
+--
 ALTER TABLE `banks`
   ADD PRIMARY KEY (`id`);
 
+--
+-- Indexes for table `cities`
+--
+ALTER TABLE `cities`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `courses`
+--
 ALTER TABLE `courses`
   ADD PRIMARY KEY (`id`);
 
+--
+-- Indexes for table `course_plans`
+--
 ALTER TABLE `course_plans`
   ADD PRIMARY KEY (`id`),
   ADD KEY `academy_id` (`academy_id`),
@@ -263,6 +444,15 @@ ALTER TABLE `course_plans`
   ADD KEY `student_courses_ibfk_5` (`student_id`),
   ADD KEY `student_courses_ibfk_3` (`teacher_id`);
 
+--
+-- Indexes for table `districts`
+--
+ALTER TABLE `districts`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `introductory_course_plans`
+--
 ALTER TABLE `introductory_course_plans`
   ADD PRIMARY KEY (`id`),
   ADD KEY `academy_id` (`academy_id`),
@@ -271,15 +461,27 @@ ALTER TABLE `introductory_course_plans`
   ADD KEY `student_courses_ibfk_5` (`student_id`),
   ADD KEY `student_courses_ibfk_3` (`teacher_id`);
 
+--
+-- Indexes for table `logs`
+--
 ALTER TABLE `logs`
   ADD PRIMARY KEY (`log_id`);
 
+--
+-- Indexes for table `options`
+--
 ALTER TABLE `options`
   ADD PRIMARY KEY (`option_id`);
 
+--
+-- Indexes for table `payment_methods`
+--
 ALTER TABLE `payment_methods`
   ADD PRIMARY KEY (`id`);
 
+--
+-- Indexes for table `rescheduled_courses`
+--
 ALTER TABLE `rescheduled_courses`
   ADD PRIMARY KEY (`id`),
   ADD KEY `academy_id` (`academy_id`),
@@ -289,104 +491,209 @@ ALTER TABLE `rescheduled_courses`
   ADD KEY `student_courses_ibfk_3` (`teacher_id`),
   ADD KEY `rescheduled_courses_ibfk_1` (`course_plan_id`);
 
+--
+-- Indexes for table `sent_messages`
+--
 ALTER TABLE `sent_messages`
   ADD PRIMARY KEY (`id`),
   ADD KEY `receiver_id` (`receiver_id`),
   ADD KEY `sender_id` (`sender_id`);
 
+--
+-- Indexes for table `student_parents`
+--
 ALTER TABLE `student_parents`
   ADD PRIMARY KEY (`id`),
   ADD KEY `student_parents_ibfk_1` (`parent_id`),
   ADD KEY `student_parents_ibfk_2` (`student_id`);
 
+--
+-- Indexes for table `users`
+--
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_type` (`user_type`);
 
+--
+-- Indexes for table `user_academy_assignment`
+--
 ALTER TABLE `user_academy_assignment`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`),
   ADD KEY `academy_id` (`academy_id`);
 
+--
+-- Indexes for table `user_types`
+--
 ALTER TABLE `user_types`
   ADD PRIMARY KEY (`id`);
 
+--
+-- Indexes for table `user_uploads`
+--
 ALTER TABLE `user_uploads`
   ADD PRIMARY KEY (`id`);
 
+--
+-- Indexes for table `verifications`
+--
 ALTER TABLE `verifications`
   ADD PRIMARY KEY (`id`),
   ADD KEY `verifications_ibfk_1` (`user_id`);
 
+--
+-- AUTO_INCREMENT for dumped tables
+--
 
+--
+-- AUTO_INCREMENT for table `academies`
+--
 ALTER TABLE `academies`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
+--
+-- AUTO_INCREMENT for table `academy_classes`
+--
 ALTER TABLE `academy_classes`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
+--
+-- AUTO_INCREMENT for table `accounting`
+--
 ALTER TABLE `accounting`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
+--
+-- AUTO_INCREMENT for table `announcements`
+--
 ALTER TABLE `announcements`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
+--
+-- AUTO_INCREMENT for table `cities`
+--
+ALTER TABLE `cities`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `courses`
+--
 ALTER TABLE `courses`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
+--
+-- AUTO_INCREMENT for table `course_plans`
+--
 ALTER TABLE `course_plans`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
+--
+-- AUTO_INCREMENT for table `districts`
+--
+ALTER TABLE `districts`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `introductory_course_plans`
+--
 ALTER TABLE `introductory_course_plans`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
+--
+-- AUTO_INCREMENT for table `logs`
+--
 ALTER TABLE `logs`
   MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT;
 
+--
+-- AUTO_INCREMENT for table `options`
+--
 ALTER TABLE `options`
   MODIFY `option_id` int(11) NOT NULL AUTO_INCREMENT;
 
+--
+-- AUTO_INCREMENT for table `payment_methods`
+--
 ALTER TABLE `payment_methods`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
+--
+-- AUTO_INCREMENT for table `rescheduled_courses`
+--
 ALTER TABLE `rescheduled_courses`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
+--
+-- AUTO_INCREMENT for table `sent_messages`
+--
 ALTER TABLE `sent_messages`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
+--
+-- AUTO_INCREMENT for table `student_parents`
+--
 ALTER TABLE `student_parents`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
+--
+-- AUTO_INCREMENT for table `users`
+--
 ALTER TABLE `users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
+--
+-- AUTO_INCREMENT for table `user_academy_assignment`
+--
 ALTER TABLE `user_academy_assignment`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
+--
+-- AUTO_INCREMENT for table `user_types`
+--
 ALTER TABLE `user_types`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
+--
+-- AUTO_INCREMENT for table `user_uploads`
+--
 ALTER TABLE `user_uploads`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
+--
+-- AUTO_INCREMENT for table `verifications`
+--
 ALTER TABLE `verifications`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
+--
+-- Constraints for dumped tables
+--
 
+--
+-- Constraints for table `academy_classes`
+--
 ALTER TABLE `academy_classes`
   ADD CONSTRAINT `academy_classes_ibfk_1` FOREIGN KEY (`academy_id`) REFERENCES `academies` (`id`) ON DELETE CASCADE;
 
+--
+-- Constraints for table `accounting`
+--
 ALTER TABLE `accounting`
   ADD CONSTRAINT `accounting_ibfk_1` FOREIGN KEY (`course_plan_id`) REFERENCES `course_plans` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `accounting_ibfk_2` FOREIGN KEY (`payment_method`) REFERENCES `payment_methods` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `accounting_ibfk_3` FOREIGN KEY (`bank_name`) REFERENCES `banks` (`id`) ON DELETE CASCADE;
 
+--
+-- Constraints for table `announcements`
+--
 ALTER TABLE `announcements`
   ADD CONSTRAINT `announcements_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`),
   ADD CONSTRAINT `announcements_ibfk_2` FOREIGN KEY (`updated_by`) REFERENCES `users` (`id`),
   ADD CONSTRAINT `announcements_ibfk_3` FOREIGN KEY (`deleted_by`) REFERENCES `users` (`id`);
 
+--
+-- Constraints for table `course_plans`
+--
 ALTER TABLE `course_plans`
   ADD CONSTRAINT `course_plans_ibfk_1` FOREIGN KEY (`academy_id`) REFERENCES `academies` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `course_plans_ibfk_2` FOREIGN KEY (`class_id`) REFERENCES `academy_classes` (`id`) ON DELETE CASCADE,
@@ -394,6 +701,9 @@ ALTER TABLE `course_plans`
   ADD CONSTRAINT `course_plans_ibfk_4` FOREIGN KEY (`student_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `course_plans_ibfk_5` FOREIGN KEY (`teacher_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
+--
+-- Constraints for table `introductory_course_plans`
+--
 ALTER TABLE `introductory_course_plans`
   ADD CONSTRAINT `introductory_course_plans_ibfk_1` FOREIGN KEY (`academy_id`) REFERENCES `academies` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `introductory_course_plans_ibfk_2` FOREIGN KEY (`class_id`) REFERENCES `academy_classes` (`id`) ON DELETE CASCADE,
@@ -401,6 +711,9 @@ ALTER TABLE `introductory_course_plans`
   ADD CONSTRAINT `introductory_course_plans_ibfk_4` FOREIGN KEY (`student_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `introductory_course_plans_ibfk_5` FOREIGN KEY (`teacher_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
+--
+-- Constraints for table `rescheduled_courses`
+--
 ALTER TABLE `rescheduled_courses`
   ADD CONSTRAINT `rescheduled_courses_ibfk_1` FOREIGN KEY (`course_plan_id`) REFERENCES `course_plans` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `rescheduled_courses_ibfk_2` FOREIGN KEY (`academy_id`) REFERENCES `academies` (`id`) ON DELETE CASCADE,
@@ -409,21 +722,36 @@ ALTER TABLE `rescheduled_courses`
   ADD CONSTRAINT `rescheduled_courses_ibfk_5` FOREIGN KEY (`student_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `rescheduled_courses_ibfk_6` FOREIGN KEY (`teacher_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
+--
+-- Constraints for table `sent_messages`
+--
 ALTER TABLE `sent_messages`
   ADD CONSTRAINT `sent_messages_ibfk_1` FOREIGN KEY (`receiver_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `sent_messages_ibfk_2` FOREIGN KEY (`sender_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
+--
+-- Constraints for table `student_parents`
+--
 ALTER TABLE `student_parents`
   ADD CONSTRAINT `student_parents_ibfk_1` FOREIGN KEY (`parent_id`) REFERENCES `users` (`id`),
   ADD CONSTRAINT `student_parents_ibfk_2` FOREIGN KEY (`student_id`) REFERENCES `users` (`id`);
 
+--
+-- Constraints for table `users`
+--
 ALTER TABLE `users`
   ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`user_type`) REFERENCES `user_types` (`id`) ON DELETE CASCADE;
 
+--
+-- Constraints for table `user_academy_assignment`
+--
 ALTER TABLE `user_academy_assignment`
   ADD CONSTRAINT `user_academy_assignment_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `user_academy_assignment_ibfk_2` FOREIGN KEY (`academy_id`) REFERENCES `academies` (`id`) ON DELETE CASCADE;
 
+--
+-- Constraints for table `verifications`
+--
 ALTER TABLE `verifications`
   ADD CONSTRAINT `verifications_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 COMMIT;
