@@ -52,91 +52,79 @@ function updateVerificationStatus($db, $verificationId, $verificationTimeColumn,
     }
 
     $updateQuery .= " WHERE id = :verificationId";
-
     $updateStmt = $db->prepare($updateQuery);
     $updateStmt->execute($params);
 
-    echo '<div class="alert alert-success" role="alert">';
-    echo 'Doğrulama başarılı! IP adresiniz ' . $verificationIP . ' olarak kaydedildi. Bu sayfayı kapatabilirsiniz.';
-    echo '</div>';
+    echo '<div class="alert alert-success" role="alert">Doğrulama başarılı! IP adresiniz ' . $verificationIP . ' olarak kaydedildi. Bu sayfayı kapatabilirsiniz.</div>';
 }
 
-$isUserVerified = false; // Kullanıcının doğrulama durumunu belirleyen değişken
+$isUserVerified = false;
 
 if ((!isset($_GET['email']) && !isset($_GET['phone'])) || !isset($_GET['code'])) {
-    echo '<div class="alert alert-danger" role="alert">Gerekli parametreler eksik. Lütfen doğru doğrulama bağlantısını kullanın.</div>';
+    echo '<div class="alert alert-danger" role="alert">Geçersiz doğrulama bağlantısı! Lütfen size gönderilen doğru doğrulama bağlantısını kullanın.</div>';
 } else {
     $code = $_GET['code'];
-
     if (isset($_GET['email'])) {
         $email = $_GET['email'];
-
         // Email doğrulama sütunları
         $verificationTimeColumn = 'verification_time_email_confirmed';
         $verificationIPColumn = 'verification_ip_email';
         $verificationCodeColumn = 'verification_code_email';
         $signatureColumn = 'verification_signature_email';
 
-        // Veritabanından veri çekme
+        // Veritabanından veri çekme işlemleri
         $query = "SELECT * FROM verifications WHERE email = ? ORDER BY id DESC LIMIT 1";
         $stmt = $db->prepare($query);
         $stmt->execute([$email]);
         $userData = $stmt->fetch(PDO::FETCH_ASSOC);
 
-
         if ($userData) {
             $verificationId = $userData['id'];
 
-            // Email doğrulama
             if ($userData[$verificationCodeColumn] == $code) {
                 if ($userData[$verificationTimeColumn] !== null) {
-                    echo '<div class="alert alert-info" role="alert">Bu e-posta zaten doğrulanmış, tekrar doğrulama işlemi yapılamaz.</div>';
+                    echo '<div class="alert alert-info" role="alert">Bu e-posta zaten doğrulanmış, tekrar doğrulama yapılamaz.</div>';
                 } else {
-                    if (isset($_POST['signatureData']) && isset($_POST['confirmation']) && $_POST['confirmation'] == 'on') {
+                    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['signatureData']) && isset($_POST['confirmation']) && $_POST['confirmation'] == 'on') {
                         $signatureData = $_POST['signatureData'];
                         updateVerificationStatus($db, $verificationId, $verificationTimeColumn, $verificationIPColumn, $signatureColumn, $signatureData);
                         echo '<div class="alert alert-success" role="alert">E-posta doğrulaması başarılı.</div>';
-                    } else {
-                        echo "E-posta doğrulaması için imza eksik veya onaylanmadı.";
+                    } else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                        echo '<div class="alert alert-warning" role="alert">E-posta doğrulaması için imza eksik veya onaylanmadı.</div>';
                     }
                 }
             } else {
                 echo '<div class="alert alert-danger" role="alert">Geçersiz doğrulama kodu.</div>';
             }
         } else {
-            echo '<div class="alert alert-danger" role="alert">Geçersiz email bilgisi.</div>';
+            echo '<div class="alert alert-danger" role="alert">Geçersiz e-posta bilgisi.</div>';
         }
     } elseif (isset($_GET['phone'])) {
         $phone = $_GET['phone'];
-
         // SMS doğrulama sütunları
         $verificationTimeColumn = 'verification_time_sms_confirmed';
         $verificationIPColumn = 'verification_ip_sms';
         $verificationCodeColumn = 'verification_code_sms';
         $signatureColumn = 'verification_signature_sms';
 
-        // Veritabanından veri çekme
         $query = "SELECT * FROM verifications WHERE phone = ? ORDER BY id DESC LIMIT 1";
         $stmt = $db->prepare($query);
         $stmt->execute([$phone]);
         $userData = $stmt->fetch(PDO::FETCH_ASSOC);
 
-
-
         if ($userData) {
             $verificationId = $userData['id'];
 
-            // SMS doğrulama
             if ($userData[$verificationCodeColumn] == $code) {
                 if ($userData[$verificationTimeColumn] !== null) {
-                    echo '<div class="alert alert-info" role="alert">Bu telefon numarası zaten doğrulanmış, tekrar doğrulama işlemi yapılamaz.</div>';
+                    echo '<div class="alert alert-info" role="alert">Bu telefon numarası zaten doğrulanmış, tekrar doğrulama yapılamaz.</div>';
                 } else {
-                    if (isset($_POST['signatureData']) && isset($_POST['confirmation']) && $_POST['confirmation'] == 'on') {
+                    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['signatureData']) && isset($_POST['confirmation']) && $_POST['confirmation'] == 'on') {
                         $signatureData = $_POST['signatureData'];
                         updateVerificationStatus($db, $verificationId, $verificationTimeColumn, $verificationIPColumn, $signatureColumn, $signatureData);
                         echo '<div class="alert alert-success" role="alert">SMS doğrulaması başarılı.</div>';
-                    } else {
-                        echo "SMS doğrulaması için imza eksik veya onaylanmadı.";
+                    } else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                        echo '<div class="alert alert-warning" role="alert">SMS doğrulaması için imza eksik veya onaylanmadı.</div>';
                     }
                 }
             } else {
@@ -158,18 +146,8 @@ if ((!isset($_GET['email']) && !isset($_GET['phone'])) || !isset($_GET['code']))
 <?php
 $userType = isset($_GET['type']) ? (int)$_GET['type'] : 0;
 
-$userTypeAgreementTexts = [
-    1 => "Yönetici Sözleşmesi Metni",
-    2 => "Koordinatör Sözleşmesi Metni",
-    3 => "Eğitim Danışmanı Sözleşmesi Metni",
-    4 => "Öğretmen Sözleşmesi Metni",
-    5 => "Veli Sözleşmesi Metni",
-    6 => "Öğrenci Sözleşmesi Metni"
-];
-
-$userTypeText = isset($userTypeAgreementTexts[$userType]) ? $userTypeAgreementTexts[$userType] : "Bilinmeyen kullanıcı sözleşmesi metni."
+$userTypeText = isset($userTypeAgreementTexts[$userType]) ? $userTypeAgreementTexts[$userType] : "Bilinmeyen kullanıcı sözleşmesi metni.";
 ?>
-
 <div class="col-lg-6 mx-auto">
     <p class="h1 text-center mt-3 mb-3">Sözleşme</p>
     <p class="lead mt-3 mb-3"><?php echo $userTypeText; ?></p>
@@ -182,63 +160,62 @@ $userTypeText = isset($userTypeAgreementTexts[$userType]) ? $userTypeAgreementTe
         <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
             <?php
             if (isset($_GET['email']) || isset($_GET['phone'])) {
-            $userField = isset($_GET['phone']) ? 'phone' : 'email';
-            $verificationTimeColumn = isset($_GET['phone']) ? 'verification_time_sms_confirmed' : 'verification_time_email_confirmed';
-            $verificationIPColumn = isset($_GET['phone']) ? 'verification_ip_sms' : 'verification_ip_email';
-            $verificationCodeColumn = isset($_GET['phone']) ? 'verification_code_sms' : 'verification_code_email';
-            $signatureColumn = isset($_GET['phone']) ? 'verification_signature_sms' : 'verification_signature_email';
+                $userField = isset($_GET['phone']) ? 'phone' : 'email';
+                $verificationTimeColumn = isset($_GET['phone']) ? 'verification_time_sms_confirmed' : 'verification_time_email_confirmed';
+                $verificationIPColumn = isset($_GET['phone']) ? 'verification_ip_sms' : 'verification_ip_email';
+                $verificationCodeColumn = isset($_GET['phone']) ? 'verification_code_sms' : 'verification_code_email';
+                $signatureColumn = isset($_GET['phone']) ? 'verification_signature_sms' : 'verification_signature_email';
 
-            $verificationId = isset($_GET['verification_id']) ? (int)$_GET['verification_id'] : 0;
+                $verificationId = isset($_GET['verification_id']) ? (int)$_GET['verification_id'] : 0;
 
-            // Check if verification_id is provided
-            if ($verificationId > 0) {
-                // Fetch data based on verification_id
-                $query = "SELECT * FROM verifications WHERE email = ? ORDER BY created_at DESC LIMIT 1";
-                $stmt = $db->prepare($query);
-                $stmt->execute([$email]);
-                $userData = $stmt->fetch(PDO::FETCH_ASSOC);
+                if ($verificationId > 0) {
+                    // Doğru alanın değerini al
+                    $userValue = isset($_GET['phone']) ? $_GET['phone'] : $_GET['email'];
 
+                    // Fetch data based on verification_id
+                    $query = "SELECT * FROM verifications WHERE $userField = ? ORDER BY created_at DESC LIMIT 1";
+                    $stmt = $db->prepare($query);
+                    $stmt->execute([$userValue]);
+                    $userData = $stmt->fetch(PDO::FETCH_ASSOC);
 
-                if ($userData) {
-                    if ($userData[$verificationTimeColumn] !== null) {
-                        $isUserVerified = true;
-                        echo '<div class="alert alert-info" role="alert">Bu kullanıcı zaten doğrulanmış, tekrar doğrulama işlemi yapılamaz.</div>';
-                    } else {
-                        // Doğrulanmamışsa ve gelen post verisi varsa işlemleri gerçekleştir
-                        if (!$isUserVerified && isset($_POST['signatureData']) && isset($_POST['confirmation']) && $_POST['confirmation'] == 'on') {
-                            // Diğer işlemleri gerçekleştir
-                            $verificationCode = $_GET['code'];
-
-                            if (!empty($_POST['signatureData'])) {
-                                // İmza verisini burada kaydedin
+                    if ($userData) {
+                        if ($userData[$verificationTimeColumn] !== null) {
+                            $isUserVerified = true;
+                            echo '<div class="alert alert-info" role="alert">Bu kullanıcı zaten doğrulanmış, tekrar doğrulama işlemi yapılamaz.</div>';
+                        } else {
+                            // Doğrulanmamışsa ve gelen POST verisi varsa işlemleri gerçekleştir
+                            if (isset($_POST['signatureData']) && isset($_POST['confirmation']) && $_POST['confirmation'] == 'on') {
+                                // Diğer işlemleri gerçekleştir
+                                $verificationCode = $_GET['code'];
                                 $signatureData = $_POST['signatureData'];
+                                $verificationTime = date('Y-m-d H:i:s');
+                                $verificationIP = $_SERVER['REMOTE_ADDR'];
 
-                                // Base64 formatında imza verisini sütuna ekleyin
+                                // İmza verisini burada kaydedin
                                 $updateQuery = "UPDATE verifications 
-                                        SET $verificationTimeColumn = ?, 
-                                            $verificationIPColumn = ?, 
-                                            $signatureColumn = ? 
-                                        WHERE id = ?";
+                                    SET $verificationTimeColumn = ?, 
+                                        $verificationIPColumn = ?, 
+                                        $signatureColumn = ? 
+                                    WHERE id = ?";
                                 $updateStmt = $db->prepare($updateQuery);
                                 $updateStmt->execute([$verificationTime, $verificationIP, $signatureData, $verificationId]);
 
-                                // Onay durumunu güncelle
-                                updateVerificationStatus($db, 'id', $verificationId, $verificationTimeColumn, $verificationIPColumn);
+                                echo '<div class="alert alert-success" role="alert">Doğrulama başarılı!</div>';
                             } else {
-                                echo "İmza eksik veya onaylanmadı.";
+                                echo '<div class="alert alert-warning" role="alert">İmza eksik veya onaylanmadı.</div>';
                             }
                         }
+                    } else {
+                        echo '<div class="alert alert-danger" role="alert">Geçersiz doğrulama bağlantısı.</div>';
                     }
                 } else {
-                    echo '<div class="alert alert-danger" role="alert">Geçersiz doğrulama bağlantısı.</div>';
+                    echo '<div class="alert alert-warning" role="alert">Lütfen dijital imzanızı atın ve onay kutucuğunu işaretleyin.</div>';
                 }
             } else {
-                echo '<div class="alert alert-danger" role="alert">Geçersiz doğrulama bağlantısı veya onay eksik.</div>';
-            }
-            } else {
-                echo '<div class="alert alert-danger" role="alert">Geçersiz doğrulama bağlantısı veya onay eksik.</div>';
+                echo '<div class="alert alert-warning" role="alert">Lütfen dijital imzanızı atın ve onay kutucuğunu işaretleyin.</div>';
             }
             ?>
+
 
         </div>
         <div>
