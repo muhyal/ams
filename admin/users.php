@@ -45,19 +45,24 @@ $query = "
     SELECT
         users.*,
         user_types.type_name,
-    (
-        SELECT MAX(verification_time_email_confirmed)
-        FROM verifications
-        WHERE user_id = users.id
-    ) AS latest_verification_time_email_confirmed,
-    (
-        SELECT MAX(verification_time_sms_confirmed)
-        FROM verifications
-        WHERE user_id = users.id
-    ) AS latest_verification_time_sms_confirmed
-FROM users
+        (
+            SELECT v2.verification_time_email_confirmed
+            FROM verifications v2
+            WHERE v2.user_id = users.id
+            ORDER BY v2.sent_at DESC
+            LIMIT 1
+        ) AS latest_verification_time_email_confirmed,
+        (
+            SELECT v2.verification_time_sms_confirmed
+            FROM verifications v2
+            WHERE v2.user_id = users.id
+            ORDER BY v2.sent_at DESC
+            LIMIT 1
+        ) AS latest_verification_time_sms_confirmed
+    FROM users
     LEFT JOIN user_types ON users.user_type = user_types.id
 ";
+
 
 $stmt = $db->prepare($query);
 $stmt->execute();
@@ -161,6 +166,7 @@ if (isset($_GET["action"]) && $_GET["action"] === "delete" && isset($_GET["id"])
                             <td><?= $user['type_name'] ?></td>
                             <td><?= $user['latest_verification_time_sms_confirmed'] ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-times text-danger"></i>' ?></td>
                             <td><?= $user['latest_verification_time_email_confirmed'] ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-times text-danger"></i>' ?></td>
+
                             <td>
                                 <?php
                                 if ($user['deleted_at']) {

@@ -62,43 +62,50 @@ if (isset($_GET["id"])) {
     $user_id = $_GET["id"];
 
     $query = "
-SELECT 
-    users.*,
-    verifications.id AS verification_id,
-    verifications.email AS verification_email,
-    verifications.phone AS verification_phone,
-    verifications.verification_code_email,
-    verifications.verification_code_sms,
-    verifications.verification_ip_email,
-    verifications.verification_ip_sms,
-    verifications.verification_time_email_sent,
-    verifications.verification_time_sms_sent,
-    verifications.verification_time_email_confirmed,
-    verifications.verification_time_sms_confirmed,
-    verifications.verification_signature_email,
-    verifications.verification_signature_sms,
-    CONCAT(u_created_by.first_name, ' ', u_created_by.last_name) AS created_by_name,
-    CONCAT(u_updated_by.first_name, ' ', u_updated_by.last_name) AS updated_by_name,
-    CONCAT(u_deleted_by.first_name, ' ', u_deleted_by.last_name) AS deleted_by_name,
-    user_types.type_name,
-    (
-        SELECT MAX(verification_time_email_confirmed)
-        FROM verifications
-        WHERE user_id = users.id
-    ) AS latest_verification_time_email_confirmed,
-    (
-        SELECT MAX(verification_time_sms_confirmed)
-        FROM verifications
-        WHERE user_id = users.id
-    ) AS latest_verification_time_sms_confirmed
-FROM users
-LEFT JOIN users u_created_by ON users.created_by_user_id = u_created_by.id
-LEFT JOIN users u_updated_by ON users.updated_by_user_id = u_updated_by.id
-LEFT JOIN users u_deleted_by ON users.deleted_by_user_id = u_deleted_by.id
-LEFT JOIN verifications ON users.id = verifications.user_id
-LEFT JOIN user_types ON users.user_type = user_types.id
-WHERE users.id = :user_id
+    SELECT 
+        users.*,
+        verifications.id AS verification_id,
+        verifications.email AS verification_email,
+        verifications.phone AS verification_phone,
+        verifications.verification_code_email,
+        verifications.verification_code_sms,
+        verifications.verification_ip_email,
+        verifications.verification_ip_sms,
+        verifications.verification_time_email_sent,
+        verifications.verification_time_sms_sent,
+        verifications.verification_time_email_confirmed,
+        verifications.verification_time_sms_confirmed,
+        verifications.verification_signature_email,
+        verifications.verification_signature_sms,
+        verifications.sent_at,
+        CONCAT(u_created_by.first_name, ' ', u_created_by.last_name) AS created_by_name,
+        CONCAT(u_updated_by.first_name, ' ', u_updated_by.last_name) AS updated_by_name,
+        CONCAT(u_deleted_by.first_name, ' ', u_deleted_by.last_name) AS deleted_by_name,
+        user_types.type_name,
+        (
+            SELECT v2.verification_time_email_confirmed
+            FROM verifications v2
+            WHERE v2.user_id = users.id
+            ORDER BY v2.sent_at DESC
+            LIMIT 1
+        ) AS latest_verification_time_email_confirmed,
+        (
+            SELECT v2.verification_time_sms_confirmed
+            FROM verifications v2
+            WHERE v2.user_id = users.id
+            ORDER BY v2.sent_at DESC
+            LIMIT 1
+        ) AS latest_verification_time_sms_confirmed
+    FROM users
+    LEFT JOIN users u_created_by ON users.created_by_user_id = u_created_by.id
+    LEFT JOIN users u_updated_by ON users.updated_by_user_id = u_updated_by.id
+    LEFT JOIN users u_deleted_by ON users.deleted_by_user_id = u_deleted_by.id
+    LEFT JOIN verifications ON users.id = verifications.user_id
+    LEFT JOIN user_types ON users.user_type = user_types.id
+    WHERE users.id = :user_id
 ";
+
+
 
     $stmt = $db->prepare($query);
     $stmt->bindParam(":user_id", $user_id, PDO::PARAM_INT);
@@ -573,8 +580,14 @@ require_once(__DIR__ . '/partials/sidebar.php');
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item"><strong>Durumu:</strong> <?= $user['is_active'] ? '<i class="fas fa-circle-dot text-success"></i> Aktif' : '<i class="fas fa-circle-dot text-secondary"></i> Pasif' ?></li>
                             <li class="list-group-item"><strong>İki Faktörlü Kimlik Doğrulama:</strong> <?= $user['two_factor_enabled'] ? '<i class="fas fa-lock text-success"></i> Güvenli' : '<i class="fas fa-unlock text-secondary"></i> Güvensiz' ?></li>
-                            <li class="list-group-item"><strong>SMS Onay Durumu:</strong> <?= $user['latest_verification_time_sms_confirmed'] ? '<i class="fas fa-check text-success"></i> Doğrulandı' : '<i class="fas fa-times text-danger"></i> Doğrulanmadı' ?></li>
-                            <li class="list-group-item"><strong>E-posta Onay Durumu:</strong> <?= $user['latest_verification_time_email_confirmed'] ? '<i class="fas fa-check text-success"></i> Doğrulandı' : '<i class="fas fa-times text-danger"></i> Doğrulanmadı' ?></li>
+                            <li class="list-group-item"><strong>SMS Onay Durumu:</strong>
+                                <?= $user['latest_verification_time_sms_confirmed'] ? '<i class="fas fa-check text-success"></i> Doğrulandı' : '<i class="fas fa-times text-danger"></i> Doğrulanmadı' ?>
+                            </li>
+
+                            <li class="list-group-item"><strong>E-posta Onay Durumu:</strong>
+                                <?= $user['latest_verification_time_email_confirmed'] ? '<i class="fas fa-check text-success"></i> Doğrulandı' : '<i class="fas fa-times text-danger"></i> Doğrulanmadı' ?>
+                            </li>
+
                             <li class="list-group-item"><strong>Kullanıcı Türü:</strong> <?= $userType ?></li>
                             <li class="list-group-item"><strong>E-posta ile iletişim izni:</strong> <?= $user['email_preference'] ? '<i class="fas fa-check text-success"></i> Var' : '<i class="fas fa-times text-danger"></i> Yok' ?></li>
                             <li class="list-group-item"><strong>SMS ile iletişim izni:</strong> <?= $user['sms_preference'] ? '<i class="fas fa-check text-success"></i> Var' : '<i class="fas fa-times text-danger"></i> Yok' ?></li>
@@ -776,6 +789,7 @@ require_once(__DIR__ . '/partials/sidebar.php');
                                             <th>SMS Gönderim</th>
                                             <th>E-posta Onay</th>
                                             <th>SMS Onay</th>
+                                            <th>Gönderim Tarihi</th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -806,7 +820,8 @@ require_once(__DIR__ . '/partials/sidebar.php');
                                                 <td><?= isset($verification['verification_time_sms_sent']) ? date(DATETIME_FORMAT, strtotime($verification['verification_time_sms_sent'])) : 'Veri yok' ?></td>
                                                 <td><?= isset($verification['verification_time_email_confirmed']) ? date(DATETIME_FORMAT, strtotime($verification['verification_time_email_confirmed'])) : 'Veri yok' ?></td>
                                                 <td><?= isset($verification['verification_time_sms_confirmed']) ? date(DATETIME_FORMAT, strtotime($verification['verification_time_sms_confirmed'])) : 'Veri yok' ?></td>
-                                                 </tr>
+                                                <td><?= isset($verification['sent_at']) ? date(DATETIME_FORMAT, strtotime($verification['sent_at'])) : 'Veri yok' ?></td>
+                                            </tr>
                                         <?php endforeach; ?>
                                         </tbody>
                                     </table>

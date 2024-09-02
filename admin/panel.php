@@ -64,19 +64,24 @@ SELECT
     users.phone,
     user_types.type_name,
     (
-        SELECT MAX(verification_time_email_confirmed)
-        FROM verifications
-        WHERE user_id = users.id
+        SELECT v2.verification_time_email_confirmed
+        FROM verifications v2
+        WHERE v2.user_id = users.id
+        ORDER BY v2.sent_at DESC
+        LIMIT 1
     ) AS latest_verification_time_email_confirmed,
     (
-        SELECT MAX(verification_time_sms_confirmed)
-        FROM verifications
-        WHERE user_id = users.id
+        SELECT v2.verification_time_sms_confirmed
+        FROM verifications v2
+        WHERE v2.user_id = users.id
+        ORDER BY v2.sent_at DESC
+        LIMIT 1
     ) AS latest_verification_time_sms_confirmed
 FROM users
 INNER JOIN user_types ON users.user_type = user_types.id
 LIMIT 5;
 ";
+
 
 $stmt = $db->prepare($query);
 $stmt->execute();

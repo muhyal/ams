@@ -113,15 +113,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $verificationTimeEmail = date("Y-m-d H:i:s", time());
         $verificationTimeSms = date("Y-m-d H:i:s", time());
 
+        $sentAt = date("Y-m-d H:i:s", time()); // Şu anki zaman
+
         // Veritabanında ekle (insert)
-        $insertQuery = "INSERT INTO verifications (user_id, email, phone, verification_code_email, verification_code_sms, verification_time_email_sent, verification_time_sms_sent, sent_by_user_id)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        $insertQuery = "INSERT INTO verifications (user_id, email, phone, verification_code_email, verification_code_sms, verification_time_email_sent, verification_time_sms_sent, sent_by_user_id, sent_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         $stmtInsert = $db->prepare($insertQuery);
 
-// Insert sırasında oluşan id'yi al
-        $verificationId = null;
-        if ($stmtInsert->execute([$user_id, $email, $phone, $verificationCodeEmail, $verificationCodeSms, $verificationTimeEmail, $verificationTimeSms, $sent_by_user_id])) {
+        if ($stmtInsert->execute([$user_id, $email, $phone, $verificationCodeEmail, $verificationCodeSms, $verificationTimeEmail, $verificationTimeSms, $sent_by_user_id, $sentAt])) {
             $verificationId = $db->lastInsertId();
         }
 
