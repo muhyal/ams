@@ -40,6 +40,18 @@ extract($option, EXTR_IF_EXISTS);
     </div>
 </footer>
 
+<!-- CKEditor 5 Entegrasyonu -->
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+<script>
+    document.querySelectorAll('textarea').forEach(function(element) {
+        ClassicEditor
+            .create(element)
+            .catch(error => {
+                console.error(error);
+            });
+    });
+</script>
+
 <script>
     // Tüm [data-bs-toggle="popover"] öğelerini seç
     const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
