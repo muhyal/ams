@@ -1,24 +1,4 @@
 <?php
-/**
- * @copyright Copyright (c) 2024, KUTBU
- *
- * @author Muhammed Yalçınkaya <muhammed.yalcinkaya@kutbu.com>
- *
- * @license AGPL-3.0
- *
- * This code is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License, version 3,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License, version 3,
- * along with this program. If not, see <http://www.gnu.org/licenses/>
- *
- */
 global $db, $showErrors, $siteName, $siteShortName, $siteUrl, $userType;
 
 // Oturum kontrolü
@@ -53,6 +33,10 @@ $query = "SELECT * FROM options";
 $result = $db->query($query);
 $options = $result->fetchAll(PDO::FETCH_ASSOC);
 
+$query = "SELECT option_name, option_value FROM options WHERE option_name LIKE 'user_agreement_%'";
+$result = $db->query($query);
+$userTypeAgreementTexts = $result->fetchAll(PDO::FETCH_KEY_PAIR);
+
 // Check if the form is submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     checkPermission();
@@ -79,6 +63,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+
+
 checkPermission();
 ?>
 
@@ -92,22 +78,36 @@ checkPermission();
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
                 <h2>Site Seçenekleri</h2>
             </div>
-        <main role="main" class="col-md-12 ml-sm-auto col-lg-12 pt-3 px-4">
+            <main role="main" class="col-md-12 ml-sm-auto col-lg-12 pt-3 px-4">
 
-            <form action="" method="post" class="container-fluid">
-                <?php foreach ($options as $option): ?>
-                    <div class="mb-3">
-                        <label for="<?php echo $option['option_name']; ?>" class="form-label"><?php echo ucfirst(str_replace('_', ' ', $option['option_name'])); ?>:</label>
-                        <input type="text" class="form-control" id="<?php echo $option['option_name']; ?>" name="<?php echo $option['option_name']; ?>" value="<?php echo $option['option_value']; ?>">
-                    </div>
-                <?php endforeach; ?>
+                <form action="" method="post" class="container-fluid">
+                    <?php foreach ($options as $option): ?>
+                        <?php
+                        // Unique ID oluşturma
+                        $textareaId = 'ckeditor_' . $option['option_name'];
 
-                <button type="submit" class="btn btn-primary">Seçenekleri Kaydet</button>
-            </form>
+                        // Label metnini belirleme
+                        $labelText = isset($labelTexts[$option['option_name']]) ? $labelTexts[$option['option_name']] : ucfirst(str_replace('_', ' ', $option['option_name']));
 
-        </main>
+                        // Textarea içeriğini doğru şekilde işleme
+                        $optionValue = htmlspecialchars_decode($option['option_value'], ENT_QUOTES);
+                        ?>
+                        <div class="mb-3">
+                            <label for="<?php echo $textareaId; ?>" class="form-label"><?php echo $labelText; ?>:</label>
+                            <?php if (strpos($option['option_name'], 'user_agreement_') !== false): ?>
+                                <textarea class="form-control" id="<?php echo $textareaId; ?>" name="<?php echo $option['option_name']; ?>" rows="10"><?php echo $optionValue; ?></textarea>
+                            <?php else: ?>
+                                <input type="text" class="form-control" id="<?php echo $option['option_name']; ?>" name="<?php echo $option['option_name']; ?>" value="<?php echo $optionValue; ?>">
+                            <?php endif; ?>
+                        </div>
+                    <?php endforeach; ?>
+
+                    <button type="submit" class="btn btn-primary">Seçenekleri Kaydet</button>
+                </form>
+
+            </main>
     </div>
 </div>
 
-<?php require_once('../admin/partials/footer.php'); ?>
 
+<?php require_once('../admin/partials/footer.php'); ?>

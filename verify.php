@@ -29,6 +29,25 @@ require_once(__DIR__ . '/config/db_connection.php');
 require_once(__DIR__ . '/config/config.php');
 require_once(__DIR__ . '/user/partials/header.php');
 
+// $userType parametresini al
+$userType = isset($_GET['type']) ? (int)$_GET['type'] : 0;
+
+// Veritabanından sözleşme metnini çekme
+$userTypeKey = 'user_agreement_' . $userType;
+$query = "SELECT option_value FROM options WHERE option_name = :userTypeKey LIMIT 1";
+$stmt = $db->prepare($query);
+$stmt->bindParam(':userTypeKey', $userTypeKey);
+$stmt->execute();
+$userTypeText = $stmt->fetchColumn();
+
+// Eğer sözleşme metni bulunamazsa varsayılan bir mesaj ayarla
+if (!$userTypeText) {
+    $userTypeText = "Bilinmeyen kullanıcı sözleşmesi metni.";
+} else {
+    $userTypeText = htmlspecialchars_decode($userTypeText, ENT_QUOTES);
+}
+
+
 $verificationTime = null;
 $verificationIP = null;
 
@@ -143,16 +162,13 @@ if ((!isset($_GET['email']) && !isset($_GET['phone'])) || !isset($_GET['code']))
 <!-- SignaturePad kütüphanesi CDN üzerinden eklendi -->
 <script src="https://unpkg.com/signature_pad"></script>
 
-<?php
-$userType = isset($_GET['type']) ? (int)$_GET['type'] : 0;
-
-$userTypeText = isset($userTypeAgreementTexts[$userType]) ? $userTypeAgreementTexts[$userType] : "Bilinmeyen kullanıcı sözleşmesi metni.";
-?>
 <div class="col-lg-6 mx-auto">
     <p class="h1 text-center mt-3 mb-3">Sözleşme</p>
     <p class="lead mt-3 mb-3"><?php echo $userTypeText; ?></p>
     <p class="mt-3 mb-3"><?php echo htmlspecialchars($siteVerifyDescription, ENT_QUOTES, 'UTF-8'); ?></p>
 </div>
+
+
 
 
 <div class="px-4 py-5 my-5 text-center">
