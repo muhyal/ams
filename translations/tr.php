@@ -23,5 +23,11 @@ return [
     'website' => 'Web Adresi',
     'announcements' => 'Duyurular',
     'announced' => 'Duyuruldu',
+    'course_fee' => 'Ders ücreti',
+    'site_name' => 'Site adı',
+    'site_short_name' => 'Site kısa adı',
+    'site_url' => 'Site bağlantısı',
+    'site_virtual_classroom_url' => 'Site sanal sınıf bağlantısı',
+
 ];
 ?>

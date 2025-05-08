@@ -922,8 +922,6 @@ ORDER BY course_date DESC
                             </div>
                                 </div>
 
-
-
                             <div class="card mt-4">
                                     <div class="card-header">
                                         <h5 class="card-title">Eğitim Planlarım</h5>
@@ -1047,7 +1045,6 @@ ORDER BY course_date DESC
                                     </div>
                                 </div>
 
-
                                 <div class="card mt-4">
                                     <div class="card-header">
                                         <h5 class="card-title">Telafi Derslerim</h5>
@@ -1103,8 +1100,7 @@ ORDER BY course_date DESC
                                         </table>
                                     </div>
                                 </div>
-                </div>
-
+                    </div>
 
                             <?php elseif ($user['user_type'] == '5'): ?>
                                 <!-- Velinin Diğer Bilgileri -->

@@ -42,15 +42,28 @@ extract($option, EXTR_IF_EXISTS);
 
 <!-- CKEditor 5 Entegrasyonu -->
 <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+<style>
+    /* CKEditor içeriğini 10 satırla sınırlamak için CSS */
+    .ck-editor__editable {
+        max-height: 200px; /* Yaklaşık 10 satır yüksekliği */
+        overflow-y: auto;
+    }
+</style>
 <script>
     document.querySelectorAll('textarea').forEach(function(element) {
         ClassicEditor
             .create(element)
+            .then(editor => {
+                // Editörün yüksekliğini sınırlamak için CSS ekliyoruz
+                editor.ui.view.editable.element.style.maxHeight = '200px'; // Yaklaşık 10 satır
+                editor.ui.view.editable.element.style.overflowY = 'auto';
+            })
             .catch(error => {
                 console.error(error);
             });
     });
 </script>
+
 
 <script>
     // Tüm [data-bs-toggle="popover"] öğelerini seç

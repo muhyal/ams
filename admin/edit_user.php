@@ -116,6 +116,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $user_type = htmlspecialchars($_POST["user_type"], ENT_QUOTES, 'UTF-8');
     $notes = htmlspecialchars($_POST["notes"], ENT_QUOTES, 'UTF-8');
     $is_active = htmlspecialchars($_POST["is_active"], ENT_QUOTES, 'UTF-8');
+    $selectedAcademies = isset($_POST['academies']) ? implode(',', $_POST['academies']) : null;
+
 
     // Kurumsal bilgileri güvenli bir şekilde alın
     $invoice_type = isset($_POST["invoice_type"]) ? htmlspecialchars($_POST["invoice_type"], ENT_QUOTES, 'UTF-8') : "";
@@ -172,6 +174,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         updated_at = ?,
         email_preference = ?,
         sms_preference = ?,
+        academies = ?,
         updated_by_user_id = ?"; // Include the updated_by_user_id field
 
 
@@ -183,7 +186,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $tc_identity_for_individual_invoice, $birth_date, $city, $district, $country,
         $blood_type, $health_issue,
         date("Y-m-d H:i:s"),
-        $email_preference, $sms_preference, $admin_id // Assuming $admin_id is the ID of the admin user making the update
+        $email_preference, $sms_preference, $selectedAcademies, $admin_id // Assuming $admin_id is the ID of the admin user making the update
     ];
 
     if (!empty($new_password)) {
@@ -199,6 +202,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Şimdi güncelleme sorgusunu çalıştırın
     $stmt = $db->prepare($updateQuery);
     $stmt->execute($params);
+
+
 
     // Kullanıcıyı güncelledikten sonra yönlendirme yapabilirsiniz
     header("Location: users.php");
@@ -403,6 +408,51 @@ require_once(__DIR__ . '/partials/header.php');
                                 <!-- Sağlık Sorunu -->
                                 <label class="form-label mt-3" for="health_issue">Sağlık Sorunu:</label>
                                 <input class="form-control" type="text" name="health_issue" value="<?php echo $user["health_issue"]; ?>" required>
+
+
+
+
+                                <?php
+                                // Database connection and session handling
+                                global $db;
+                                $userId = $_GET['id'];  // Assuming the user ID is passed as a GET parameter
+
+                                // Fetch user details including academies (assuming academies are stored as a comma-separated string)
+                                $getUserQuery = "SELECT * FROM users WHERE id = ?";
+                                $stmt = $db->prepare($getUserQuery);
+                                $stmt->execute([$userId]);
+                                $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                                // Fetch all academies
+                                $getAcademiesQuery = "SELECT id, name FROM academies";
+                                $stmtAcademies = $db->query($getAcademiesQuery);
+                                $academies = $stmtAcademies->fetchAll(PDO::FETCH_ASSOC);
+
+                                // Fetch selected academies for the user (stored as comma-separated values)
+                                $userAcademies = isset($user['academies']) ? explode(',', $user['academies']) : [];
+                                ?>
+
+                                <div class="form-group">
+                                    <label class="form-label mt-3" for="academies">Kayıt edilen akademi(ler):</label>
+                                    <div class="form-check">
+                                        <?php if (!empty($academies)): ?>
+                                            <?php foreach ($academies as $academy): ?>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="academies[]" id="academy_<?php echo $academy['id']; ?>" value="<?php echo $academy['id']; ?>"
+                                                        <?php echo in_array($academy['id'], $userAcademies) ? 'checked' : ''; ?>>
+                                                    <label class="form-check-label" for="academy_<?php echo $academy['id']; ?>">
+                                                        <?php echo $academy['name']; ?>
+                                                    </label>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                            <p>Hiçbir akademi bulunamadı.</p>
+                                        <?php endif; ?>
+                                    </div>
+                                    <small class="form-text text-muted">Bir veya birden fazla akademi seçebilirsiniz.</small>
+                                </div>
+
+
 
 
                                 <!-- Bireysel ve Kurumsal alanları -->

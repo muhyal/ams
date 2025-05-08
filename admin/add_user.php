@@ -50,6 +50,16 @@ use libphonenumber\PhoneNumberUtil;
 use libphonenumber\PhoneNumberFormat;
 use League\ISO3166\ISO3166;
 
+
+// Fetch all academies
+$getAcademiesQuery = "SELECT id, name FROM academies";
+$stmtAcademies = $db->query($getAcademiesQuery);
+$academies = $stmtAcademies->fetchAll(PDO::FETCH_ASSOC);
+
+// Fetch selected academies for the user (stored as comma-separated values)
+$userAcademies = isset($user['academies']) ? explode(',', $user['academies']) : [];
+
+
 // Ülkeleri al
 $phoneNumberUtil = PhoneNumberUtil::getInstance();
 $iso3166 = new ISO3166();
@@ -71,6 +81,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $countryCode = isset($_POST["country"]) ? htmlspecialchars($_POST["country"]) : "";
     $phoneNumber = isset($_POST["phone"]) ? htmlspecialchars($_POST["phone"]) : "";
     $country = $_POST["country"];
+    $selectedAcademies = isset($_POST['academies']) ? implode(',', $_POST['academies']) : null;
+
 
     $invoice_type = isset($_POST["invoice_type"]) ? htmlspecialchars($_POST["invoice_type"]) : "";
 
@@ -136,6 +148,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     blood_type,
     health_issue,
     country,
+    academies,
     invoice_type,
     tax_company_name,
     tax_office,
@@ -146,7 +159,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     created_by_user_id,
     updated_at,
     updated_by_user_id
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try {
             $stmt = $db->prepare($insertQuery);
@@ -171,6 +184,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $blood_type,
                 $health_issue,
                 $country,
+                $selectedAcademies,
                 $invoice_type,
                 $tax_company_name,
                 $tax_office,
@@ -374,6 +388,27 @@ require_once(__DIR__ . '/partials/header.php');
                             <div class="invalid-feedback">Bu alan gereklidir.</div>
                         </div>
 
+                        <!-- Akademi Seçimi -->
+                        <div class="mb-3">
+                            <label class="form-label" for="academies">Kayıt edileceği akademi(ler):</label>
+                            <div class="form-check">
+                                <?php if (!empty($academies)): ?>
+                                    <?php foreach ($academies as $academy): ?>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="academies[]" id="academy_<?php echo $academy['id']; ?>" value="<?php echo $academy['id']; ?>"
+                                                <?php echo in_array($academy['id'], $userAcademies) ? 'checked' : ''; ?>>
+                                            <label class="form-check-label" for="academy_<?php echo $academy['id']; ?>">
+                                                <?php echo $academy['name']; ?>
+                                            </label>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <p>Hiçbir akademi bulunamadı.</p>
+                                <?php endif; ?>
+                            </div>
+                            <small class="form-text text-muted">Bir veya birden fazla akademi seçebilirsiniz.</small>
+                        </div>
+
                         <div class="mb-3">
                             <label for="birth_date" class="form-label">Doğum Tarihi:</label>
                             <input type="date" name="birth_date" class="form-control" required>
@@ -475,6 +510,8 @@ require_once(__DIR__ . '/partials/header.php');
                             <div class="invalid-feedback">Bu alan gereklidir.</div>
                         </div>
 
+
+
                         <!-- Kan Grubu -->
                         <div class="mb-3">
                             <label for="blood_type" class="form-label">Kan Grubu:</label>
@@ -500,8 +537,21 @@ require_once(__DIR__ . '/partials/header.php');
 
                         <div class="mb-3">
                             <label for="health_issue" class="form-label">Sağlık Sorunu:</label>
-                            <input type="text" name="health_issue" class="form-control">
+                            <input type="text" id="health_issue" name="health_issue" class="form-control" placeholder="Yoksa boş bırakın">
                         </div>
+
+                        <script>
+                        document.querySelector('form').addEventListener('submit', function(event) {
+                        var healthIssueInput = document.getElementById('health_issue');
+
+                        // Eğer kutu boşsa, 'Yok' olarak kaydedilmesini sağla
+                        if (healthIssueInput.value.trim() === '') {
+                        healthIssueInput.value = 'Yok';
+                        }
+                        });
+                        </script>
+
+
 
                         <!-- Bireysel ve Kurumsal alanlarına ID eklendi -->
                         <label class="form-label mt-3" for="invoice_type">Fatura Tipi Seçin:</label>
@@ -608,12 +658,14 @@ require_once(__DIR__ . '/partials/header.php');
 
 
                 <div class="mb-3 mt-3 form-check">
-                    <input type="checkbox" class="form-check-input" id="sendWelcomeEmail" name="sendWelcomeEmail" checked>
+<!--                    <input type="checkbox" class="form-check-input" id="sendWelcomeEmail" name="sendWelcomeEmail" checked>
+-->                    <input type="checkbox" class="form-check-input" id="sendWelcomeEmail" name="sendWelcomeEmail">
                     <label class="form-check-label" for="sendWelcomeEmail">Hoşgeldin E-postası Gönder</label>
                 </div>
 
                 <div class="mb-3 mt-3 form-check">
-                    <input type="checkbox" class="form-check-input" id="sendWelcomeSms" name="sendWelcomeSms" checked>
+<!--                    <input type="checkbox" class="form-check-input" id="sendWelcomeEmail" name="sendWelcomeEmail" checked>
+-->                    <input type="checkbox" class="form-check-input" id="sendWelcomeSms" name="sendWelcomeSms">
                     <label class="form-check-label" for="sendWelcomeSms">Hoşgeldin SMS'i Gönder</label>
                 </div>
 

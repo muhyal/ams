@@ -40,29 +40,68 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 require_once('../config/config.php');
 
-// Kullanıcıları ve rolleri veritabanından çekme
-$query = "
-    SELECT
-        users.*,
-        user_types.type_name,
-        (
+// SQL sorgusunu kontrol etmek için bir koşul ekleyin
+if (isset($_GET['unverified'])) {
+    // Doğrulanmamış kullanıcıları çekme
+    $query = "
+        SELECT
+            users.*,
+            user_types.type_name,
+            (
+                SELECT v2.verification_time_email_confirmed
+                FROM verifications v2
+                WHERE v2.user_id = users.id
+                ORDER BY v2.sent_at DESC
+                LIMIT 1
+            ) AS latest_verification_time_email_confirmed,
+            (
+                SELECT v2.verification_time_sms_confirmed
+                FROM verifications v2
+                WHERE v2.user_id = users.id
+                ORDER BY v2.sent_at DESC
+                LIMIT 1
+            ) AS latest_verification_time_sms_confirmed
+        FROM users
+        LEFT JOIN user_types ON users.user_type = user_types.id
+        WHERE (
             SELECT v2.verification_time_email_confirmed
             FROM verifications v2
             WHERE v2.user_id = users.id
             ORDER BY v2.sent_at DESC
             LIMIT 1
-        ) AS latest_verification_time_email_confirmed,
-        (
+        ) IS NULL
+        OR (
             SELECT v2.verification_time_sms_confirmed
             FROM verifications v2
             WHERE v2.user_id = users.id
             ORDER BY v2.sent_at DESC
             LIMIT 1
-        ) AS latest_verification_time_sms_confirmed
-    FROM users
-    LEFT JOIN user_types ON users.user_type = user_types.id
-";
-
+        ) IS NULL
+    ";
+} else {
+    // Tüm kullanıcıları çekme
+    $query = "
+        SELECT
+            users.*,
+            user_types.type_name,
+            (
+                SELECT v2.verification_time_email_confirmed
+                FROM verifications v2
+                WHERE v2.user_id = users.id
+                ORDER BY v2.sent_at DESC
+                LIMIT 1
+            ) AS latest_verification_time_email_confirmed,
+            (
+                SELECT v2.verification_time_sms_confirmed
+                FROM verifications v2
+                WHERE v2.user_id = users.id
+                ORDER BY v2.sent_at DESC
+                LIMIT 1
+            ) AS latest_verification_time_sms_confirmed
+        FROM users
+        LEFT JOIN user_types ON users.user_type = user_types.id
+    ";
+}
 
 $stmt = $db->prepare($query);
 $stmt->execute();
@@ -106,9 +145,6 @@ if (isset($_GET["action"]) && $_GET["action"] === "delete" && isset($_GET["id"])
     header("Location: ".$_SERVER['PHP_SELF']);
     exit();
 }
-
-
-
 ?>
 <?php require_once(__DIR__ . '/partials/header.php'); ?>
 <style>
@@ -128,7 +164,7 @@ if (isset($_GET["action"]) && $_GET["action"] === "delete" && isset($_GET["id"])
         <?php require_once(__DIR__ . '/partials/sidebar.php'); ?>
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
-                <h2>Kullanıcılar</h2>
+                <h2><?php echo isset($_GET['unverified']) ? 'Doğrulanmamış Kullanıcılar' : 'Tüm Kullanıcılar'; ?></h2>
             </div>
 
             <div class="table-responsive">

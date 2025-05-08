@@ -163,13 +163,10 @@ if ((!isset($_GET['email']) && !isset($_GET['phone'])) || !isset($_GET['code']))
 <script src="https://unpkg.com/signature_pad"></script>
 
 <div class="col-lg-6 mx-auto">
-    <p class="h1 text-center mt-3 mb-3">Sözleşme</p>
+    <p class="h1 text-center mt-3 mb-3">Dijital Sözleşmeniz</p>
     <p class="lead mt-3 mb-3"><?php echo $userTypeText; ?></p>
     <p class="mt-3 mb-3"><?php echo htmlspecialchars($siteVerifyDescription, ENT_QUOTES, 'UTF-8'); ?></p>
 </div>
-
-
-
 
 <div class="px-4 py-5 my-5 text-center">
     <div class="col-lg-6 mx-auto">
@@ -239,7 +236,7 @@ if ((!isset($_GET['email']) && !isset($_GET['phone'])) || !isset($_GET['code']))
                 <!-- İmza Alanı -->
                 <div class="signature-container">
                     <canvas id="signatureCanvas" width="400" height="200" style="border:1px solid #000;"></canvas>
-                    <div class="signature-text">Dijital İmzanızı Buraya Atabilirsiniz</div>
+                    <div class="signature-text">Dijital İmza</div>
                 </div>
 
                 <!-- Onay Seçim Kutusu -->
@@ -252,8 +249,8 @@ if ((!isset($_GET['email']) && !isset($_GET['phone'])) || !isset($_GET['code']))
 
                 <!-- İmza Temizle ve Gönder Butonları -->
                 <div class="form-group">
-                    <button type="button" class="btn btn-primary" onclick="clearSignature()">İmzayı Temizle</button>
-                    <button type="button" class="btn btn-primary" onclick="sendSignature()">İmzala & Onayla</button>
+                    <button type="button" class="btn btn-success" onclick="sendSignature()">İmzala & Onayla</button>
+                    <button type="button" class="btn btn-warning" onclick="clearSignature()">İmza Alanını Temizle</button>
                 </div>
             <?php endif; ?>
 

@@ -23,5 +23,7 @@ return [
     'website' => 'Web Site',
     'announcements' => 'Announcements',
     'announced' => 'Announced',
+    'course_fee' => 'Course fee',
+
 ];
 ?>

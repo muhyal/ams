@@ -47,15 +47,83 @@ require_once(__DIR__ . '/partials/header.php');
                 <h2>Hakkında</h2>
             </div>
 
-<h4>PHP Bilgileri</h4>
-<?php
-// PHP sürümünü al
-echo "<p>PHP Sürümü: " . phpversion() . "</p>";
+<div class="row">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>Sistem Bilgileri</h4>
+            </div>
+            <div class="card-body">
+                <h5>PHP Bilgileri</h5>
+                <?php
+                // PHP sürümünü al
+                echo "<p><strong>PHP Sürümü:</strong> " . phpversion() . "</p>";
+                
+                // PHP bellek kullanımı
+                echo "<p><strong>Bellek Kullanımı:</strong> " . formatBytes(memory_get_usage()) . "</p>";
+                
+                // Maksimum upload boyutu
+                echo "<p><strong>Maksimum Upload Boyutu:</strong> " . ini_get('upload_max_filesize') . "</p>";
+                
+                // Sunucu bilgileri
+                echo "<p><strong>Sunucu Yazılımı:</strong> " . $_SERVER['SERVER_SOFTWARE'] . "</p>";
+                ?>
+            </div>
+        </div>
 
-// Yüklü PHP eklentilerini al
-$extensions = get_loaded_extensions();
-echo "<p>Yüklü PHP Eklentileri: " . implode(", ", $extensions) . "</p>";
-?>
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>PHP Eklentileri</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-sm">
+                        <thead>
+                            <tr>
+                                <th>Eklenti Adı</th>
+                                <th>Versiyon</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            $extensions = get_loaded_extensions();
+                            sort($extensions); // Eklentileri alfabetik sırala
+                            foreach ($extensions as $extension) {
+                                echo "<tr>";
+                                echo "<td>" . htmlspecialchars($extension) . "</td>";
+                                echo "<td>" . phpversion($extension) . "</td>";
+                                echo "</tr>";
+                            }
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>Sistem Durumu</h4>
+            </div>
+            <div class="card-body">
+                <?php
+                // Disk kullanımı
+                $totalSpace = disk_total_space("/");
+                $freeSpace = disk_free_space("/");
+                $usedSpace = $totalSpace - $freeSpace;
+                $usedPercentage = round(($usedSpace / $totalSpace) * 100, 2);
+                
+                echo "<p><strong>Disk Kullanımı:</strong></p>";
+                echo "<div class='progress mb-3'>";
+                echo "<div class='progress-bar' role='progressbar' style='width: {$usedPercentage}%' ";
+                echo "aria-valuenow='{$usedPercentage}' aria-valuemin='0' aria-valuemax='100'>";
+                echo "{$usedPercentage}%</div></div>";
+                echo "<p>Kullanılan: " . formatBytes($usedSpace) . " / Toplam: " . formatBytes($totalSpace) . "</p>";
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
 
 <?php
 // Yardımcı fonksiyon: baytları insan dostu bir formata dönüştürür

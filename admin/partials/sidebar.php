@@ -195,6 +195,12 @@
                                 Akademi/Tarih Ders Planları
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="text-light-emphasis nav-link <?php echo ($_SERVER['SCRIPT_NAME'] == '/admin/users.php?unverified') ? 'active' : ''; ?>" href="/admin/users.php?unverified">
+                                <i class="fas fa-user-xmark"></i>
+                                Doğrulanmamış Kullanıcılar
+                            </a>
+                        </li>
                     </ul>
                     <hr class="my-3">
 

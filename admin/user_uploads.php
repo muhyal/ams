@@ -36,7 +36,43 @@ require_once "../src/functions.php";
 $query = "SELECT user_uploads.id, users.first_name, users.last_name, user_uploads.filename, user_uploads.file_type, user_uploads.description, user_uploads.upload_date
           FROM user_uploads
           INNER JOIN users ON user_uploads.user_id = users.id";
-$stmt = $db->query($query);
+
+// Silme işlemi için kontrol
+if (isset($_POST['delete_file']) && isset($_POST['file_id'])) {
+    $fileId = $_POST['file_id'];
+    
+    // Önce dosya bilgilerini al
+    $getFileQuery = "SELECT filename FROM user_uploads WHERE id = ?";
+    $stmt = $db->prepare($getFileQuery);
+    $stmt->execute([$fileId]);
+    $fileInfo = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    // Dosyayı fiziksel olarak sil
+    if ($fileInfo) {
+        $filePath = __DIR__ . '/../uploads/user_uploads/' . $fileInfo['filename'];
+        if (file_exists($filePath)) {
+            unlink($filePath);
+        }
+        
+        // Veritabanından kaydı sil
+        $deleteQuery = "DELETE FROM user_uploads WHERE id = ?";
+        $stmt = $db->prepare($deleteQuery);
+        $stmt->execute([$fileId]);
+    }
+    
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit();
+}
+
+// Filtreleme için sorguyu güncelle
+if (isset($_GET['file_type']) && !empty($_GET['file_type'])) {
+    $query .= " WHERE user_uploads.file_type = :file_type";
+    $stmt = $db->prepare($query);
+    $stmt->execute(['file_type' => $_GET['file_type']]);
+} else {
+    $stmt = $db->query($query);
+}
+
 $fileUploads = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
@@ -50,60 +86,90 @@ $fileUploads = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <h2>Kullanıcıların Yüklediği Dosyalar</h2>
             </div>
 
+            <div class="mb-3">
+                <form class="form-inline">
+                    <label class="mr-2">Dosya Türü:</label>
+                    <select name="file_type" class="form-control mr-2">
+                        <option value="">Tümü</option>
+                        <option value="health_report" <?php echo isset($_GET['file_type']) && $_GET['file_type'] == 'health_report' ? 'selected' : ''; ?>>Sağlık Raporu</option>
+                        <option value="permission_document" <?php echo isset($_GET['file_type']) && $_GET['file_type'] == 'permission_document' ? 'selected' : ''; ?>>İzin Belgesi</option>
+                        <option value="payment_receipt" <?php echo isset($_GET['file_type']) && $_GET['file_type'] == 'payment_receipt' ? 'selected' : ''; ?>>Ödeme Belgesi</option>
+                        <option value="petition" <?php echo isset($_GET['file_type']) && $_GET['file_type'] == 'petition' ? 'selected' : ''; ?>>Dilekçe</option>
+                        <option value="photo" <?php echo isset($_GET['file_type']) && $_GET['file_type'] == 'photo' ? 'selected' : ''; ?>>Fotoğraf</option>
+                        <option value="other" <?php echo isset($_GET['file_type']) && $_GET['file_type'] == 'other' ? 'selected' : ''; ?>>Diğer</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary">Filtrele</button>
+                </form>
+            </div>
+
             <table class="table">
                 <thead>
                 <tr>
-                    <th>Önizleme</th>
-                    <th>Yükleyen</th>
-                    <th>Dosya Adı</th>
-                    <th>Dosya Türü</th>
-                    <th>Açıklama</th>
-                    <th>Yükleme Tarihi</th>
-                    <th></th>
+                <th>Önizleme</th>
+        <th>Yükleyen</th>
+        <th>Dosya Adı</th>
+        <th>Dosya Türü</th>
+        <th>Açıklama</th>
+        <th>Yükleme Tarihi</th>
+        <th>İşlemler</th> 
                 </tr>
                 </thead>
                 <tbody>
                 <?php foreach ($fileUploads as $upload): ?>
-                    <tr>
-                        <td><img src="/uploads/user_uploads/<?php echo $upload['filename']; ?>" style="width: 30px; height: 30px;" alt="Dosya Küçük Resmi"></td>
-                        <td><?php echo $upload['first_name']; ?> <?php echo $upload['last_name']; ?></td>
-                        <td><?php echo $upload['filename']; ?></td>
-                        <td>
-                            <?php
-                            $fileType = $upload['file_type'];
-
-                            switch ($fileType) {
-                                case 'health_report':
-                                    echo 'Sağlık Raporu';
-                                    break;
-                                case 'permission_document':
-                                    echo 'İzin Belgesi';
-                                    break;
-                                case 'payment_receipt':
-                                    echo 'Ödeme Belgesi';
-                                    break;
-                                case 'petition':
-                                    echo 'Dilekçe';
-                                    break;
-                                case 'other':
-                                    echo 'Diğer';
-                                    break;
-                                case 'photo':
-                                    echo 'Fotoğraf';
-                                    break;
-                                default:
-                                    echo $fileType; // Eğer tanımlanmamışsa orijinal değeri göster
-                            }
-                            ?>
-                        </td>                        <td><?php echo $upload['description']; ?></td>
-                        <td><?php echo $upload['upload_date']; ?></td>
-                        <td>
-                            <a href="/user/dl.php?file=<?php echo $upload['filename']; ?>" class="btn btn-primary btn-sm">
-                                <i class="fas fa-download"></i>
-                            </a>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
+        <tr>
+            <td>
+                <?php if (in_array(pathinfo($upload['filename'], PATHINFO_EXTENSION), ['jpg', 'jpeg', 'png', 'gif'])): ?>
+                    <img src="/uploads/user_uploads/<?php echo $upload['filename']; ?>" style="width: 30px; height: 30px;" alt="Dosya Küçük Resmi">
+                <?php else: ?>
+                    <i class="fas fa-file fa-2x"></i>
+                <?php endif; ?>
+            </td>
+            <td><?php echo htmlspecialchars($upload['first_name'] . ' ' . $upload['last_name']); ?></td>
+            <td><?php echo htmlspecialchars($upload['filename']); ?></td>
+            <td>
+                <?php
+                $fileType = $upload['file_type'];
+                switch ($fileType) {
+                    case 'health_report':
+                        echo 'Sağlık Raporu';
+                        break;
+                    case 'permission_document':
+                        echo 'İzin Belgesi';
+                        break;
+                    case 'payment_receipt':
+                        echo 'Ödeme Belgesi';
+                        break;
+                    case 'petition':
+                        echo 'Dilekçe';
+                        break;
+                    case 'photo':
+                        echo 'Fotoğraf';
+                        break;
+                    case 'other':
+                        echo 'Diğer';
+                        break;
+                    default:
+                        echo htmlspecialchars($fileType);
+                }
+                ?>
+            </td>
+            <td><?php echo htmlspecialchars($upload['description']); ?></td>
+            <td><?php echo date('d.m.Y H:i', strtotime($upload['upload_date'])); ?></td>
+            <td>
+                <div class="btn-group">
+                    <a href="/user/dl.php?file=<?php echo urlencode($upload['filename']); ?>" class="btn btn-primary btn-sm">
+                        <i class="fas fa-download"></i>
+                    </a>
+                    <form method="POST" style="display: inline;" onsubmit="return confirm('Bu dosyayı silmek istediğinizden emin misiniz?');">
+                        <input type="hidden" name="file_id" value="<?php echo $upload['id']; ?>">
+                        <button type="submit" name="delete_file" class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+    <?php endforeach; ?>
                 </tbody>
             </table>
         </main>

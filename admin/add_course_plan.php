@@ -128,6 +128,20 @@ $courseQuery = "SELECT id, course_name FROM courses";
 $courseStmt = $db->query($courseQuery);
 $courses = $courseStmt->fetchAll(PDO::FETCH_ASSOC);
 
+// `course_fee` değerini options tablosundan çek
+$query = "SELECT option_value FROM options WHERE option_name = 'course_fee' LIMIT 1";
+$stmt = $db->prepare($query);
+$stmt->execute();
+$courseFee = $stmt->fetchColumn();
+
+// Eğer değer bulunamazsa, placeholder olarak "yoksa siz belirleyin" mesajını ayarla
+if (!$courseFee) {
+    $courseFee = ""; // Değeri boş bırak
+    $placeholderText = "Varsayılan değer bulunamadı, elle belirleyebilirsiniz";
+} else {
+    $placeholderText = $courseFee; // Değer bulunduysa placeholder aynı olur
+}
+
 // Header ve sidebar dosyalarını dahil et
 require_once(__DIR__ . '/partials/header.php');
 require_once(__DIR__ . '/partials/sidebar.php');
@@ -238,8 +252,9 @@ require_once(__DIR__ . '/partials/sidebar.php');
                     <!-- Ders Ücreti -->
                     <div class="form-group mt-3">
                         <label for="course_fee">Ders Ücreti</label>
-                        <input type="number" name="course_fee" class="form-control" placeholder="4739" value="4739" required>
+                        <input type="number" name="course_fee" class="form-control" placeholder="<?php echo htmlspecialchars($placeholderText, ENT_QUOTES, 'UTF-8'); ?>" value="<?php echo htmlspecialchars($courseFee, ENT_QUOTES, 'UTF-8'); ?>" required>
                     </div>
+
                 </div>
                 <div class="col-md-6">
                     <!-- İkinci kolon içeriği -->

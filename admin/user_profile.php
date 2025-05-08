@@ -954,9 +954,9 @@ require_once(__DIR__ . '/partials/sidebar.php');
                     </div>
                     <div class="card-body">
                         <?php echo !empty($user['notes']) ? $user['notes'] : 'Henüz not yazılmamış'; ?>
-
                     </div>
                 </div>
+
 
 
 
@@ -1098,14 +1098,70 @@ WHERE uaa.user_id = ?";
                             </div>
                         </div>
                     </div>
+
+
+                    <?php
+                    if (isset($_GET["id"])) {
+                        $user_id = $_GET["id"];
+
+                        // Kullanıcının akademilerini almak için sorgu
+                        $query = "SELECT academies FROM users WHERE id = :user_id";
+
+                        $stmt = $db->prepare($query);
+                        $stmt->bindParam(":user_id", $user_id, PDO::PARAM_INT);
+                        $stmt->execute();
+
+                        $academies = $stmt->fetchColumn(); // Veriyi tek bir sütun olarak alır
+
+                        // Eğer academies sütunu boş değilse
+                        if (!empty($academies)) {
+                            $academyIds = explode(',', $academies); // Virgülle ayrılmış akademi ID'lerini diziye çevir
+
+                            // Akademi isimlerini almak için sorgu
+                            $placeholders = implode(',', array_fill(0, count($academyIds), '?'));
+                            $academyQuery = "SELECT name FROM academies WHERE id IN ($placeholders)";
+
+                            $stmtAcademy = $db->prepare($academyQuery);
+                            $stmtAcademy->execute($academyIds);
+                            $academyNames = $stmtAcademy->fetchAll(PDO::FETCH_COLUMN); // Sadece akademi isimlerini al
+
+                            ?>
+
+                <div class="card mt-3 mb-3">
+                    <div class="card-header">
+                        <h5 class="card-title">Kayıt Edildiği Akademiler</h5>
+                    </div>
+                    <div class="card-body">
+                                <ul class="list-group">
+                                    <?php foreach ($academyNames as $academyName): ?>
+                                        <li class="list-group-item">
+                                            <?= htmlspecialchars($academyName) ?>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </div>
+                            <?php
+                        } else {
+                            echo '<div class="alert alert-info" role="alert">Bu kullanıcı henüz bir akademiye kaydedilmemiştir.</div>';
+                        }
+                    } else {
+                        echo '<div class="alert alert-danger" role="alert">Kullanıcı belirtilmedi.</div>';
+                    }
+                    ?>
+
+
+
                     <?php
                 }
                 ?>
 
 
 
+                </div>
             </div>
         </div>
+
+
 
 
             <?php
